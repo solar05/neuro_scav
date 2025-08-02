@@ -59,7 +59,8 @@ defmodule NeuroScav.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:ollama, "~> 0.8"},
-      {:finitomata, "~> 0.30"}
+      {:finitomata, "~> 0.30"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 
