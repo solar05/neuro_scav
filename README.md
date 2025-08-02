@@ -1,5 +1,7 @@
 # NeuroScav
 
+[![CI](https://github.com/solar05/neuro_scav/actions/workflows/build.yml/badge.svg)](https://github.com/solar05/neuro_scav/actions/workflows/build.yml)
+
 To start your Phoenix server:
 
   * Run `mix setup` to install and setup dependencies
