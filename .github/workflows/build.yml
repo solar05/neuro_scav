@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30 # Add timeout to prevent hanging builds
+
+    env:
+      MIX_ENV: test
+
+    services:
+      db:
+        image: postgres:16-alpine
+        ports: ["5432:5432"]
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_HOST_AUTH_METHOD: trust # Simplify auth for CI
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --name=pg_ci
+          --mount type=tmpfs,destination=/var/lib/postgresql/data
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch complete history for better caching
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: "27.2"
+          elixir-version: "1.18.3"
+
+      - name: Cache Dependencies
+        uses: actions/cache@v4
+        id: deps-cache
+        with:
+          path: |
+            ./deps
+            ./_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-
+
+      - name: Get deps
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+          mix deps.get
+
+      - name: Mix deps.compile
+        run: mix compile --warnings-as-errors
+
+      - name: Mix format
+        run: mix format --check-formatted
+        
+      - name: Mix credo
+        run: mix credo
+
+      - name: Mix audit
+        run: mix hex.audit
+
+      - name: Setup db
+        run: mix ecto.create && mix ecto.migrate
+
+      - name: Mix tests
+        run: mix test
