@@ -3,3 +3,19 @@
 @import "tailwindcss/utilities";
 
 /* This file is for your main application CSS */
+
+@font-face {
+    font-family: "Bender";
+    font-weight: normal;
+    src: url("../fonts/Bender.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "BenderBold";
+    font-weight: bold;
+    src: url("../fonts/BenderBold.otf") format("opentype");
+}
+
+body {
+    font: 40px/1.5 "Bender", cursive;
+}
