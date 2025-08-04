@@ -19,3 +19,97 @@
 body {
     font: 40px/1.5 "Bender", cursive;
 }
+
+h2 {
+    font-family: "Bender";
+}
+
+h1 {
+    font-family: "Bender";
+}
+
+a {
+    font-family: "Bender";
+}
+
+p {
+    font-family: "Bender";
+}
+
+.scav-back {
+    background: url("/images/back.webp") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+.blended-border {
+    border-color: #a5a5a5;
+}
+
+.btn-blended {
+    background-color: #d49300 !important;
+}
+
+.btn-blended:hover {
+    background-color: rgb(195, 195, 195);
+}
+
+.blended-nav:hover {
+    background-color: rgb(195, 195, 195);
+}
+
+.blended {
+    color: #a5a5a5;
+}
+
+.blended-reg-bg {
+    font-size: 250%;
+    color: #a5a5a5;
+}
+
+.blended-nav {
+    color: #212529 !important;
+    background-color: #d49300 !important;    
+}
+
+.blend-font {
+    color: #fff !important;
+}
+
+.blended-reg {
+    color: #a5a5a5;
+}
+
+.legendary {
+    color: darkorange;
+}
+
+.epic {
+    color: darkorchid;
+}
+
+.uncommon {
+    color: darkgreen;
+}
+
+.border-uncommon {
+    border: 6px solid darkgreen;
+    border-radius: 20px 20px 20px 20px;
+}
+
+.border-rare {
+    border: 6px solid dodgerblue;
+    border-radius: 20px 20px 20px 20px;
+}
+
+.border-epic {
+    border: 6px solid darkorchid;
+    border-radius: 20px 20px 20px 20px;
+}
+
+.border-legendary {
+    border: 6px solid darkorange;
+    border-radius: 20px 20px 20px 20px;
+}
