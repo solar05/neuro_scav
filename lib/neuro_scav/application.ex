@@ -9,6 +9,7 @@ defmodule NeuroScav.Application do
   def start(_type, _args) do
     children = [
       NeuroScavWeb.Telemetry,
+      NeuroScav.PromEx,
       NeuroScav.Repo,
       {DNSCluster, query: Application.get_env(:neuro_scav, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: NeuroScav.PubSub},

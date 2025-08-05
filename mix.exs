@@ -60,6 +60,7 @@ defmodule NeuroScav.MixProject do
       {:bandit, "~> 1.5"},
       {:ollama, "~> 0.8"},
       {:finitomata, "~> 0.30"},
+      {:prom_ex, "~> 1.11.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:lazy_html, ">= 0.1.0", only: :test}
     ]
