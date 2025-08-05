@@ -3,10 +3,11 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <meta name="description" content="Scavenger's names generator." />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title default="Scavgen">
       {assigns[:page_title]}
@@ -16,6 +17,27 @@
     </script>
   </head>
   <body style="background-color: black;" class="scav-back">
+    <div class="container">
+      <nav class="navbar navbar-expand navbar-light">
+        <div class="collapse navbar-collapse">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link blend-font" href="#">a</a>
+            <a class="nav-item nav-link blend-font" href="#">b</a>
+            <a class="nav-item nav-link blend-font" href="#">c</a>
+            <a class="nav-item nav-link blended-active" href="#">⚡Neuro-дикий</a>
+          </div>
+        </div>
+        <div class="navbar navbar-expand navbar-light navbar-right">
+          <div class="navbar-nav">
+            <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
+              <a class="nav-item nav-link blended-nav rounded" href="/?lang=ru">RU</a>
+            <% else %>
+              <a class="nav-item nav-link blended-nav rounded" href="/?lang=en">EN</a>
+            <% end %>
+          </div>
+        </div>
+      </nav>
+    </div>
     {@inner_content}
   </body>
 </html>

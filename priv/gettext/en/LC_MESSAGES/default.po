@@ -1,0 +1,2 @@
+msgid "Welcome to %{name}!"
+msgstr "Welcome to %{name}!"

@@ -1,6 +1,4 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
+@import "bootstrap.min.css";
 
 /* This file is for your main application CSS */
 
@@ -14,6 +12,11 @@
     font-family: "BenderBold";
     font-weight: bold;
     src: url("../fonts/BenderBold.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "SF";
+    src: url("../fonts/SFProText-Regular.ttf");
 }
 
 body {
@@ -53,11 +56,7 @@ p {
 }
 
 .btn-blended:hover {
-    background-color: rgb(195, 195, 195);
-}
-
-.blended-nav:hover {
-    background-color: rgb(195, 195, 195);
+    background-color: rgb(195, 195, 195) !important;
 }
 
 .blended {
@@ -72,6 +71,25 @@ p {
 .blended-nav {
     color: #212529 !important;
     background-color: #d49300 !important;    
+}
+
+.blended-nav:hover {
+    background-color: rgb(195, 195, 195) !important;
+}
+
+.blended-active {
+    color: #212529 !important;
+    background-color: #4d6bfe !important;
+    color: #fff !important;
+    font-family: "SF";
+    border-radius: 18px;
+}
+
+.blended-active:hover {
+    color: #212529 !important;
+    background-color: #fff !important;
+    font-family: "SF";
+    border-radius: 18px;
 }
 
 .blend-font {
