@@ -1,4 +1,8 @@
 defmodule NeuroScavWeb.Plugs.SetLocale do
+  @moduledoc """
+  Localization changer plug.
+  """
+
   import Plug.Conn
   @supported_locales Gettext.known_locales(NeuroScavWeb.Gettext)
 

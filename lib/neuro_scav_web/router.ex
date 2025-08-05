@@ -19,6 +19,13 @@ defmodule NeuroScavWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/neuro_scavengers", NeuroScavengerLive.Index, :index
+    live "/neuro_scavengers/new", NeuroScavengerLive.Index, :new
+    live "/neuro_scavengers/:id/edit", NeuroScavengerLive.Index, :edit
+
+    live "/neuro_scavengers/:id", NeuroScavengerLive.Show, :show
+    live "/neuro_scavengers/:id/show/edit", NeuroScavengerLive.Show, :edit
   end
 
   # Other scopes may use custom stacks.
