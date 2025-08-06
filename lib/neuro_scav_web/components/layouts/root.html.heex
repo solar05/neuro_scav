@@ -31,9 +31,13 @@
           <div class="collapse navbar-collapse">
             <div class="navbar-nav">
               <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
-                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">RU</a>
+                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">
+                  RU
+                </a>
               <% else %>
-                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=en">EN</a>
+                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=en">
+                  EN
+                </a>
               <% end %>
             </div>
           </div>
