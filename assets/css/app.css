@@ -77,6 +77,22 @@ p {
     background-color: rgb(195, 195, 195) !important;
 }
 
+.btn-blended-neuro {
+    color: #212529 !important;
+    background-color: #4d6bfe !important;
+    color: #fff !important;
+    font-family: "SF";
+    font-size: 280%;
+    border-radius: 18px;
+}
+
+.btn-blended-neuro:hover {
+    color: #212529 !important;
+    background-color: #fff !important;
+    font-family: "SF";
+    border-radius: 18px;
+}
+
 .blended-active {
     color: #212529 !important;
     background-color: #4d6bfe !important;
