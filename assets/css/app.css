@@ -40,7 +40,7 @@ p {
 }
 
 .scav-back {
-    background: url("/images/back.webp") no-repeat center center fixed;
+    background: url("/images/back.png") no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -110,6 +110,15 @@ p {
 
 .blend-font {
     color: #fff !important;
+    border-radius: 18px;
+    font-family: "SF";
+}
+
+.blend-font:hover {
+    color: #212529 !important;
+    background-color: #fff !important;
+    font-family: "SF";
+    border-radius: 18px;
 }
 
 .blended-reg {

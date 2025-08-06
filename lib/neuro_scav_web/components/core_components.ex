@@ -176,6 +176,10 @@ defmodule NeuroScavWeb.CoreComponents do
     """
   end
 
+  def ignore(assigns) do
+    ~H""
+  end
+
   @doc """
   Renders a simple form.
 

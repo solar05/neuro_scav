@@ -15,12 +15,21 @@ defmodule NeuroScavWeb.Plugs.SetLocale do
         put_locale(conn, @default_locale)
 
       locale ->
-        NeuroScavWeb.Gettext |> Gettext.put_locale(locale)
         put_locale(conn, locale)
     end
   end
 
+  def put_gettext_locale(nil) do
+    NeuroScavWeb.Gettext |> Gettext.put_locale(@default_locale)
+  end
+
+  def put_gettext_locale(locale) do
+    NeuroScavWeb.Gettext |> Gettext.put_locale(locale)
+  end
+
   defp put_locale(conn, locale) do
+    put_gettext_locale(locale)
+
     conn
     |> put_resp_cookie("lang", locale, max_age: 365 * 24 * 60 * 60)
     |> put_session("lang", locale)
