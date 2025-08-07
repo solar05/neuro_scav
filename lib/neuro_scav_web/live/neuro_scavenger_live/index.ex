@@ -6,7 +6,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
   @impl true
   def mount(_params, session, socket) do
-    setup_locale(Map.get(session, "lang"))
+    if connected?(socket) do
+      setup_locale(Map.get(session, "lang"))
+      NeuroScav.Pubsub.subscribe(session)
+    end
 
     {:ok, stream(socket, :neuro_scavengers, Scavengers.list_neuro_scavengers())}
   end
@@ -48,6 +51,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     {:ok, _} = Scavengers.delete_neuro_scavenger(neuro_scavenger)
 
     {:noreply, stream_delete(socket, :neuro_scavengers, neuro_scavenger)}
+  end
+
+  # pubsub callbacks
+  def handle_info(_msg, socket) do
+    {:noreply, socket}
   end
 
   defp setup_locale(locale) do
