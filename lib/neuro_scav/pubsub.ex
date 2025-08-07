@@ -9,14 +9,6 @@ defmodule NeuroScav.Pubsub do
     PubSub.subscribe(NeuroScav.PubSub, user_topic(user_id))
   end
 
-  def broadcast(info \\ %{}) do
-    PubSub.broadcast(
-      NeuroScav.PubSub,
-      user_topic("2483795d-f57c-4b88-be49-6617fb7a9a34"),
-      "lalal"
-    )
-  end
-
   def broadcast(user_id, {message, payload}) do
     PubSub.broadcast(NeuroScav.PubSub, user_topic(user_id), {message, payload})
   end
