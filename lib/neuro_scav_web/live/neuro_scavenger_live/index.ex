@@ -1,17 +1,23 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.Scavengers
-  alias NeuroScav.Scavengers.NeuroScavenger
+  alias NeuroScav.{Scavengers, Pubsub}
 
   @impl true
   def mount(_params, session, socket) do
     if connected?(socket) do
       setup_locale(Map.get(session, "lang"))
-      NeuroScav.Pubsub.subscribe(session)
+      Pubsub.subscribe(session)
     end
 
-    {:ok, stream(socket, :neuro_scavengers, Scavengers.list_neuro_scavengers())}
+    user_id = Map.get(session, "user_id")
+
+    new_socket =
+      socket
+      |> assign(:scavenger, placeholder())
+      |> assign(:user_id, user_id)
+
+    {:ok, new_socket}
   end
 
   @impl true
@@ -26,9 +32,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
+    Pubsub.broadcast(socket.assigns.user_id, {:lala, "jopa"})
+
     socket
     |> assign(:page_title, "New Neuro scavenger")
-    |> assign(:neuro_scavenger, %NeuroScavenger{})
+    |> assign(:scavenger, "Wait") # add loading logic
   end
 
   defp apply_action(socket, :index, _params) do
@@ -55,10 +63,15 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
   # pubsub callbacks
   def handle_info(_msg, socket) do
-    {:noreply, socket}
+    # add logic for completed request
+    {:noreply, assign(socket, :scavenger, "New scav #{Enum.random(1..30)}")}
   end
 
   defp setup_locale(locale) do
     NeuroScavWeb.Plugs.SetLocale.put_gettext_locale(locale)
+  end
+
+  defp placeholder() do
+    Gettext.gettext(NeuroScavWeb.Gettext, "Neuro placeholder")
   end
 end
