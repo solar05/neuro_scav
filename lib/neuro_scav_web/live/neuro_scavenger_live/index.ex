@@ -36,7 +36,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
     socket
     |> assign(:page_title, "New Neuro scavenger")
-    |> assign(:scavenger, "Wait") # add loading logic
+    # add loading logic
+    |> assign(:scavenger, "Wait")
   end
 
   defp apply_action(socket, :index, _params) do
