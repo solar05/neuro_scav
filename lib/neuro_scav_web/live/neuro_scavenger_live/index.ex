@@ -54,18 +54,18 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     {:noreply, stream_insert(socket, :neuro_scavengers, neuro_scavenger)}
   end
 
+  # pubsub callbacks
+  def handle_info(_msg, socket) do
+    # add logic for completed request
+    {:noreply, assign(socket, :scavenger, "New scav #{Enum.random(1..30)}")}
+  end
+
   @impl true
   def handle_event("delete", %{"id" => id}, socket) do
     neuro_scavenger = Scavengers.get_neuro_scavenger!(id)
     {:ok, _} = Scavengers.delete_neuro_scavenger(neuro_scavenger)
 
     {:noreply, stream_delete(socket, :neuro_scavengers, neuro_scavenger)}
-  end
-
-  # pubsub callbacks
-  def handle_info(_msg, socket) do
-    # add logic for completed request
-    {:noreply, assign(socket, :scavenger, "New scav #{Enum.random(1..30)}")}
   end
 
   defp setup_locale(locale) do
