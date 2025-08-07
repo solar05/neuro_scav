@@ -14,7 +14,7 @@ defmodule NeuroScav.UserRequestsSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
-      {NeuroScav.UserRequestsServer, %{}}
+      {NeuroScav.UserRequestsServer, []}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

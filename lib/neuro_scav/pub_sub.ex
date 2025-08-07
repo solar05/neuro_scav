@@ -1,4 +1,4 @@
-defmodule NeuroScav.Pubsub do
+defmodule NeuroScav.PubSub do
   @moduledoc """
   Main pubsub module.
   """

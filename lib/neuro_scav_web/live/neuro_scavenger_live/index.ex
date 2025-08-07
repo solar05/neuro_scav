@@ -1,13 +1,13 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.{Scavengers, Pubsub}
+  alias NeuroScav.{Scavengers, PubSub}
 
   @impl true
   def mount(_params, session, socket) do
     if connected?(socket) do
       setup_locale(Map.get(session, "lang"))
-      Pubsub.subscribe(session)
+      PubSub.subscribe(session)
     end
 
     user_id = Map.get(session, "user_id")
@@ -32,12 +32,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   end
 
   defp apply_action(socket, :new, _params) do
-    Pubsub.broadcast(socket.assigns.user_id, {:lala, "jopa"})
+    result = NeuroScav.UserRequestsServer.schedule_request(socket.assigns.user_id)
+    message = format_schedule_message(result)
 
     socket
     |> assign(:page_title, "New Neuro scavenger")
-    # add loading logic
-    |> assign(:scavenger, "Wait")
+    |> assign(:scavenger, message)
   end
 
   defp apply_action(socket, :index, _params) do
@@ -55,9 +55,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   end
 
   # pubsub callbacks
-  def handle_info(_msg, socket) do
+  def handle_info({:scavenger_generated, msg}, socket) do
     # add logic for completed request
-    {:noreply, assign(socket, :scavenger, "New scav #{Enum.random(1..30)}")}
+    {:noreply, assign(socket, :scavenger, "New scav #{msg}")}
   end
 
   @impl true
@@ -72,7 +72,24 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     NeuroScavWeb.Plugs.SetLocale.put_gettext_locale(locale)
   end
 
+  defp get_text(msg) do
+    Gettext.gettext(NeuroScavWeb.Gettext, msg)
+  end
+
   defp placeholder() do
-    Gettext.gettext(NeuroScavWeb.Gettext, "Neuro placeholder")
+    get_text("Neuro placeholder")
+  end
+
+  defp format_schedule_message(result) do
+    case result do
+      :requests_limit_reached ->
+        get_text("Limit reached")
+
+      :scheduled ->
+        get_text("Neuro scheduled")
+
+      :already_scheduled ->
+        get_text("Neuro already scheduled")
+    end
   end
 end
