@@ -10,20 +10,21 @@ defmodule NeuroScav.UserRequestsServer do
 
   @requests_limit 10
 
-  @spec schedule_request(String.t()) :: :scheduled | :already_scheduled
+  @spec schedule_request(String.t()) :: :scheduled | :already_scheduled | :requests_limit_reached
   def schedule_request(user_id) do
     GenServer.call(__MODULE__, {:add_request, user_id})
   end
 
-  def start_link(default) when is_list(default) do
+  def start_link(%{schedule_timer: schedule_timer, initial_state: default_state} = settings)
+      when is_map(settings) do
     Logger.info("User requests server started")
-    schedule_server_seconds(5)
-    GenServer.start_link(__MODULE__, default, name: __MODULE__)
+    schedule_server_seconds(schedule_timer)
+    GenServer.start_link(__MODULE__, default_state, name: __MODULE__)
   end
 
   @impl true
-  def init(requests) do
-    {:ok, requests}
+  def init(%{initial_state: default_state}) do
+    {:ok, default_state}
   end
 
   @impl true
@@ -69,6 +70,8 @@ defmodule NeuroScav.UserRequestsServer do
   defp now() do
     DateTime.utc_now() |> DateTime.add(3, :hour)
   end
+
+  defp schedule_server_seconds(-1), do: nil
 
   defp schedule_server_seconds(time) do
     Process.send_after(__MODULE__, :process_request, :timer.seconds(time))
