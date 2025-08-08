@@ -56,3 +56,12 @@ msgstr "Статистика"
 
 msgid "Neuro placeholder"
 msgstr "Здесь будет дичок"
+
+msgid "Neuro scheduled"
+msgstr "Генерируем..."
+
+msgid "Limit reached"
+msgstr "Достигнут лимит запросов, попробуйте позже"
+
+msgid "Neuro already scheduled"
+msgstr "Генерируем, ожидайте..."

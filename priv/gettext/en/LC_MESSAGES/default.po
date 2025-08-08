@@ -56,3 +56,12 @@ msgstr "Statistics"
 
 msgid "Neuro placeholder"
 msgstr "Here will be scavic"
+
+msgid "Neuro scheduled"
+msgstr "Generating..."
+
+msgid "Limit reached"
+msgstr "Request's limit reached, try again later"
+
+msgid "Neuro already scheduled"
+msgstr "Generating, please, wait..."
