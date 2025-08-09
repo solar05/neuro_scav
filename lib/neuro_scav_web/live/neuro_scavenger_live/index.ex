@@ -1,7 +1,7 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.{Scavengers, PubSub}
+  alias NeuroScav.PubSub
 
   @impl true
   def mount(_params, session, socket) do
@@ -34,6 +34,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     socket
   end
 
+  @impl true
   def handle_event("schedule_request", _value, socket) do
     result =
       NeuroScav.UserRequestsServer.schedule_request(
