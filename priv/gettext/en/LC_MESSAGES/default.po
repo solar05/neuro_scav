@@ -40,10 +40,10 @@ msgid "close"
 msgstr ""
 
 msgid "Generate neuro"
-msgstr "Generate neuro-scavenger ⚡⚡⚡"
+msgstr "Generate neuro-scavenger"
 
 msgid "Neuro-scav"
-msgstr "⚡Neuro-scav"
+msgstr "Neuro-scav"
 
 msgid "Generate single"
 msgstr "Single"

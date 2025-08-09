@@ -40,10 +40,10 @@ msgid "close"
 msgstr ""
 
 msgid "Generate neuro"
-msgstr "Сгенерировать neuro-дичка ⚡⚡⚡"
+msgstr "Сгенерировать neuro-дичка"
 
 msgid "Neuro-scav"
-msgstr "⚡Neuro-дикий"
+msgstr "Neuro-дикий"
 
 msgid "Generate single"
 msgstr "Одинокий"

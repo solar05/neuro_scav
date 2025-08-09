@@ -77,6 +77,28 @@ p {
     background-color: rgb(195, 195, 195) !important;
 }
 
+.background-container {
+    background-color: #3a3a46 !important;
+    padding-bottom: 10px;
+    border-radius: 40px;
+}
+
+.navbar-scav {
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+/* incomment in better times */
+/* .ai-badge {
+    background: linear-gradient(45deg, #4d6bfe, #677ff7);
+    animation: aiPulse 2s infinite;
+}
+
+@keyframes aiPulse {
+    0%, 100% { box-shadow: 0 0 60px rgba(74, 158, 255, 0.3); }
+    50% { box-shadow: 0 0 60px rgba(74, 158, 255, 0.8); }
+} */
+
 .btn-blended-neuro {
     color: #212529 !important;
     background-color: #4d6bfe !important;
