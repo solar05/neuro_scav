@@ -76,7 +76,7 @@ defmodule NeuroScav.UserRequestsServer do
       end)
 
     Logger.info("Done processing request #{user_id} with time #{exec_time / 1_000_000}")
-    schedule_server_seconds(5)
+    schedule_server_seconds(1)
     {:noreply, new_state}
   end
 
