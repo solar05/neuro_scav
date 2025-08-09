@@ -20,6 +20,9 @@ if System.get_env("PHX_SERVER") do
   config :neuro_scav, NeuroScavWeb.Endpoint, server: true
 end
 
+config :neuro_scav, NeuroScav.NeuroClient,
+  api_url: System.get_env("NEURO_MODEL_API_URL") || "http://localhost:11434/api"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

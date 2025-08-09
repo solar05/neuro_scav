@@ -2,7 +2,7 @@
   Neuro scavenger {@neuro_scavenger.id}
   <:subtitle>This is a neuro_scavenger record from your database.</:subtitle>
   <:actions>
-    <.link patch={~p"/neuro_scavengers/#{@neuro_scavenger}/show/edit"} phx-click={JS.push_focus()}>
+    <.link phx-click={JS.push_focus()}>
       <.button>Edit neuro_scavenger</.button>
     </.link>
   </:actions>
@@ -14,18 +14,12 @@
 
 <.back navigate={~p"/neuro_scavengers"}>Back to neuro_scavengers</.back>
 
-<.modal
-  :if={@live_action == :edit}
-  id="neuro_scavenger-modal"
-  show
-  on_cancel={JS.patch(~p"/neuro_scavengers/#{@neuro_scavenger}")}
->
+<.modal :if={@live_action == :edit} id="neuro_scavenger-modal" show>
   <.live_component
     module={NeuroScavWeb.NeuroScavengerLive.FormComponent}
     id={@neuro_scavenger.id}
     title={@page_title}
     action={@live_action}
     neuro_scavenger={@neuro_scavenger}
-    patch={~p"/neuro_scavengers/#{@neuro_scavenger}"}
   />
 </.modal>

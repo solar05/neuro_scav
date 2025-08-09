@@ -6,20 +6,26 @@ defmodule NeuroScav.UserRequestsServer do
 
   use GenServer
 
-  alias NeuroScav.PubSub
+  alias NeuroScav.{PubSub, Client}
 
   @requests_limit 10
 
-  @spec schedule_request(String.t()) :: :scheduled | :already_scheduled | :requests_limit_reached
-  def schedule_request(user_id) do
-    GenServer.call(__MODULE__, {:add_request, user_id})
+  @spec schedule_request(String.t(), String.t()) ::
+          :scheduled | :already_scheduled | :requests_limit_reached
+  def schedule_request(user_id, locale) do
+    GenServer.call(__MODULE__, {:add_request, user_id, locale})
   end
 
   def start_link(%{schedule_timer: schedule_timer, initial_state: default_state} = settings)
       when is_map(settings) do
     Logger.info("User requests server started")
     schedule_server_seconds(schedule_timer)
-    GenServer.start_link(__MODULE__, default_state, name: __MODULE__)
+
+    GenServer.start_link(
+      __MODULE__,
+      %{schedule_timer: schedule_timer, initial_state: default_state},
+      name: __MODULE__
+    )
   end
 
   @impl true
@@ -28,11 +34,13 @@ defmodule NeuroScav.UserRequestsServer do
   end
 
   @impl true
-  def handle_call({:add_request, user_id}, _from, state) do
+  def handle_call({:add_request, user_id, locale}, _from, state) do
     case find_request(state, user_id) do
       nil ->
         if Enum.count(state) < @requests_limit do
-          new_state = state ++ [%{"user_id" => user_id, "scheduled_at" => now()}]
+          new_state =
+            state ++ [%{"user_id" => user_id, "scheduled_at" => now(), "locale" => locale}]
+
           {:reply, :scheduled, new_state}
         else
           {:reply, :requests_limit_reached, state}
@@ -53,12 +61,21 @@ defmodule NeuroScav.UserRequestsServer do
 
   @impl true
   def handle_info(:process_request, state) do
-    [%{"user_id" => user_id} | new_state] = state
+    [%{"user_id" => user_id, "locale" => locale} | new_state] = state
 
     Logger.info("Processing request #{user_id}")
-    # add processing
-    PubSub.broadcast(user_id, {:scavenger_generated, user_id})
-    Logger.info("Done processing request #{user_id}")
+
+    {exec_time, _} =
+      :timer.tc(fn ->
+        case Client.generate_scav(Client.init(), locale) do
+          {:ok, result} ->
+            PubSub.broadcast(user_id, {:scavenger_generated, result})
+            # add error handling todo
+            # {:error, _} -> PubSub.broadcast(user_id, :scavenger_generation_error)
+        end
+      end)
+
+    Logger.info("Done processing request #{user_id} with time #{exec_time / 1_000_000}")
     schedule_server_seconds(5)
     {:noreply, new_state}
   end

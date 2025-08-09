@@ -14,11 +14,11 @@ defmodule NeuroScav.UserRequestServerTest do
 
   describe "when queue is empty" do
     test "schedule request" do
-      assert Server.schedule_request(@user_id) == :scheduled
-      assert Server.schedule_request(@user_id) == :already_scheduled
-      assert Server.schedule_request(@another_id) == :scheduled
-      assert Server.schedule_request(@another_id) == :already_scheduled
-      assert Server.schedule_request(@user_id) == :already_scheduled
+      assert Server.schedule_request(@user_id, "en") == :scheduled
+      assert Server.schedule_request(@user_id, "en") == :already_scheduled
+      assert Server.schedule_request(@another_id, "en") == :scheduled
+      assert Server.schedule_request(@another_id, "en") == :already_scheduled
+      assert Server.schedule_request(@user_id, "en") == :already_scheduled
     end
   end
 end

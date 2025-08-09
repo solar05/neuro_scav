@@ -65,3 +65,6 @@ msgstr "Request's limit reached, try again later"
 
 msgid "Neuro already scheduled"
 msgstr "Generating, please, wait..."
+
+msgid "Neuro error"
+msgstr "Что-то пошло не так, попробуй еще раз"

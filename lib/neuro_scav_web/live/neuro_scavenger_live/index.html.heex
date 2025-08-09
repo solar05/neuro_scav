@@ -6,7 +6,7 @@
     <br />
     <p class="lead">
       <.link
-        patch={~p"/neuro_scavengers/new"}
+        phx-click="schedule_request"
         class="btn btn-blended-neuro btn-lg blended d-flex justify-content-center"
       >
         {gettext("Generate neuro")}
@@ -14,54 +14,3 @@
     </p>
   </div>
 </div>
-
-<.ignore>
-  <.header>
-    Listing Neuro scavengers
-    <:actions>
-      <.link patch={~p"/neuro_scavengers/new"}>
-        <.button>New Neuro scavenger</.button>
-      </.link>
-    </:actions>
-  </.header>
-
-  <.table
-    id="neuro_scavengers"
-    rows={@streams.neuro_scavengers}
-    row_click={
-      fn {_id, neuro_scavenger} -> JS.navigate(~p"/neuro_scavengers/#{neuro_scavenger}") end
-    }
-  >
-    <:col :let={{_id, neuro_scavenger}} label="Name">{neuro_scavenger.name}</:col>
-    <:action :let={{_id, neuro_scavenger}}>
-      <div class="sr-only">
-        <.link navigate={~p"/neuro_scavengers/#{neuro_scavenger}"}>Show</.link>
-      </div>
-      <.link patch={~p"/neuro_scavengers/#{neuro_scavenger}/edit"}>Edit</.link>
-    </:action>
-    <:action :let={{id, neuro_scavenger}}>
-      <.link
-        phx-click={JS.push("delete", value: %{id: neuro_scavenger.id}) |> hide("##{id}")}
-        data-confirm="Are you sure?"
-      >
-        Delete
-      </.link>
-    </:action>
-  </.table>
-
-  <.modal
-    :if={@live_action in [:new, :edit]}
-    id="neuro_scavenger-modal"
-    show
-    on_cancel={JS.patch(~p"/neuro_scavengers")}
-  >
-    <.live_component
-      module={NeuroScavWeb.NeuroScavengerLive.FormComponent}
-      id={@neuro_scavenger.id || :new}
-      title={@page_title}
-      action={@live_action}
-      neuro_scavenger={@neuro_scavenger}
-      patch={~p"/neuro_scavengers"}
-    />
-  </.modal>
-</.ignore>

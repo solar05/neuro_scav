@@ -11,10 +11,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     end
 
     user_id = Map.get(session, "user_id")
+    locale = Map.get(session, "lang")
 
     new_socket =
       socket
       |> assign(:scavenger, placeholder())
+      |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
     {:ok, new_socket}
@@ -25,47 +27,37 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
     {:noreply, apply_action(socket, socket.assigns.live_action, params)}
   end
 
-  defp apply_action(socket, :edit, %{"id" => id}) do
+  defp apply_action(socket, _live_action, _params) do
+    # socket
+    # |> assign(:page_title, "Edit Neuro scavenger")
+    # |> assign(:neuro_scavenger, Scavengers.get_neuro_scavenger!(id))
     socket
-    |> assign(:page_title, "Edit Neuro scavenger")
-    |> assign(:neuro_scavenger, Scavengers.get_neuro_scavenger!(id))
   end
 
-  defp apply_action(socket, :new, _params) do
-    result = NeuroScav.UserRequestsServer.schedule_request(socket.assigns.user_id)
+  def handle_event("schedule_request", _value, socket) do
+    result =
+      NeuroScav.UserRequestsServer.schedule_request(
+        socket.assigns.user_id,
+        socket.assigns.user_locale
+      )
+
     message = format_schedule_message(result)
 
-    socket
-    |> assign(:page_title, "New Neuro scavenger")
-    |> assign(:scavenger, message)
-  end
-
-  defp apply_action(socket, :index, _params) do
-    socket
-    |> assign(:page_title, "Listing Neuro scavengers")
-    |> assign(:neuro_scavenger, nil)
-  end
-
-  @impl true
-  def handle_info(
-        {NeuroScavWeb.NeuroScavengerLive.FormComponent, {:saved, neuro_scavenger}},
-        socket
-      ) do
-    {:noreply, stream_insert(socket, :neuro_scavengers, neuro_scavenger)}
+    {:noreply,
+     socket
+     |> assign(:page_title, "New Neuro scavenger")
+     |> assign(:scavenger, message)}
   end
 
   # pubsub callbacks
+  @impl true
   def handle_info({:scavenger_generated, msg}, socket) do
-    # add logic for completed request
-    {:noreply, assign(socket, :scavenger, "New scav #{msg}")}
+    {:noreply, assign(socket, :scavenger, msg)}
   end
 
   @impl true
-  def handle_event("delete", %{"id" => id}, socket) do
-    neuro_scavenger = Scavengers.get_neuro_scavenger!(id)
-    {:ok, _} = Scavengers.delete_neuro_scavenger(neuro_scavenger)
-
-    {:noreply, stream_delete(socket, :neuro_scavengers, neuro_scavenger)}
+  def handle_info(:scavenger_generation_error, socket) do
+    {:noreply, assign(socket, :scavenger, get_text("Neuro error"))}
   end
 
   defp setup_locale(locale) do
