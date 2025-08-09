@@ -67,4 +67,10 @@ msgid "Neuro already scheduled"
 msgstr "Generating, please, wait..."
 
 msgid "Neuro error"
-msgstr "Что-то пошло не так, попробуй еще раз"
+msgstr "Something went wrong, try again"
+
+msgid "Queue place"
+msgstr "Your place in queue:"
+
+msgid "Neuro next"
+msgstr "Your request are next"

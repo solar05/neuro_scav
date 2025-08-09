@@ -64,19 +64,21 @@ defmodule NeuroScav.UserRequestsServer do
     [%{"user_id" => user_id, "locale" => locale} | new_state] = state
 
     Logger.info("Processing request #{user_id}")
+    notify_user_places(user_id)
 
     {exec_time, _} =
       :timer.tc(fn ->
         case Client.generate_scav(Client.init(), locale) do
           {:ok, result} ->
             PubSub.broadcast(user_id, {:scavenger_generated, result})
+            notify_user_places(new_state)
             # add error handling todo
             # {:error, _} -> PubSub.broadcast(user_id, :scavenger_generation_error)
         end
       end)
 
     Logger.info("Done processing request #{user_id} with time #{exec_time / 1_000_000}")
-    schedule_server_seconds(1)
+    schedule_server_seconds(2)
     {:noreply, new_state}
   end
 
@@ -92,5 +94,16 @@ defmodule NeuroScav.UserRequestsServer do
 
   defp schedule_server_seconds(time) do
     Process.send_after(__MODULE__, :process_request, :timer.seconds(time))
+  end
+
+  defp notify_user_places(user_id) when is_binary(user_id) do
+    PubSub.broadcast(user_id, {:queue_place_updated, 0})
+  end
+
+  defp notify_user_places(users) when is_list(users) do
+    Enum.reduce(users, 1, fn %{"user_id" => user_id}, acc ->
+      PubSub.broadcast(user_id, {:queue_place_updated, acc})
+      acc + 1
+    end)
   end
 end

@@ -68,3 +68,9 @@ msgstr "Генерируем, ожидайте..."
 
 msgid "Neuro error"
 msgstr "Что-то пошло не так, попробуй еще раз"
+
+msgid "Queue place"
+msgstr "Ваше место в очереди:"
+
+msgid "Neuro next"
+msgstr "Генерируем дичка для вас"
