@@ -17,36 +17,36 @@
     </script>
   </head>
   <body style="background-color: black;" class="scav-back">
-  <div class="container background-container">
-    <div class="container">
-      <nav class="navbar navbar-expand navbar-light navbar-scav">
-        <div class="collapse navbar-collapse">
-          <div class="navbar-nav">
-            <a class="nav-item nav-link blend-font" href="#">{gettext("Generate single")}</a>
-            <a class="nav-item nav-link blend-font" href="#">{gettext("Generate team")}</a>
-            <a class="nav-item nav-link blended-active" href="#">{gettext("Neuro-scav")}</a>
-            <a class="nav-item nav-link blend-font" href="#">{gettext("Stats")}</a>
-          </div>
-        </div>
-        <div class="navbar navbar-expand navbar-light navbar-right">
+    <div class="container background-container">
+      <div class="container">
+        <nav class="navbar navbar-expand navbar-light navbar-scav">
           <div class="collapse navbar-collapse">
             <div class="navbar-nav">
-              <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
-                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">
-                  RU
-                </a>
-              <% else %>
-                <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=en">
-                  EN
-                </a>
-              <% end %>
+              <a class="nav-item nav-link blend-font" href="#">{gettext("Generate single")}</a>
+              <a class="nav-item nav-link blend-font" href="#">{gettext("Generate team")}</a>
+              <a class="nav-item nav-link blended-active" href="#">{gettext("Neuro-scav")}</a>
+              <a class="nav-item nav-link blend-font" href="#">{gettext("Stats")}</a>
             </div>
           </div>
-        </div>
-      </nav>
-    </div>
-    <br />
-    {@inner_content}
+          <div class="navbar navbar-expand navbar-light navbar-right">
+            <div class="collapse navbar-collapse">
+              <div class="navbar-nav">
+                <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
+                  <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">
+                    RU
+                  </a>
+                <% else %>
+                  <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=en">
+                    EN
+                  </a>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+      <br />
+      {@inner_content}
     </div>
   </body>
 </html>
