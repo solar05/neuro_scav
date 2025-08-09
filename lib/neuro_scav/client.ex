@@ -5,7 +5,7 @@ defmodule NeuroScav.Client do
 
   require Logger
 
-  def init() do
+  def init do
     Ollama.init(base_url: get_base_url(), receive_timeout: 60_000)
   end
 
@@ -35,11 +35,11 @@ defmodule NeuroScav.Client do
     # end
   end
 
-  defp get_base_url() do
+  defp get_base_url do
     Application.get_env(:neuro_scav, NeuroScav.NeuroClient)[:api_url]
   end
 
-  defp model(), do: "gemma3:4b"
+  defp model, do: "gemma3:4b"
 
   defp present_promt(_language) do
     "1 + 2"

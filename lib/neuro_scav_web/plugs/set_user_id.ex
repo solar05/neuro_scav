@@ -21,7 +21,7 @@ defmodule NeuroScavWeb.Plugs.SetUserId do
     put_session(conn, "user_id", generate_user_id())
   end
 
-  defp generate_user_id() do
+  defp generate_user_id do
     Uniq.UUID.uuid4()
   end
 

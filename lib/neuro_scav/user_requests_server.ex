@@ -6,7 +6,7 @@ defmodule NeuroScav.UserRequestsServer do
 
   use GenServer
 
-  alias NeuroScav.{PubSub, Client}
+  alias NeuroScav.{Client, PubSub}
 
   @requests_limit 10
 
@@ -86,7 +86,7 @@ defmodule NeuroScav.UserRequestsServer do
     Enum.find(requests, fn %{"user_id" => user_id} -> user_id == id end)
   end
 
-  defp now() do
+  defp now do
     DateTime.utc_now() |> DateTime.add(3, :hour)
   end
 

@@ -2,6 +2,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   use NeuroScavWeb, :live_view
 
   alias NeuroScav.PubSub
+  alias NeuroScavWeb.Plugs.SetLocale
 
   @impl true
   def mount(_params, session, socket) do
@@ -72,14 +73,14 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
   end
 
   defp setup_locale(locale) do
-    NeuroScavWeb.Plugs.SetLocale.put_gettext_locale(locale)
+    SetLocale.put_gettext_locale(locale)
   end
 
   defp get_text(msg) do
     Gettext.gettext(NeuroScavWeb.Gettext, msg)
   end
 
-  defp placeholder() do
+  defp placeholder do
     get_text("Neuro placeholder")
   end
 
