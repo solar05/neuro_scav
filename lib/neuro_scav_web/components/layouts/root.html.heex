@@ -2,12 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no, maximum-scale=1"
+    />
     <meta name="description" content="Scavenger's names generator." />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#000000" />
+
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
     <link rel="manifest" href="/site.webmanifest" />
+
     <meta name="csrf-token" content={get_csrf_token()} />
     <.live_title default="Scavgen">
       {assigns[:page_title]}
@@ -17,19 +26,21 @@
     </script>
   </head>
   <body style="background-color: black;" class="scav-back">
-    <div class="container background-container">
+    <div class="background-container">
       <div class="container">
         <nav class="navbar navbar-expand navbar-light navbar-scav">
-          <div class="collapse navbar-collapse">
+          <div class="collapse navbar-collapse show">
             <div class="navbar-nav">
               <a class="nav-item nav-link blend-font" href="#">{gettext("Generate single")}</a>
               <a class="nav-item nav-link blend-font" href="#">{gettext("Generate team")}</a>
-              <a class="nav-item nav-link blended-active" href="#">{gettext("Neuro-scav")}</a>
+              <.link class="nav-item nav-link blended-active" navigate={~p"/neuro_scavengers"}>
+                {gettext("Neuro-scav")}
+              </.link>
               <a class="nav-item nav-link blend-font" href="#">{gettext("Stats")}</a>
             </div>
           </div>
           <div class="navbar navbar-expand navbar-light navbar-right">
-            <div class="collapse navbar-collapse">
+            <div class="collapse navbar-collapse show">
               <div class="navbar-nav">
                 <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
                   <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">

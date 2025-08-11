@@ -6,6 +6,8 @@
     <p class="lead">
       <.link
         phx-click="schedule_request"
+        phx-debounce="1000"
+        phx-throttle="1500"
         class="btn btn-blended-neuro btn-lg blended d-flex justify-content-center"
       >
         {gettext("Generate neuro")}

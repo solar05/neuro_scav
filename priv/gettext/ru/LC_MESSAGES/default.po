@@ -61,16 +61,16 @@ msgid "Neuro scheduled"
 msgstr "Генерируем..."
 
 msgid "Limit reached"
-msgstr "Достигнут лимит запросов, попробуйте позже"
+msgstr "Достигнут лимит запросов"
 
 msgid "Neuro already scheduled"
 msgstr "Генерируем, ожидайте..."
 
 msgid "Neuro error"
-msgstr "Что-то пошло не так, попробуй еще раз"
+msgstr "Что-то пошло не так"
 
 msgid "Queue place"
-msgstr "Ваше место в очереди:"
+msgstr "Ваше место в очереди: %{place}"
 
 msgid "Neuro next"
 msgstr "Генерируем дичка для вас"
