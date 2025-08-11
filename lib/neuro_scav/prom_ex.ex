@@ -65,7 +65,8 @@ defmodule NeuroScav.PromEx do
       {Plugins.Phoenix, router: NeuroScavWeb.Router, endpoint: NeuroScavWeb.Endpoint},
       Plugins.Ecto,
       # Plugins.Oban,
-      Plugins.PhoenixLiveView
+      Plugins.PhoenixLiveView,
+      PromEx.Plugins.NeuroScav
       # Plugins.Absinthe,
       # Plugins.Broadway,
 

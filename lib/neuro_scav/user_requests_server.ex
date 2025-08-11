@@ -7,6 +7,7 @@ defmodule NeuroScav.UserRequestsServer do
   use GenServer
 
   alias NeuroScav.{Client, PubSub}
+  alias PromEx.Plugins.NeuroScav, as: NeuroPromex
 
   @requests_limit 10
 
@@ -72,12 +73,16 @@ defmodule NeuroScav.UserRequestsServer do
           {:ok, result} ->
             PubSub.broadcast(user_id, {:scavenger_generated, result})
             notify_user_places(new_state)
-            # add error handling todo
-            # {:error, _} -> PubSub.broadcast(user_id, :scavenger_generation_error)
+
+          {:error, _} ->
+            PubSub.broadcast(user_id, :scavenger_generation_error)
+            notify_user_places(new_state)
         end
       end)
 
-    Logger.info("Done processing request #{user_id} with time #{exec_time / 1_000_000}")
+    formatted_exec_time = format_exec_time(exec_time)
+    export_request_processed_info(formatted_exec_time)
+    Logger.info("Done processing request #{user_id} about #{formatted_exec_time / 1000} seconds")
     schedule_server_seconds(2)
     {:noreply, new_state}
   end
@@ -106,4 +111,17 @@ defmodule NeuroScav.UserRequestsServer do
       acc + 1
     end)
   end
+
+  defp export_request_processed_info(exec_time) do
+    :telemetry.execute(
+      NeuroPromex.processed_request_measure(),
+      %{duration: exec_time},
+      %{}
+    )
+
+    :telemetry.execute(NeuroPromex.processed_request_count(), %{}, %{})
+  end
+
+  defp format_exec_time(0), do: 0
+  defp format_exec_time(exec_time), do: exec_time / 1_000
 end

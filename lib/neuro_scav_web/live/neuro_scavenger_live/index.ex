@@ -69,7 +69,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
   @impl true
   def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :scavenger, "#{get_text("Queue place")} #{place}")}
+    {:noreply, assign(socket, :scavenger, get_text("Queue place", place: place))}
   end
 
   defp setup_locale(locale) do
@@ -78,6 +78,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
   defp get_text(msg) do
     Gettext.gettext(NeuroScavWeb.Gettext, msg)
+  end
+
+  defp get_text(msg, params) do
+    Gettext.gettext(NeuroScavWeb.Gettext, msg, params)
   end
 
   defp placeholder do

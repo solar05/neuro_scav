@@ -35,6 +35,10 @@ defmodule NeuroScav.Client do
     # end
   end
 
+  defp parse_answer({:error, %{status: _status, message: message}}) do
+    {:error, message}
+  end
+
   defp get_base_url do
     Application.get_env(:neuro_scav, NeuroScav.NeuroClient)[:api_url]
   end
