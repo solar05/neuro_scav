@@ -335,6 +335,107 @@ p {
       }
 
 
+
+
+.gnome-footer {
+    position: fixed;
+    bottom: -150px;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(135deg, #2c5530, #4a7c59);
+    border-top: 3px solid #8B4513;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    transition: bottom 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.gnome-footer.show {
+    bottom: 0;
+    animation: footerBounce 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.gnome-footer.hide {
+    animation: footerSlideDown 0.6s ease-in-out;
+    animation-fill-mode: forwards;
+}
+
+.gnome-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 20px;
+}
+
+.gnome-image {
+    width: 100px;
+    height: 100px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 3px solid #8B4513;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: #fff;
+    padding: 10px;
+}
+
+.gnome-image:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+}
+
+.gnome-image:active {
+    transform: scale(0.95);
+}
+
+.gnome-text {
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin: 0;
+}
+
+@keyframes footerBounce {
+    0% {
+        bottom: -150px;
+        transform: translateY(0);
+    }
+    50% {
+        bottom: 10px;
+        transform: translateY(-10px);
+    }
+    100% {
+        bottom: 0;
+        transform: translateY(0);
+    }
+}
+
+@keyframes footerSlideDown {
+    0% {
+        bottom: 0;
+        opacity: 1;
+    }
+    100% {
+        bottom: -150px;
+        opacity: 0;
+    }
+}
+
+/* Анимация при клике на гнома */
+.gnome-image.clicked {
+    animation: gnomeJump 0.6s ease-out;
+}
+
+@keyframes gnomeJump {
+    0% { transform: translateY(0) rotate(0deg) scale(1); }
+    25% { transform: translateY(-20px) rotate(-10deg) scale(1.1); }
+    50% { transform: translateY(-30px) rotate(5deg) scale(1.15); }
+    75% { transform: translateY(-10px) rotate(-5deg) scale(1.05); }
+    100% { transform: translateY(0) rotate(0deg) scale(1); }
+}
+
+
 .legendary {
     color: darkorange;
 }

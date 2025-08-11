@@ -47,8 +47,14 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Index do
 
     {:noreply,
      socket
-     |> assign(:page_title, "New Neuro scavenger")
      |> assign(:scavenger, message)}
+  end
+
+  @impl true
+  def handle_event("gnome_clicked", _, socket) do
+    {:noreply,
+     socket
+     |> assign(:scavenger, get_text("Gnome catched"))}
   end
 
   # pubsub callbacks

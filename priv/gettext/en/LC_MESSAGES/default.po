@@ -74,3 +74,9 @@ msgstr "Your place in queue: %{place}"
 
 msgid "Neuro next"
 msgstr "Your request are next"
+
+msgid "Gnome click"
+msgstr "Click on the gnome!"
+
+msgid "Gnome catched"
+msgstr "YOU CATCHED A GNOME!"

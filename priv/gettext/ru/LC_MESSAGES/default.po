@@ -74,3 +74,9 @@ msgstr "Ваше место в очереди: %{place}"
 
 msgid "Neuro next"
 msgstr "Генерируем дичка для вас"
+
+msgid "Gnome click"
+msgstr "Нажми на гнома!"
+
+msgid "Gnome catched"
+msgstr "ТЫ ПОЙМАЛ ГНОМА!"
