@@ -24,18 +24,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   end
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, _live_action, _params) do
-    # socket
-    # |> assign(:page_title, "Edit Neuro scavenger")
-    # |> assign(:neuro_scavenger, Scavengers.get_neuro_scavenger!(id))
-    socket
-  end
-
-  @impl true
   def handle_event("schedule_request", _value, socket) do
     result =
       NeuroScav.UserRequestsServer.schedule_request(
