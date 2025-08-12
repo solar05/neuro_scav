@@ -23,48 +23,22 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
     {:ok, new_socket}
   end
 
-  # @impl true
-  # def handle_event("schedule_request", _value, socket) do
-  #   result =
-  #     NeuroScav.UserRequestsServer.schedule_request(
-  #       socket.assigns.user_id,
-  #       socket.assigns.user_locale
-  #     )
+  def handle_event("generate_team", _value, socket) do
+    NeuroScav.ScavengersServer.generate_team(socket.assigns.user_id, socket.assigns.user_locale)
 
-  #   message = format_schedule_message(result)
-
-  #   {:noreply,
-  #    socket
-  #    |> assign(:scavenger, message)}
-  # end
+    {:noreply, socket}
+  end
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
     NeuroScav.StatsCounterServer.update_counter(:gnome)
 
-    {:noreply,
-     socket
-     |> assign(:scavenger, Locale.get_text("Gnome catched"))}
+    {:noreply, socket}
   end
 
   # pubsub callbacks
   @impl true
-  def handle_info({:scavenger_generated, msg}, socket) do
-    {:noreply, assign(socket, :scavenger, msg)}
-  end
-
-  @impl true
-  def handle_info(:scavenger_generation_error, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro error"))}
-  end
-
-  @impl true
-  def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro next"))}
-  end
-
-  @impl true
-  def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Queue place", place: place))}
+  def handle_info({:team_generated, team}, socket) do
+    {:noreply, assign(socket, :team, team)}
   end
 end

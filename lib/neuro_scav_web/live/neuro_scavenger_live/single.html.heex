@@ -1,17 +1,20 @@
 <div class="container">
-  <div class="jumbotron">
-    <h1 class="display-4 text-center blended"></h1>
-    <h2 class="text-center blended-reg-bg">{@scavenger}</h2>
-    <br />
-    <p class="lead">
-      <.link
-        phx-click="schedule_request"
-        phx-debounce="1000"
-        phx-throttle="1500"
-        class="btn btn-blended-neuro btn-lg blended d-flex justify-content-center"
-      >
-        {gettext("Generate single")}
-      </.link>
-    </p>
-  </div>
+  <h1 class="display-4 text-center blended"></h1>
+  <h2 class={"text-center blended-reg-bg scav-container #{@scavenger.rarity}-name"}>
+    {@scavenger.name}
+  </h2>
+  <br />
+  <h3 class={"text-center blended-reg-bg scav-container #{@scavenger.rarity}"}>
+    {@scavenger.rarity_text}
+  </h3>
+  <br />
+  <p class="lead">
+    <.link
+      phx-click="generate_single"
+      phx-throttle="500"
+      class="btn btn-blended-neuro btn-lg blended d-flex justify-content-center"
+    >
+      {gettext("Generate single")}
+    </.link>
+  </p>
 </div>

@@ -16,27 +16,23 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
     new_socket =
       socket
-      |> assign(:scavenger, Locale.get_text("Single placeholder"))
+      |> assign(:scavenger, %{
+        name: Locale.get_text("Single placeholder"),
+        rarity: nil,
+        rarity_text: Locale.get_text("default")
+      })
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
     {:ok, new_socket}
   end
 
-  # @impl true
-  # def handle_event("schedule_request", _value, socket) do
-  #   result =
-  #     NeuroScav.UserRequestsServer.schedule_request(
-  #       socket.assigns.user_id,
-  #       socket.assigns.user_locale
-  #     )
+  @impl true
+  def handle_event("generate_single", _value, socket) do
+    NeuroScav.ScavengersServer.generate_single(socket.assigns.user_id, socket.assigns.user_locale)
 
-  #   message = format_schedule_message(result)
-
-  #   {:noreply,
-  #    socket
-  #    |> assign(:scavenger, message)}
-  # end
+    {:noreply, socket}
+  end
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
@@ -44,27 +40,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
     {:noreply,
      socket
-     |> assign(:scavenger, Locale.get_text("Gnome catched"))}
+     |> assign(:scavenger, %{
+       name: Locale.get_text("Gnome catched"),
+       rarity: nil,
+       rarity_text: Locale.get_text("gnome")
+     })}
   end
 
   # pubsub callbacks
   @impl true
-  def handle_info({:scavenger_generated, msg}, socket) do
-    {:noreply, assign(socket, :scavenger, msg)}
-  end
+  def handle_info({:single_generated, %{rarity: rarity, name: name}}, socket) do
+    rarity_text = Locale.get_text(Atom.to_string(rarity))
 
-  @impl true
-  def handle_info(:scavenger_generation_error, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro error"))}
-  end
-
-  @impl true
-  def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro next"))}
-  end
-
-  @impl true
-  def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :scavenger, Locale.get_text("Queue place", place: place))}
+    {:noreply,
+     assign(socket, :scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})}
   end
 end
