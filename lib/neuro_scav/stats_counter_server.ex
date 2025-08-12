@@ -6,13 +6,14 @@ defmodule NeuroScav.StatsCounterServer do
 
   use GenServer
 
-  @spec update_counter(:neuro_scav | :gnome) :: :ok | :invalid_counter
-  def update_counter(:neuro_scav) do
-    GenServer.cast(__MODULE__, :neuro)
-  end
+  alias NeuroScav.{Scavengers, PubSub}
 
-  def update_counter(:gnome) do
-    GenServer.cast(__MODULE__, :gnome)
+  @counters [:common, :uncommon, :rare, :epic, :legendary, :neuro, :gnome]
+
+  @spec update_counter(:common | :uncommon | :rare | :epic | :legendary | :neuro | :gnome) ::
+          :ok | :invalid_counter
+  def update_counter(counter) when counter in @counters do
+    GenServer.cast(__MODULE__, counter)
   end
 
   def update_counter(_) do
@@ -28,16 +29,22 @@ defmodule NeuroScav.StatsCounterServer do
   end
 
   @impl true
-  def init(default_state) do
+  def init(_default_state) do
     Logger.info("Statistics counter server started")
-    {:ok, default_state}
+    {:ok, Scavengers.get_statistics()}
   end
 
-  # def handle_cast(counter, state) do
-  #   # [stats] = Statistics.get_all()
-  #   # stats = Statistics.update_counter(counter)
-  #   # {:ok, _} = Statisctics.update(stats)
+  @impl true
+  def handle_cast(counter, state) do
+    new_value = Map.get(state, counter) + 1
 
-  #   {:noreply, state}
-  # end
+    case Scavengers.update_statistics(state, Map.put(%{}, counter, new_value)) do
+      {:ok, new_state} ->
+        PubSub.broadcast_statistics(new_state)
+        {:noreply, new_state}
+
+      {:error, _} ->
+        {:noreply, state}
+    end
+  end
 end

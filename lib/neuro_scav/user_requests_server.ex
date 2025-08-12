@@ -71,11 +71,11 @@ defmodule NeuroScav.UserRequestsServer do
       :timer.tc(fn ->
         case Client.generate_scav(Client.init(), locale) do
           {:ok, result} ->
-            PubSub.broadcast(user_id, {:scavenger_generated, result})
+            PubSub.broadcast(user_id, {:scavenger_generated, :neuro_scavenger, result})
             notify_user_places(new_state)
 
           {:error, _} ->
-            PubSub.broadcast(user_id, :scavenger_generation_error)
+            PubSub.broadcast(user_id, {:scavenger_generation_error, :neuro_scavenger})
             notify_user_places(new_state)
         end
       end)
@@ -102,12 +102,12 @@ defmodule NeuroScav.UserRequestsServer do
   end
 
   defp notify_user_places(user_id) when is_binary(user_id) do
-    PubSub.broadcast(user_id, {:queue_place_updated, 0})
+    PubSub.broadcast(user_id, {:queue_place_updated, :neuro_scavenger, 0})
   end
 
   defp notify_user_places(users) when is_list(users) do
     Enum.reduce(users, 1, fn %{"user_id" => user_id}, acc ->
-      PubSub.broadcast(user_id, {:queue_place_updated, acc})
+      PubSub.broadcast(user_id, {:queue_place_updated, :neuro_scavenger, acc})
       acc + 1
     end)
   end

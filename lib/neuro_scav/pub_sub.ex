@@ -5,23 +5,31 @@ defmodule NeuroScav.PubSub do
 
   alias Phoenix.PubSub
 
-  def subscribe(%{"user_id" => user_id}) do
-    PubSub.subscribe(NeuroScav.PubSub, user_topic(user_id))
+  def subscribe(topic, %{"user_id" => user_id}) do
+    PubSub.subscribe(NeuroScav.PubSub, user_topic(topic, user_id))
   end
 
-  def broadcast(user_id, {message, payload}) do
-    PubSub.broadcast(NeuroScav.PubSub, user_topic(user_id), {message, payload})
+  def subscribe_statistics() do
+    PubSub.subscribe(NeuroScav.PubSub, statistics_topic())
   end
 
-  def broadcast(user_id, message) do
-    PubSub.broadcast(NeuroScav.PubSub, user_topic(user_id), message)
+  def broadcast(user_id, {message, topic, payload}) do
+    PubSub.broadcast(NeuroScav.PubSub, user_topic(topic, user_id), {message, payload})
   end
 
-  def user_topic(%{"user_id" => user_id}) do
-    "neuro_user:" <> user_id
+  def broadcast(user_id, {message, topic}) do
+    PubSub.broadcast(NeuroScav.PubSub, user_topic(topic, user_id), message)
   end
 
-  def user_topic(user_id) when is_binary(user_id) do
-    "neuro_user:" <> user_id
+  def broadcast_statistics(new_statistics) do
+    PubSub.broadcast(NeuroScav.PubSub, statistics_topic(), {:statistics_updated, new_statistics})
+  end
+
+  def statistics_topic do
+    "statistics:lobby"
+  end
+
+  def user_topic(topic, user_id) when is_binary(user_id) do
+    "#{topic}:" <> user_id
   end
 end
