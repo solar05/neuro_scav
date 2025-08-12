@@ -71,6 +71,7 @@ defmodule NeuroScav.UserRequestsServer do
       :timer.tc(fn ->
         case Client.generate_scav(Client.init(), locale) do
           {:ok, result} ->
+            NeuroScav.StatsCounterServer.update_counter(:neuro)
             PubSub.broadcast(user_id, {:scavenger_generated, :neuro_scavenger, result})
             notify_user_places(new_state)
 

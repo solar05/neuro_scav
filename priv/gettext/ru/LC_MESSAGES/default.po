@@ -116,3 +116,30 @@ msgstr "Нейро-дички"
 
 msgid "Stats gnome"
 msgstr "Секретные"
+
+msgid "Single generating"
+msgstr "Ищем дичка..."
+
+msgid "Team generating"
+msgstr "Собираем команду..."
+
+msgid "legendary"
+msgstr "Легендарная находка!"
+
+msgid "epic"
+msgstr "Эпическая находка!"
+
+msgid "rare"
+msgstr "Редкий дичок!"
+
+msgid "uncommon"
+msgstr "Необычный дичок!"
+
+msgid "common"
+msgstr "Обычный дикий"
+
+msgid "gnome"
+msgstr "Гномья находка!"
+
+msgid "default"
+msgstr "А здесь будет редкость"

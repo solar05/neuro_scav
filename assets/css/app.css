@@ -39,6 +39,12 @@ p {
     font-family: "Bender";
 }
 
+.scav-container {
+    min-height: 100px;
+    max-height: 250px;
+    padding-top: 15px;
+}
+
 .scav-back {
     background: url("/images/back.png") no-repeat center center fixed;
     -webkit-background-size: cover;
@@ -64,7 +70,7 @@ p {
 }
 
 .blended-reg-bg {
-    font-size: 150%;
+    font-size: 120%;
     color: #a5a5a5;
 }
 
@@ -91,7 +97,7 @@ p {
     color: #212529 !important;
     color: #fff !important;
     font-family: "Bender";
-    font-size: 120%;
+    font-size: 150%;
     border: none;
 }
 
@@ -117,7 +123,6 @@ p {
 } */
 
 .btn-blended-neuro {
-    color: #212529 !important;
     background-color: #4d6bfe !important;
     color: #fff !important;
     font-family: "SF";
@@ -133,7 +138,6 @@ p {
 }
 
 .blended-active {
-    color: #212529 !important;
     background-color: #4d6bfe !important;
     color: #fff !important;
     font-family: "SF";
@@ -204,14 +208,38 @@ body {
 }
 
 @media (max-width: 1200px) {
+    .blended-reg-bg {
+        font-size: 80%;
+        color: #a5a5a5;
+    }
+
     .background-container {
         max-width: 95%;
+    }
+
+    .table-scav {
+        color: #fff !important;
+        font-family: "Bender";
+        font-size: 60%;
+        border: none;
     }
 }
 
 @media (max-width: 768px) {
     body {
         padding: 10px;
+    }
+
+    .blended-reg-bg {
+        font-size: 80%;
+        color: #a5a5a5;
+    }
+
+    .table-scav {
+        color: #fff !important;
+        font-family: "Bender";
+        font-size: 60%;
+        border: none;
     }
 
     .background-container {
@@ -276,8 +304,20 @@ body {
 }
 
 @media (max-width: 480px) {
+    .blended-reg-bg {
+        font-size: 80%;
+        color: #a5a5a5;
+    }
+
     body {
         padding: 5px;
+    }
+
+    .table-scav {
+        color: #fff !important;
+        font-family: "Bender";
+        font-size: 60%;
+        border: none;
     }
 
     .background-container {
@@ -308,12 +348,24 @@ body {
         padding: 4px 1px;
     }
 
+    .blended-reg-bg {
+        font-size: 80%;
+        color: #a5a5a5;
+    }
+
     .navbar-nav .nav-item:nth-child(n+3) {
         margin-top: 5px;
     }
 
     .lead {
         min-height: 40px;
+    }
+
+    .table-scav {
+        color: #fff !important;
+        font-family: "Bender";
+        font-size: 50%;
+        border: none;
     }
 }
 
@@ -467,6 +519,29 @@ body {
     }
 }
 
+.legendary-name {
+    background-color: darkorange !important;
+    color: #fff !important;
+    border-radius: 18px;
+}
+
+.epic-name {
+    background-color: darkorchid;
+    color: #fff;
+    border-radius: 18px;
+}
+
+.rare-name {
+    background-color: rgb(37, 171, 215);
+    color: #fff;
+    border-radius: 18px;
+}
+
+.uncommon-name {
+    background-color: darkgreen;
+    color: #fff;
+    border-radius: 18px;
+}
 
 .legendary {
     color: darkorange;
@@ -476,9 +551,18 @@ body {
     color: darkorchid;
 }
 
+.rare {
+    color: rgb(37, 171, 215);
+}
+
 .uncommon {
     color: darkgreen;
 }
+
+.common {
+    color: #a5a5a5;
+}
+
 
 .border-uncommon {
     border: 6px solid darkgreen;
@@ -499,3 +583,17 @@ body {
     border: 6px solid darkorange;
     border-radius: 20px 20px 20px 20px;
 }
+
+   td {
+      height: 50px; 
+      vertical-align: top;
+    }
+    .text-container {
+      height: 40px; 
+      overflow: auto;
+        height: 250px;
+    }
+    
+    table {
+        table-layout: fixed;
+    }

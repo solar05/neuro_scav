@@ -116,3 +116,30 @@ msgstr "Neuro"
 
 msgid "Stats gnome"
 msgstr "Secret"
+
+msgid "Single generating"
+msgstr "Generaing scavenger..."
+
+msgid "Team generating"
+msgstr "Generating team..."
+
+msgid "legendary"
+msgstr "Legendary!"
+
+msgid "epic"
+msgstr "Epic scavenger!"
+
+msgid "rare"
+msgstr "Rare scavenger!"
+
+msgid "uncommon"
+msgstr "Uncommon scavenger"
+
+msgid "common"
+msgstr "Common scavenger"
+
+msgid "gnome"
+msgstr "You have been gnomed!"
+
+msgid "default"
+msgstr "Here will be rarity"

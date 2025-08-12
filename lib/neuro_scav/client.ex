@@ -47,7 +47,7 @@ defmodule NeuroScav.Client do
     Application.get_env(:neuro_scav, NeuroScav.NeuroClient)[:api_url]
   end
 
-  defp model, do: "gemma3:4b"
+  defp model, do: "smollm:latest"
 
   defp present_promt(_language) do
     "1 + 2"
