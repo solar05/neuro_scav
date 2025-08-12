@@ -575,15 +575,42 @@ defmodule NeuroScavWeb.CoreComponents do
     """
   end
 
-  attr :to, :string, required: true
-  attr :lang, :string, required: true
+  attr :path, :string, required: true
+  attr :action, :string, required: true
   slot :inner_block, required: true
 
-  def navlink_inactive(%{lang: lang, to: to} = assigns) do
-    assigns = assign(assigns, :destination_url, "#{to}?lang=#{lang}")
+  def navlink(%{path: path, action: action} = assigns) do
+    selected_class =
+      if path == "/#{action}" do
+        "nav-item nav-link blended-active"
+      else
+        "nav-item nav-link blend-font"
+      end
+
+    assigns =
+      assigns
+      |> assign(:destination_url, path)
+      |> assign(:selected, selected_class)
 
     ~H"""
-    <a class="nav-item nav-link blend-font" href={@destination_url}>{render_slot(@inner_block)}</a>
+    <a class={@selected} href={@destination_url}>{render_slot(@inner_block)}</a>
+    """
+  end
+
+  attr :lang, :string, required: true
+  attr :path, :string, required: true
+  slot :inner_block, required: false
+
+  def locale_link(%{lang: lang, path: path} = assigns) do
+    language = if lang == "en", do: "RU", else: "EN"
+
+    updated_path = "#{path}?lang=#{String.downcase(language)}"
+
+    assigns =
+      assigns |> assign(:current_language, language) |> assign(:updated_path, updated_path)
+
+    ~H"""
+    <a class="nav-item nav-link blended-active" href={@updated_path}>{@current_language}</a>
     """
   end
 

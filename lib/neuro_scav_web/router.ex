@@ -21,7 +21,10 @@ defmodule NeuroScavWeb.Router do
 
     get "/", PageController, :home
 
-    live "/neuro_scavengers", NeuroScavengerLive.Index, :index
+    live "/neuro_scavengers", NeuroScavengerLive.Neuro, :neuro_scavengers
+    live "/single_scavenger", NeuroScavengerLive.Single, :single_scavenger
+    live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
+    live "/statistics", NeuroScavengerLive.Statistics, :statistics
   end
 
   # Other scopes may use custom stacks.

@@ -1,4 +1,4 @@
-defmodule NeuroScavWeb.NeuroScavengerLive.Index do
+defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   use NeuroScavWeb, :live_view
 
   alias NeuroScav.PubSub

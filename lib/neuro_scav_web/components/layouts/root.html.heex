@@ -31,41 +31,28 @@
         <nav class="navbar navbar-expand navbar-light navbar-scav">
           <div class="collapse navbar-collapse show">
             <div class="navbar-nav">
-              <.navlink_inactive
-                to="https://scavgen.com/single"
-                lang={@conn.params["lang"] || @conn.cookies["lang"]}
-              >
+              <.navlink path={~p"/single_scavenger"} action={@live_action}>
                 {gettext("Generate single")}
-              </.navlink_inactive>
-              <.navlink_inactive
-                to="https://scavgen.com/team"
-                lang={@conn.params["lang"] || @conn.cookies["lang"]}
-              >
+              </.navlink>
+              <.navlink path={~p"/team_scavengers"} action={@live_action}>
                 {gettext("Generate team")}
-              </.navlink_inactive>
-              <.link class="nav-item nav-link blended-active" navigate={~p"/neuro_scavengers"}>
+              </.navlink>
+              <.navlink path={~p"/neuro_scavengers"} action={@live_action}>
                 {gettext("Neuro-scav")}
-              </.link>
-              <.navlink_inactive
-                to="https://scavgen.com/stats"
-                lang={@conn.params["lang"] || @conn.cookies["lang"]}
-              >
+              </.navlink>
+              <.navlink path={~p"/statistics"} action={@live_action}>
                 {gettext("Stats")}
-              </.navlink_inactive>
+              </.navlink>
             </div>
           </div>
           <div class="navbar navbar-expand navbar-light navbar-right">
             <div class="collapse navbar-collapse show">
               <div class="navbar-nav">
-                <%= if @conn.params["lang"] == "en" || @conn.cookies["lang"] == "en" do %>
-                  <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=ru">
-                    RU
-                  </a>
-                <% else %>
-                  <a class="nav-item nav-link blended-active" href="/neuro_scavengers?lang=en">
-                    EN
-                  </a>
-                <% end %>
+                <.locale_link
+                  lang={@conn.params["lang"] || @conn.cookies["lang"]}
+                  path={@conn.request_path}
+                >
+                </.locale_link>
               </div>
             </div>
           </div>
