@@ -1,24 +1,20 @@
-defmodule NeuroScav.UserRequestsSupervisor do
+defmodule NeuroScav.ScavengersSupervisor do
   @moduledoc """
-  User requests supervisor.
+  Scavengers supervisor.
   """
   use Supervisor
 
   require Logger
 
-  @default_server_timer_seconds 5
-
   def start_link(_init_arg) do
+    Logger.info("Scavengers supervisor started")
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
   end
 
   @impl true
   def init(_init_arg) do
-    Logger.info("User requests supervisor started")
-
     children = [
-      {NeuroScav.UserRequestsServer,
-       %{schedule_timer: @default_server_timer_seconds, initial_state: []}}
+      {NeuroScav.ScavengersServer, %{}}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

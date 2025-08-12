@@ -19,7 +19,6 @@ defmodule NeuroScav.UserRequestsServer do
 
   def start_link(%{schedule_timer: schedule_timer, initial_state: default_state} = settings)
       when is_map(settings) do
-    Logger.info("User requests server started")
     schedule_server_seconds(schedule_timer)
 
     GenServer.start_link(
@@ -31,6 +30,7 @@ defmodule NeuroScav.UserRequestsServer do
 
   @impl true
   def init(%{initial_state: default_state}) do
+    Logger.info("User requests server started")
     {:ok, default_state}
   end
 
