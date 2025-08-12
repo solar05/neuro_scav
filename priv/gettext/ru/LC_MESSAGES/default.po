@@ -45,17 +45,32 @@ msgstr "Сгенерировать neuro-дичка"
 msgid "Neuro-scav"
 msgstr "Neuro-дикий"
 
-msgid "Generate single"
+msgid "Single"
 msgstr "Одинокий"
 
-msgid "Generate team"
+msgid "Team"
 msgstr "Компания"
+
+msgid "Generate single"
+msgstr "Сгенерировать дичка"
+
+msgid "Generate team"
+msgstr "Сгенерировать команду"
+
+msgid "Single placeholder"
+msgstr "Здесь будет дичок"
+
+msgid "Team placeholder"
+msgstr "Здесь будет команда"
 
 msgid "Stats"
 msgstr "Статистика"
 
+msgid "Stats placeholder"
+msgstr "Статистика"
+
 msgid "Neuro placeholder"
-msgstr "Здесь будет дичок"
+msgstr "Здесь будет neuro-дичок"
 
 msgid "Neuro scheduled"
 msgstr "Генерируем..."

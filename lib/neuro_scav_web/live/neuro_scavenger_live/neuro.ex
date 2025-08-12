@@ -1,22 +1,22 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.PubSub
-  alias NeuroScavWeb.Plugs.SetLocale
+  alias NeuroScav.{Locale, PubSub}
 
   @impl true
   def mount(_params, session, socket) do
+    locale = Map.get(session, "lang")
+
     if connected?(socket) do
-      setup_locale(Map.get(session, "lang"))
+      Locale.setup_locale(Map.get(session, "lang"))
       PubSub.subscribe(session)
     end
 
     user_id = Map.get(session, "user_id")
-    locale = Map.get(session, "lang")
 
     new_socket =
       socket
-      |> assign(:scavenger, placeholder())
+      |> assign(:neuro_scavenger, Locale.get_text("Neuro placeholder"))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
@@ -47,63 +47,43 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
     {:noreply,
      socket
-     |> assign(:scavenger, message)}
+     |> assign(:neuro_scavenger, message)}
   end
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
     {:noreply,
      socket
-     |> assign(:scavenger, get_text("Gnome catched"))}
+     |> assign(:neuro_scavenger, Locale.get_text("Gnome catched"))}
   end
 
   # pubsub callbacks
   @impl true
   def handle_info({:scavenger_generated, msg}, socket) do
-    {:noreply, assign(socket, :scavenger, msg)}
+    {:noreply, assign(socket, :neuro_scavenger, msg)}
   end
 
   @impl true
   def handle_info(:scavenger_generation_error, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Neuro error"))}
+    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Neuro error"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Neuro next"))}
+    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Neuro next"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Queue place", place: place))}
-  end
-
-  defp setup_locale(locale) do
-    SetLocale.put_gettext_locale(locale)
-  end
-
-  defp get_text(msg) do
-    Gettext.gettext(NeuroScavWeb.Gettext, msg)
-  end
-
-  defp get_text(msg, params) do
-    Gettext.gettext(NeuroScavWeb.Gettext, msg, params)
-  end
-
-  defp placeholder do
-    get_text("Neuro placeholder")
+    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Queue place", place: place))}
   end
 
   defp format_schedule_message(result) do
     case result do
-      :requests_limit_reached ->
-        get_text("Limit reached")
-
-      :scheduled ->
-        get_text("Neuro scheduled")
-
-      :already_scheduled ->
-        get_text("Neuro already scheduled")
+      :requests_limit_reached -> "Limit reached"
+      :scheduled -> "Neuro scheduled"
+      :already_scheduled -> "Neuro already scheduled"
     end
+    |> Locale.get_text()
   end
 end

@@ -45,17 +45,32 @@ msgstr "Generate neuro-scavenger"
 msgid "Neuro-scav"
 msgstr "Neuro-scav"
 
-msgid "Generate single"
+msgid "Single"
 msgstr "Single"
 
-msgid "Generate team"
+msgid "Team"
 msgstr "Team"
+
+msgid "Generate single"
+msgstr "Generate scavenger"
+
+msgid "Generate team"
+msgstr "Generate team"
+
+msgid "Single placeholder"
+msgstr "Here will be scavenger"
+
+msgid "Team placeholder"
+msgstr "Here will be team"
 
 msgid "Stats"
 msgstr "Statistics"
 
+msgid "Stats placeholder"
+msgstr "Statistics"
+
 msgid "Neuro placeholder"
-msgstr "Here will be scavic"
+msgstr "Here will be neuro scavic"
 
 msgid "Neuro scheduled"
 msgstr "Generating..."

@@ -1,60 +1,48 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.PubSub
-  alias NeuroScavWeb.Plugs.SetLocale
+  alias NeuroScav.{Locale, PubSub}
 
   @impl true
   def mount(_params, session, socket) do
+    locale = Map.get(session, "lang")
+
     if connected?(socket) do
-      setup_locale(Map.get(session, "lang"))
+      Locale.setup_locale(locale)
       PubSub.subscribe(session)
     end
 
     user_id = Map.get(session, "user_id")
-    locale = Map.get(session, "lang")
 
     new_socket =
       socket
-      |> assign(:scavenger, placeholder())
+      |> assign(:scavenger, Locale.get_text("Single placeholder"))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
     {:ok, new_socket}
   end
 
-  @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
+  # @impl true
+  # def handle_event("schedule_request", _value, socket) do
+  #   result =
+  #     NeuroScav.UserRequestsServer.schedule_request(
+  #       socket.assigns.user_id,
+  #       socket.assigns.user_locale
+  #     )
 
-  defp apply_action(socket, _live_action, _params) do
-    # socket
-    # |> assign(:page_title, "Edit Neuro scavenger")
-    # |> assign(:neuro_scavenger, Scavengers.get_neuro_scavenger!(id))
-    socket
-  end
+  #   message = format_schedule_message(result)
 
-  @impl true
-  def handle_event("schedule_request", _value, socket) do
-    result =
-      NeuroScav.UserRequestsServer.schedule_request(
-        socket.assigns.user_id,
-        socket.assigns.user_locale
-      )
-
-    message = format_schedule_message(result)
-
-    {:noreply,
-     socket
-     |> assign(:scavenger, message)}
-  end
+  #   {:noreply,
+  #    socket
+  #    |> assign(:scavenger, message)}
+  # end
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
     {:noreply,
      socket
-     |> assign(:scavenger, get_text("Gnome catched"))}
+     |> assign(:scavenger, Locale.get_text("Gnome catched"))}
   end
 
   # pubsub callbacks
@@ -65,45 +53,16 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
   @impl true
   def handle_info(:scavenger_generation_error, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Neuro error"))}
+    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro error"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Neuro next"))}
+    {:noreply, assign(socket, :scavenger, Locale.get_text("Neuro next"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :scavenger, get_text("Queue place", place: place))}
-  end
-
-  defp setup_locale(locale) do
-    SetLocale.put_gettext_locale(locale)
-  end
-
-  defp get_text(msg) do
-    Gettext.gettext(NeuroScavWeb.Gettext, msg)
-  end
-
-  defp get_text(msg, params) do
-    Gettext.gettext(NeuroScavWeb.Gettext, msg, params)
-  end
-
-  defp placeholder do
-    get_text("Neuro placeholder")
-  end
-
-  defp format_schedule_message(result) do
-    case result do
-      :requests_limit_reached ->
-        get_text("Limit reached")
-
-      :scheduled ->
-        get_text("Neuro scheduled")
-
-      :already_scheduled ->
-        get_text("Neuro already scheduled")
-    end
+    {:noreply, assign(socket, :scavenger, Locale.get_text("Queue place", place: place))}
   end
 end
