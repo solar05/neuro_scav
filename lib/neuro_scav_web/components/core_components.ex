@@ -575,6 +575,18 @@ defmodule NeuroScavWeb.CoreComponents do
     """
   end
 
+  attr :to, :string, required: true
+  attr :lang, :string, required: true
+  slot :inner_block, required: true
+
+  def navlink_inactive(%{lang: lang, to: to} = assigns) do
+    assigns = assign(assigns, :destination_url, "#{to}?lang=#{lang}")
+
+    ~H"""
+    <a class="nav-item nav-link blend-font" href={@destination_url}>{render_slot(@inner_block)}</a>
+    """
+  end
+
   @doc """
   Renders a [Heroicon](https://heroicons.com).
 

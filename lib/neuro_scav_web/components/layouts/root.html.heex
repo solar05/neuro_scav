@@ -31,12 +31,27 @@
         <nav class="navbar navbar-expand navbar-light navbar-scav">
           <div class="collapse navbar-collapse show">
             <div class="navbar-nav">
-              <a class="nav-item nav-link blend-font" href="#">{gettext("Generate single")}</a>
-              <a class="nav-item nav-link blend-font" href="#">{gettext("Generate team")}</a>
+              <.navlink_inactive
+                to="https://scavgen.com/single"
+                lang={@conn.params["lang"] || @conn.cookies["lang"]}
+              >
+                {gettext("Generate single")}
+              </.navlink_inactive>
+              <.navlink_inactive
+                to="https://scavgen.com/team"
+                lang={@conn.params["lang"] || @conn.cookies["lang"]}
+              >
+                {gettext("Generate team")}
+              </.navlink_inactive>
               <.link class="nav-item nav-link blended-active" navigate={~p"/neuro_scavengers"}>
                 {gettext("Neuro-scav")}
               </.link>
-              <a class="nav-item nav-link blend-font" href="#">{gettext("Stats")}</a>
+              <.navlink_inactive
+                to="https://scavgen.com/stats"
+                lang={@conn.params["lang"] || @conn.cookies["lang"]}
+              >
+                {gettext("Stats")}
+              </.navlink_inactive>
             </div>
           </div>
           <div class="navbar navbar-expand navbar-light navbar-right">
