@@ -95,3 +95,24 @@ msgstr "Click on the gnome!"
 
 msgid "Gnome catched"
 msgstr "YOU CATCHED A GNOME!"
+
+msgid "Stats common"
+msgstr "Common"
+
+msgid "Stats uncommon"
+msgstr "Uncommon"
+
+msgid "Stats rare"
+msgstr "Rare"
+
+msgid "Stats epic"
+msgstr "Epic"
+
+msgid "Stats legendary"
+msgstr "Legendary"
+
+msgid "Stats neuro"
+msgstr "Neuro"
+
+msgid "Stats gnome"
+msgstr "Secret"

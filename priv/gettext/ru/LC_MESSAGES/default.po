@@ -95,3 +95,24 @@ msgstr "Нажми на гнома!"
 
 msgid "Gnome catched"
 msgstr "ТЫ ПОЙМАЛ ГНОМА!"
+
+msgid "Stats common"
+msgstr "Обычные"
+
+msgid "Stats uncommon"
+msgstr "Необычные"
+
+msgid "Stats rare"
+msgstr "Редкие"
+
+msgid "Stats epic"
+msgstr "Эпичные"
+
+msgid "Stats legendary"
+msgstr "Легендарные"
+
+msgid "Stats neuro"
+msgstr "Нейро-дички"
+
+msgid "Stats gnome"
+msgstr "Секретные"

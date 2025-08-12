@@ -1,10 +1,44 @@
 <div class="container">
-  <div class="jumbotron">
-    <h1 class="display-4 text-center blended"></h1>
-    <h2 class="text-center blended-reg-bg">{@statistics_text}</h2>
-    <br />
-    <p class="lead">
-      {inspect(@statistics)}
-    </p>
-  </div>
+  <h1 class="text-center blended-reg-bg">{@statistics_text}</h1>
+  <table class="table table-scav table-responsive table-hover">
+    <tbody>
+      <tr>
+        <td class="td-scav" style="border-radius: 40px 0px 0px 0px; text-align: center;">
+          {gettext("Stats neuro")}
+        </td>
+        <td class="td-scav" style="border-radius: 0px 40px 0px 0px;">{@statistics.neuro}</td>
+      </tr>
+      <tr>
+        <td class="td-scav" style="text-align: center;">{gettext("Stats legendary")}</td>
+        <td class="td-scav">{@statistics.legendary}</td>
+      </tr>
+      <tr>
+        <td class="td-scav" style="text-align: center;">{gettext("Stats epic")}</td>
+        <td class="td-scav">{@statistics.epic}</td>
+      </tr>
+      <tr>
+        <td class="td-scav" style="text-align: center;">{gettext("Stats rare")}</td>
+        <td class="td-scav">{@statistics.rare}</td>
+      </tr>
+      <tr>
+        <td class="td-scav" style="text-align: center;">{gettext("Stats uncommon")}</td>
+        <td class="td-scav">{@statistics.uncommon}</td>
+      </tr>
+      <tr>
+        <td class="td-scav" style="text-align: center;">{gettext("Stats common")}</td>
+        <td class="td-scav">{@statistics.common}</td>
+      </tr>
+      <tr>
+        <td
+          class="td-scav"
+          style="border-radius: 0px 0px 0px 40px; text-align: center; border-bottom: none;"
+        >
+          {gettext("Stats gnome")}
+        </td>
+        <td class="td-scav" style="border-radius: 0px 0px 40px 0px; border-bottom: none;">
+          {@statistics.gnome}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>
