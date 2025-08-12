@@ -9,7 +9,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
 
     if connected?(socket) do
       Locale.setup_locale(Map.get(session, "lang"))
-      PubSub.subscribe(session)
+      PubSub.subscribe(:team_scavengers, session)
     end
 
     user_id = Map.get(session, "user_id")
@@ -40,6 +40,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
+    NeuroScav.StatsCounterServer.update_counter(:gnome)
+
     {:noreply,
      socket
      |> assign(:scavenger, Locale.get_text("Gnome catched"))}
