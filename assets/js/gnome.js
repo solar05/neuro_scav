@@ -41,7 +41,7 @@ class GnomeFooter {
             if (this.isVisible) {
                 this.hideFooter();
             }
-        }, 5000);
+        }, 10000);
     }
 
     hideFooter() {

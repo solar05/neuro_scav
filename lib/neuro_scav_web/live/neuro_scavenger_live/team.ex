@@ -16,7 +16,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
 
     new_socket =
       socket
-      |> assign(:team, Locale.get_text("Team placeholder"))
+      |> assign(:team, [])
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 

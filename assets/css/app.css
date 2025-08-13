@@ -102,10 +102,9 @@ p {
 }
 
 .table-scav {
-    color: #212529 !important;
     color: #fff !important;
     font-family: "Bender";
-    font-size: 150%;
+    font-size: 130%;
     border: none;
 }
 
@@ -565,6 +564,7 @@ body {
     border-radius: 18px;
 }
 
+
 .epic-name {
     background-color: darkorchid;
     color: #fff;
@@ -581,6 +581,46 @@ body {
     background-color: darkgreen;
     color: #fff;
     border-radius: 18px;
+}
+
+.team-legendary-name {
+    background-color: darkorange !important;
+    color: #fff !important;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.team-epic-name {
+    background-color: darkorchid;
+    color: #fff;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.team-rare-name {
+    background-color: rgb(37, 171, 215);
+    color: #fff;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.team-uncommon-name {
+    background-color: darkgreen;
+    color: #fff;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .legendary {
