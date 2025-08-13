@@ -110,7 +110,8 @@ p {
 }
 
 .td-scav {
-    background-color: #4d6bfe !important;
+    background-color: #abadbd !important;
+    color: #ffffff !important;
 }
 
 .tr-scav:hover {
@@ -120,7 +121,7 @@ p {
 
 
 /* incomment in better times */
-/* .ai-badge {
+.ai-badge {
     background: linear-gradient(45deg, #4d6bfe, #677ff7);
     animation: aiPulse 2s infinite;
 }
@@ -128,7 +129,7 @@ p {
 @keyframes aiPulse {
     0%, 100% { box-shadow: 0 0 60px rgba(74, 158, 255, 0.3); }
     50% { box-shadow: 0 0 60px rgba(74, 158, 255, 0.8); }
-} */
+}
 
 .btn-blended-neuro {
     background-color: #4d6bfe !important;
@@ -150,6 +151,37 @@ p {
     color: #fff !important;
     font-family: "SF";
     border-radius: 18px;
+}
+
+.btn-old-blended {
+    color: #010101 !important;
+    background-color: #d49300 !important;
+    font-size: 120%;
+}
+
+.btn-old-blended:hover {
+    color: #fff !important;
+    background-color: rgb(195, 195, 195);
+}
+
+.blended-old-nav:hover {
+    background-color: rgb(195, 195, 195);
+}
+
+.blended-old-nav {
+    color: #212529 !important;
+    background-color: #d49300 !important;
+    border-radius: 18px;
+}
+
+.blend-old-font {
+    color: #fff !important;
+    border-radius: 18px;
+}
+
+.blend-old-font:hover {
+    background-color: #d49300 !important;
+    color: #fff !important;
 }
 
 .blended-active:hover {

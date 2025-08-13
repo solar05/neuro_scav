@@ -27,7 +27,7 @@
   </head>
   <body
     style="background-color: black;"
-    class={"#{if @live_action in [:single_scavenger, :team_scavengers], do: "scav-old-back", else: "scav-back"}"}
+    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics], do: "scav-old-back", else: "scav-back"}"}
   >
     <div class="background-container">
       <div class="container">
@@ -54,6 +54,7 @@
                 <.locale_link
                   lang={@conn.params["lang"] || @conn.cookies["lang"]}
                   path={@conn.request_path}
+                  action={@live_action}
                 >
                 </.locale_link>
               </div>

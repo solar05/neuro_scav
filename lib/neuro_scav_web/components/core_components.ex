@@ -581,36 +581,68 @@ defmodule NeuroScavWeb.CoreComponents do
 
   def navlink(%{path: path, action: action} = assigns) do
     selected_class =
-      if path == "/#{action}" do
-        "nav-item nav-link blended-active"
+      if old_buttons?(action) && old_path?(path) do
+        if path == "/#{action}",
+          do: "nav-item nav-link blended-old-nav",
+          else: "nav-item nav-link blend-old-font"
       else
-        "nav-item nav-link blend-font"
+        if path == "/#{action}",
+          do: "nav-item nav-link blended-active",
+          else: "nav-item nav-link blend-font"
       end
+
+    ai_powered_class =
+      if old_buttons?(action) && path == "/neuro_scavengers" do
+        "ai-badge"
+      else
+        ""
+      end
+
+    final_class = "#{selected_class} #{ai_powered_class}" |> String.trim()
 
     assigns =
       assigns
       |> assign(:destination_url, path)
-      |> assign(:selected, selected_class)
+      |> assign(:selected, final_class)
 
     ~H"""
     <a class={@selected} href={@destination_url}>{render_slot(@inner_block)}</a>
     """
   end
 
+  defp old_buttons?(action) do
+    action in [:single_scavenger, :team_scavengers, :statistics]
+  end
+
+  defp old_path?(path) do
+    path in ["/single_scavenger", "/team_scavengers", "/statistics"]
+  end
+
   attr :lang, :string, required: true
   attr :path, :string, required: true
+  attr :action, :string, required: true
   slot :inner_block, required: false
 
-  def locale_link(%{lang: lang, path: path} = assigns) do
+  def locale_link(%{lang: lang, path: path, action: action} = assigns) do
     language = if lang == "en", do: "RU", else: "EN"
 
     updated_path = "#{path}?lang=#{String.downcase(language)}"
 
+    selected_class =
+      if old_buttons?(action) do
+        "nav-item nav-link blended-old-nav"
+      else
+        "nav-item nav-link blended-active"
+      end
+
     assigns =
-      assigns |> assign(:current_language, language) |> assign(:updated_path, updated_path)
+      assigns
+      |> assign(:current_language, language)
+      |> assign(:updated_path, updated_path)
+      |> assign(:selected_class, selected_class)
 
     ~H"""
-    <a class="nav-item nav-link blended-active" href={@updated_path}>{@current_language}</a>
+    <a class={@selected_class} href={@updated_path}>{@current_language}</a>
     """
   end
 
