@@ -25,7 +25,10 @@
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
   </head>
-  <body style="background-color: black;" class="scav-back">
+  <body
+    style="background-color: black;"
+    class={"#{if @live_action in [:single_scavenger, :team_scavengers], do: "scav-old-back", else: "scav-back"}"}
+  >
     <div class="background-container">
       <div class="container">
         <nav class="navbar navbar-expand navbar-light navbar-scav">

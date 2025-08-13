@@ -53,6 +53,14 @@ p {
     background-size: cover;
 }
 
+.scav-old-back {
+    background: url("/images/old_back.webp") no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
 .blended-border {
     border-color: #a5a5a5;
 }
