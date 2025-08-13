@@ -20,6 +20,9 @@ defmodule NeuroScav.StatsCounterServer do
     :invalid_counter
   end
 
+  @spec gnome_captured() :: :ok
+  def gnome_captured(), do: update_counter(:gnome)
+
   def start_link(_settings) do
     GenServer.start_link(
       __MODULE__,

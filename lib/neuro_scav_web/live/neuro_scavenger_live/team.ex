@@ -1,7 +1,7 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Team do
   use NeuroScavWeb, :live_view
 
-  alias NeuroScav.{Locale, PubSub}
+  alias NeuroScav.{Locale, PubSub, StatsCounterServer}
 
   @impl true
   def mount(_params, session, socket) do
@@ -31,7 +31,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
 
   @impl true
   def handle_event("gnome_clicked", _, socket) do
-    NeuroScav.StatsCounterServer.update_counter(:gnome)
+    StatsCounterServer.gnome_captured()
 
     {:noreply, socket}
   end
