@@ -153,6 +153,7 @@ p {
 }
 
 .btn-old-blended {
+    font-family: "Bender" !important;
     color: #010101 !important;
     background-color: #d49300 !important;
     font-size: 120%;
@@ -160,22 +161,23 @@ p {
 
 .btn-old-blended:hover {
     color: #fff !important;
-    background-color: rgb(195, 195, 195);
 }
 
 .blended-old-nav:hover {
-    background-color: rgb(195, 195, 195);
+    color: #fff !important;
 }
 
 .blended-old-nav {
+    font-family: "Bender" !important;
     color: #212529 !important;
     background-color: #d49300 !important;
-    border-radius: 18px;
+    border-radius: 10px;
 }
 
 .blend-old-font {
     color: #fff !important;
-    border-radius: 18px;
+    font-family: "Bender" !important;
+    border-radius: 10px;
 }
 
 .blend-old-font:hover {
@@ -664,16 +666,17 @@ body {
     border-radius: 20px 20px 20px 20px;
 }
 
-   td {
-      height: 50px; 
-      vertical-align: top;
-    }
-    .text-container {
-      height: 40px; 
-      overflow: auto;
-        height: 250px;
-    }
+td {
+    height: 50px; 
+    vertical-align: top;
+}
+
+.text-container {
+    height: 40px; 
+    overflow: auto;
+    height: 250px;
+}
     
-    table {
-        table-layout: fixed;
-    }
+table {
+    table-layout: fixed;
+}
