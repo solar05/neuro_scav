@@ -3,5 +3,30 @@
     "treat_no_relevant_lines_as_covered": true,
     "output_dir": "cover/",
     "html_filter_full_covered": true
-  }
+  },
+  "default_stop_words": [
+    "defmodule",
+    "defrecord",
+    "defimpl",
+    "def.+(.+\/\/.+).+do"
+  ],
+  "skip_files": [
+    "lib/neuro_scav/plugins/neuro_scav.ex",
+    "lib/neuro_scav/locale.ex",
+    "lib/neuro_scav/scavengers/names.ex",
+    "lib/neuro_scav/scavengers/statistics.ex",
+    "lib/neuro_scav/pub_sub.ex",
+    "lib/neuro_scav/scavengers_supervisor.ex",
+    "lib/neuro_scav/stats_counter_supervisor.ex",
+    "lib/neuro_scav/user_requests_supervisor.ex",
+    "lib/neuro_scav/application.ex",
+    "test/support/data_case.ex",
+    "test/support/conn_case.ex",
+    "lib/neuro_scav_web/components/core_components.ex",
+    "lib/neuro_scav/prom_ex.ex",
+    "lib/neuro_scav_web/router.ex",
+    "lib/neuro_scav_web/telemetry.ex",
+    "lib/neuro_scav_web/gettext.ex",
+    "lib/neuro_scav/client.ex"
+  ]
 }
