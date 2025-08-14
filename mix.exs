@@ -9,7 +9,16 @@ defmodule NeuroScav.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test,
+        "coveralls.json": :test,
+        "coveralls.cobertura": :test
+      ]
     ]
   end
 
@@ -63,7 +72,8 @@ defmodule NeuroScav.MixProject do
       {:prom_ex, "~> 1.11.0"},
       {:uniq, "~> 0.4"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:lazy_html, ">= 0.1.0", only: :test}
+      {:lazy_html, ">= 0.1.0", only: :test},
+      {:excoveralls, "~> 0.18", only: :test}
     ]
   end
 
