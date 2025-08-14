@@ -1,6 +1,7 @@
 # NeuroScav
 
 [![CI](https://github.com/solar05/neuro_scav/actions/workflows/build.yml/badge.svg)](https://github.com/solar05/neuro_scav/actions/workflows/build.yml)
+[![codecov](https://codecov.io/github/solar05/neuro_scav/graph/badge.svg?token=BV9QGO1UOV)](https://codecov.io/github/solar05/neuro_scav)
 
 To start your Phoenix server:
 
