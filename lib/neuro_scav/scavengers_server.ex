@@ -46,6 +46,8 @@ defmodule NeuroScav.ScavengersServer do
   @impl true
   def handle_cast({:generate_single, user_id, locale}, state) do
     scavenger = generate_scavenger(state, locale)
+
+    NeuroScav.StatsCounterServer.update_counter(scavenger.rarity)
     PubSub.broadcast(user_id, {:single_generated, :single_scavenger, scavenger})
 
     {:noreply, state}
@@ -53,6 +55,10 @@ defmodule NeuroScav.ScavengersServer do
 
   def handle_cast({:generate_team, user_id, locale}, state) do
     team = 1..@max_team_members |> Enum.map(fn _ -> generate_scavenger(state, locale) end)
+
+    team
+    |> Enum.map(fn scav -> scav.rarity end)
+    |> NeuroScav.StatsCounterServer.update_miltiple_counters()
 
     PubSub.broadcast(user_id, {:team_generated, :team_scavengers, team})
 
@@ -76,8 +82,6 @@ defmodule NeuroScav.ScavengersServer do
         uncommon?(name) == true -> :uncommon
         true -> :common
       end
-
-    NeuroScav.StatsCounterServer.update_counter(rarity)
 
     %{name: name, rarity: rarity}
   end
