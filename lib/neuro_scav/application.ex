@@ -16,8 +16,6 @@ defmodule NeuroScav.Application do
         {Phoenix.PubSub, name: NeuroScav.PubSub},
         # Start the Finch HTTP client for sending emails
         {Finch, name: NeuroScav.Finch},
-        NeuroScav.ScavengersSupervisor,
-        NeuroScav.StatsCounterSupervisor,
         # Start a worker by calling: NeuroScav.Worker.start_link(arg)
         # {NeuroScav.Worker, arg},
         # Start to serve requests, typically the last entry
@@ -37,7 +35,12 @@ defmodule NeuroScav.Application do
     end
   else
     defp requests_tree(tree) do
-      tree ++ [NeuroScav.UserRequestsSupervisor]
+      tree ++
+        [
+          NeuroScav.UserRequestsSupervisor,
+          NeuroScav.ScavengersSupervisor,
+          NeuroScav.StatsCounterSupervisor
+        ]
     end
   end
 

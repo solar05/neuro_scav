@@ -19,13 +19,17 @@ defmodule NeuroScavWeb.Router do
   scope "/", NeuroScavWeb do
     pipe_through :browser
 
-    # get "/", PageController, :home
-
     live "/", NeuroScavengerLive.Single, :single_scavenger
     live "/neuro_scavengers", NeuroScavengerLive.Neuro, :neuro_scavengers
     live "/single_scavenger", NeuroScavengerLive.Single, :single_scavenger
     live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
+  end
+
+  scope "/api", NeuroScavWeb.Api do
+    pipe_through :api
+
+    get "/health", HealthController, :health
   end
 
   # Other scopes may use custom stacks.
