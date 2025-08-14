@@ -73,4 +73,9 @@ jobs:
         run: mix ecto.create && mix ecto.migrate
 
       - name: Mix tests
-        run: mix test
+        run: mix coveralls.json
+        
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
