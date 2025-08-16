@@ -7,6 +7,7 @@ defmodule NeuroScavWeb.Plugs.SetLocale do
   @supported_locales Gettext.known_locales(NeuroScavWeb.Gettext)
   @default_locale "ru"
 
+  def init(), do: init(nil)
   def init(_options), do: nil
 
   def call(conn, _options) do
@@ -17,10 +18,6 @@ defmodule NeuroScavWeb.Plugs.SetLocale do
       locale ->
         put_locale(conn, locale)
     end
-  end
-
-  def put_gettext_locale(nil) do
-    NeuroScavWeb.Gettext |> Gettext.put_locale(@default_locale)
   end
 
   def put_gettext_locale(locale) do

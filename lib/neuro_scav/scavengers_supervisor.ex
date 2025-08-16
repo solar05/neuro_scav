@@ -14,7 +14,7 @@ defmodule NeuroScav.ScavengersSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
-      {NeuroScav.ScavengersServer, %{}}
+      {NeuroScav.ScavengersServer, %{module_name: NeuroScav.Scavengers.Names}}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

@@ -49,12 +49,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
   # pubsub callbacks
   @impl true
-  def handle_info({:scavenger_generated, msg}, socket) do
+  def handle_info({:neuro_generated, msg}, socket) do
     {:noreply, assign(socket, :neuro_scavenger, msg)}
   end
 
   @impl true
-  def handle_info(:scavenger_generation_error, socket) do
+  def handle_info(:neuro_generation_error, socket) do
     {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Neuro error"))}
   end
 

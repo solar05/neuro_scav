@@ -9,7 +9,8 @@ defmodule NeuroScav.Client do
     Ollama.init(base_url: get_base_url(), receive_timeout: 60_000)
   end
 
-  def generate_scav(client, language \\ "en") do
+  def generate_scav(language \\ "en") do
+    client = init()
     language = present_language(language)
 
     Ollama.completion(client,

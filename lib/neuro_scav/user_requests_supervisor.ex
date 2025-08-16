@@ -6,7 +6,7 @@ defmodule NeuroScav.UserRequestsSupervisor do
 
   require Logger
 
-  @default_server_timer_seconds 5
+  @default_server_timer_seconds 2
 
   def start_link(_init_arg) do
     Supervisor.start_link(__MODULE__, [], name: __MODULE__)
@@ -18,7 +18,7 @@ defmodule NeuroScav.UserRequestsSupervisor do
 
     children = [
       {NeuroScav.UserRequestsServer,
-       %{schedule_timer: @default_server_timer_seconds, initial_state: []}}
+       %{schedule_timer: @default_server_timer_seconds, state: [], client: NeuroScav.Client}}
     ]
 
     Supervisor.init(children, strategy: :one_for_one)

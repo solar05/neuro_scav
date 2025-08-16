@@ -4,14 +4,11 @@ defmodule NeuroScav.ScavengersFixtures do
   entities via the `NeuroScav.Scavengers` context.
   """
 
-  # def neuro_scavenger_fixture(attrs \\ %{}) do
-  #   {:ok, neuro_scavenger} =
-  #     attrs
-  #     |> Enum.into(%{
-  #       name: "some name"
-  #     })
-  #     |> NeuroScav.Scavengers.create_neuro_scavenger()
+  def statistics_fixture(attrs \\ %{}) do
+    {:ok, statistics} =
+      attrs
+      |> NeuroScav.Scavengers.create_statistics()
 
-  #   neuro_scavenger
-  # end
+    statistics
+  end
 end

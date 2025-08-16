@@ -5,6 +5,7 @@ defmodule NeuroScavWeb.Plugs.SetUserId do
 
   import Plug.Conn
 
+  def init(), do: init(nil)
   def init(_options), do: nil
 
   def call(conn, _options) do

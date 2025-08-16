@@ -6,7 +6,6 @@ defmodule NeuroScav.ScavengersServer do
 
   use GenServer
 
-  alias NeuroScav.Scavengers.Names
   alias NeuroScav.PubSub
 
   @max_team_members 5
@@ -20,23 +19,23 @@ defmodule NeuroScav.ScavengersServer do
     GenServer.cast(__MODULE__, {:generate_team, user_id, locale})
   end
 
-  def start_link(_settings) do
+  def start_link(settings) do
     GenServer.start_link(
       __MODULE__,
-      %{},
+      settings,
       name: __MODULE__
     )
   end
 
   @impl true
-  def init(_default_state) do
+  def init(%{module_name: names} = _default_state) do
     state = %{
-      "first_names_ru" => Names.first_names_ru(),
-      "last_names_ru" => Names.last_names_ru(),
-      "first_names_en" => Names.first_names_en(),
-      "last_names_en" => Names.last_names_en(),
-      "legendary_names_ru" => Names.legendary_names_ru(),
-      "legendary_names_en" => Names.legendary_names_en()
+      "first_names_ru" => names.first_names_ru(),
+      "last_names_ru" => names.last_names_ru(),
+      "first_names_en" => names.first_names_en(),
+      "last_names_en" => names.last_names_en(),
+      "legendary_names_ru" => names.legendary_names_ru(),
+      "legendary_names_en" => names.legendary_names_en()
     }
 
     Logger.info("Scavenger server started")
@@ -86,21 +85,21 @@ defmodule NeuroScav.ScavengersServer do
     %{name: name, rarity: rarity}
   end
 
-  defp legendary?(names, name, locale) do
+  def legendary?(names, name, locale) do
     Map.get(names, "legendary_names_#{locale}") |> Enum.member?(name)
   end
 
-  defp epic?(name) do
+  def epic?(name) do
     [first_name, last_name] = String.split(name, " ")
     String.slice(first_name, -3..-1) == String.slice(last_name, -3..-1)
   end
 
-  defp rare?(name) do
+  def rare?(name) do
     [first_name, last_name] = String.split(name, " ")
     String.first(first_name) == String.first(last_name)
   end
 
-  defp uncommon?(name) do
+  def uncommon?(name) do
     [first_name, last_name] = String.split(name, " ")
     String.length(first_name) == String.length(last_name)
   end

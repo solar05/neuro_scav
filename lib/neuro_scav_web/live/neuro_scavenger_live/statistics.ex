@@ -16,7 +16,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Statistics do
 
     new_socket =
       socket
-      # |> assign(:statistics_text, Locale.get_text("Stats placeholder"))
       |> assign(:statistics, Scavengers.get_statistics())
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)

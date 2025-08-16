@@ -6,7 +6,7 @@ defmodule NeuroScav.UserRequestsServer do
 
   use GenServer
 
-  alias NeuroScav.{Client, PubSub}
+  alias NeuroScav.PubSub
   alias PromEx.Plugins.NeuroScav, as: NeuroPromex
 
   @requests_limit 10
@@ -17,51 +17,54 @@ defmodule NeuroScav.UserRequestsServer do
     GenServer.call(__MODULE__, {:add_request, user_id, locale})
   end
 
-  def start_link(%{schedule_timer: schedule_timer, initial_state: default_state} = settings)
-      when is_map(settings) do
+  def start_link(%{schedule_timer: schedule_timer, state: default_state, client: client}) do
     schedule_server_seconds(schedule_timer)
 
     GenServer.start_link(
       __MODULE__,
-      %{schedule_timer: schedule_timer, initial_state: default_state},
+      %{schedule_timer: schedule_timer, state: default_state, client: client},
       name: __MODULE__
     )
   end
 
   @impl true
-  def init(%{initial_state: default_state}) do
+  def init(state) do
     Logger.info("User requests server started")
-    {:ok, default_state}
+    {:ok, state}
   end
 
   @impl true
-  def handle_call({:add_request, user_id, locale}, _from, state) do
+  def handle_call({:add_request, user_id, locale}, _from, %{state: state} = settings) do
     case find_request(state, user_id) do
       nil ->
         if Enum.count(state) < @requests_limit do
           new_state =
             state ++ [%{"user_id" => user_id, "scheduled_at" => now(), "locale" => locale}]
 
-          {:reply, :scheduled, new_state}
+          {:reply, :scheduled, Map.put(settings, :state, new_state)}
         else
-          {:reply, :requests_limit_reached, state}
+          {:reply, :requests_limit_reached, settings}
         end
 
       _request ->
         Logger.info("User with id #{user_id} already scheduled request")
-        {:reply, :already_scheduled, state}
+        {:reply, :already_scheduled, settings}
     end
   end
 
   @impl true
-  def handle_info(:process_request, []) do
+  def handle_info(:process_request, %{schedule_timer: schedule_timer, state: []} = settings) do
     Logger.info("There is no request to execute")
-    schedule_server_seconds(5)
-    {:noreply, []}
+    schedule_server_seconds(schedule_timer)
+    {:noreply, settings}
   end
 
   @impl true
-  def handle_info(:process_request, state) do
+  def handle_info(:process_request, %{
+        schedule_timer: schedule_timer,
+        state: state,
+        client: client
+      }) do
     [%{"user_id" => user_id, "locale" => locale} | new_state] = state
 
     Logger.info("Processing request #{user_id}")
@@ -69,23 +72,25 @@ defmodule NeuroScav.UserRequestsServer do
 
     {exec_time, _} =
       :timer.tc(fn ->
-        case Client.generate_scav(Client.init(), locale) do
+        case client.generate_scav(locale) do
           {:ok, result} ->
             NeuroScav.StatsCounterServer.update_counter(:neuro)
-            PubSub.broadcast(user_id, {:scavenger_generated, :neuro_scavenger, result})
+            PubSub.broadcast(user_id, {:neuro_generated, :neuro_scavenger, result})
             notify_user_places(new_state)
 
           {:error, _} ->
-            PubSub.broadcast(user_id, {:scavenger_generation_error, :neuro_scavenger})
+            PubSub.broadcast(user_id, {:neuro_generation_error, :neuro_scavenger})
             notify_user_places(new_state)
         end
       end)
 
     formatted_exec_time = format_exec_time(exec_time)
+
     export_request_processed_info(formatted_exec_time)
     Logger.info("Done processing request #{user_id} about #{formatted_exec_time / 1000} seconds")
-    schedule_server_seconds(2)
-    {:noreply, new_state}
+
+    schedule_server_seconds(schedule_timer)
+    {:noreply, %{schedule_timer: schedule_timer, state: new_state, client: client}}
   end
 
   defp find_request(requests, id) do
@@ -95,8 +100,6 @@ defmodule NeuroScav.UserRequestsServer do
   defp now do
     DateTime.utc_now() |> DateTime.add(3, :hour)
   end
-
-  defp schedule_server_seconds(-1), do: nil
 
   defp schedule_server_seconds(time) do
     Process.send_after(__MODULE__, :process_request, :timer.seconds(time))
@@ -123,6 +126,5 @@ defmodule NeuroScav.UserRequestsServer do
     :telemetry.execute(NeuroPromex.processed_request_count(), %{}, %{})
   end
 
-  defp format_exec_time(0), do: 0
   defp format_exec_time(exec_time), do: exec_time / 1_000
 end
