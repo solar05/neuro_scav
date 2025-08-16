@@ -102,14 +102,14 @@ p {
 }
 
 .table-scav {
-    color: #fff !important;
+    color: #abadbd !important;
     font-family: "Bender";
-    font-size: 130%;
+    font-size: 110%;
     border: none;
 }
 
 .td-scav {
-    background-color: #abadbd !important;
+    background-color: #7e7f8b !important;
     color: #ffffff !important;
 }
 
@@ -259,7 +259,7 @@ body {
     }
 
     .table-scav {
-        color: #fff !important;
+        color: #abadbd !important;
         font-family: "Bender";
         font-size: 60%;
         border: none;
@@ -277,7 +277,7 @@ body {
     }
 
     .table-scav {
-        color: #fff !important;
+        color: #abadbd !important;
         font-family: "Bender";
         font-size: 60%;
         border: none;
@@ -355,7 +355,7 @@ body {
     }
 
     .table-scav {
-        color: #fff !important;
+        color: #abadbd !important;
         font-family: "Bender";
         font-size: 60%;
         border: none;
@@ -403,7 +403,7 @@ body {
     }
 
     .table-scav {
-        color: #fff !important;
+        color: #abadbd !important;
         font-family: "Bender";
         font-size: 50%;
         border: none;

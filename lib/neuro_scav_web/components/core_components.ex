@@ -642,7 +642,9 @@ defmodule NeuroScavWeb.CoreComponents do
       |> assign(:selected_class, selected_class)
 
     ~H"""
-    <a class={@selected_class} href={@updated_path}>{@current_language}</a>
+    <a class={@selected_class} style="margin-right: 15px;" href={@updated_path}>
+      {@current_language}
+    </a>
     """
   end
 
