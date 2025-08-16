@@ -40,6 +40,7 @@
     "lib/neuro_scav_web/telemetry.ex",
     "lib/neuro_scav_web/gettext.ex",
     "lib/neuro_scav/client.ex",
-    "lib/neuro_scav/scavengers.ex"
+    "lib/neuro_scav/scavengers.ex",
+    "lib/neuro_scav/release.ex"
   ]
 }
