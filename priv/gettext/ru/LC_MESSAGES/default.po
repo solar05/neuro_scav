@@ -43,10 +43,10 @@ msgid "Generate neuro"
 msgstr "Сгенерировать neuro-дичка"
 
 msgid "Neuro-scav"
-msgstr "Neuro-дикий"
+msgstr "Neuro-дичок"
 
 msgid "Single"
-msgstr "Одинокий"
+msgstr "Дичок"
 
 msgid "Team"
 msgstr "Компания"

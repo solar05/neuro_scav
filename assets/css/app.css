@@ -306,22 +306,15 @@ body {
     }
 
     .nav-link {
-        padding: 8px 4px;
+        margin-top: 5px;
         font-size: 0.85rem;
         white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
 
     .navbar-right {
         width: 100%;
         justify-content: center;
         margin-top: 10px;
-    }
-
-    .jumbotron {
-        padding: 1rem;
-        margin: 0;
     }
 
     .display-4 {
