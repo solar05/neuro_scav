@@ -134,8 +134,15 @@ p {
     background-color: #4d6bfe !important;
     color: #fff !important;
     font-family: "SF";
-    font-size: 150%;
+    font-size: 120%;
     border-radius: 18px;
+}
+
+.cf-turnstile {
+    max-width: 100% !important;
+    width: 100% !important;
+    transform-origin: 0 0;
+    transform: scale(1.2);
 }
 
 .btn-blended-neuro:hover {
@@ -284,12 +291,19 @@ body {
     }
 
     .background-container {
-        max-width: 100%;
+        max-width: 95%;
         padding: 15px;
     }
 
     .navbar {
         padding: 0.5rem 0;
+    }
+
+    .cf-turnstile {
+        max-width: 90% !important;
+        width: 90% !important;
+        transform-origin: 0 0;
+        transform: scale(0.75);
     }
 
     .navbar-nav {

@@ -20,7 +20,8 @@
     ":single_generated",
     ":team_generated",
     ":statistics_updated",
-    "rarity_text"
+    "rarity_text",
+    "socket ="
   ],
   "skip_files": [
     "lib/neuro_scav/plugins/neuro_scav.ex",
@@ -41,6 +42,7 @@
     "lib/neuro_scav_web/gettext.ex",
     "lib/neuro_scav/client.ex",
     "lib/neuro_scav/scavengers.ex",
-    "lib/neuro_scav/release.ex"
+    "lib/neuro_scav/release.ex",
+    "test/support/turnstile_mock.ex"
   ]
 }

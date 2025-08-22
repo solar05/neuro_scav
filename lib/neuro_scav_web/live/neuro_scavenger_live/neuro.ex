@@ -3,6 +3,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
   alias NeuroScav.{Locale, PubSub, StatsCounterServer}
 
+  @turnstile Application.compile_env(:phoenix_turnstile, :adapter, Turnstile)
+
   @impl true
   def mount(_params, session, socket) do
     locale = Map.get(session, "lang")
@@ -24,18 +26,27 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   end
 
   @impl true
-  def handle_event("schedule_request", _value, socket) do
-    result =
-      NeuroScav.UserRequestsServer.schedule_request(
-        socket.assigns.user_id,
-        socket.assigns.user_locale
-      )
+  def handle_event("schedule_request", values, socket) do
+    case @turnstile.verify(values) do
+      {:ok, _} ->
+        result =
+          NeuroScav.UserRequestsServer.schedule_request(
+            socket.assigns.user_id,
+            socket.assigns.user_locale
+          )
 
-    message = format_schedule_message(result)
+        message = format_schedule_message(result)
 
-    {:noreply,
-     socket
-     |> assign(:neuro_scavenger, message)}
+        {:noreply,
+         socket
+         |> assign(:neuro_scavenger, message)}
+
+      {:error, _} ->
+        socket =
+          assign(socket, :neuro_scavenger, Locale.get_text("Neuro error")) |> Turnstile.refresh()
+
+        {:noreply, socket}
+    end
   end
 
   @impl true

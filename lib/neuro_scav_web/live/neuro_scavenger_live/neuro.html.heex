@@ -1,15 +1,25 @@
 <div class="container">
-    <h1 class="display-4 text-center blended"></h1>
-    <h2 class="text-center blended-reg-bg">{@neuro_scavenger}</h2>
-    <br />
-    <p class="lead">
-      <.link
-        phx-click="schedule_request"
+  <h1 class="display-4 text-center blended"></h1>
+  <h2 class="text-center blended-reg-bg">{@neuro_scavenger}</h2>
+  <br />
+  <p class="lead">
+    <.form for={%{}} phx-submit="schedule_request" id="neuro_form">
+      <.button
         phx-debounce="1000"
         phx-throttle="1500"
         class="btn btn-blended-neuro btn-lg blended d-flex justify-content-center"
+        style="width: 100%;"
       >
         {gettext("Generate neuro")}
-      </.link>
-    </p>
+      </.button>
+      <div class="container" style="margin-top: 20px;">
+        <Turnstile.widget
+          theme="auto"
+          data-size="compact"
+          class="cf-turnstile"
+          appearance="interaction-only"
+        />
+      </div>
+    </.form>
+  </p>
 </div>

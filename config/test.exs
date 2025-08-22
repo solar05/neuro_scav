@@ -37,3 +37,5 @@ config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
 config :plug, :validate_header_keys_during_test, false
+
+config :phoenix_turnstile, adapter: TurnstileMock

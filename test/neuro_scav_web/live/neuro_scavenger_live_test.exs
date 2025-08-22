@@ -21,17 +21,17 @@ defmodule NeuroScavWeb.NeuroScavengerLiveTest do
     test "run request", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/neuro_scavengers")
 
-      assert index_live |> element("a", "Сгенерировать neuro-дичка") |> render_click() =~
+      assert index_live |> form("#neuro_form") |> render_submit() =~
                "Генерируем..."
     end
 
     test "when request already scheduled", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/neuro_scavengers")
 
-      assert index_live |> element("a", "Сгенерировать neuro-дичка") |> render_click() =~
+      assert index_live |> form("#neuro_form") |> render_submit() =~
                "Генерируем..."
 
-      assert index_live |> element("a", "Сгенерировать neuro-дичка") |> render_click() =~
+      assert index_live |> form("#neuro_form") |> render_submit() =~
                "Генерируем, ожидайте..."
     end
 
@@ -43,7 +43,7 @@ defmodule NeuroScavWeb.NeuroScavengerLiveTest do
         UserRequestsServer.schedule_request("#{user}", "ru")
       end)
 
-      assert index_live |> element("a", "Сгенерировать neuro-дичка") |> render_click() =~
+      assert index_live |> form("#neuro_form") |> render_submit() =~
                "Достигнут лимит запросов"
     end
   end
