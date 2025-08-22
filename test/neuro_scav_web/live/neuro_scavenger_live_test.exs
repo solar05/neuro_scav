@@ -8,7 +8,7 @@ defmodule NeuroScavWeb.NeuroScavengerLiveTest do
   describe "Index" do
     setup do
       settings = %{schedule_timer: 1, state: [], client: FakeClient}
-      {:ok, _pid} = GenServer.start_link(UserRequestsServer, settings, name: UserRequestsServer)
+      GenServer.start_link(UserRequestsServer, settings, name: UserRequestsServer)
       :ok
     end
 

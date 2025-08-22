@@ -14,7 +14,7 @@ defmodule NeuroScav.ScavengersServerTest do
 
   setup do
     default_settings = %{module_name: FixtureNames}
-    {:ok, _pid} = GenServer.start_link(Server, default_settings, name: Server)
+    GenServer.start_link(Server, default_settings, name: Server)
     :ok
   end
 

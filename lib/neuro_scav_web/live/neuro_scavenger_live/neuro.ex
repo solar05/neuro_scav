@@ -8,6 +8,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   @impl true
   def mount(_params, session, socket) do
     locale = Map.get(session, "lang")
+    remote_ip = get_connect_info(socket, :peer_data).address
 
     if connected?(socket) do
       Locale.setup_locale(Map.get(session, "lang"))
@@ -21,13 +22,14 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
       |> assign(:neuro_scavenger, Locale.get_text("Neuro placeholder"))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
+      |> assign(:remote_ip, remote_ip)
 
     {:ok, new_socket}
   end
 
   @impl true
   def handle_event("schedule_request", values, socket) do
-    case @turnstile.verify(values) do
+    case @turnstile.verify(values, socket.assigns.remote_ip) do
       {:ok, _} ->
         result =
           NeuroScav.UserRequestsServer.schedule_request(
