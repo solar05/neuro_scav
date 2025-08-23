@@ -6,7 +6,7 @@ defmodule NeuroScav.Client do
   require Logger
 
   def init do
-    Ollama.init(base_url: get_base_url(), receive_timeout: 60_000)
+    Ollama.init(base_url: get_base_url(), receive_timeout: 15_000)
   end
 
   def generate_scav(language \\ "en") do
@@ -22,18 +22,18 @@ defmodule NeuroScav.Client do
     |> parse_answer()
   end
 
-  # defp parse_answer({:ok, %{"response" => response, "total_duration" => _total_duration}}) do
-  # total_duration_seconds = total_duration / 1_000_000_000
-  defp parse_answer({:ok, %{"response" => response}}) do
-    {:ok, response}
-    # case Jason.decode(response) do
-    #   {:ok, parsed_response} ->
-    #     Logger.info("Taken time for request #{total_duration_seconds}")
-    #     {:ok, parsed_response}
-    #   {:error, error} ->
-    #     Logger.info("Some shit happens when parsing response #{inspect(error)}")
-    #     {:error, :incorrect_scavenger}
-    # end
+  defp parse_answer({:ok, %{"response" => response, "total_duration" => total_duration}}) do
+    total_duration_seconds = total_duration / 1_000_000_000
+
+    case Jason.decode(response) do
+      {:ok, %{"firstName" => first_name, "lastName" => last_name}} ->
+        Logger.info("Taken time for request #{total_duration_seconds}")
+        {:ok, "#{first_name} #{last_name}"}
+
+      {:error, error} ->
+        Logger.info("Some shit happens when parsing response #{inspect(error)}")
+        {:error, :incorrect_scavenger}
+    end
   end
 
   defp parse_answer({:error, %{status: _status, message: message}}) do
@@ -48,14 +48,13 @@ defmodule NeuroScav.Client do
     Application.get_env(:neuro_scav, NeuroScav.NeuroClient)[:api_url]
   end
 
-  defp model, do: "smollm:latest"
+  defp model, do: "scav:latest"
 
-  defp present_promt(_language) do
-    "1 + 2"
-    # "Generate scavenger name in #{language} language"
+  defp present_promt(language) do
+    "gen#{language}"
   end
 
-  defp present_language("en"), do: "english"
-  defp present_language("ru"), do: "russian"
+  defp present_language("en"), do: "en"
+  defp present_language("ru"), do: "ru"
   defp present_language(_), do: raise(ArgumentError, "invalid language")
 end

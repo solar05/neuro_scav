@@ -51,6 +51,9 @@ msgstr "Дичок"
 msgid "Team"
 msgstr "Компания"
 
+msgid "Chill"
+msgstr "Зачилься, братик..."
+
 msgid "Generate single"
 msgstr "Сгенерировать дичка"
 

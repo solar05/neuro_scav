@@ -14,7 +14,7 @@ defmodule NeuroScav.UserRequestsServer do
   @spec schedule_request(String.t(), String.t()) ::
           :scheduled | :already_scheduled | :requests_limit_reached
   def schedule_request(user_id, locale) do
-    GenServer.call(__MODULE__, {:add_request, user_id, locale})
+    GenServer.call(__MODULE__, {:add_request, user_id, locale}, :timer.seconds(30))
   end
 
   def start_link(%{schedule_timer: schedule_timer, state: default_state, client: client}) do

@@ -43,9 +43,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
          socket
          |> assign(:neuro_scavenger, message)}
 
-      {:error, _} ->
+      {:error, _error} ->
         socket =
-          assign(socket, :neuro_scavenger, Locale.get_text("Neuro error")) |> Turnstile.refresh()
+          assign(socket, :neuro_scavenger, Locale.get_text("Chill")) |> Turnstile.refresh()
 
         {:noreply, socket}
     end

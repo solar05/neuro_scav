@@ -120,6 +120,9 @@ msgstr "Secret"
 msgid "Single generating"
 msgstr "Generaing scavenger..."
 
+msgid "Chill"
+msgstr "Chillout, friend..."
+
 msgid "Team generating"
 msgstr "Generating team..."
 
