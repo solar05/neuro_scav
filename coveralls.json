@@ -43,6 +43,6 @@
     "lib/neuro_scav/client.ex",
     "lib/neuro_scav/scavengers.ex",
     "lib/neuro_scav/release.ex",
-    "test/support/turnstile_mock.ex"
+    "test/support/fixtures/turnstile_mock.ex"
   ]
 }

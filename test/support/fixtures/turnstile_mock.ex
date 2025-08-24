@@ -4,5 +4,5 @@ defmodule TurnstileMock do
   """
 
   def refresh(socket), do: socket
-  def verify(_, _), do: {:ok, %{}}
+  def verify(_), do: {:ok, %{}}
 end
