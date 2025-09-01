@@ -17,6 +17,7 @@ defmodule NeuroScav.Client do
       model: model(),
       prompt: present_promt(language),
       format: "json",
+      keep_alive: -1,
       options: %{"think" => false, "format" => "json"}
     )
     |> parse_answer()
