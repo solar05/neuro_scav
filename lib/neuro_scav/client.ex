@@ -6,7 +6,7 @@ defmodule NeuroScav.Client do
   require Logger
 
   def init do
-    Ollama.init(base_url: get_base_url(), receive_timeout: 45_000)
+    Ollama.init(base_url: get_base_url(), receive_timeout: 60_000)
   end
 
   def generate_scav(language \\ "en") do
