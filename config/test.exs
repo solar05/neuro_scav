@@ -20,12 +20,6 @@ config :neuro_scav, NeuroScavWeb.Endpoint,
   secret_key_base: "TtYUJr0yUnYLoWHZeNYB+AW+tI9fUz8gzNHh6kTg0UraH2CAdNfe9YUJkVL0l2bu",
   server: false
 
-# In test we don't send emails
-config :neuro_scav, NeuroScav.Mailer, adapter: Swoosh.Adapters.Test
-
-# Disable swoosh api client as it is only required for production adapters
-config :swoosh, :api_client, false
-
 # Print only warnings and errors during test
 config :logger, level: :warning
 
