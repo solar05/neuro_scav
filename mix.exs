@@ -73,7 +73,8 @@ defmodule NeuroScav.MixProject do
       {:phoenix_turnstile, "~> 1.2"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:lazy_html, ">= 0.1.0", only: :test},
-      {:excoveralls, "~> 0.18", only: :test}
+      {:excoveralls, "~> 0.18", only: :test},
+      {:systemd, "~> 0.6"}
     ]
   end
 

@@ -19,7 +19,8 @@ defmodule NeuroScav.Application do
         # Start a worker by calling: NeuroScav.Worker.start_link(arg)
         # {NeuroScav.Worker, arg},
         # Start to serve requests, typically the last entry
-        NeuroScavWeb.Endpoint
+        NeuroScavWeb.Endpoint,
+        :systemd.ready()
       ]
       |> requests_tree()
 
