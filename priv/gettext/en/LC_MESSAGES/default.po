@@ -45,6 +45,9 @@ msgstr "Generate neuro-scavenger"
 msgid "Neuro-scav"
 msgstr "Neuro-scav"
 
+msgid "Neuro captcha"
+msgstr "oh no, it's captcha"
+
 msgid "Single"
 msgstr "Single"
 

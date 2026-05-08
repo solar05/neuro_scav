@@ -45,6 +45,9 @@ msgstr "Сгенерировать neuro-дичка"
 msgid "Neuro-scav"
 msgstr "Neuro-дичок"
 
+msgid "Neuro captcha"
+msgstr "глянь, тут капча"
+
 msgid "Single"
 msgstr "Дичок"
 

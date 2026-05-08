@@ -3,6 +3,8 @@ defmodule NeuroScav.Client do
   Client for neuro interactions.
   """
 
+  @default_temperature 0.8
+
   require Logger
 
   def init do
@@ -18,7 +20,7 @@ defmodule NeuroScav.Client do
       prompt: present_promt(language),
       format: "json",
       keep_alive: -1,
-      options: %{"think" => false, "format" => "json"}
+      options: %{"think" => false, "format" => "json", "temperature" => @default_temperature}
     )
     |> parse_answer()
   end
