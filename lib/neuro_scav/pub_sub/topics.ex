@@ -1,0 +1,62 @@
+defmodule NeuroScav.PubSub.Topics do
+  @moduledoc """
+  PubSub topic constants and topic generation utilities.
+
+  This module centralizes all PubSub topic definitions used throughout
+  the application, making it easier to maintain topic naming conventions
+  and enabling AI systems to understand the event structure.
+
+  ## Topic Patterns
+
+  The application uses hierarchical topic patterns:
+  - `statistics:lobby` - Global statistics updates
+  - `user:<user_id>` - User-specific events
+  - `team:<team_id>` - Team-specific events
+  - `<event_type>:<entity_id>` - Event-based routing
+
+  ## Usage
+
+  Instead of using hardcoded strings:
+
+      # ❌ Avoid hardcoding
+      PubSub.broadcast(NeuroScav.PubSub, "user:123", {:scavenger_generated, scav})
+
+      # ✅ Prefer using constants
+      PubSub.broadcast(NeuroScav.PubSub, Topics.user_topic("123"), {:scavenger_generated, scav})
+  """
+
+  # Statistics topics
+  @doc """
+  Global statistics topic for broadcasting aggregated statistics updates.
+
+  Used by StatsCounterServer to publish updated counter values.
+  All subscribers receive the latest statistics.
+  """
+  @spec statistics_topic() :: String.t()
+  def statistics_topic, do: "statistics:lobby"
+
+  # User-specific topics
+  @doc """
+  User-specific topic for events related to a particular user.
+
+  Topics:
+  - `:single_generated` - Single scavenger was generated
+  - `:team_generated` - Team of scavengers was generated
+  - `:request_completed` - User request completed
+  """
+  @spec user_topic(String.t()) :: String.t()
+  def user_topic(user_id) when is_binary(user_id), do: "user:#{user_id}"
+
+  # Event message types
+  @doc "Message type for statistics update events"
+  @spec statistics_updated_message() :: atom()
+  def statistics_updated_message, do: :statistics_updated
+
+  @doc "Message type for single scavenger generation"
+  @spec single_generated_message() :: atom()
+  def single_generated_message, do: :single_generated
+
+  @doc "Message type for team scavenger generation"
+  @spec team_generated_message() :: atom()
+  def team_generated_message, do: :team_generated
+end

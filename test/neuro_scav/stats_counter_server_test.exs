@@ -36,20 +36,20 @@ defmodule NeuroScav.StatsCounterServerTest do
     end
   end
 
-  describe "update_miltiple_counters/1" do
+  describe "update_multiple_counters/1" do
     test "updates stats correctly" do
       data = [:common, :rare, :gnome, :gnome, :common, :legendary]
-      assert Server.update_miltiple_counters(data) == :ok
+      assert Server.update_multiple_counters(data) == :ok
 
       assert %{gnome: 2, common: 2, legendary: 1} = Process.whereis(Server) |> :sys.get_state()
     end
 
     test "does not update incorrect counters" do
-      assert Server.update_miltiple_counters([:ultra_rare_gnome]) == :invalid_counter
+      assert Server.update_multiple_counters([:ultra_rare_gnome]) == :invalid_counter
     end
 
     test "does not update empty counters" do
-      assert Server.update_miltiple_counters([]) == :invalid_counter
+      assert Server.update_multiple_counters([]) == :invalid_counter
     end
   end
 end
