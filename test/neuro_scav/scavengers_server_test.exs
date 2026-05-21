@@ -25,12 +25,22 @@ defmodule NeuroScav.ScavengersServerTest do
       assert result.name == "Кеша Пивосос"
       assert result.rarity == :legendary
     end
+
+    test "adjust test coverage" do
+      assert Server.generate_single("some-id", "en") == :ok
+      Process.sleep(100)
+    end
   end
 
   describe "generate_team/1" do
     test "correctly generates team" do
       result = Server.generate_team("en")
       assert length(result) == 5
+    end
+
+    test "adjust test coverage" do
+      assert Server.generate_team("some-id", "en") == :ok
+      Process.sleep(100)
     end
   end
 
