@@ -16,6 +16,7 @@ defmodule NeuroScavWeb.Router do
     plug :accepts, ["json"]
     plug :fetch_session
     plug NeuroScavWeb.Plugs.SetLocale
+    plug NeuroScavWeb.Plugs.RateLimit, limit: 200, window_ms: 60_000
   end
 
   scope "/", NeuroScavWeb do

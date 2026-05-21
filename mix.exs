@@ -71,6 +71,7 @@ defmodule NeuroScav.MixProject do
       {:prom_ex, "~> 1.11.0"},
       {:uniq, "~> 0.4"},
       {:phoenix_turnstile, "~> 1.2"},
+      {:hammer, "~> 6.1"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
@@ -96,7 +97,8 @@ defmodule NeuroScav.MixProject do
         "tailwind neuro_scav --minify",
         "esbuild neuro_scav --minify",
         "phx.digest"
-      ]
+      ],
+      precommit: ["format", "credo --strict"]
     ]
   end
 end
