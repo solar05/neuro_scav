@@ -15,14 +15,14 @@ A Phoenix-based web application for neural scavenger hunts. NeuroScav provides r
 
 ## Tech Stack
 
-- **Framework**: [Phoenix](https://www.phoenixframework.org/) 1.7.21
+- **Framework**: [Phoenix](https://www.phoenixframework.org/) 1.8+
 - **Language**: Elixir 1.14+
 - **Database**: PostgreSQL with Ecto ORM
 - **Real-time Communication**: Phoenix LiveView & PubSub
 - **UI**: Tailwind CSS & Heroicons
 - **AI**: Ollama for local LLM inference
 - **State Management**: Finitomata state machines
-- **HTTP Client**: Finch
+- **HTTP Client**: Req (HTTP client library)
 - **Server**: Bandit
 - **Monitoring**: PromEx for Prometheus metrics
 - **Code Quality**: Credo linter
@@ -106,53 +106,6 @@ Tests are automatically set up to:
 - Create test database
 - Run migrations
 - Clean up after execution
-
-## Project Structure
-
-```
-neuro_scav/
-├── lib/
-│   ├── neuro_scav/              # Core business logic
-│   │   ├── application.ex       # Application startup
-│   │   ├── scavengers.ex        # Scavengers context
-│   │   ├── client.ex            # AI client
-│   │   ├── servers/             # GenServer implementations
-│   │   │   ├── user_requests_*  # User request handling
-│   │   │   ├── scavengers_*     # Scavenger coordination
-│   │   │   └── stats_counter_*  # Statistics aggregation
-│   │   ├── repo.ex              # Ecto repository
-│   │   ├── pub_sub.ex           # PubSub configuration
-│   │   └── prom_ex.ex           # Prometheus metrics
-│   ├── neuro_scav_web/          # Web layer
-│   │   ├── router.ex            # Route definitions
-│   │   ├── live/                # LiveView modules
-│   │   │   └── neuro_scavenger_live/
-│   │   │       ├── single.ex    # Single player mode
-│   │   │       ├── team.ex      # Team mode
-│   │   │       ├── neuro.ex     # Neural scavengers
-│   │   │       └── statistics.ex # Statistics display
-│   │   ├── components/          # Reusable UI components
-│   │   ├── layouts/             # Page layouts
-│   │   └── plugs/               # HTTP middleware
-├── config/
-│   ├── config.exs               # General configuration
-│   ├── dev.exs                  # Development settings
-│   ├── prod.exs                 # Production settings
-│   ├── test.exs                 # Test settings
-│   └── runtime.exs              # Runtime configuration
-├── priv/
-│   ├── repo/                    # Database migrations
-│   ├── static/                  # Static assets
-│   └── gettext/                 # Translation files
-├── assets/                      # Frontend source files
-│   ├── js/                      # JavaScript
-│   ├── css/                     # Tailwind CSS
-│   └── tailwind.config.js       # Tailwind configuration
-├── test/                        # Test files
-├── docker-compose.yml           # Docker services setup
-└── mix.exs                      # Mix project definition
-
-```
 
 ## Key Components
 
@@ -247,6 +200,140 @@ The application supports multiple languages (English and Russian). Translation f
 
 - Extract strings: `mix gettext.extract`
 - Merge translations: `mix gettext.merge priv/gettext`
+
+## API Reference
+
+The application provides RESTful JSON API endpoints for programmatic access to scavenger hunt functionality.
+
+### Base URL
+
+```
+http://localhost:4000/api
+```
+
+### Endpoints
+
+#### Health Check
+
+**GET** `/api/health`
+
+Check if the API is running.
+
+**Response** (200 OK):
+```json
+{
+  "result": "Ok"
+}
+```
+
+---
+
+#### Generate Single Scavenger
+
+**GET** `/api/generate_single`
+
+Generate a single scavenger hunt item.
+
+**Query Parameters:**
+- `lang` (optional): Language preference (`en` or `ru`). Defaults to language from cookies or `en`.
+
+**Response** (200 OK):
+```json
+{
+  "scavenger": {
+    "name": "Red ball",
+    "rarity": "common"
+  }
+}
+```
+
+**Rarity Levels:**
+- `common`
+- `uncommon`
+- `rare`
+- `epic`
+- `legendary`
+- `neuro` (AI-powered)
+- `gnome` (Special variant)
+
+---
+
+#### Generate Team Scavengers
+
+**GET** `/api/generate_team`
+
+Generate a team-based scavenger hunt (multiple items).
+
+**Query Parameters:**
+- `lang` (optional): Language preference (`en` or `ru`). Defaults to language from cookies or `en`.
+
+**Response** (200 OK):
+```json
+{
+  "team": [
+    {
+      "name": "Red ball",
+      "rarity": "common"
+    },
+    {
+      "name": "Blue pen",
+      "rarity": "uncommon"
+    },
+    {
+      "name": "Ancient artifact",
+      "rarity": "epic"
+    }
+  ]
+}
+```
+
+---
+
+#### Get Statistics
+
+**GET** `/api/stats`
+
+Retrieve aggregated statistics for all completed scavenger hunts.
+
+**Response** (200 OK):
+```json
+{
+  "legendary": 42,
+  "epic": 156,
+  "rare": 328,
+  "uncommon": 512,
+  "common": 1024,
+  "neuro": 89,
+  "gnome": 23
+}
+```
+
+The response contains counts of discovered scavengers grouped by rarity level.
+
+---
+
+### Usage Examples
+
+#### cURL
+
+```bash
+# Health check
+curl http://localhost:4000/api/health
+
+# Generate single scavenger with English locale
+curl "http://localhost:4000/api/generate_single?lang=en"
+
+# Generate single scavenger with Russian locale
+curl "http://localhost:4000/api/generate_single?lang=ru"
+
+# Generate team scavengers
+curl "http://localhost:4000/api/generate_team"
+
+# Get statistics
+curl http://localhost:4000/api/stats
+```
+
+---
 
 ## Monitoring
 
