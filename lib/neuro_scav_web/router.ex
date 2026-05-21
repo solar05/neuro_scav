@@ -14,6 +14,8 @@ defmodule NeuroScavWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug :fetch_session
+    plug NeuroScavWeb.Plugs.SetLocale
   end
 
   scope "/", NeuroScavWeb do
@@ -30,6 +32,9 @@ defmodule NeuroScavWeb.Router do
     pipe_through :api
 
     get "/health", HealthController, :health
+    get "/generate_single", ScavengersController, :generate_single
+    get "/generate_team", ScavengersController, :generate_team
+    get "/stats", ScavengersController, :stats
   end
 
   # Other scopes may use custom stacks.

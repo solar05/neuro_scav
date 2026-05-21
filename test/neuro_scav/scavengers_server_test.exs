@@ -20,18 +20,17 @@ defmodule NeuroScav.ScavengersServerTest do
 
   describe "generate_single/1" do
     test "correctly generates scavenger" do
-      assert Server.generate_single("ru") == :ok
-      assert GenServer.cast(Server, {:generate_single, "1234", "ru"})
-      Process.sleep(1)
+      result = Server.generate_single("ru")
+      assert is_map(result)
+      assert result.name == "Кеша Пивосос"
+      assert result.rarity == :legendary
     end
   end
 
   describe "generate_team/1" do
     test "correctly generates team" do
-      assert Server.generate_team("en") == :ok
-
-      GenServer.cast(Server, {:generate_team, "1234", "en"})
-      Process.sleep(1)
+      result = Server.generate_team("en")
+      assert length(result) == 5
     end
   end
 

@@ -11,12 +11,23 @@ defmodule NeuroScav.ScavengersServer do
   @max_team_members 5
 
   @spec generate_single(String.t(), String.t()) :: :ok
-  def generate_single(user_id, locale \\ "en") do
+  def generate_single(user_id, locale) do
     GenServer.cast(__MODULE__, {:generate_single, user_id, locale})
   end
 
-  def generate_team(user_id, locale \\ "en") do
+  @spec generate_team(String.t(), String.t()) :: :ok
+  def generate_team(user_id, locale) do
     GenServer.cast(__MODULE__, {:generate_team, user_id, locale})
+  end
+
+  @spec generate_single(String.t()) :: map()
+  def generate_single(locale) do
+    GenServer.call(__MODULE__, {:generate_single, locale})
+  end
+
+  @spec generate_team(String.t()) :: list(map())
+  def generate_team(locale) do
+    GenServer.call(__MODULE__, {:generate_team, locale})
   end
 
   def start_link(settings) do
@@ -40,6 +51,26 @@ defmodule NeuroScav.ScavengersServer do
 
     Logger.info("Scavenger server started")
     {:ok, state}
+  end
+
+  @impl true
+  def handle_call({:generate_single, locale}, _from, state) do
+    scavenger = generate_scavenger(state, locale)
+
+    NeuroScav.StatsCounterServer.update_counter(scavenger.rarity)
+
+    {:reply, scavenger, state}
+  end
+
+  @impl true
+  def handle_call({:generate_team, locale}, _from, state) do
+    team = 1..@max_team_members |> Enum.map(fn _ -> generate_scavenger(state, locale) end)
+
+    team
+    |> Enum.map(fn scav -> scav.rarity end)
+    |> NeuroScav.StatsCounterServer.update_miltiple_counters()
+
+    {:reply, team, state}
   end
 
   @impl true
@@ -85,22 +116,32 @@ defmodule NeuroScav.ScavengersServer do
     %{name: name, rarity: rarity}
   end
 
+  @spec legendary?(map(), String.t(), String.t()) :: boolean()
   def legendary?(names, name, locale) do
     Map.get(names, "legendary_names_#{locale}") |> Enum.member?(name)
   end
 
+  @spec epic?(String.t()) :: boolean()
   def epic?(name) do
-    [first_name, last_name] = String.split(name, " ")
+    splitted_name = String.split(name, " ")
+    first_name = List.first(splitted_name)
+    last_name = List.last(splitted_name)
     String.slice(first_name, -3..-1) == String.slice(last_name, -3..-1)
   end
 
+  @spec rare?(String.t()) :: boolean()
   def rare?(name) do
-    [first_name, last_name] = String.split(name, " ")
+    splitted_name = String.split(name, " ")
+    first_name = List.first(splitted_name)
+    last_name = List.last(splitted_name)
     String.first(first_name) == String.first(last_name)
   end
 
+  @spec uncommon?(String.t()) :: boolean()
   def uncommon?(name) do
-    [first_name, last_name] = String.split(name, " ")
+    splitted_name = String.split(name, " ")
+    first_name = List.first(splitted_name)
+    last_name = List.last(splitted_name)
     String.length(first_name) == String.length(last_name)
   end
 end

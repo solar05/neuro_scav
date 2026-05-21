@@ -33,8 +33,7 @@ defmodule NeuroScavWeb.Plugs.SetLocale do
   end
 
   defp fetch_locale_from(conn) do
-    (conn.params["lang"] || conn.cookies["lang"])
-    |> check_locale()
+    (conn.params["lang"] || conn.cookies["lang"]) |> check_locale()
   end
 
   defp check_locale(locale) when locale in @supported_locales, do: locale
