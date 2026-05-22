@@ -780,8 +780,72 @@ body {
     border-radius: 20px 20px 20px 20px;
 }
 
+@keyframes rainbowBackground {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes glowGnome {
+    0%   { box-shadow: 0 0 12px 3px rgba(255, 50, 50, 0.55),  0 0 38px 7px rgba(255, 50, 50, 0.2); }
+    16%  { box-shadow: 0 0 14px 4px rgba(255, 150, 0, 0.55),  0 0 42px 8px rgba(255, 150, 0, 0.2); }
+    33%  { box-shadow: 0 0 12px 3px rgba(50, 220, 80, 0.55),  0 0 38px 7px rgba(50, 220, 80, 0.2); }
+    50%  { box-shadow: 0 0 14px 4px rgba(0, 160, 255, 0.55),  0 0 42px 8px rgba(0, 160, 255, 0.2); }
+    66%  { box-shadow: 0 0 12px 3px rgba(160, 0, 255, 0.55),  0 0 38px 7px rgba(160, 0, 255, 0.2); }
+    83%  { box-shadow: 0 0 14px 4px rgba(255, 0, 160, 0.55),  0 0 42px 8px rgba(255, 0, 160, 0.2); }
+    100% { box-shadow: 0 0 12px 3px rgba(255, 50, 50, 0.55),  0 0 38px 7px rgba(255, 50, 50, 0.2); }
+}
+
+@keyframes textShimmerGnome {
+    0%   { color: #ff6b6b; text-shadow: 0 0 10px rgba(255, 80, 80, 0.75); }
+    16%  { color: #ffaa33; text-shadow: 0 0 10px rgba(255, 170, 50, 0.75); }
+    33%  { color: #ffe044; text-shadow: 0 0 10px rgba(255, 220, 60, 0.75); }
+    50%  { color: #44ee88; text-shadow: 0 0 10px rgba(50, 230, 130, 0.75); }
+    66%  { color: #44aaff; text-shadow: 0 0 10px rgba(60, 170, 255, 0.75); }
+    83%  { color: #bb55ff; text-shadow: 0 0 10px rgba(190, 80, 255, 0.75); }
+    100% { color: #ff6b6b; text-shadow: 0 0 10px rgba(255, 80, 80, 0.75); }
+}
+
+@keyframes gnomeBounceIn {
+    0%   { opacity: 0; transform: scale(0.25) rotate(-18deg); filter: blur(8px); }
+    35%  { opacity: 1; filter: blur(0); }
+    55%  { transform: scale(1.28) rotate(7deg); }
+    70%  { transform: scale(0.88) rotate(-4deg); }
+    83%  { transform: scale(1.1) rotate(2deg); }
+    92%  { transform: scale(0.96) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.gnome-appear {
+    animation: gnomeBounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.gnome-name {
+    background: linear-gradient(270deg, #ff4444, #ff8800, #ffdd00, #44cc55, #2299ff, #9944ff, #ff44bb, #ff4444) !important;
+    background-size: 600% 600% !important;
+    animation: rainbowBackground 4s ease infinite, glowGnome 2.5s linear infinite;
+    border-radius: 18px;
+    color: #fff !important;
+}
+
+.team-gnome-name {
+    background: linear-gradient(270deg, #ff4444, #ff8800, #ffdd00, #44cc55, #2299ff, #9944ff, #ff44bb, #ff4444) !important;
+    background-size: 600% 600% !important;
+    animation: rainbowBackground 4s ease infinite, glowGnome 2.5s linear infinite;
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: #fff !important;
+}
+
+.gnome {
+    animation: textShimmerGnome 2.5s linear infinite;
+}
+
 td {
-    height: 50px; 
+    height: 50px;
     vertical-align: top;
 }
 

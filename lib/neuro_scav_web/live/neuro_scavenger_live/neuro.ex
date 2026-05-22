@@ -18,7 +18,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
     new_socket =
       socket
-      |> assign(:neuro_scavenger, Locale.get_text("Neuro placeholder"))
+      |> assign(:neuro_scavenger, plain(Locale.get_text("Neuro placeholder")))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
@@ -39,14 +39,14 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
         {:noreply,
          socket
-         |> assign(:neuro_scavenger, message)
+         |> assign(:neuro_scavenger, plain(message))
          |> Turnstile.refresh()}
 
       {:error, _error} ->
-        socket =
-          assign(socket, :neuro_scavenger, Locale.get_text("Chill")) |> Turnstile.refresh()
-
-        {:noreply, socket}
+        {:noreply,
+         socket
+         |> assign(:neuro_scavenger, plain(Locale.get_text("Chill")))
+         |> Turnstile.refresh()}
     end
   end
 
@@ -55,30 +55,37 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
     StatsCounterServer.gnome_captured()
 
     {:noreply,
-     socket
-     |> assign(:neuro_scavenger, Locale.get_text("Gnome catched"))}
+     assign(socket, :neuro_scavenger, %{
+       name: Locale.get_text("Gnome catched"),
+       rarity: "gnome",
+       rarity_text: Locale.get_text("gnome")
+     })
+     |> Turnstile.refresh()}
   end
 
   # pubsub callbacks
   @impl true
   def handle_info({:neuro_generated, msg}, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, msg)}
+    {:noreply, assign(socket, :neuro_scavenger, plain(msg))}
   end
 
   @impl true
   def handle_info(:neuro_generation_error, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Neuro error"))}
+    {:noreply, assign(socket, :neuro_scavenger, plain(Locale.get_text("Neuro error")))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Neuro next"))}
+    {:noreply, assign(socket, :neuro_scavenger, plain(Locale.get_text("Neuro next")))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, place}, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, Locale.get_text("Queue place", place: place))}
+    {:noreply,
+     assign(socket, :neuro_scavenger, plain(Locale.get_text("Queue place", place: place)))}
   end
+
+  defp plain(name), do: %{name: name, rarity: nil, rarity_text: nil}
 
   defp format_schedule_message(result) do
     case result do

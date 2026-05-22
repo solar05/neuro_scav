@@ -42,7 +42,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
      socket
      |> assign(:scavenger, %{
        name: Locale.get_text("Gnome catched"),
-       rarity: nil,
+       rarity: "gnome",
        rarity_text: Locale.get_text("gnome")
      })}
   end

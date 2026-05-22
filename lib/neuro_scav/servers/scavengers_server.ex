@@ -231,6 +231,10 @@ defmodule NeuroScav.ScavengersServer do
   end
 
   @doc false
+  @spec max_team_members() :: integer()
+  def max_team_members, do: @max_team_members
+
+  @doc false
   @spec generate_scavenger(map(), String.t()) :: map()
   defp generate_scavenger(names, locale) do
     first_name =

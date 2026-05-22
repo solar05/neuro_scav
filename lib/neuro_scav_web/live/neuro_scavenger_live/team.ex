@@ -33,12 +33,23 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
   def handle_event("gnome_clicked", _, socket) do
     StatsCounterServer.gnome_captured()
 
-    {:noreply, socket}
+    {:noreply, socket |> assign(:team, gnome_team())}
   end
 
   # pubsub callbacks
   @impl true
   def handle_info({:team_generated, team}, socket) do
     {:noreply, assign(socket, :team, team)}
+  end
+
+  defp gnome_team do
+    1..NeuroScav.ScavengersServer.max_team_members()
+    |> Enum.map(fn _ ->
+      %{
+        name: Locale.get_text("Gnome catched"),
+        rarity: "gnome",
+        rarity_text: Locale.get_text("gnome")
+      }
+    end)
   end
 end

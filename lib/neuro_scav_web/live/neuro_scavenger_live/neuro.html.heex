@@ -1,6 +1,14 @@
 <div class="container" style="margin-top: 20px;">
   <h1 class="display-4 text-center blended"></h1>
-  <h2 class="text-center blended-reg-bg">{@neuro_scavenger}</h2>
+  <h2 class={"text-center blended-reg-bg scav-container #{@neuro_scavenger.rarity}-name"}>
+    <span id="neuro-scav-name" phx-hook="ScavName">{@neuro_scavenger.name}</span>
+  </h2>
+  <%= if @neuro_scavenger.rarity do %>
+    <br />
+    <h3 class={"text-center blended-reg-bg scav-container #{@neuro_scavenger.rarity}"}>
+      {@neuro_scavenger.rarity_text}
+    </h3>
+  <% end %>
   <br />
   <p class="lead">
     <.form for={%{}} phx-submit="schedule_request" id="neuro_form">
