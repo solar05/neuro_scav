@@ -21,6 +21,7 @@
           class="cf-turnstile"
           appearance="always"
           style="flex: 1;"
+          button-id="neuroButton"
         />
         <div
           class="d-none d-md-flex"
@@ -33,9 +34,8 @@
     </.form>
   </p>
   <script>
-    const button = document.getElementById('neuroButton')
-    setTimeout(() => {
-      button.disabled = false
-    }, 2000)
+    document.getElementById('neuro_form').addEventListener('submit', function() {
+      document.getElementById('neuroButton').disabled = true;
+    });
   </script>
 </div>

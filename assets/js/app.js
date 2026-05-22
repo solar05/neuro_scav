@@ -22,14 +22,58 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import "./gnome";
-import { TurnstileHook } from "phoenix_turnstile";
+function makeTurnstileHook() {
+  const callbackEvent = (self, name, eventName) => {
+    return (payload) => {
+      const events = self.el.dataset.events || ""
+      if (events.split(",").indexOf(name) > -1) {
+        self.pushEventTo(self.el, `turnstile:${eventName || name}`, payload)
+      }
+    }
+  }
+
+  return {
+    mounted() {
+      const buttonId = this.el.dataset.buttonId
+      const setButton = (disabled) => {
+        if (buttonId) {
+          const btn = document.getElementById(buttonId)
+          if (btn) btn.disabled = disabled
+        }
+      }
+
+      turnstile.render(this.el, {
+        callback: (token) => { callbackEvent(this, "success")(token); setButton(false) },
+        "error-callback": (code) => { callbackEvent(this, "error")(code); setButton(true) },
+        "expired-callback": () => { callbackEvent(this, "expired")({}); setButton(true) },
+        "before-interactive-callback": callbackEvent(this, "beforeInteractive", "before-interactive"),
+        "after-interactive-callback": callbackEvent(this, "afterInteractive", "after-interactive"),
+        "unsupported-callback": callbackEvent(this, "unsupported"),
+        "timeout-callback": callbackEvent(this, "timeout")
+      })
+
+      this.handleEvent("turnstile:refresh", (event) => {
+        if (!event.id || event.id === this.el.id) {
+          setButton(true)
+          turnstile.reset(this.el)
+        }
+      })
+
+      this.handleEvent("turnstile:remove", (event) => {
+        if (!event.id || event.id === this.el.id) {
+          turnstile.remove(this.el)
+        }
+      })
+    }
+  }
+}
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
   hooks: {
-    Turnstile: TurnstileHook
+    Turnstile: makeTurnstileHook()
   }
 })
 
