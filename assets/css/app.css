@@ -148,6 +148,78 @@ p {
     }
 }
 
+@keyframes nameReveal {
+    0%   { opacity: 0; transform: translateY(8px) scale(0.95); filter: blur(4px); }
+    55%  { opacity: 1; filter: blur(0); }
+    75%  { transform: translateY(-3px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+.scav-appear {
+    animation: nameReveal 0.5s ease-out both;
+}
+
+@keyframes glowLegendary {
+    0%, 100% {
+        box-shadow: 0 0 10px 2px rgba(255, 140, 0, 0.45), 0 0 30px 5px rgba(255, 140, 0, 0.18);
+    }
+    50% {
+        box-shadow: 0 0 24px 7px rgba(255, 140, 0, 0.88), 0 0 55px 12px rgba(255, 140, 0, 0.38);
+    }
+}
+
+@keyframes glowEpic {
+    0%, 100% {
+        box-shadow: 0 0 8px 2px rgba(153, 50, 204, 0.4), 0 0 22px 4px rgba(153, 50, 204, 0.15);
+    }
+    50% {
+        box-shadow: 0 0 20px 5px rgba(153, 50, 204, 0.82), 0 0 46px 10px rgba(153, 50, 204, 0.32);
+    }
+}
+
+@keyframes glowRare {
+    0%, 100% {
+        box-shadow: 0 0 7px 1px rgba(37, 171, 215, 0.38), 0 0 18px 3px rgba(37, 171, 215, 0.13);
+    }
+    50% {
+        box-shadow: 0 0 16px 4px rgba(37, 171, 215, 0.72), 0 0 38px 8px rgba(37, 171, 215, 0.27);
+    }
+}
+
+@keyframes glowUncommon {
+    0%, 100% {
+        box-shadow: 0 0 6px 1px rgba(0, 100, 0, 0.35), 0 0 15px 3px rgba(0, 100, 0, 0.12);
+    }
+    50% {
+        box-shadow: 0 0 14px 3px rgba(0, 100, 0, 0.65), 0 0 32px 6px rgba(0, 100, 0, 0.22);
+    }
+}
+
+@keyframes textShimmerLegendary {
+    0%, 100% { color: darkorange;  text-shadow: 0 0 6px rgba(255, 140, 0, 0.3); }
+    50%       { color: #ffaa00;    text-shadow: 0 0 18px rgba(255, 140, 0, 0.8), 0 0 35px rgba(255, 140, 0, 0.35); }
+}
+
+@keyframes textShimmerEpic {
+    0%, 100% { color: darkorchid; text-shadow: 0 0 5px rgba(153, 50, 204, 0.3); }
+    50%       { color: #b84de0;   text-shadow: 0 0 16px rgba(153, 50, 204, 0.75), 0 0 30px rgba(153, 50, 204, 0.3); }
+}
+
+@keyframes textShimmerRare {
+    0%, 100% { color: rgb(37, 171, 215); text-shadow: 0 0 5px rgba(37, 171, 215, 0.3); }
+    50%       { color: rgb(85, 205, 245); text-shadow: 0 0 14px rgba(37, 171, 215, 0.7), 0 0 28px rgba(37, 171, 215, 0.25); }
+}
+
+@keyframes textShimmerUncommon {
+    0%, 100% { color: darkgreen; text-shadow: 0 0 4px rgba(0, 100, 0, 0.3); }
+    50%       { color: #009900;  text-shadow: 0 0 12px rgba(0, 100, 0, 0.65), 0 0 24px rgba(0, 100, 0, 0.22); }
+}
+
+@keyframes textShimmerCommon {
+    0%, 100% { color: #a5a5a5; text-shadow: none; }
+    50%       { color: #c2c2c2; text-shadow: 0 0 8px rgba(165, 165, 165, 0.4); }
+}
+
 .btn-blended-neuro {
     background-color: #4d6bfe !important;
     color: #fff !important;
@@ -594,25 +666,28 @@ body {
     background-color: darkorange !important;
     color: #fff !important;
     border-radius: 18px;
+    animation: glowLegendary 1.5s ease-in-out infinite;
 }
-
 
 .epic-name {
     background-color: darkorchid;
     color: #fff;
     border-radius: 18px;
+    animation: glowEpic 2s ease-in-out infinite;
 }
 
 .rare-name {
     background-color: rgb(37, 171, 215);
     color: #fff;
     border-radius: 18px;
+    animation: glowRare 2.5s ease-in-out infinite;
 }
 
 .uncommon-name {
     background-color: darkgreen;
     color: #fff;
     border-radius: 18px;
+    animation: glowUncommon 3s ease-in-out infinite;
 }
 
 .team-legendary-name {
@@ -623,6 +698,7 @@ body {
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
+    animation: glowLegendary 1.5s ease-in-out infinite;
 }
 
 .team-epic-name {
@@ -633,6 +709,7 @@ body {
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
+    animation: glowEpic 2s ease-in-out infinite;
 }
 
 .team-rare-name {
@@ -643,6 +720,7 @@ body {
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
+    animation: glowRare 2.5s ease-in-out infinite;
 }
 
 .team-uncommon-name {
@@ -653,26 +731,32 @@ body {
     padding-right: 20px;
     padding-top: 10px;
     padding-bottom: 10px;
+    animation: glowUncommon 3s ease-in-out infinite;
 }
 
 .legendary {
     color: darkorange;
+    animation: textShimmerLegendary 1.5s ease-in-out infinite;
 }
 
 .epic {
     color: darkorchid;
+    animation: textShimmerEpic 2s ease-in-out infinite;
 }
 
 .rare {
     color: rgb(37, 171, 215);
+    animation: textShimmerRare 2.5s ease-in-out infinite;
 }
 
 .uncommon {
     color: darkgreen;
+    animation: textShimmerUncommon 3s ease-in-out infinite;
 }
 
 .common {
     color: #a5a5a5;
+    animation: textShimmerCommon 4s ease-in-out infinite;
 }
 
 

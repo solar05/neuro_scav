@@ -68,12 +68,23 @@ function makeTurnstileHook() {
   }
 }
 
+const ScavNameHook = {
+  mounted() { this.reveal() },
+  updated() { this.reveal() },
+  reveal() {
+    this.el.classList.remove('scav-appear')
+    void this.el.offsetWidth
+    this.el.classList.add('scav-appear')
+  }
+}
+
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {
   longPollFallbackMs: 2500,
   params: {_csrf_token: csrfToken},
   hooks: {
-    Turnstile: makeTurnstileHook()
+    Turnstile: makeTurnstileHook(),
+    ScavName: ScavNameHook
   }
 })
 
