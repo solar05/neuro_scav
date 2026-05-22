@@ -38,8 +38,8 @@ defmodule NeuroScav.PubSub do
       subscribe("user", %{"user_id" => "user123"})
   """
   @spec subscribe(String.t(), map()) :: :ok | {:error, term()}
-  def subscribe(_topic, %{"user_id" => user_id}) do
-    PubSub.subscribe(NeuroScav.PubSub, Topics.user_topic(user_id))
+  def subscribe(topic, %{"user_id" => user_id}) do
+    PubSub.subscribe(NeuroScav.PubSub, Topics.user_topic(user_id, topic))
   end
 
   @doc """
@@ -68,13 +68,13 @@ defmodule NeuroScav.PubSub do
       broadcast(user_id, {:request_completed, :single_scavenger})
   """
   @spec broadcast(String.t(), {atom(), String.t(), term()}) :: :ok | {:error, term()}
-  def broadcast(user_id, {message, _topic, payload}) do
-    PubSub.broadcast(NeuroScav.PubSub, Topics.user_topic(user_id), {message, payload})
+  def broadcast(user_id, {message, topic, payload}) do
+    PubSub.broadcast(NeuroScav.PubSub, Topics.user_topic(user_id, topic), {message, payload})
   end
 
   @spec broadcast(String.t(), {atom(), String.t()}) :: :ok | {:error, term()}
-  def broadcast(user_id, {message, _topic}) do
-    PubSub.broadcast(NeuroScav.PubSub, Topics.user_topic(user_id), message)
+  def broadcast(user_id, {message, topic}) do
+    PubSub.broadcast(NeuroScav.PubSub, Topics.user_topic(user_id, topic), message)
   end
 
   @doc """

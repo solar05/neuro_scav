@@ -44,8 +44,8 @@ defmodule NeuroScav.PubSub.Topics do
   - `:team_generated` - Team of scavengers was generated
   - `:request_completed` - User request completed
   """
-  @spec user_topic(String.t()) :: String.t()
-  def user_topic(user_id) when is_binary(user_id), do: "user:#{user_id}"
+  @spec user_topic(String.t(), atom() | String.t()) :: String.t()
+  def user_topic(user_id, page) when is_binary(user_id), do: "user:#{user_id}:#{page}"
 
   # Event message types
   @doc "Message type for statistics update events"

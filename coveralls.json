@@ -21,7 +21,8 @@
     ":team_generated",
     ":statistics_updated",
     "rarity_text",
-    "socket ="
+    "socket =",
+    "def handle_info(_msg, socket), do: {:noreply, socket}"
   ],
   "skip_files": [
     "lib/neuro_scav/plugins/neuro_scav.ex",
