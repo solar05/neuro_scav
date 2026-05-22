@@ -873,7 +873,8 @@ body {
     animation: glowNeuro 2s ease-in-out infinite;
 }
 
-.neuro-name span {
+.neuro-name span,
+.neuro {
     background: linear-gradient(90deg, #4d6bfe 0%, #00e5ff 35%, #8892f7 65%, #4d6bfe 100%);
     background-size: 250% 100%;
     -webkit-background-clip: text;
