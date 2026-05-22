@@ -72,10 +72,14 @@ const ScavNameHook = {
   mounted() { this.reveal() },
   updated() { this.reveal() },
   reveal() {
-    const isGnome = this.el.closest('.gnome-name, .team-gnome-name') !== null
-    this.el.classList.remove('scav-appear', 'gnome-appear')
-    void this.el.offsetWidth
-    this.el.classList.add(isGnome ? 'gnome-appear' : 'scav-appear')
+    const el = this.el
+    el.classList.remove('scav-appear', 'gnome-appear', 'neuro-appear', 'queue-appear', 'error-appear')
+    void el.offsetWidth
+    if (el.closest('.gnome-name, .team-gnome-name')) el.classList.add('gnome-appear')
+    else if (el.closest('.neuro-name'))              el.classList.add('neuro-appear')
+    else if (el.closest('.queue-name'))              el.classList.add('queue-appear')
+    else if (el.closest('.error-name'))              el.classList.add('error-appear')
+    else                                             el.classList.add('scav-appear')
   }
 }
 

@@ -18,7 +18,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
 
     new_socket =
       socket
-      |> assign(:neuro_scavenger, plain(Locale.get_text("Neuro placeholder")))
+      |> assign(:neuro_scavenger, scav(Locale.get_text("Neuro placeholder"), nil))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
@@ -35,17 +35,17 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
             socket.assigns.user_locale
           )
 
-        message = format_schedule_message(result)
+        {message, rarity} = format_schedule_message(result)
 
         {:noreply,
          socket
-         |> assign(:neuro_scavenger, plain(message))
+         |> assign(:neuro_scavenger, scav(message, rarity))
          |> Turnstile.refresh()}
 
       {:error, _error} ->
         {:noreply,
          socket
-         |> assign(:neuro_scavenger, plain(Locale.get_text("Chill")))
+         |> assign(:neuro_scavenger, scav(Locale.get_text("Chill"), "error"))
          |> Turnstile.refresh()}
     end
   end
@@ -55,44 +55,44 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
     StatsCounterServer.gnome_captured()
 
     {:noreply,
-     assign(socket, :neuro_scavenger, %{
-       name: Locale.get_text("Gnome catched"),
-       rarity: "gnome",
-       rarity_text: Locale.get_text("gnome")
-     })
+     assign(socket, :neuro_scavenger, scav(Locale.get_text("Gnome catched"), "gnome"))
      |> Turnstile.refresh()}
   end
 
   # pubsub callbacks
   @impl true
   def handle_info({:neuro_generated, msg}, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, plain(msg))}
+    {:noreply, assign(socket, :neuro_scavenger, scav(msg, "neuro"))}
   end
 
   @impl true
   def handle_info(:neuro_generation_error, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, plain(Locale.get_text("Neuro error")))}
+    {:noreply, assign(socket, :neuro_scavenger, scav(Locale.get_text("Neuro error"), "error"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, 0}, socket) do
-    {:noreply, assign(socket, :neuro_scavenger, plain(Locale.get_text("Neuro next")))}
+    {:noreply, assign(socket, :neuro_scavenger, scav(Locale.get_text("Neuro next"), "queue"))}
   end
 
   @impl true
   def handle_info({:queue_place_updated, place}, socket) do
     {:noreply,
-     assign(socket, :neuro_scavenger, plain(Locale.get_text("Queue place", place: place)))}
+     assign(
+       socket,
+       :neuro_scavenger,
+       scav(Locale.get_text("Queue place", place: place), "queue")
+     )}
   end
 
-  defp plain(name), do: %{name: name, rarity: nil, rarity_text: nil}
+  defp scav(name, rarity), do: %{name: name, rarity: rarity}
 
-  defp format_schedule_message(result) do
-    case result do
-      :requests_limit_reached -> "Limit reached"
-      :scheduled -> "Neuro scheduled"
-      :already_scheduled -> "Neuro already scheduled"
-    end
-    |> Locale.get_text()
-  end
+  defp format_schedule_message(:requests_limit_reached),
+    do: {Locale.get_text("Limit reached"), "error"}
+
+  defp format_schedule_message(:scheduled),
+    do: {Locale.get_text("Neuro scheduled"), "queue"}
+
+  defp format_schedule_message(:already_scheduled),
+    do: {Locale.get_text("Neuro already scheduled"), "queue"}
 end

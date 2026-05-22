@@ -844,6 +844,110 @@ body {
     animation: textShimmerGnome 2.5s linear infinite;
 }
 
+/* ── Neuro (AI-generated result) ── */
+@keyframes glowNeuro {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(77, 107, 254, 0.45), 0 0 28px 5px rgba(77, 107, 254, 0.15); }
+    50%       { box-shadow: 0 0 22px 6px rgba(0, 229, 255, 0.6),  0 0 55px 12px rgba(77, 107, 254, 0.2); }
+}
+
+@keyframes neuroTextFlow {
+    0%   { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+@keyframes neuroReveal {
+    0%   { opacity: 0; filter: blur(7px) brightness(3); transform: translateY(10px) scale(0.96); }
+    35%  { opacity: 1; filter: blur(1px) brightness(1.4); }
+    60%  { filter: blur(0) brightness(1); transform: translateY(-3px) scale(1.01); }
+    80%  { transform: translateY(1px) scale(0.998); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0) brightness(1); }
+}
+
+.neuro-appear {
+    animation: neuroReveal 0.85s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.neuro-name {
+    background: linear-gradient(135deg, #0c1440, #111d50) !important;
+    border-radius: 18px;
+    animation: glowNeuro 2s ease-in-out infinite;
+}
+
+.neuro-name span {
+    background: linear-gradient(90deg, #4d6bfe 0%, #00e5ff 35%, #8892f7 65%, #4d6bfe 100%);
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: neuroTextFlow 3s linear infinite;
+}
+
+/* ── Queue (waiting / generating) ── */
+@keyframes glowQueue {
+    0%, 100% { box-shadow: 0 0 6px 1px rgba(212, 147, 0, 0.38), 0 0 18px 3px rgba(212, 147, 0, 0.12); }
+    50%       { box-shadow: 0 0 16px 4px rgba(212, 147, 0, 0.7), 0 0 40px 8px rgba(212, 147, 0, 0.22); }
+}
+
+@keyframes queueTextPulse {
+    0%, 100% { color: #d49300; text-shadow: 0 0 5px rgba(212, 147, 0, 0.3); }
+    50%       { color: #ffc933; text-shadow: 0 0 15px rgba(212, 147, 0, 0.8), 0 0 30px rgba(212, 147, 0, 0.3); }
+}
+
+@keyframes queueReveal {
+    0%   { opacity: 0; transform: translateX(-12px); }
+    55%  { opacity: 1; transform: translateX(3px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.queue-appear {
+    animation: queueReveal 0.5s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.queue-name {
+    background-color: #221800 !important;
+    border-radius: 18px;
+    animation: glowQueue 2s ease-in-out infinite;
+}
+
+.queue-name span {
+    animation: queueTextPulse 1.8s ease-in-out infinite;
+}
+
+/* ── Error (error / limit / chill) ── */
+@keyframes glowError {
+    0%, 100% { box-shadow: 0 0 7px 1px rgba(220, 38, 38, 0.42), 0 0 20px 3px rgba(220, 38, 38, 0.15); }
+    50%       { box-shadow: 0 0 18px 5px rgba(220, 38, 38, 0.72), 0 0 44px 9px rgba(220, 38, 38, 0.25); }
+}
+
+@keyframes errorTextPulse {
+    0%, 100% { color: #ff6b6b; text-shadow: 0 0 5px rgba(220, 38, 38, 0.35); }
+    50%       { color: #ff9999; text-shadow: 0 0 15px rgba(220, 38, 38, 0.75), 0 0 30px rgba(220, 38, 38, 0.3); }
+}
+
+@keyframes errorReveal {
+    0%   { opacity: 0; transform: scale(0.95); }
+    15%  { opacity: 1; transform: translateX(-7px) scale(1); }
+    30%  { transform: translateX(6px); }
+    45%  { transform: translateX(-4px); }
+    60%  { transform: translateX(3px); }
+    75%  { transform: translateX(-1px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.error-appear {
+    animation: errorReveal 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.error-name {
+    background-color: #2a0808 !important;
+    border-radius: 18px;
+    animation: glowError 1.5s ease-in-out infinite;
+}
+
+.error-name span {
+    animation: errorTextPulse 1.5s ease-in-out infinite;
+}
+
 td {
     height: 50px;
     vertical-align: top;
