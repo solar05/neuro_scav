@@ -130,6 +130,24 @@ p {
     50% { box-shadow: 0 0 60px rgba(74, 158, 255, 0.8); }
 }
 
+@keyframes borderPulseGold {
+    0%, 100% {
+        box-shadow: 0 0 6px 0px rgba(212, 147, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 16px 0px rgba(212, 147, 0, 0.75);
+    }
+}
+
+@keyframes borderPulseBlue {
+    0%, 100% {
+        box-shadow: 0 0 6px 0px rgba(77, 107, 254, 0.3);
+    }
+    50% {
+        box-shadow: 0 0 16px 0px rgba(77, 107, 254, 0.7);
+    }
+}
+
 .btn-blended-neuro {
     background-color: #4d6bfe !important;
     color: #fff !important;
@@ -157,6 +175,7 @@ p {
     color: #fff !important;
     font-family: "SF";
     border-radius: 18px;
+    animation: borderPulseBlue 2.5s ease-in-out infinite;
 }
 
 .btn-old-blended {
@@ -164,6 +183,7 @@ p {
     color: #010101 !important;
     background-color: #d49300 !important;
     font-size: 120%;
+    animation: borderPulseGold 2s ease-in-out infinite;
 }
 
 .btn-old-blended:hover {
@@ -179,12 +199,14 @@ p {
     color: #212529 !important;
     background-color: #d49300 !important;
     border-radius: 10px;
+    animation: borderPulseGold 2.5s ease-in-out infinite;
 }
 
 .blend-old-font {
     color: #fff !important;
     font-family: "Bender" !important;
     border-radius: 10px;
+    animation: borderPulseGold 2.5s ease-in-out infinite;
 }
 
 .blend-old-font:hover {
@@ -203,6 +225,7 @@ p {
     color: #fff !important;
     border-radius: 18px;
     font-family: "SF";
+    animation: borderPulseBlue 2.5s ease-in-out infinite;
 }
 
 .blend-font:hover {
