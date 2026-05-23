@@ -46,5 +46,15 @@ defmodule NeuroScavWeb.NeuroScavengerLiveTest do
       assert index_live |> form("#neuro_form") |> render_submit() =~
                "Достигнут лимит запросов"
     end
+
+    test "when captcha fails", %{conn: conn} do
+      TurnstileMock.set_error(true)
+      on_exit(fn -> TurnstileMock.set_error(false) end)
+
+      {:ok, index_live, _html} = live(conn, ~p"/neuro_scavengers")
+
+      assert index_live |> form("#neuro_form") |> render_submit() =~
+               "Зачилься"
+    end
   end
 end

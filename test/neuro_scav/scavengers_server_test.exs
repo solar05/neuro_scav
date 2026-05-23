@@ -32,6 +32,12 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
+  describe "test max_members" do
+    test "adjust test coverage" do
+      assert is_integer(Server.max_team_members())
+    end
+  end
+
   describe "generate_team/1" do
     test "correctly generates team" do
       result = Server.generate_team("en")
