@@ -10,6 +10,12 @@ defmodule NeuroScav.ScavengersServerTest do
     def first_names_en, do: ["Victor"]
     def last_names_en, do: ["Beersucker"]
     def legendary_names_en, do: []
+    def first_names_de, do: ["Klaus"]
+    def last_names_de, do: ["Bratwurst"]
+    def legendary_names_de, do: []
+    def first_names_ja, do: ["太郎"]
+    def last_names_ja, do: ["田中"]
+    def legendary_names_ja, do: []
   end
 
   setup do
