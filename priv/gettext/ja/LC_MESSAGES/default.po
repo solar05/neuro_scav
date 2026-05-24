@@ -27,115 +27,115 @@ msgid "close"
 msgstr ""
 
 msgid "Generate neuro"
-msgstr "ニューロ野蛮人を生成"
+msgstr "Nyuuro yabanjin wo seisei"
 
 msgid "Neuro-scav"
-msgstr "ニューロ野蛮人"
+msgstr "Nyuuro yabanjin"
 
 msgid "Neuro captcha"
-msgstr "うわ、キャプチャだ"
+msgstr "Uwa, kyapucha da"
 
 msgid "Single"
-msgstr "単体"
+msgstr "Tantai"
 
 msgid "Team"
-msgstr "チーム"
+msgstr "Chiimu"
 
 msgid "Chill"
-msgstr "落ち着けよ、友達..."
+msgstr "Ochitsuke yo, tomodachi..."
 
 msgid "Generate single"
-msgstr "野蛮人を生成"
+msgstr "Yabanjin wo seisei"
 
 msgid "Generate team"
-msgstr "チームを生成"
+msgstr "Chiimu wo seisei"
 
 msgid "Single placeholder"
-msgstr "ここに野蛮人が表示されます"
+msgstr "Koko ni yabanjin ga hyouji saremasu"
 
 msgid "Team placeholder"
-msgstr "ここにチームが表示されます"
+msgstr "Koko ni chiimu ga hyouji saremasu"
 
 msgid "Stats"
-msgstr "統計"
+msgstr "Toukei"
 
 msgid "Stats placeholder"
-msgstr "統計"
+msgstr "Toukei"
 
 msgid "Neuro placeholder"
-msgstr "ここにニューロ野蛮人が表示されます"
+msgstr "Koko ni nyuuro yabanjin ga hyouji saremasu"
 
 msgid "Neuro scheduled"
-msgstr "生成中..."
+msgstr "Seisei chuu..."
 
 msgid "Limit reached"
-msgstr "リクエスト制限に達しました"
+msgstr "Rikuesuto seigen ni tasshimashita"
 
 msgid "Neuro already scheduled"
-msgstr "生成中です。お待ちください..."
+msgstr "Seisei chuu desu. Omachi kudasai..."
 
 msgid "Neuro error"
-msgstr "何かがうまくいきませんでした"
+msgstr "Nanika ga umaku ikimasen deshita"
 
 msgid "Queue place"
-msgstr "キューでの順番: %{place}"
+msgstr "Kyuu de no junban: %{place}"
 
 msgid "Neuro next"
-msgstr "次はあなたです"
+msgstr "Tsugi wa anata desu"
 
 msgid "Gnome click"
-msgstr "ノームをクリック！"
+msgstr "Noomu wo kurikku!"
 
 msgid "Gnome catched"
-msgstr "ノームを捕まえた！"
+msgstr "Noomu wo tsukamaeta!"
 
 msgid "Stats common"
-msgstr "コモン"
+msgstr "Komon"
 
 msgid "Stats uncommon"
-msgstr "アンコモン"
+msgstr "Ankomon"
 
 msgid "Stats rare"
-msgstr "レア"
+msgstr "Rea"
 
 msgid "Stats epic"
-msgstr "エピック"
+msgstr "Epikku"
 
 msgid "Stats legendary"
-msgstr "レジェンダリー"
+msgstr "Rejendarii"
 
 msgid "Stats neuro"
-msgstr "ニューロ野蛮人"
+msgstr "Nyuuro yabanjin"
 
 msgid "Stats gnome"
-msgstr "シークレット"
+msgstr "Shiikuretto"
 
 msgid "Single generating"
-msgstr "野蛮人を探しています..."
+msgstr "Yabanjin wo sagashite imasu..."
 
 msgid "Team generating"
-msgstr "チームを集めています..."
+msgstr "Chiimu wo atsumete imasu..."
 
 msgid "legendary"
-msgstr "レジェンダリー！"
+msgstr "Rejendarii!"
 
 msgid "epic"
-msgstr "エピックな野蛮人！"
+msgstr "Epikku na yabanjin!"
 
 msgid "rare"
-msgstr "レアな野蛮人！"
+msgstr "Rea na yabanjin!"
 
 msgid "uncommon"
-msgstr "アンコモンな野蛮人"
+msgstr "Ankomon na yabanjin"
 
 msgid "common"
-msgstr "コモンな野蛮人"
+msgstr "Komon na yabanjin"
 
 msgid "gnome"
-msgstr "ノームに捕まれた！"
+msgstr "Noomu ni tsukamareta!"
 
 msgid "default"
-msgstr "ここにレア度が表示されます"
+msgstr "Koko ni rea-do ga hyouji saremasu"
 
 msgid "Stats total"
-msgstr "合計"
+msgstr "Goukei"

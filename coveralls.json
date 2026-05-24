@@ -22,7 +22,8 @@
     ":statistics_updated",
     "rarity_text",
     "socket =",
-    "def handle_info(_msg, socket), do: {:noreply, socket}"
+    "def handle_info(_msg, socket), do: {:noreply, socket}",
+    "#{pct}%"
   ],
   "skip_files": [
     "lib/neuro_scav/plugins/neuro_scav.ex",
