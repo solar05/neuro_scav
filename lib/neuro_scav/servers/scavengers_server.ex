@@ -10,7 +10,7 @@ defmodule NeuroScav.ScavengersServer do
   Rarities are calculated based on first and last name properties:
 
   1. **Legendary** - Name matches a predefined legendary name list for the language
-  2. **Epic** - First and last names share the same last 3 characters (e.g., "Alex Zenix")
+  2. **Epic** - First and last names rhyme — share the same suffix from the last vowel (e.g., "Гена Лена", "Борис Денис")
   3. **Rare** - First and last names start with the same character (e.g., "Alice Abrams")
   4. **Uncommon** - First and last names have equal length (e.g., "Tom Ward")
   5. **Common** - Default for names matching no criteria
@@ -286,9 +286,10 @@ defmodule NeuroScav.ScavengersServer do
   @doc """
   Check if a name is epic rarity.
 
-  A name is epic if the first and last names share the same last 3 characters.
+  A name is epic if the first and last names rhyme — they share the same
+  suffix starting from the last vowel (the "rime" of the final syllable).
 
-  Examples: "Alex Zenix", "Samuel Bitumel"
+  Examples: "Гена Лена" ("-а" == "-а"), "Борис Денис" ("-ис" == "-ис")
 
   ## Parameters
 
@@ -296,14 +297,29 @@ defmodule NeuroScav.ScavengersServer do
 
   ## Returns
 
-  true if last 3 chars of first name == last 3 chars of last name
+  true if the rhyme suffix of first name == rhyme suffix of last name
   """
   @spec epic?(String.t()) :: boolean()
   def epic?(name) do
     splitted_name = String.split(name, " ")
     first_name = List.first(splitted_name)
     last_name = List.last(splitted_name)
-    String.slice(first_name, -3..-1) == String.slice(last_name, -3..-1)
+    rhyme_suffix(first_name) == rhyme_suffix(last_name)
+  end
+
+  @vowels ~w(a e i o u а е ё и о у ы э ю я)
+
+  @spec rhyme_suffix(String.t()) :: String.t()
+  defp rhyme_suffix(word) do
+    graphemes = word |> String.downcase() |> String.graphemes()
+
+    case Enum.reverse(graphemes) |> Enum.find_index(&(&1 in @vowels)) do
+      nil -> Enum.join(graphemes)
+      idx ->
+        graphemes
+        |> Enum.drop(length(graphemes) - idx - 1)
+        |> Enum.join()
+    end
   end
 
   @doc """

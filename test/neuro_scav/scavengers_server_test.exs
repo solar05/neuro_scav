@@ -62,7 +62,10 @@ defmodule NeuroScav.ScavengersServerTest do
     end
 
     test "epic?/2" do
+      assert Server.epic?("Гена Лена")
+      assert Server.epic?("Борис Денис")
       assert Server.epic?("Яшка Полторашка")
+      refute Server.epic?("Маша Сергей")
     end
 
     test "rare?/2" do
