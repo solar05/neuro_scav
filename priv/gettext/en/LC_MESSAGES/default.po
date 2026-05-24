@@ -67,10 +67,10 @@ msgid "Team placeholder"
 msgstr "Here will be team"
 
 msgid "Stats"
-msgstr "Statistics"
+msgstr "Statis"
 
 msgid "Stats placeholder"
-msgstr "Statistics"
+msgstr "Statis"
 
 msgid "Neuro placeholder"
 msgstr "Here will be neuro scavic"
@@ -149,3 +149,12 @@ msgstr "You have been gnomed!"
 
 msgid "default"
 msgstr "Here will be rarity"
+
+msgid "Stats total"
+msgstr "Total"
+
+msgid "Feed"
+msgstr "Live Feed"
+
+msgid "Feed placeholder"
+msgstr "Waiting for scavengers..."
