@@ -1,11 +1,8 @@
 <div class="container">
-  <table class="table table-responsive table-scav table-hover">
+  <table class="table table-responsive table-scav table-hover team-table">
     <tbody>
       <tr>
-        <td
-          class="td-scav"
-          style="border-radius: 10px 10px 0px 0px; text-align: center; background-color: #7e7f8b !important;"
-        >
+        <td class="td-scav" style="border-radius: 10px 10px 0px 0px;">
           <span class={"text-container team-#{Map.get(Enum.at(@team, 0, nil) || %{}, :rarity)}-name"}>
             <span id="team-name-0" phx-hook="ScavName">
               {Map.get(Enum.at(@team, 0, nil) || %{}, :name) || gettext("Single placeholder")}
@@ -14,7 +11,7 @@
         </td>
       </tr>
       <tr>
-        <td class="td-scav" style="text-align: center; background-color: #7e7f8b !important;">
+        <td class="td-scav">
           <span class={"text-container team-#{Map.get(Enum.at(@team, 1, nil) || %{}, :rarity)}-name"}>
             <span id="team-name-1" phx-hook="ScavName">
               {Map.get(Enum.at(@team, 1, nil) || %{}, :name) || gettext("Single placeholder")}
@@ -23,7 +20,7 @@
         </td>
       </tr>
       <tr>
-        <td class="td-scav" style="text-align: center; background-color: #7e7f8b !important;">
+        <td class="td-scav">
           <span class={"text-container team-#{Map.get(Enum.at(@team, 2, nil) || %{}, :rarity)}-name"}>
             <span id="team-name-2" phx-hook="ScavName">
               {Map.get(Enum.at(@team, 2, nil) || %{}, :name) || gettext("Single placeholder")}
@@ -32,7 +29,7 @@
         </td>
       </tr>
       <tr>
-        <td class="td-scav" style="text-align: center; background-color: #7e7f8b !important;">
+        <td class="td-scav">
           <span class={"text-container team-#{Map.get(Enum.at(@team, 3, nil) || %{}, :rarity)}-name"}>
             <span id="team-name-3" phx-hook="ScavName">
               {Map.get(Enum.at(@team, 3, nil) || %{}, :name) || gettext("Single placeholder")}
@@ -41,10 +38,7 @@
         </td>
       </tr>
       <tr>
-        <td
-          class="td-scav"
-          style="border-radius: 0px 0px 10px 10px; border-bottom: none; text-align: center; background-color: #7e7f8b !important;"
-        >
+        <td class="td-scav" style="border-radius: 0px 0px 10px 10px; border-bottom: none;">
           <span class={"text-container team-#{Map.get(Enum.at(@team, 4, nil) || %{}, :rarity)}-name"}>
             <span id="team-name-4" phx-hook="ScavName">
               {Map.get(Enum.at(@team, 4, nil) || %{}, :name) || gettext("Single placeholder")}

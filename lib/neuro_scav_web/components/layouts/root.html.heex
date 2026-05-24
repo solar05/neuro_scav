@@ -65,18 +65,18 @@
       </div>
       {@inner_content}
     </div>
+    <footer id="gnomeFooter" class="gnome-footer">
+      <div class="gnome-container">
+        <img
+          id="gnomeImage"
+          src="/images/gnome.png"
+          alt="Гном"
+          class="gnome-image"
+          phx-click="gnome_clicked"
+          phx-throttle="2000"
+        />
+        <p class="gnome-text">{gettext("Gnome click")}</p>
+      </div>
+    </footer>
   </body>
-  <footer id="gnomeFooter" class="gnome-footer">
-    <div class="gnome-container">
-      <img
-        id="gnomeImage"
-        src="/images/gnome.png"
-        alt="Гном"
-        class="gnome-image"
-        phx-click="gnome_clicked"
-        phx-throttle="2000"
-      />
-      <p class="gnome-text">{gettext("Gnome click")}</p>
-    </div>
-  </footer>
 </html>

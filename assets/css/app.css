@@ -94,11 +94,6 @@ p {
     background-color: rgb(195, 195, 195) !important;
 }
 
-.background-container {
-    background-color: #3a3a46 !important;
-    border-radius: 60px;
-}
-
 .navbar-scav {
     padding-left: 14px;
     padding-right: 14px;
@@ -120,6 +115,7 @@ p {
 .td-scav {
     background-color: #7e7f8b !important;
     color: #ffffff !important;
+    text-align: center;
 }
 
 .tr-scav:hover {
@@ -408,6 +404,7 @@ body {
 }
 
 .background-container {
+    background-color: #3a3a46;
     width: 100%;
     max-width: 1200px;
     padding: 20px;
@@ -594,15 +591,8 @@ body {
         padding: 3px 10px;
     }
 
-    .team-legendary-name,
-    .team-epic-name,
-    .team-rare-name,
-    .team-uncommon-name,
-    .team-gnome-name {
-        padding-left: 10px;
-        padding-right: 10px;
-        padding-top: 6px;
-        padding-bottom: 6px;
+    .team-table .text-container {
+        padding: 6px 8px;
     }
 }
 
@@ -811,47 +801,33 @@ body {
     animation: glowUncommon 3s ease-in-out infinite;
 }
 
+.team-table .text-container {
+    padding: 10px 20px;
+    border-radius: 10px;
+    width: 100%;
+}
+
 .team-legendary-name {
     background-color: darkorange !important;
     color: #fff !important;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     animation: glowLegendary 1.5s ease-in-out infinite;
 }
 
 .team-epic-name {
     background-color: darkorchid;
     color: #fff;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     animation: glowEpic 2s ease-in-out infinite;
 }
 
 .team-rare-name {
     background-color: rgb(37, 171, 215);
     color: #fff;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     animation: glowRare 2.5s ease-in-out infinite;
 }
 
 .team-uncommon-name {
     background-color: darkgreen;
     color: #fff;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     animation: glowUncommon 3s ease-in-out infinite;
 }
 
@@ -953,11 +929,6 @@ body {
     background: linear-gradient(270deg, #ff4444, #ff8800, #ffdd00, #44cc55, #2299ff, #9944ff, #ff44bb, #ff4444) !important;
     background-size: 600% 600% !important;
     animation: rainbowBackground 4s ease infinite, glowGnome 2.5s linear infinite;
-    border-radius: 10px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-top: 10px;
-    padding-bottom: 10px;
     color: #fff !important;
 }
 
@@ -1109,6 +1080,6 @@ td {
 }
 
 table {
-    table-layout: fixed;
+    table-layout: auto;
     width: 100%;
 }

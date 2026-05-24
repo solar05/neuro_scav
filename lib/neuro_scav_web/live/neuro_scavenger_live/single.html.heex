@@ -1,10 +1,8 @@
-<div class="container">
-  <h1 class="display-4 text-center blended"></h1>
+<div class="container pt-2">
   <h2 class={"text-center blended-reg-bg scav-container #{@scavenger.rarity}-name"}>
     <span id="scav-name" phx-hook="ScavName">{@scavenger.name}</span>
   </h2>
-  <br />
-  <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+  <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap mt-3">
     <h3 class={"blended-reg-bg scav-container #{@scavenger.rarity} mb-0"}>
       {@scavenger.rarity_text}
     </h3>
@@ -14,8 +12,7 @@
       </div>
     <% end %>
   </div>
-  <br />
-  <p class="lead">
+  <p class="lead mt-3">
     <.link
       phx-click="generate_single"
       phx-throttle="500"
