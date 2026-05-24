@@ -48,6 +48,13 @@ p {
     overflow-wrap: break-word;
 }
 
+.rarity-label {
+    padding: 8px 16px;
+    overflow: hidden;
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
 .scav-back {
     background: url("/images/back.png") no-repeat center center fixed;
     -webkit-background-size: cover;
@@ -531,6 +538,10 @@ body {
         padding: 8px 12px;
     }
 
+    .rarity-label {
+        padding: 6px 10px;
+    }
+
     .streak-badge {
         font-size: 0.9rem;
         padding: 4px 12px;
@@ -584,6 +595,10 @@ body {
     .scav-container {
         min-height: 50px;
         padding: 6px 8px;
+    }
+
+    .rarity-label {
+        padding: 5px 8px;
     }
 
     .streak-badge {
@@ -1048,6 +1063,9 @@ body {
     padding: 6px 20px;
     border-radius: 18px;
     display: inline-block;
+    align-self: center;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .streak-warm {
@@ -1177,6 +1195,12 @@ table {
     background-color: #d49300;
     color: #212529;
     transform: scale(1.12);
+}
+
+@media (max-width: 768px) {
+    .shortcuts-help-btn {
+        display: none;
+    }
 }
 
 /* ── Shortcuts modal ── */

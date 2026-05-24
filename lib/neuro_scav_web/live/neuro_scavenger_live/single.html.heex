@@ -3,7 +3,7 @@
     <span id="scav-name" phx-hook="ScavName">{@scavenger.name}</span>
   </h2>
   <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap mt-3">
-    <h3 class={"blended-reg-bg scav-container #{@scavenger.rarity} mb-0"}>
+    <h3 class={"blended-reg-bg rarity-label #{@scavenger.rarity} mb-0"}>
       {@scavenger.rarity_text}
     </h3>
     <%= if @streak >= 2 do %>
