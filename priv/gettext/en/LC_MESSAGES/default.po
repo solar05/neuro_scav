@@ -152,9 +152,3 @@ msgstr "Here will be rarity"
 
 msgid "Stats total"
 msgstr "Total"
-
-msgid "Feed"
-msgstr "Live Feed"
-
-msgid "Feed placeholder"
-msgstr "Waiting for scavengers..."

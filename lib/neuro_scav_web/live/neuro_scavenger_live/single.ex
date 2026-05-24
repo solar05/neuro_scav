@@ -3,6 +3,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
   alias NeuroScav.{Locale, PubSub, StatsCounterServer}
 
+  @streak_rarities [:uncommon, :rare, :epic, :legendary, :neuro, "gnome"]
+
   @impl true
   def mount(_params, session, socket) do
     locale = Map.get(session, "lang")
@@ -23,6 +25,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
       })
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
+      |> assign(:streak, 0)
+      |> assign(:streak_class, "streak-warm")
 
     {:ok, new_socket}
   end
@@ -44,7 +48,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
        name: Locale.get_text("Gnome catched"),
        rarity: "gnome",
        rarity_text: Locale.get_text("gnome")
-     })}
+     })
+     |> update_streak("gnome")}
   end
 
   # pubsub callbacks
@@ -53,6 +58,26 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
     rarity_text = Locale.get_text(Atom.to_string(rarity))
 
     {:noreply,
-     assign(socket, :scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})}
+     socket
+     |> assign(:scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
+     |> update_streak(rarity)}
   end
+
+  defp update_streak(socket, rarity) when rarity in @streak_rarities do
+    new_streak = socket.assigns.streak + 1
+
+    socket
+    |> assign(:streak, new_streak)
+    |> assign(:streak_class, streak_css_class(new_streak))
+  end
+
+  defp update_streak(socket, _common) do
+    socket
+    |> assign(:streak, 0)
+    |> assign(:streak_class, "streak-warm")
+  end
+
+  defp streak_css_class(n) when n >= 10, do: "streak-legendary"
+  defp streak_css_class(n) when n >= 5, do: "streak-hot"
+  defp streak_css_class(_), do: "streak-warm"
 end

@@ -152,9 +152,3 @@ msgstr "А здесь будет редкость"
 
 msgid "Stats total"
 msgstr "Всего"
-
-msgid "Feed"
-msgstr "Лента"
-
-msgid "Feed placeholder"
-msgstr "Ждём дичков..."

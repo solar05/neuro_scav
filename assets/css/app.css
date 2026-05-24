@@ -949,6 +949,30 @@ body {
     animation: errorTextPulse 1.5s ease-in-out infinite;
 }
 
+.streak-badge {
+    font-family: "Bender";
+    font-size: 110%;
+    letter-spacing: 2px;
+    padding: 6px 20px;
+    border-radius: 18px;
+    display: inline-block;
+}
+
+.streak-warm {
+    background-color: rgba(0, 100, 0, 0.12);
+    animation: textShimmerUncommon 3s ease-in-out infinite, glowUncommon 3s ease-in-out infinite;
+}
+
+.streak-hot {
+    background-color: rgba(37, 171, 215, 0.12);
+    animation: textShimmerRare 2.5s ease-in-out infinite, glowRare 2.5s ease-in-out infinite;
+}
+
+.streak-legendary {
+    background-color: rgba(255, 140, 0, 0.12);
+    animation: textShimmerLegendary 1.5s ease-in-out infinite, glowLegendary 1.5s ease-in-out infinite;
+}
+
 td {
     height: 50px;
     vertical-align: top;
