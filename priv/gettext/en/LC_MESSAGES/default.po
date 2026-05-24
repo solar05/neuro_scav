@@ -67,10 +67,10 @@ msgid "Team placeholder"
 msgstr "Here will be team"
 
 msgid "Stats"
-msgstr "Statis"
+msgstr "Stats"
 
 msgid "Stats placeholder"
-msgstr "Statis"
+msgstr "Stats"
 
 msgid "Neuro placeholder"
 msgstr "Here will be neuro scavic"

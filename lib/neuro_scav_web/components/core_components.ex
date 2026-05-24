@@ -624,27 +624,41 @@ defmodule NeuroScavWeb.CoreComponents do
   slot :inner_block, required: false
 
   def locale_link(%{lang: lang, path: path, action: action} = assigns) do
-    language = if lang == "en", do: "RU", else: "EN"
+    effective_lang = lang || "ru"
+    locales = [{"RU", "ru"}, {"EN", "en"}, {"DE", "de"}, {"JA", "ja"}]
 
-    updated_path = "#{path}?lang=#{String.downcase(language)}"
+    current_label =
+      locales
+      |> Enum.find({"RU", "ru"}, fn {_, code} -> code == effective_lang end)
+      |> elem(0)
 
-    selected_class =
-      if old_buttons?(action) do
-        "nav-item nav-link blended-old-nav"
-      else
-        "nav-item nav-link blended-active"
-      end
+    items =
+      Enum.map(locales, fn {label, code} ->
+        %{label: label, href: "#{path}?lang=#{code}", active: code == effective_lang}
+      end)
 
     assigns =
       assigns
-      |> assign(:current_language, language)
-      |> assign(:updated_path, updated_path)
-      |> assign(:selected_class, selected_class)
+      |> assign(:current_label, current_label)
+      |> assign(:items, items)
+      |> assign(:is_old, old_buttons?(action))
 
     ~H"""
-    <a class={@selected_class} style="margin-right: 15px;" href={@updated_path}>
-      {@current_language}
-    </a>
+    <details class={"lang-dropdown#{if @is_old, do: " lang-dropdown-old"}"}>
+      <summary class="lang-dropdown-btn">
+        {@current_label} <span class="lang-dropdown-arrow">▾</span>
+      </summary>
+      <div class="lang-dropdown-menu">
+        <%= for item <- @items do %>
+          <a
+            class={"lang-dropdown-item#{if item.active, do: " lang-dropdown-item-active"}"}
+            href={item.href}
+          >
+            {item.label}
+          </a>
+        <% end %>
+      </div>
+    </details>
     """
   end
 

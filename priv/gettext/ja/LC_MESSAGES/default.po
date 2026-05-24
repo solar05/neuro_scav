@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Language: ja\n"
+
+msgid "Actions"
+msgstr ""
+
+msgid "Attempting to reconnect"
+msgstr ""
+
+msgid "Error!"
+msgstr ""
+
+msgid "Hang in there while we get back on track"
+msgstr ""
+
+msgid "Something went wrong!"
+msgstr ""
+
+msgid "Success!"
+msgstr ""
+
+msgid "We can't find the internet"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
+msgid "Generate neuro"
+msgstr "ニューロ野蛮人を生成"
+
+msgid "Neuro-scav"
+msgstr "ニューロ野蛮人"
+
+msgid "Neuro captcha"
+msgstr "うわ、キャプチャだ"
+
+msgid "Single"
+msgstr "単体"
+
+msgid "Team"
+msgstr "チーム"
+
+msgid "Chill"
+msgstr "落ち着けよ、友達..."
+
+msgid "Generate single"
+msgstr "野蛮人を生成"
+
+msgid "Generate team"
+msgstr "チームを生成"
+
+msgid "Single placeholder"
+msgstr "ここに野蛮人が表示されます"
+
+msgid "Team placeholder"
+msgstr "ここにチームが表示されます"
+
+msgid "Stats"
+msgstr "統計"
+
+msgid "Stats placeholder"
+msgstr "統計"
+
+msgid "Neuro placeholder"
+msgstr "ここにニューロ野蛮人が表示されます"
+
+msgid "Neuro scheduled"
+msgstr "生成中..."
+
+msgid "Limit reached"
+msgstr "リクエスト制限に達しました"
+
+msgid "Neuro already scheduled"
+msgstr "生成中です。お待ちください..."
+
+msgid "Neuro error"
+msgstr "何かがうまくいきませんでした"
+
+msgid "Queue place"
+msgstr "キューでの順番: %{place}"
+
+msgid "Neuro next"
+msgstr "次はあなたです"
+
+msgid "Gnome click"
+msgstr "ノームをクリック！"
+
+msgid "Gnome catched"
+msgstr "ノームを捕まえた！"
+
+msgid "Stats common"
+msgstr "コモン"
+
+msgid "Stats uncommon"
+msgstr "アンコモン"
+
+msgid "Stats rare"
+msgstr "レア"
+
+msgid "Stats epic"
+msgstr "エピック"
+
+msgid "Stats legendary"
+msgstr "レジェンダリー"
+
+msgid "Stats neuro"
+msgstr "ニューロ野蛮人"
+
+msgid "Stats gnome"
+msgstr "シークレット"
+
+msgid "Single generating"
+msgstr "野蛮人を探しています..."
+
+msgid "Team generating"
+msgstr "チームを集めています..."
+
+msgid "legendary"
+msgstr "レジェンダリー！"
+
+msgid "epic"
+msgstr "エピックな野蛮人！"
+
+msgid "rare"
+msgstr "レアな野蛮人！"
+
+msgid "uncommon"
+msgstr "アンコモンな野蛮人"
+
+msgid "common"
+msgstr "コモンな野蛮人"
+
+msgid "gnome"
+msgstr "ノームに捕まれた！"
+
+msgid "default"
+msgstr "ここにレア度が表示されます"
+
+msgid "Stats total"
+msgstr "合計"

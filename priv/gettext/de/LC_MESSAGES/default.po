@@ -1,0 +1,141 @@
+msgid ""
+msgstr ""
+"Language: de\n"
+
+msgid "Actions"
+msgstr ""
+
+msgid "Attempting to reconnect"
+msgstr ""
+
+msgid "Error!"
+msgstr ""
+
+msgid "Hang in there while we get back on track"
+msgstr ""
+
+msgid "Something went wrong!"
+msgstr ""
+
+msgid "Success!"
+msgstr ""
+
+msgid "We can't find the internet"
+msgstr ""
+
+msgid "close"
+msgstr ""
+
+msgid "Generate neuro"
+msgstr "Neuro-Wildling generieren"
+
+msgid "Neuro-scav"
+msgstr "Neuro-Wildling"
+
+msgid "Neuro captcha"
+msgstr "oh nein, ein Captcha"
+
+msgid "Single"
+msgstr "Einzeln"
+
+msgid "Team"
+msgstr "Team"
+
+msgid "Chill"
+msgstr "Entspann dich, Alter..."
+
+msgid "Generate single"
+msgstr "Wildling generieren"
+
+msgid "Generate team"
+msgstr "Team generieren"
+
+msgid "Single placeholder"
+msgstr "Hier erscheint der Wildling"
+
+msgid "Team placeholder"
+msgstr "Hier erscheint das Team"
+
+msgid "Stats"
+msgstr "Statistik"
+
+msgid "Stats placeholder"
+msgstr "Statistik"
+
+msgid "Neuro placeholder"
+msgstr "Hier erscheint der Neuro-Wildling"
+
+msgid "Neuro scheduled"
+msgstr "Generiere..."
+
+msgid "Limit reached"
+msgstr "Anfragelimit erreicht"
+
+msgid "Neuro already scheduled"
+msgstr "Generiere, bitte warten..."
+
+msgid "Neuro error"
+msgstr "Etwas ist schiefgelaufen"
+
+msgid "Queue place"
+msgstr "Ihr Platz in der Warteschlange: %{place}"
+
+msgid "Neuro next"
+msgstr "Sie sind als Nächstes dran"
+
+msgid "Gnome click"
+msgstr "Klick den Gnom!"
+
+msgid "Gnome catched"
+msgstr "DU HAST EINEN GNOM GEFANGEN!"
+
+msgid "Stats common"
+msgstr "Gewöhnlich"
+
+msgid "Stats uncommon"
+msgstr "Ungewöhnlich"
+
+msgid "Stats rare"
+msgstr "Selten"
+
+msgid "Stats epic"
+msgstr "Episch"
+
+msgid "Stats legendary"
+msgstr "Legendär"
+
+msgid "Stats neuro"
+msgstr "Neuro-Wildlinge"
+
+msgid "Stats gnome"
+msgstr "Geheim"
+
+msgid "Single generating"
+msgstr "Wildling wird gesucht..."
+
+msgid "Team generating"
+msgstr "Team wird zusammengestellt..."
+
+msgid "legendary"
+msgstr "Legendärer Fund!"
+
+msgid "epic"
+msgstr "Epischer Wildling!"
+
+msgid "rare"
+msgstr "Seltener Wildling!"
+
+msgid "uncommon"
+msgstr "Ungewöhnlicher Wildling"
+
+msgid "common"
+msgstr "Gewöhnlicher Wildling"
+
+msgid "gnome"
+msgstr "Du wurdest gegnomed!"
+
+msgid "default"
+msgstr "Hier erscheint die Seltenheit"
+
+msgid "Stats total"
+msgstr "Gesamt"

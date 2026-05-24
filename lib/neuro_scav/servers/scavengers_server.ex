@@ -181,7 +181,13 @@ defmodule NeuroScav.ScavengersServer do
       "first_names_en" => names.first_names_en(),
       "last_names_en" => names.last_names_en(),
       "legendary_names_ru" => names.legendary_names_ru(),
-      "legendary_names_en" => names.legendary_names_en()
+      "legendary_names_en" => names.legendary_names_en(),
+      "first_names_ja" => names.first_names_ja(),
+      "last_names_ja" => names.last_names_ja(),
+      "legendary_names_ja" => names.legendary_names_ja(),
+      "first_names_de" => names.first_names_de(),
+      "last_names_de" => names.last_names_de(),
+      "legendary_names_de" => names.legendary_names_de()
     }
 
     Logger.info("Scavenger server started")

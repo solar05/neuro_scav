@@ -2154,16 +2154,28 @@ defmodule NeuroScav.Scavengers.Names do
     "大蛇丸様"
   ]
 
+  @spec first_names_ru :: [String.t()]
   def first_names_ru, do: @first_names_ru
+  @spec last_names_ru :: [String.t()]
   def last_names_ru, do: @last_names_ru
+  @spec legendary_names_ru :: [String.t()]
   def legendary_names_ru, do: @legendary_names_ru
+  @spec first_names_en :: [String.t()]
   def first_names_en, do: @first_names_en
+  @spec last_names_en :: [String.t()]
   def last_names_en, do: @last_names_en
+  @spec legendary_names_en :: [String.t()]
   def legendary_names_en, do: @legendary_names_en
+  @spec first_names_de :: [String.t()]
   def first_names_de, do: @first_names_de
+  @spec last_names_de :: [String.t()]
   def last_names_de, do: @last_names_de
+  @spec legendary_names_de :: [String.t()]
   def legendary_names_de, do: @legendary_names_de
+  @spec first_names_ja :: [String.t()]
   def first_names_ja, do: @first_names_ja
+  @spec last_names_ja :: [String.t()]
   def last_names_ja, do: @last_names_ja
+  @spec legendary_names_ja :: [String.t()]
   def legendary_names_ja, do: @legendary_names_ja
 end
