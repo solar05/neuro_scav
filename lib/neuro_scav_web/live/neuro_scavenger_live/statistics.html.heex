@@ -5,11 +5,8 @@
         <td class="td-scav" style="border-radius: 10px 0px 0px 0px;">
           <span class="text-container neuro">{gettext("Stats neuro")}</span>
         </td>
-        <td class="td-scav">
-          <span class="text-container neuro">{@statistics.neuro}</span>
-        </td>
         <td class="td-scav" style="border-radius: 0px 10px 0px 0px;">
-          <span class="text-container neuro">{calc_percent(@statistics.neuro, @total)}</span>
+          <span class="text-container neuro">{@statistics.neuro}</span>
         </td>
       </tr>
       <tr>
@@ -19,11 +16,6 @@
         <td class="td-scav">
           <span class="text-container legendary">{@statistics.legendary}</span>
         </td>
-        <td class="td-scav">
-          <span class="text-container legendary">
-            {calc_percent(@statistics.legendary, @total)}
-          </span>
-        </td>
       </tr>
       <tr>
         <td class="td-scav">
@@ -31,9 +23,6 @@
         </td>
         <td class="td-scav">
           <span class="text-container epic">{@statistics.epic}</span>
-        </td>
-        <td class="td-scav">
-          <span class="text-container epic">{calc_percent(@statistics.epic, @total)}</span>
         </td>
       </tr>
       <tr>
@@ -43,9 +32,6 @@
         <td class="td-scav">
           <span class="text-container rare">{@statistics.rare}</span>
         </td>
-        <td class="td-scav">
-          <span class="text-container rare">{calc_percent(@statistics.rare, @total)}</span>
-        </td>
       </tr>
       <tr>
         <td class="td-scav">
@@ -53,11 +39,6 @@
         </td>
         <td class="td-scav">
           <span class="text-container uncommon">{@statistics.uncommon}</span>
-        </td>
-        <td class="td-scav">
-          <span class="text-container uncommon">
-            {calc_percent(@statistics.uncommon, @total)}
-          </span>
         </td>
       </tr>
       <tr>
@@ -67,30 +48,13 @@
         <td class="td-scav">
           <span class="text-container common">{@statistics.common}</span>
         </td>
-        <td class="td-scav">
-          <span class="text-container common">{calc_percent(@statistics.common, @total)}</span>
-        </td>
-      </tr>
-      <tr>
-        <td class="td-scav">
-          <span class="text-container gnome">{gettext("Stats gnome")}</span>
-        </td>
-        <td class="td-scav">
-          <span class="text-container gnome">{@statistics.gnome}</span>
-        </td>
-        <td class="td-scav">
-          <span class="text-container gnome">{calc_percent(@statistics.gnome, @total)}</span>
-        </td>
       </tr>
       <tr>
         <td class="td-scav" style="border-radius: 0px 0px 0px 10px; border-bottom: none;">
-          <span class="text-container">{gettext("Stats total")}</span>
-        </td>
-        <td class="td-scav" style="border-bottom: none;">
-          <span class="text-container">{@total}</span>
+          <span class="text-container gnome">{gettext("Stats gnome")}</span>
         </td>
         <td class="td-scav" style="border-radius: 0px 0px 10px 0px; border-bottom: none;">
-          <span class="text-container">100%</span>
+          <span class="text-container gnome">{@statistics.gnome}</span>
         </td>
       </tr>
     </tbody>

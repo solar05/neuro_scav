@@ -18,7 +18,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Statistics do
     new_socket =
       socket
       |> assign(:statistics, statistics)
-      |> assign(:total, compute_total(statistics))
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
@@ -35,23 +34,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Statistics do
   # pubsub callbacks
   @impl true
   def handle_info({:statistics_updated, statistics}, socket) do
-    {:noreply,
-     socket
-     |> assign(:statistics, statistics)
-     |> assign(:total, compute_total(statistics))}
-  end
-
-  defp compute_total(nil), do: 0
-
-  defp compute_total(stats) do
-    stats.common + stats.uncommon + stats.rare + stats.epic +
-      stats.legendary + stats.neuro + stats.gnome
-  end
-
-  def calc_percent(_count, 0), do: "–"
-
-  def calc_percent(count, total) do
-    pct = Float.round(count / total * 100, 1)
-    "#{pct}%"
+    {:noreply, assign(socket, :statistics, statistics)}
   end
 end
