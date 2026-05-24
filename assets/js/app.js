@@ -22,6 +22,23 @@ import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import "./gnome";
+
+// ── Rarity flash overlay ──
+function triggerRarityFlash(rarity) {
+  const flash = document.getElementById('rarity-flash');
+  if (!flash) return;
+  flash.className = `rarity-flash flash-${rarity}`;
+  void flash.offsetWidth;
+  flash.classList.add('flash-active');
+  setTimeout(() => { flash.className = 'rarity-flash'; }, 900);
+}
+
+// ── Shortcuts modal toggle (exposed on window for inline onclick) ──
+window.toggleShortcutsModal = function() {
+  const modal = document.getElementById('shortcuts-modal');
+  if (modal) modal.classList.toggle('hidden');
+};
+
 function makeTurnstileHook() {
   const callbackEvent = (self, name, eventName) => {
     return (payload) => {
@@ -72,14 +89,31 @@ const ScavNameHook = {
   mounted() { this.reveal() },
   updated() { this.reveal() },
   reveal() {
-    const el = this.el
-    el.classList.remove('scav-appear', 'gnome-appear', 'neuro-appear', 'queue-appear', 'error-appear')
-    void el.offsetWidth
-    if (el.closest('.gnome-name, .team-gnome-name')) el.classList.add('gnome-appear')
-    else if (el.closest('.neuro-name'))              el.classList.add('neuro-appear')
-    else if (el.closest('.queue-name'))              el.classList.add('queue-appear')
-    else if (el.closest('.error-name'))              el.classList.add('error-appear')
-    else                                             el.classList.add('scav-appear')
+    const el = this.el;
+    el.classList.remove(
+      'scav-appear', 'gnome-appear', 'neuro-appear', 'queue-appear', 'error-appear',
+      'legendary-appear', 'epic-appear', 'rare-appear'
+    );
+    void el.offsetWidth;
+    if (el.closest('.gnome-name, .team-gnome-name')) {
+      el.classList.add('gnome-appear');
+    } else if (el.closest('.neuro-name')) {
+      el.classList.add('neuro-appear');
+    } else if (el.closest('.queue-name')) {
+      el.classList.add('queue-appear');
+    } else if (el.closest('.error-name')) {
+      el.classList.add('error-appear');
+    } else if (el.closest('.legendary-name, .team-legendary-name')) {
+      el.classList.add('legendary-appear');
+      triggerRarityFlash('legendary');
+    } else if (el.closest('.epic-name, .team-epic-name')) {
+      el.classList.add('epic-appear');
+      triggerRarityFlash('epic');
+    } else if (el.closest('.rare-name, .team-rare-name')) {
+      el.classList.add('rare-appear');
+    } else {
+      el.classList.add('scav-appear');
+    }
   }
 }
 
@@ -106,3 +140,30 @@ liveSocket.connect()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
 window.liveSocket = liveSocket
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+  if (e.key === ' ') {
+    e.preventDefault();
+    const btn = document.getElementById('btn-single') ||
+                document.getElementById('btn-team') ||
+                document.getElementById('neuroButton');
+    if (btn && !btn.disabled) btn.click();
+  } else if (e.key === '1') {
+    window.location.href = '/single_scavenger';
+  } else if (e.key === '2') {
+    window.location.href = '/team_scavengers';
+  } else if (e.key === '3') {
+    window.location.href = '/neuro_scavengers';
+  } else if (e.key === '4') {
+    window.location.href = '/statistics';
+  } else if (e.key === '?') {
+    window.toggleShortcutsModal();
+  } else if (e.key === 'Escape') {
+    const modal = document.getElementById('shortcuts-modal');
+    if (modal && !modal.classList.contains('hidden')) modal.classList.add('hidden');
+  }
+});

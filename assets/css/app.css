@@ -1083,3 +1083,198 @@ table {
     table-layout: auto;
     width: 100%;
 }
+
+/* ── Legendary reveal animation ── */
+@keyframes legendaryReveal {
+    0%   { opacity: 0; transform: scale(0.55) rotate(-5deg); filter: blur(10px) brightness(2.5); }
+    40%  { opacity: 1; filter: blur(0) brightness(1.7); }
+    65%  { transform: scale(1.15) rotate(2deg); }
+    82%  { transform: scale(0.95) rotate(-0.5deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0deg); filter: blur(0) brightness(1); }
+}
+
+.legendary-appear {
+    animation: legendaryReveal 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+/* ── Epic reveal animation ── */
+@keyframes epicReveal {
+    0%   { opacity: 0; transform: translateY(24px) scale(0.87); filter: blur(8px); }
+    50%  { opacity: 1; filter: blur(0); transform: translateY(-7px) scale(1.07); }
+    75%  { transform: translateY(3px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.epic-appear {
+    animation: epicReveal 0.75s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+/* ── Rare reveal animation ── */
+@keyframes rareReveal {
+    0%   { opacity: 0; transform: translateX(-20px); filter: blur(5px); }
+    65%  { opacity: 1; transform: translateX(5px); filter: blur(0); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+.rare-appear {
+    animation: rareReveal 0.5s ease-out both;
+}
+
+/* ── Rarity flash overlay ── */
+.rarity-flash {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0;
+}
+
+@keyframes flashLegendary {
+    0%   { opacity: 0.6; background: radial-gradient(ellipse at center, rgba(255,140,0,0.55) 0%, transparent 68%); }
+    100% { opacity: 0; background: radial-gradient(ellipse at center, rgba(255,140,0,0) 0%, transparent 68%); }
+}
+
+@keyframes flashEpic {
+    0%   { opacity: 0.5; background: radial-gradient(ellipse at center, rgba(153,50,204,0.5) 0%, transparent 68%); }
+    100% { opacity: 0; background: radial-gradient(ellipse at center, rgba(153,50,204,0) 0%, transparent 68%); }
+}
+
+.rarity-flash.flash-legendary.flash-active {
+    animation: flashLegendary 0.9s ease-out forwards;
+}
+
+.rarity-flash.flash-epic.flash-active {
+    animation: flashEpic 0.9s ease-out forwards;
+}
+
+/* ── Keyboard shortcuts help button ── */
+.shortcuts-help-btn {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1001;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: #3a3a46;
+    border: 2px solid #d49300;
+    color: #d49300;
+    font-family: "Bender", cursive;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s, transform 0.2s;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.55);
+    animation: borderPulseGold 2.5s ease-in-out infinite;
+    line-height: 1;
+    padding: 0;
+}
+
+.shortcuts-help-btn:hover {
+    background-color: #d49300;
+    color: #212529;
+    transform: scale(1.12);
+}
+
+/* ── Shortcuts modal ── */
+.shortcuts-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: rgba(0, 0, 0, 0.72);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+}
+
+.shortcuts-modal.hidden {
+    display: none;
+}
+
+@keyframes modalReveal {
+    0%   { opacity: 0; transform: scale(0.82) translateY(-18px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.shortcuts-modal-content {
+    background: #3a3a46;
+    border: 2px solid #d49300;
+    border-radius: 20px;
+    min-width: 300px;
+    max-width: 90vw;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.75), 0 0 40px rgba(212,147,0,0.12);
+    overflow: hidden;
+    animation: modalReveal 0.3s cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+.shortcuts-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(212, 147, 0, 0.28);
+    font-family: "Bender", cursive;
+    font-size: 120%;
+    color: #d49300;
+    letter-spacing: 1px;
+}
+
+.shortcuts-modal-close {
+    background: none;
+    border: none;
+    color: #a5a5a5;
+    font-size: 22px;
+    cursor: pointer;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.2s;
+    font-family: inherit;
+}
+
+.shortcuts-modal-close:hover {
+    color: #d49300;
+}
+
+.shortcuts-modal-body {
+    padding: 14px 20px 20px;
+}
+
+.shortcuts-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Bender", cursive;
+    color: #a5a5a5;
+}
+
+.shortcuts-table td {
+    padding: 9px 10px;
+    border: none;
+    height: auto;
+    vertical-align: middle;
+}
+
+.shortcuts-table td:first-child {
+    width: 90px;
+    text-align: center;
+}
+
+.shortcuts-table tr + tr td {
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 10px;
+    background: #212529;
+    border: 1px solid #555;
+    border-radius: 6px;
+    font-family: "SF", monospace;
+    font-size: 85%;
+    color: #d49300;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.5);
+    white-space: nowrap;
+}

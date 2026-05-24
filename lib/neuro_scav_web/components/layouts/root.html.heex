@@ -78,5 +78,64 @@
         <p class="gnome-text">{gettext("Gnome click")}</p>
       </div>
     </footer>
+
+    <div id="rarity-flash" class="rarity-flash"></div>
+
+    <button
+      id="shortcuts-help-btn"
+      class="shortcuts-help-btn"
+      onclick="window.toggleShortcutsModal()"
+    >
+      ?
+    </button>
+
+    <div
+      id="shortcuts-modal"
+      class="shortcuts-modal hidden"
+      onclick="if(event.target===this)window.toggleShortcutsModal()"
+    >
+      <div class="shortcuts-modal-content">
+        <div class="shortcuts-modal-header">
+          <span>Keyboard Shortcuts</span>
+          <button onclick="window.toggleShortcutsModal()" class="shortcuts-modal-close">
+            &times;
+          </button>
+        </div>
+        <div class="shortcuts-modal-body">
+          <table class="shortcuts-table">
+            <tbody>
+              <tr>
+                <td><kbd>Space</kbd></td>
+                <td>Generate</td>
+              </tr>
+              <tr>
+                <td><kbd>1</kbd></td>
+                <td>Single</td>
+              </tr>
+              <tr>
+                <td><kbd>2</kbd></td>
+                <td>Team</td>
+              </tr>
+              <tr>
+                <td><kbd>3</kbd></td>
+                <td>Neuro-scav</td>
+              </tr>
+              <tr>
+                <td><kbd>4</kbd></td>
+                <td>Stats</td>
+              </tr>
+              <tr>
+                <td><kbd>?</kbd></td>
+                <td>Show / hide this help</td>
+              </tr>
+              <tr>
+                <td><kbd>Esc</kbd></td>
+                <td>Close this modal</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

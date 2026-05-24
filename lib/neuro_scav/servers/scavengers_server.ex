@@ -314,7 +314,9 @@ defmodule NeuroScav.ScavengersServer do
     graphemes = word |> String.downcase() |> String.graphemes()
 
     case Enum.reverse(graphemes) |> Enum.find_index(&(&1 in @vowels)) do
-      nil -> Enum.join(graphemes)
+      nil ->
+        Enum.join(graphemes)
+
       idx ->
         graphemes
         |> Enum.drop(length(graphemes) - idx - 1)
