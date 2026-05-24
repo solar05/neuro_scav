@@ -152,3 +152,15 @@ msgstr "А здесь будет редкость"
 
 msgid "Stats total"
 msgstr "Всего"
+
+msgid "Keyboard Shortcuts"
+msgstr "Горячие клавиши"
+
+msgid "Shortcut generate"
+msgstr "Генерировать"
+
+msgid "Shortcut toggle help"
+msgstr "Показать / скрыть справку"
+
+msgid "Shortcut close modal"
+msgstr "Закрыть окно"

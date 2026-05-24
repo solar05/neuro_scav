@@ -152,3 +152,15 @@ msgstr "Here will be rarity"
 
 msgid "Stats total"
 msgstr "Total"
+
+msgid "Keyboard Shortcuts"
+msgstr "Keyboard Shortcuts"
+
+msgid "Shortcut generate"
+msgstr "Generate"
+
+msgid "Shortcut toggle help"
+msgstr "Show / hide this help"
+
+msgid "Shortcut close modal"
+msgstr "Close this window"

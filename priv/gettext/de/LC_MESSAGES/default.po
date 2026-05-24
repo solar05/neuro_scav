@@ -139,3 +139,15 @@ msgstr "Hier erscheint die Seltenheit"
 
 msgid "Stats total"
 msgstr "Gesamt"
+
+msgid "Keyboard Shortcuts"
+msgstr "Tastenkürzel"
+
+msgid "Shortcut generate"
+msgstr "Generieren"
+
+msgid "Shortcut toggle help"
+msgstr "Hilfe ein- / ausblenden"
+
+msgid "Shortcut close modal"
+msgstr "Fenster schließen"

@@ -139,3 +139,15 @@ msgstr "Koko ni rea-do ga hyouji saremasu"
 
 msgid "Stats total"
 msgstr "Goukei"
+
+msgid "Keyboard Shortcuts"
+msgstr "Kiibodo shootokatto"
+
+msgid "Shortcut generate"
+msgstr "Seisei"
+
+msgid "Shortcut toggle help"
+msgstr "Herupu wo hyouji / kakusu"
+
+msgid "Shortcut close modal"
+msgstr "Madо wo tojiru"
