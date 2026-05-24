@@ -151,3 +151,42 @@ msgstr "Herupu wo hyouji / kakusu"
 
 msgid "Shortcut close modal"
 msgstr "Madо wo tojiru"
+
+msgid "Rarity Guide"
+msgstr "Rea-do Gaido"
+
+msgid "Glossary link"
+msgstr "Rea-do Gaido"
+
+msgid "legendary rule"
+msgstr "Namae ga rejendarii risuto ni aru"
+
+msgid "legendary examples"
+msgstr "Tanaka Tarou · Uchiha Sasuke · Hatake Kakashi"
+
+msgid "epic rule"
+msgstr "Namae to myouji ga iun (saigo no boin kara onaji safikusu)"
+
+msgid "epic examples"
+msgstr "rei: Ken Ten, Ren Gen"
+
+msgid "rare rule"
+msgstr "Namae to myouji ga onaji moji de hajimaru"
+
+msgid "rare examples"
+msgstr "rei: Kazuki Kage, Shou Suzuki"
+
+msgid "uncommon rule"
+msgstr "Namae to myouji ga onaji nagasa"
+
+msgid "uncommon examples"
+msgstr "rei: Ren Ken, Riku Fuji"
+
+msgid "common rule"
+msgstr "Dono jouken ni mo atehamaranai"
+
+msgid "neuro rule"
+msgstr "Ninkou AI de seisei sareta"
+
+msgid "gnome rule"
+msgstr "Noomu ga nigerumaeni tsukamaero!"

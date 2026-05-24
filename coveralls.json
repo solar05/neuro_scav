@@ -45,6 +45,7 @@
     "lib/neuro_scav/scavengers.ex",
     "lib/neuro_scav/release.ex",
     "test/support/fixtures/turnstile_mock.ex",
-    "lib/neuro_scav_web/plugs/rate_limit.ex"
+    "lib/neuro_scav_web/plugs/rate_limit.ex",
+    "lib/neuro_scav_web/live/neuro_scavenger_live/glossary.ex"
   ]
 }

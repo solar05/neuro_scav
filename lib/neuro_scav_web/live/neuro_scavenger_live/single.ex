@@ -5,6 +5,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
   @streak_rarities [:uncommon, :rare, :epic, :legendary, :neuro, "gnome"]
 
+  @gnome_probability 3
+
   @impl true
   def mount(_params, session, socket) do
     locale = Map.get(session, "lang")
@@ -27,6 +29,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
       |> assign(:user_id, user_id)
       |> assign(:streak, 0)
       |> assign(:streak_class, "streak-warm")
+      |> assign(:gnome_lurking, false)
 
     {:ok, new_socket}
   end
@@ -35,7 +38,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   def handle_event("generate_single", _value, socket) do
     NeuroScav.ScavengersServer.generate_single(socket.assigns.user_id, socket.assigns.user_locale)
 
-    {:noreply, socket}
+    {:noreply, assign(socket, :gnome_lurking, false)}
   end
 
   @impl true
@@ -49,6 +52,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
        rarity: "gnome",
        rarity_text: Locale.get_text("gnome")
      })
+     |> assign(:gnome_lurking, false)
      |> update_streak("gnome")}
   end
 
@@ -56,10 +60,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   @impl true
   def handle_info({:single_generated, %{rarity: rarity, name: name}}, socket) do
     rarity_text = Locale.get_text(Atom.to_string(rarity))
+    gnome_lurking = :rand.uniform(100) <= @gnome_probability
 
     {:noreply,
      socket
      |> assign(:scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
+     |> assign(:gnome_lurking, gnome_lurking)
      |> update_streak(rarity)}
   end
 

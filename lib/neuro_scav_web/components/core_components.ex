@@ -611,11 +611,11 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   defp old_buttons?(action) do
-    action in [:single_scavenger, :team_scavengers, :statistics]
+    action in [:single_scavenger, :team_scavengers, :statistics, :glossary]
   end
 
   defp old_path?(path) do
-    path in ["/single_scavenger", "/team_scavengers", "/statistics"]
+    path in ["/single_scavenger", "/team_scavengers", "/statistics", "/glossary"]
   end
 
   attr :lang, :string, required: true

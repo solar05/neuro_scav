@@ -151,3 +151,42 @@ msgstr "Hilfe ein- / ausblenden"
 
 msgid "Shortcut close modal"
 msgstr "Fenster schließen"
+
+msgid "Rarity Guide"
+msgstr "Seltenheits-Handbuch"
+
+msgid "Glossary link"
+msgstr "Seltenheits-Handbuch"
+
+msgid "legendary rule"
+msgstr "Name steht auf der vordefinierten Legendenliste"
+
+msgid "legendary examples"
+msgstr "Bernd Bratwurst · Helmut Kohl · Hans Kaiser"
+
+msgid "epic rule"
+msgstr "Vor- und Nachname reimen sich (gleicher Suffix ab dem letzten Vokal)"
+
+msgid "epic examples"
+msgstr "z.B. Ernst Durst, Klaus Maus"
+
+msgid "rare rule"
+msgstr "Vor- und Nachname beginnen mit demselben Buchstaben"
+
+msgid "rare examples"
+msgstr "z.B. Fritz Fuchs, Karl Koch"
+
+msgid "uncommon rule"
+msgstr "Vor- und Nachname haben die gleiche Zeichenanzahl"
+
+msgid "uncommon examples"
+msgstr "z.B. Hans Wolf, Sven Kalt"
+
+msgid "common rule"
+msgstr "Passt zu keiner höheren Seltenheit"
+
+msgid "neuro rule"
+msgstr "Von einer KI generiert"
+
+msgid "gnome rule"
+msgstr "Fang den Gnom, bevor er wegläuft!"

@@ -1302,3 +1302,75 @@ kbd {
     box-shadow: 0 2px 0 rgba(0,0,0,0.5);
     white-space: nowrap;
 }
+
+/* ── Gnome lurking (inline in single view) ── */
+.gnome-lurking-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 14px;
+}
+
+.gnome-lurking-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 3px solid #8B4513;
+    background: #fff;
+    padding: 8px;
+    cursor: pointer;
+    animation: gnomeBounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) both,
+               gnomeLurkPulse 2s ease-in-out infinite 0.8s;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gnome-lurking-img:hover {
+    transform: scale(1.18) rotate(8deg);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.7);
+}
+
+.gnome-lurking-img:active {
+    transform: scale(0.9);
+}
+
+@keyframes gnomeLurkPulse {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(255, 100, 0, 0.4); }
+    50%       { box-shadow: 0 0 20px 6px rgba(255, 200, 0, 0.7); }
+}
+
+/* ── Glossary table ── */
+.td-scav-desc {
+    background-color: #7e7f8b !important;
+    color: #d0d1da !important;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 90%;
+    vertical-align: middle;
+}
+
+.glossary-example {
+    color: #a5a5a5;
+    font-size: 82%;
+}
+
+/* ── Shortcuts modal glossary link ── */
+.shortcuts-modal-glossary {
+    border-top: 1px solid rgba(212, 147, 0, 0.2);
+    margin-top: 10px;
+    padding-top: 10px;
+    text-align: center;
+}
+
+.glossary-modal-link {
+    font-family: "Bender", cursive;
+    font-size: 90%;
+    color: #d49300 !important;
+    text-decoration: none !important;
+    letter-spacing: 0.5px;
+    transition: color 0.2s;
+}
+
+.glossary-modal-link:hover {
+    color: #ffbb33 !important;
+    text-decoration: underline !important;
+}

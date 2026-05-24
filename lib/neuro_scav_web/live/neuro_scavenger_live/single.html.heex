@@ -12,6 +12,18 @@
       </div>
     <% end %>
   </div>
+  <%= if @gnome_lurking do %>
+    <div class="gnome-lurking-wrap">
+      <img
+        src="/images/gnome.png"
+        alt="gnome"
+        class="gnome-lurking-img"
+        phx-click="gnome_clicked"
+        phx-throttle="500"
+      />
+      <p class="gnome-text mt-1">{gettext("Gnome click")}</p>
+    </div>
+  <% end %>
   <p class="lead mt-3">
     <.link
       phx-click="generate_single"

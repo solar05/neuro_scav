@@ -27,6 +27,7 @@ defmodule NeuroScavWeb.Router do
     live "/single_scavenger", NeuroScavengerLive.Single, :single_scavenger
     live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
+    live "/glossary", NeuroScavengerLive.Glossary, :glossary
   end
 
   scope "/api", NeuroScavWeb.Api do

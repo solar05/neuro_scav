@@ -164,3 +164,42 @@ msgstr "Показать / скрыть справку"
 
 msgid "Shortcut close modal"
 msgstr "Закрыть окно"
+
+msgid "Rarity Guide"
+msgstr "Справочник редкостей"
+
+msgid "Glossary link"
+msgstr "Справочник редкостей"
+
+msgid "legendary rule"
+msgstr "Имя есть в секретном легендарном списке"
+
+msgid "legendary examples"
+msgstr "Дед Мороз · Гит Пуш · Жак Пиджак"
+
+msgid "epic rule"
+msgstr "Имя и фамилия рифмуются (одинаковый суффикс от последней гласной)"
+
+msgid "epic examples"
+msgstr "напр. Гена Антена, Борис Денис"
+
+msgid "rare rule"
+msgstr "Имя и фамилия начинаются с одной буквы"
+
+msgid "rare examples"
+msgstr "напр. Артём Аристократ, Серый Суслик"
+
+msgid "uncommon rule"
+msgstr "Имя и фамилия одинаковой длины"
+
+msgid "uncommon examples"
+msgstr "напр. Коля Шиза, Дима Слоп"
+
+msgid "common rule"
+msgstr "Просто дичок"
+
+msgid "neuro rule"
+msgstr "Сгенерирован дичайшей нейросетью"
+
+msgid "gnome rule"
+msgstr "Поймай гнома, пока не убежал!"
