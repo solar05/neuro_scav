@@ -178,10 +178,10 @@ msgid "legendary examples"
 msgstr "Ded Moroz · Git Push · Jack Sparrow"
 
 msgid "epic rule"
-msgstr "First and last names rhyme (same suffix from last vowel)"
+msgstr "First and last names rhyme"
 
 msgid "epic examples"
-msgstr "e.g. Sam Jam, Gena Lena"
+msgstr "e.g. Yashka Poltorashka"
 
 msgid "rare rule"
 msgstr "First and last names start with the same letter"

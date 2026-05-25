@@ -165,7 +165,7 @@ msgid "legendary examples"
 msgstr "Tanaka Tarou · Uchiha Sasuke · Hatake Kakashi"
 
 msgid "epic rule"
-msgstr "Namae to myouji ga iun (saigo no boin kara onaji safikusu)"
+msgstr "Namae to myouji ga iun"
 
 msgid "epic examples"
 msgstr "rei: Ken Ten, Ren Gen"

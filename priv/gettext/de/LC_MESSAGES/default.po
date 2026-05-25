@@ -165,7 +165,7 @@ msgid "legendary examples"
 msgstr "Bernd Bratwurst · Helmut Kohl · Hans Kaiser"
 
 msgid "epic rule"
-msgstr "Vor- und Nachname reimen sich (gleicher Suffix ab dem letzten Vokal)"
+msgstr "Vor- und Nachname reimen sich"
 
 msgid "epic examples"
 msgstr "z.B. Ernst Durst, Klaus Maus"

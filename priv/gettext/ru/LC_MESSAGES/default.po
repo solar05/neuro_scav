@@ -178,10 +178,10 @@ msgid "legendary examples"
 msgstr "Дед Мороз · Гит Пуш · Жак Пиджак"
 
 msgid "epic rule"
-msgstr "Имя и фамилия рифмуются (одинаковый суффикс от последней гласной)"
+msgstr "Имя и фамилия рифмуются"
 
 msgid "epic examples"
-msgstr "напр. Гена Антена, Борис Денис"
+msgstr "напр. Гена Антена, Яшка Полторашка"
 
 msgid "rare rule"
 msgstr "Имя и фамилия начинаются с одной буквы"

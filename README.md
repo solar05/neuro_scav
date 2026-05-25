@@ -11,7 +11,7 @@ A Phoenix-based web application for neural scavenger hunts. NeuroScav provides r
 - **Team Scavengers Mode**: Collaborative team-based scavenger hunts with real-time updates
 - **Neural AI Integration**: Powered by [Ollama](https://ollama.ai) 
 - **Live Statistics**: Real-time statistics tracking and aggregation with PubSub
-- **Multi-language Support**: Built-in i18n support for English and Russian
+- **Multi-language Support**: Built-in i18n support for English, Russian, German, and Japanese
 
 ## Tech Stack
 
@@ -196,7 +196,7 @@ DNS_CLUSTER_QUERY=<query>
 
 ## Internationalization (i18n)
 
-The application supports multiple languages (English and Russian). Translation files are located in `priv/gettext/`:
+The application supports multiple languages (English, Russian, German, and Japanese). Translation files are located in `priv/gettext/`:
 
 - Extract strings: `mix gettext.extract`
 - Merge translations: `mix gettext.merge priv/gettext`
