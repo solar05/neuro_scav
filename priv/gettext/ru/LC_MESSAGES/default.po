@@ -100,7 +100,7 @@ msgid "Gnome click"
 msgstr "Нажми на гнома!"
 
 msgid "Gnome catched"
-msgstr "ТЫ ПОЙМАЛ ГНОМА!"
+msgstr "ГНОМ ГНОМЫЧ"
 
 msgid "Stats common"
 msgstr "Обычные"

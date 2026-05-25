@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0f08"/>
+      <stop offset="50%" stop-color="#120a05"/>
+      <stop offset="100%" stop-color="#0a0603"/>
+    </linearGradient>
+    <filter id="rough">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="grey"/>
+      <feBlend in="SourceGraphic" in2="grey" mode="multiply" result="blend"/>
+      <feComponentTransfer in="blend">
+        <feFuncA type="linear" slope="0.06"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <!-- rust patches -->
+  <ellipse cx="80"  cy="50"  rx="55" ry="30" fill="#6b2a08" opacity="0.22"/>
+  <ellipse cx="220" cy="110" rx="65" ry="35" fill="#7a3010" opacity="0.20"/>
+  <ellipse cx="160" cy="80"  rx="40" ry="22" fill="#5a2206" opacity="0.18"/>
+  <!-- horizontal scratches / corrosion lines -->
+  <g stroke="#8b4012" stroke-linecap="round" fill="none">
+    <line x1="8"   y1="22"  x2="95"  y2="19"  stroke-width="0.8" opacity="0.5"/>
+    <line x1="12"  y1="38"  x2="140" y2="35"  stroke-width="0.6" opacity="0.4"/>
+    <line x1="30"  y1="55"  x2="88"  y2="52"  stroke-width="1"   opacity="0.45"/>
+    <line x1="5"   y1="70"  x2="180" y2="66"  stroke-width="0.5" opacity="0.3"/>
+    <line x1="110" y1="30"  x2="260" y2="27"  stroke-width="0.7" opacity="0.4"/>
+    <line x1="150" y1="48"  x2="315" y2="44"  stroke-width="0.6" opacity="0.35"/>
+    <line x1="180" y1="62"  x2="310" y2="58"  stroke-width="0.8" opacity="0.4"/>
+    <line x1="8"   y1="90"  x2="130" y2="86"  stroke-width="0.9" opacity="0.45"/>
+    <line x1="60"  y1="105" x2="200" y2="100" stroke-width="0.6" opacity="0.35"/>
+    <line x1="10"  y1="120" x2="100" y2="116" stroke-width="0.7" opacity="0.4"/>
+    <line x1="200" y1="85"  x2="318" y2="80"  stroke-width="0.8" opacity="0.38"/>
+    <line x1="220" y1="118" x2="315" y2="114" stroke-width="0.6" opacity="0.3"/>
+    <line x1="30"  y1="140" x2="180" y2="136" stroke-width="0.7" opacity="0.35"/>
+    <line x1="130" y1="148" x2="310" y2="143" stroke-width="0.5" opacity="0.3"/>
+  </g>
+  <!-- pitting marks -->
+  <g fill="#7a3010" opacity="0.5">
+    <circle cx="42"  cy="43"  r="2.5"/>
+    <circle cx="115" cy="68"  r="2"/>
+    <circle cx="195" cy="38"  r="3"/>
+    <circle cx="258" cy="72"  r="1.8"/>
+    <circle cx="78"  cy="118" r="2.2"/>
+    <circle cx="165" cy="130" r="2.8"/>
+    <circle cx="288" cy="105" r="2"/>
+    <circle cx="22"  cy="148" r="1.5"/>
+  </g>
+  <!-- bolt holes -->
+  <circle cx="15"  cy="15"  r="5" fill="none" stroke="#5a2008" stroke-width="1" opacity="0.4"/>
+  <circle cx="305" cy="15"  r="5" fill="none" stroke="#5a2008" stroke-width="1" opacity="0.4"/>
+  <circle cx="15"  cy="145" r="5" fill="none" stroke="#5a2008" stroke-width="1" opacity="0.4"/>
+  <circle cx="305" cy="145" r="5" fill="none" stroke="#5a2008" stroke-width="1" opacity="0.4"/>
+</svg>

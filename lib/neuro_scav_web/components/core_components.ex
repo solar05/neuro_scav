@@ -620,7 +620,7 @@ defmodule NeuroScavWeb.CoreComponents do
 
   attr :lang, :string, required: true
   attr :path, :string, required: true
-  attr :action, :string, required: true
+  attr :action, :atom, required: true
   slot :inner_block, required: false
 
   def locale_link(%{lang: lang, path: path, action: action} = assigns) do

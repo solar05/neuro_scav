@@ -20,7 +20,7 @@ defmodule NeuroScavWeb.TeamLiveTest do
     test "gnome clicked shows gnome team", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/team_scavengers")
 
-      assert render_click(index_live, "gnome_clicked") =~ "ТЫ ПОЙМАЛ ГНОМА!"
+      assert render_click(index_live, "gnome_clicked") =~ "ГНОМ ГНОМЫЧ"
     end
   end
 end

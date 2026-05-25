@@ -1496,85 +1496,24 @@ kbd {
 }
 
 /* ── 10 card art themes ── */
-.theme-void .share-card-art {
-    background: radial-gradient(ellipse at 50% 120%, #0d0d2e 0%, #050510 60%, #000 100%);
-}
-.theme-void .share-art-lines {
-    background-image: radial-gradient(1px 1px at 20% 30%, rgba(100,120,255,0.35) 0%, transparent 100%),
-                      radial-gradient(1px 1px at 70% 60%, rgba(100,120,255,0.25) 0%, transparent 100%),
-                      radial-gradient(1px 1px at 45% 80%, rgba(150,150,255,0.2) 0%, transparent 100%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(255,255,255,0.025) 18px, rgba(255,255,255,0.025) 19px);
-}
+.share-card-art.theme-void   { background: url('/images/share/void.svg')   center/cover no-repeat; }
+.share-card-art.theme-lava   { background: url('/images/share/lava.svg')   center/cover no-repeat; }
+.share-card-art.theme-swamp  { background: url('/images/share/swamp.svg')  center/cover no-repeat; }
+.share-card-art.theme-arctic { background: url('/images/share/arctic.svg') center/cover no-repeat; }
+.share-card-art.theme-storm  { background: url('/images/share/storm.svg')  center/cover no-repeat; }
+.share-card-art.theme-rust   { background: url('/images/share/rust.svg')   center/cover no-repeat; }
+.share-card-art.theme-toxic  { background: url('/images/share/toxic.svg')  center/cover no-repeat; }
+.share-card-art.theme-blood  { background: url('/images/share/blood.svg')  center/cover no-repeat; }
+.share-card-art.theme-abyss  { background: url('/images/share/abyss.svg')  center/cover no-repeat; }
+.share-card-art.theme-nebula { background: url('/images/share/nebula.svg') center/cover no-repeat; }
 
-.theme-lava .share-card-art {
-    background: radial-gradient(ellipse at 50% 110%, #5c1a00 0%, #2a0800 60%, #0d0200 100%);
-}
-.theme-lava .share-art-lines {
-    background-image: linear-gradient(180deg, transparent 60%, rgba(255,60,0,0.12) 100%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(255,80,0,0.04) 18px, rgba(255,80,0,0.04) 19px);
-}
-
-.theme-swamp .share-card-art {
-    background: radial-gradient(ellipse at 50% 120%, #0a2a0f 0%, #051505 60%, #020802 100%);
-}
-.theme-swamp .share-art-lines {
-    background-image: linear-gradient(135deg, rgba(0,80,20,0.15) 0%, transparent 60%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,120,30,0.04) 18px, rgba(0,120,30,0.04) 19px);
-}
-
-.theme-arctic .share-card-art {
-    background: radial-gradient(ellipse at 50% 0%, #0f2a3a 0%, #081520 60%, #020810 100%);
-}
-.theme-arctic .share-art-lines {
-    background-image: linear-gradient(180deg, rgba(150,220,255,0.1) 0%, transparent 50%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(100,200,255,0.03) 18px, rgba(100,200,255,0.03) 19px);
-}
-
-.theme-storm .share-card-art {
-    background: radial-gradient(ellipse at 30% 50%, #1a1a2e 0%, #0a0a1a 60%, #000 100%);
-}
-.theme-storm .share-art-lines {
-    background-image: linear-gradient(45deg, rgba(80,80,180,0.1) 0%, transparent 70%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(60,60,150,0.04) 18px, rgba(60,60,150,0.04) 19px);
-}
-
-.theme-rust .share-card-art {
-    background: radial-gradient(ellipse at 50% 100%, #2a1505 0%, #150a02 60%, #080400 100%);
-}
-.theme-rust .share-art-lines {
-    background-image: linear-gradient(135deg, rgba(120,60,10,0.15) 0%, transparent 70%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(150,70,10,0.04) 18px, rgba(150,70,10,0.04) 19px);
-}
-
-.theme-toxic .share-card-art {
-    background: radial-gradient(ellipse at 50% 110%, #1a2200 0%, #0d1100 60%, #050800 100%);
-}
-.theme-toxic .share-art-lines {
-    background-image: radial-gradient(ellipse at 50% 50%, rgba(130,200,0,0.08) 0%, transparent 70%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(120,190,0,0.04) 18px, rgba(120,190,0,0.04) 19px);
-}
-
-.theme-blood .share-card-art {
-    background: radial-gradient(ellipse at 50% 110%, #3a0505 0%, #1a0202 60%, #080000 100%);
-}
-.theme-blood .share-art-lines {
-    background-image: linear-gradient(180deg, transparent 50%, rgba(180,0,0,0.12) 100%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(140,0,0,0.04) 18px, rgba(140,0,0,0.04) 19px);
-}
-
-.theme-abyss .share-card-art {
-    background: radial-gradient(ellipse at 50% 0%, #001a2e 0%, #000d1a 60%, #000508 100%);
-}
-.theme-abyss .share-art-lines {
-    background-image: radial-gradient(ellipse at 50% 80%, rgba(0,80,120,0.12) 0%, transparent 70%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(0,60,100,0.04) 18px, rgba(0,60,100,0.04) 19px);
-}
-
-.theme-nebula .share-card-art {
-    background: radial-gradient(ellipse at 60% 40%, #1a0a2e 0%, #0d0518 60%, #050008 100%);
-}
-.theme-nebula .share-art-lines {
-    background-image: radial-gradient(ellipse at 40% 60%, rgba(120,0,180,0.12) 0%, transparent 60%),
-                      radial-gradient(ellipse at 70% 30%, rgba(0,100,180,0.08) 0%, transparent 50%),
-                      repeating-linear-gradient(0deg, transparent, transparent 18px, rgba(100,0,150,0.03) 18px, rgba(100,0,150,0.03) 19px);
+/* scan-line overlay на все темы */
+.share-art-lines {
+    background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,0.08) 3px,
+        rgba(0,0,0,0.08) 4px
+    );
 }

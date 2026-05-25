@@ -87,7 +87,7 @@ msgid "Gnome click"
 msgstr "Klick den Gnom!"
 
 msgid "Gnome catched"
-msgstr "DU HAST EINEN GNOM GEFANGEN!"
+msgstr "GNOMEN GNOMICH"
 
 msgid "Stats common"
 msgstr "Gewöhnlich"

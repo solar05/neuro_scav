@@ -87,7 +87,7 @@ msgid "Gnome click"
 msgstr "Noomu wo kurikku!"
 
 msgid "Gnome catched"
-msgstr "Noomu wo tsukamaeta!"
+msgstr "Gnoomu Gnoomuch-kun"
 
 msgid "Stats common"
 msgstr "Komon"

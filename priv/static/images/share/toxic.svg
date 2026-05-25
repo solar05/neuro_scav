@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 160">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0e1400"/>
+      <stop offset="100%" stop-color="#060900"/>
+    </linearGradient>
+    <radialGradient id="pool" cx="50%" cy="100%" r="60%">
+      <stop offset="0%" stop-color="#4a7000" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#1a2800" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="drip-blur">
+      <feGaussianBlur stdDeviation="1"/>
+    </filter>
+  </defs>
+  <rect width="320" height="160" fill="url(#bg)"/>
+  <rect width="320" height="160" fill="url(#pool)"/>
+  <!-- drips from ceiling -->
+  <!-- drip shape: vertical line + teardrop at end -->
+  <g fill="#5a9000" opacity="0.7" filter="url(#glow)">
+    <!-- drip 1 -->
+    <rect x="54"  y="0" width="2"   height="62" opacity="0.5"/>
+    <ellipse cx="55"  cy="65"  rx="5"  ry="7"/>
+    <!-- drip 2 -->
+    <rect x="108" y="0" width="1.5" height="45" opacity="0.5"/>
+    <ellipse cx="109" cy="48"  rx="4"  ry="6"/>
+    <!-- drip 3 (long) -->
+    <rect x="160" y="0" width="2.5" height="80" opacity="0.5"/>
+    <ellipse cx="161" cy="83"  rx="6"  ry="8"/>
+    <!-- drip 4 -->
+    <rect x="215" y="0" width="1.5" height="55" opacity="0.5"/>
+    <ellipse cx="216" cy="58"  rx="4"  ry="6"/>
+    <!-- drip 5 -->
+    <rect x="270" y="0" width="2"   height="38" opacity="0.5"/>
+    <ellipse cx="271" cy="41"  rx="5"  ry="7"/>
+    <!-- drip 6 (short) -->
+    <rect x="30"  y="0" width="1"   height="22" opacity="0.4"/>
+    <ellipse cx="30"  cy="24"  rx="3"  ry="4"   opacity="0.6"/>
+    <!-- drip 7 -->
+    <rect x="292" y="0" width="1"   height="30" opacity="0.4"/>
+    <ellipse cx="292" cy="32"  rx="3"  ry="4"   opacity="0.6"/>
+  </g>
+  <!-- puddle ripples on floor -->
+  <g fill="none" stroke="#3a6000" stroke-linecap="round">
+    <ellipse cx="161" cy="145" rx="40" ry="10" stroke-width="1"   opacity="0.5"/>
+    <ellipse cx="161" cy="148" rx="60" ry="12" stroke-width="0.7" opacity="0.35"/>
+    <ellipse cx="161" cy="151" rx="80" ry="14" stroke-width="0.5" opacity="0.22"/>
+  </g>
+  <!-- hazard bubbles -->
+  <g fill="none" stroke="#5a9000" filter="url(#glow)">
+    <circle cx="55"  cy="130" r="6"  stroke-width="0.8" opacity="0.4"/>
+    <circle cx="210" cy="138" r="4"  stroke-width="0.8" opacity="0.35"/>
+    <circle cx="128" cy="125" r="5"  stroke-width="0.8" opacity="0.38"/>
+    <circle cx="265" cy="132" r="3.5" stroke-width="0.7" opacity="0.3"/>
+  </g>
+  <!-- warning glow -->
+  <ellipse cx="160" cy="83" rx="12" ry="10" fill="#7ab000" opacity="0.3" filter="url(#glow)"/>
+</svg>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
     <%= if assigns[:name] do %>
-      <title><%= @name %> — <%= @rarity %> | scavgen</title>
+      <title>{@name} — {@rarity} | scavgen</title>
       <meta name="description" content={"I found a #{@rarity} scavenger: #{@name}"} />
       <meta property="og:title" content={"#{@name} — #{@rarity}"} />
       <meta property="og:description" content={"A #{@rarity} scavenger from scavgen"} />
@@ -22,6 +22,6 @@
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
   </head>
   <body style="background-color: black; margin: 0;">
-    <%= @inner_content %>
+    {@inner_content}
   </body>
 </html>

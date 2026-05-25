@@ -97,7 +97,7 @@ msgid "Gnome click"
 msgstr "Click on the gnome!"
 
 msgid "Gnome catched"
-msgstr "YOU CATCHED A GNOME!"
+msgstr "Gnome Gnomich"
 
 msgid "Stats common"
 msgstr "Common"
