@@ -545,12 +545,6 @@ body {
         padding: 6px 10px;
     }
 
-    .streak-badge {
-        font-size: 0.9rem;
-        padding: 4px 12px;
-        letter-spacing: 1px;
-    }
-
     td {
         height: auto;
         min-height: 44px;
@@ -602,11 +596,6 @@ body {
 
     .rarity-label {
         padding: 5px 8px;
-    }
-
-    .streak-badge {
-        font-size: 0.8rem;
-        padding: 3px 10px;
     }
 
     .team-table .text-container {
@@ -1057,33 +1046,6 @@ body {
 
 .error-name span {
     animation: errorTextPulse 1.5s ease-in-out infinite;
-}
-
-.streak-badge {
-    font-family: "Bender";
-    font-size: 110%;
-    letter-spacing: 2px;
-    padding: 6px 20px;
-    border-radius: 18px;
-    display: inline-block;
-    align-self: center;
-    flex-shrink: 0;
-    white-space: nowrap;
-}
-
-.streak-warm {
-    background-color: rgba(0, 100, 0, 0.12);
-    animation: textShimmerUncommon 3s ease-in-out infinite, glowUncommon 3s ease-in-out infinite;
-}
-
-.streak-hot {
-    background-color: rgba(37, 171, 215, 0.12);
-    animation: textShimmerRare 2.5s ease-in-out infinite, glowRare 2.5s ease-in-out infinite;
-}
-
-.streak-legendary {
-    background-color: rgba(255, 140, 0, 0.12);
-    animation: textShimmerLegendary 1.5s ease-in-out infinite, glowLegendary 1.5s ease-in-out infinite;
 }
 
 td {

@@ -3,8 +3,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
 
   alias NeuroScav.{Locale, PubSub, StatsCounterServer}
 
-  @streak_rarities [:uncommon, :rare, :epic, :legendary, :neuro]
-
   @impl true
   def mount(_params, session, socket) do
     locale = Map.get(session, "lang")
@@ -25,8 +23,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
       })
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
-      |> assign(:streak, 0)
-      |> assign(:streak_class, "streak-warm")
       |> assign(:share_token, nil)
 
     {:ok, new_socket}
@@ -65,25 +61,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
     {:noreply,
      socket
      |> assign(:scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
-     |> assign(:share_token, share_token)
-     |> update_streak(rarity)}
+     |> assign(:share_token, share_token)}
   end
-
-  defp update_streak(socket, rarity) when rarity in @streak_rarities do
-    new_streak = socket.assigns.streak + 1
-
-    socket
-    |> assign(:streak, new_streak)
-    |> assign(:streak_class, streak_css_class(new_streak))
-  end
-
-  defp update_streak(socket, _common) do
-    socket
-    |> assign(:streak, 0)
-    |> assign(:streak_class, "streak-warm")
-  end
-
-  defp streak_css_class(n) when n >= 10, do: "streak-legendary"
-  defp streak_css_class(n) when n >= 5, do: "streak-hot"
-  defp streak_css_class(_), do: "streak-warm"
 end

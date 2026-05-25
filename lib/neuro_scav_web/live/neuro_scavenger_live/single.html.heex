@@ -6,11 +6,6 @@
     <h3 class={"blended-reg-bg rarity-label #{@scavenger.rarity} mb-0"}>
       {@scavenger.rarity_text}
     </h3>
-    <%= if @streak >= 2 do %>
-      <div class={"streak-badge #{@streak_class}"}>
-        x{@streak}
-      </div>
-    <% end %>
   </div>
   <p class="lead mt-3">
     <.link
