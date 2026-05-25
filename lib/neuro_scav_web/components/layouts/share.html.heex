@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <%= if assigns[:name] do %>
+      <title><%= @name %> — <%= @rarity %> | scavgen</title>
+      <meta name="description" content={"I found a #{@rarity} scavenger: #{@name}"} />
+      <meta property="og:title" content={"#{@name} — #{@rarity}"} />
+      <meta property="og:description" content={"A #{@rarity} scavenger from scavgen"} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={url(~p"/share/#{@token}")} />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:title" content={"#{@name} — #{@rarity}"} />
+      <meta name="twitter:description" content={"A #{@rarity} scavenger from scavgen"} />
+    <% else %>
+      <title>scavgen</title>
+    <% end %>
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
+  </head>
+  <body style="background-color: black; margin: 0;">
+    <%= @inner_content %>
+  </body>
+</html>

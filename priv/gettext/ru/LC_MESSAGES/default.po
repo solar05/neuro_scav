@@ -203,3 +203,6 @@ msgstr "Сгенерирован дичайшей нейросетью"
 
 msgid "gnome rule"
 msgstr "Поймай гнома, пока не убежал!"
+
+msgid "Share"
+msgstr "Поделиться"

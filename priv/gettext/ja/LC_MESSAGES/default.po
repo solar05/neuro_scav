@@ -190,3 +190,6 @@ msgstr "Ninkou AI de seisei sareta"
 
 msgid "gnome rule"
 msgstr "Noomu ga nigerumaeni tsukamaero!"
+
+msgid "Share"
+msgstr "シェア"

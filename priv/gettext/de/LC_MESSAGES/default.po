@@ -190,3 +190,6 @@ msgstr "Von einer KI generiert"
 
 msgid "gnome rule"
 msgstr "Fang den Gnom, bevor er wegläuft!"
+
+msgid "Share"
+msgstr "Teilen"

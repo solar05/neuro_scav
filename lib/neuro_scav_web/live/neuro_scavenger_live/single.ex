@@ -30,6 +30,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
       |> assign(:streak, 0)
       |> assign(:streak_class, "streak-warm")
       |> assign(:gnome_lurking, false)
+      |> assign(:share_token, nil)
 
     {:ok, new_socket}
   end
@@ -45,14 +46,18 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   def handle_event("gnome_clicked", _, socket) do
     StatsCounterServer.gnome_captured()
 
+    gnome_name = Locale.get_text("Gnome catched")
+    share_token = Base.url_encode64("#{gnome_name}|gnome", padding: false)
+
     {:noreply,
      socket
      |> assign(:scavenger, %{
-       name: Locale.get_text("Gnome catched"),
+       name: gnome_name,
        rarity: "gnome",
        rarity_text: Locale.get_text("gnome")
      })
      |> assign(:gnome_lurking, false)
+     |> assign(:share_token, share_token)
      |> update_streak("gnome")}
   end
 
@@ -61,11 +66,13 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   def handle_info({:single_generated, %{rarity: rarity, name: name}}, socket) do
     rarity_text = Locale.get_text(Atom.to_string(rarity))
     gnome_lurking = :rand.uniform(100) <= @gnome_probability
+    share_token = Base.url_encode64("#{name}|#{rarity}", padding: false)
 
     {:noreply,
      socket
      |> assign(:scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
      |> assign(:gnome_lurking, gnome_lurking)
+     |> assign(:share_token, share_token)
      |> update_streak(rarity)}
   end
 

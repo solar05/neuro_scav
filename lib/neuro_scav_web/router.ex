@@ -28,6 +28,8 @@ defmodule NeuroScavWeb.Router do
     live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
+
+    get "/share/:token", ShareController, :show
   end
 
   scope "/api", NeuroScavWeb.Api do

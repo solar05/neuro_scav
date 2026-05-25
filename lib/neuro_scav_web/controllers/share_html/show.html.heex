@@ -1,0 +1,47 @@
+<%= if @name do %>
+  <div class="share-page">
+    <div class={"share-card border-#{@rarity}"}>
+      <div class={"share-card-art theme-#{@theme}"}>
+        <div class="share-card-art-inner">
+          <div class="share-art-lines"></div>
+        </div>
+      </div>
+      <div class="share-card-body">
+        <p class={"share-card-name #{@rarity}-name"}>
+          <%= @name %>
+        </p>
+        <span class={"share-rarity-badge #{@rarity}"}>
+          <%= @rarity %>
+        </span>
+      </div>
+      <div class="share-card-footer">
+        <span class="share-brand">scavgen</span>
+      </div>
+    </div>
+
+    <div class="share-actions">
+      <button
+        class="share-copy-btn"
+        data-url={url(~p"/share/#{@token}")}
+        onclick="var btn=this; navigator.clipboard.writeText(btn.dataset.url).then(function(){var orig=btn.textContent; btn.textContent='copied!'; setTimeout(function(){btn.textContent=orig;},1500);});"
+      >
+        copy link
+      </button>
+      <a href={~p"/"} class="share-try-btn">try yourself</a>
+    </div>
+  </div>
+<% else %>
+  <div class="share-page">
+    <div class="share-card border-common">
+      <div class="share-card-art theme-void">
+        <div class="share-card-art-inner"></div>
+      </div>
+      <div class="share-card-body">
+        <p class="share-card-name common-name">invalid link</p>
+      </div>
+    </div>
+    <div class="share-actions">
+      <a href={~p"/"} class="share-try-btn">go to scavgen</a>
+    </div>
+  </div>
+<% end %>
