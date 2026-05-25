@@ -301,10 +301,8 @@ defmodule NeuroScav.ScavengersServer do
   """
   @spec epic?(String.t()) :: boolean()
   def epic?(name) do
-    splitted_name = String.split(name, " ")
-    first_name = List.first(splitted_name)
-    last_name = List.last(splitted_name)
-    rhyme_suffix(first_name) == rhyme_suffix(last_name)
+    parts = String.split(name, " ")
+    rhyme_suffix(List.first(parts)) == rhyme_suffix(List.last(parts))
   end
 
   @vowels ~w(a e i o u а е ё и о у ы э ю я)
@@ -318,12 +316,9 @@ defmodule NeuroScav.ScavengersServer do
         Enum.join(graphemes)
 
       idx ->
-        pos = length(graphemes) - idx - 1
         # Require at least 3 characters to avoid weak single-vowel matches
         # ("Дима"→"има", "Сотона"→"она" won't match; "Гена"→"ена", "Лена"→"ена" will).
-        shortage = max(0, 3 - (length(graphemes) - pos))
-        start = max(0, pos - shortage)
-        Enum.drop(graphemes, start) |> Enum.join()
+        Enum.take(graphemes, -max(idx + 1, 3)) |> Enum.join()
     end
   end
 
