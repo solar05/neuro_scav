@@ -117,12 +117,15 @@ p {
     font-family: "Bender";
     font-size: 110%;
     border: none;
+    table-layout: fixed;
+    width: 100%;
 }
 
 .td-scav {
     background-color: #7e7f8b !important;
     color: #ffffff !important;
     text-align: center;
+    width: 50%;
 }
 
 .tr-scav:hover {
