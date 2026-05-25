@@ -287,9 +287,9 @@ defmodule NeuroScav.ScavengersServer do
   Check if a name is epic rarity.
 
   A name is epic if the first and last names rhyme — they share the same
-  suffix starting from the last vowel (the "rime" of the final syllable).
+  3-character suffix ending at the last vowel and beyond.
 
-  Examples: "Гена Лена" ("-а" == "-а"), "Борис Денис" ("-ис" == "-ис")
+  Examples: "Гена Лена" ("ена" == "ена"), "Маша Саша" ("аша" == "аша")
 
   ## Parameters
 
@@ -318,9 +318,12 @@ defmodule NeuroScav.ScavengersServer do
         Enum.join(graphemes)
 
       idx ->
-        graphemes
-        |> Enum.drop(length(graphemes) - idx - 1)
-        |> Enum.join()
+        pos = length(graphemes) - idx - 1
+        # Require at least 3 characters to avoid weak single-vowel matches
+        # ("Дима"→"има", "Сотона"→"она" won't match; "Гена"→"ена", "Лена"→"ена" will).
+        shortage = max(0, 3 - (length(graphemes) - pos))
+        start = max(0, pos - shortage)
+        Enum.drop(graphemes, start) |> Enum.join()
     end
   end
 

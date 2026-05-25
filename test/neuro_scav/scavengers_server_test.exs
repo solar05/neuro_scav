@@ -62,11 +62,20 @@ defmodule NeuroScav.ScavengersServerTest do
     end
 
     test "epic?/2" do
+      # ru rhymes
       assert Server.epic?("Гена Лена")
-      assert Server.epic?("Борис Денис")
       assert Server.epic?("Яшка Полторашка")
+      assert Server.epic?("Маша Саша")
+      # english rhymes
+      assert Server.epic?("Sasha Masha")
+      assert Server.epic?("Dima Prima")
+      # no rhymes
       refute Server.epic?("Маша Сергей")
       refute Server.epic?("М Й")
+      refute Server.epic?("Дима Сотона")
+      refute Server.epic?("Vova Sasha")
+      refute Server.epic?("Борис Денис")
+      refute Server.epic?("Катя Петя")
     end
 
     test "rare?/2" do
