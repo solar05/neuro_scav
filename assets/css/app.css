@@ -749,7 +749,6 @@ body {
     }
 }
 
-/* Анимация при клике на гнома */
 .gnome-image.clicked {
     animation: gnomeJump 0.6s ease-out;
 }

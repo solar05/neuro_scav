@@ -1,7 +1,8 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Statistics do
   use NeuroScavWeb, :live_view
+  use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, PubSub, Scavengers, StatsCounterServer}
+  alias NeuroScav.{Locale, PubSub, Scavengers}
 
   @impl true
   def mount(_params, session, socket) do
@@ -22,13 +23,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Statistics do
       |> assign(:user_id, user_id)
 
     {:ok, new_socket}
-  end
-
-  @impl true
-  def handle_event("gnome_clicked", _, socket) do
-    StatsCounterServer.gnome_captured()
-
-    {:noreply, socket}
   end
 
   # pubsub callbacks
