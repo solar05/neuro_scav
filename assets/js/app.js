@@ -33,6 +33,74 @@ function triggerRarityFlash(rarity) {
   setTimeout(() => { flash.className = 'rarity-flash'; }, 900);
 }
 
+// ── Screen shake (epic) ──
+function triggerScreenShake() {
+  document.body.classList.remove('screen-shake');
+  void document.body.offsetWidth;
+  document.body.classList.add('screen-shake');
+  setTimeout(() => document.body.classList.remove('screen-shake'), 400);
+}
+
+// ── Confetti burst (legendary) ──
+function launchConfetti() {
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:10000';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  const colors = ['#ff8c00', '#ffd700', '#ff4500', '#fff4a3', '#ffb347', '#ffffff', '#ff6347'];
+  const cx = canvas.width / 2;
+  const cy = canvas.height * 0.35;
+
+  const particles = Array.from({length: 90}, () => {
+    const angle = (Math.random() * Math.PI * 2);
+    const speed = Math.random() * 7 + 3;
+    return {
+      x: cx + (Math.random() - 0.5) * 40,
+      y: cy + (Math.random() - 0.5) * 20,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      w: Math.random() * 8 + 4,
+      h: Math.random() * 4 + 3,
+      rot: Math.random() * 360,
+      rotV: (Math.random() - 0.5) * 12,
+      opacity: 1
+    };
+  });
+
+  let frame = 0;
+  const totalFrames = 100;
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.22;
+      p.vx *= 0.99;
+      p.rot += p.rotV;
+      p.opacity = Math.max(0, 1 - frame / totalFrames);
+
+      ctx.save();
+      ctx.globalAlpha = p.opacity;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+
+    frame++;
+    if (frame < totalFrames) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+
+  requestAnimationFrame(draw);
+}
+
 // ── Shortcuts modal toggle (exposed on window for inline onclick) ──
 window.toggleShortcutsModal = function() {
   const modal = document.getElementById('shortcuts-modal');
@@ -106,9 +174,11 @@ const ScavNameHook = {
     } else if (el.closest('.legendary-name, .team-legendary-name')) {
       el.classList.add('legendary-appear');
       triggerRarityFlash('legendary');
+      launchConfetti();
     } else if (el.closest('.epic-name, .team-epic-name')) {
       el.classList.add('epic-appear');
       triggerRarityFlash('epic');
+      triggerScreenShake();
     } else if (el.closest('.rare-name, .team-rare-name')) {
       el.classList.add('rare-appear');
     } else {

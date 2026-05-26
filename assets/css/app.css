@@ -1130,6 +1130,21 @@ table {
     animation: flashEpic 0.9s ease-out forwards;
 }
 
+/* ── Screen shake (epic) ── */
+@keyframes screenShake {
+    0%   { transform: translate(0, 0) rotate(0deg); }
+    15%  { transform: translate(-5px, 2px) rotate(-0.4deg); }
+    30%  { transform: translate(5px, -2px) rotate(0.4deg); }
+    45%  { transform: translate(-3px, 1px) rotate(-0.2deg); }
+    60%  { transform: translate(3px, -1px) rotate(0.2deg); }
+    75%  { transform: translate(-1px, 1px) rotate(-0.1deg); }
+    100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+.screen-shake {
+    animation: screenShake 0.4s ease-in-out;
+}
+
 /* ── Keyboard shortcuts help button ── */
 .shortcuts-help-btn {
     position: fixed;
@@ -1443,4 +1458,65 @@ kbd {
         rgba(0,0,0,0.08) 3px,
         rgba(0,0,0,0.08) 4px
     );
+}
+
+/* ── Rarity progress bars ── */
+.stats-divider {
+    border: none;
+    border-top: 5px solid rgba(255, 255, 255, 0.55);
+    margin: 1.5rem 0;
+}
+
+.rarity-bars-container {
+    width: 100%;
+    margin: 2rem 0 1rem;
+    padding: 0;
+    display: grid;
+    grid-template-columns: max-content 1fr max-content;
+    column-gap: 0.75rem;
+    row-gap: 0.55rem;
+    align-items: center;
+}
+
+.rarity-bars-total {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #888;
+    font-size: 2.5rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 0.7rem;
+}
+
+.rarity-bar-row {
+    display: contents;
+}
+
+.rarity-bar-label {
+    text-align: right;
+    font-size: 2.2rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.rarity-bar-track {
+    flex: 1;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.rarity-bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    transition: width 0.6s ease;
+    min-width: 2px;
+}
+
+.rarity-bar-pct {
+    min-width: 42px;
+    font-size: 1.78rem;
+    color: #888;
+    text-align: right;
 }

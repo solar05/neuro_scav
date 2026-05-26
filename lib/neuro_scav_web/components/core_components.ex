@@ -760,6 +760,63 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   @doc """
+  Renders rarity distribution as animated progress bars.
+
+  Shows each rarity's share of the total scavenger count.
+  Updates in real-time when statistics change via PubSub.
+
+  ## Example
+
+      <.rarity_bars statistics={@statistics} />
+  """
+  attr :statistics, :any, required: true
+
+  def rarity_bars(assigns) do
+    s = assigns.statistics
+
+    {total, counts} =
+      if s do
+        c = [s.neuro, s.legendary, s.epic, s.rare, s.uncommon, s.common, s.gnome]
+        {Enum.sum(c), c}
+      else
+        {0, List.duplicate(0, 7)}
+      end
+
+    config = [
+      {"neuro", gettext("Stats neuro"), "linear-gradient(90deg,#4d6bfe,#00e5ff,#8892f7)"},
+      {"legendary", gettext("Stats legendary"), "darkorange"},
+      {"epic", gettext("Stats epic"), "darkorchid"},
+      {"rare", gettext("Stats rare"), "rgb(37,171,215)"},
+      {"uncommon", gettext("Stats uncommon"), "darkgreen"},
+      {"common", gettext("Stats common"), "#a5a5a5"},
+      {"gnome", gettext("Stats gnome"),
+       "linear-gradient(90deg,#ff3232,#ff9600,#50dc50,#00a0ff,#a000ff)"}
+    ]
+
+    bars =
+      Enum.zip(config, counts)
+      |> Enum.map(fn {{cls, label, bg}, count} ->
+        pct = if total > 0, do: Float.round(count / total * 100, 1), else: 0.0
+        %{cls: cls, label: label, bg: bg, pct: pct}
+      end)
+
+    assigns = assign(assigns, bars: bars, total: total)
+
+    ~H"""
+    <div class="rarity-bars-container">
+      <p class="rarity-bars-total">{gettext("Stats total")}: {@total}</p>
+      <div :for={bar <- @bars} class="rarity-bar-row">
+        <span class={"rarity-bar-label #{bar.cls}"}>{bar.label}</span>
+        <div class="rarity-bar-track">
+          <div class="rarity-bar-fill" style={"width: #{bar.pct}%; background: #{bar.bg};"}></div>
+        </div>
+        <span class="rarity-bar-pct">{bar.pct}%</span>
+      </div>
+    </div>
+    """
+  end
+
+  @doc """
   Translates the errors for a field from a keyword list of errors.
   """
   def translate_errors(errors, field) when is_list(errors) do
