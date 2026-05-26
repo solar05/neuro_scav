@@ -1207,8 +1207,8 @@ table {
 .shortcuts-modal-content {
     background: #3a3a46;
     border: 2px solid #d49300;
-    border-radius: 20px;
-    min-width: 300px;
+    border-radius: 14px;
+    min-width: 210px;
     max-width: 90vw;
     box-shadow: 0 8px 40px rgba(0,0,0,0.75), 0 0 40px rgba(212,147,0,0.12);
     overflow: hidden;
@@ -1216,22 +1216,32 @@ table {
 }
 
 .shortcuts-modal-header {
+    position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
+    justify-content: flex-end;
+    padding: 11px 14px;
     border-bottom: 1px solid rgba(212, 147, 0, 0.28);
     font-family: "Bender", cursive;
-    font-size: 120%;
+    font-size: 84%;
     color: #d49300;
     letter-spacing: 1px;
+    margin-top: 5px;
+}
+
+.shortcuts-modal-header > span {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none;
 }
 
 .shortcuts-modal-close {
     background: none;
     border: none;
     color: #a5a5a5;
-    font-size: 22px;
+    font-size: 15px;
     cursor: pointer;
     padding: 0 2px;
     line-height: 1;
@@ -1244,7 +1254,7 @@ table {
 }
 
 .shortcuts-modal-body {
-    padding: 14px 20px 20px;
+    padding: 10px 14px 14px;
 }
 
 .shortcuts-table {
@@ -1255,14 +1265,14 @@ table {
 }
 
 .shortcuts-table td {
-    padding: 9px 10px;
+    padding: 6px 7px;
     border: none;
     height: auto;
     vertical-align: middle;
 }
 
 .shortcuts-table td:first-child {
-    width: 90px;
+    width: 63px;
     text-align: center;
 }
 
@@ -1272,12 +1282,12 @@ table {
 
 kbd {
     display: inline-block;
-    padding: 3px 10px;
+    padding: 2px 7px;
     background: #212529;
     border: 1px solid #555;
-    border-radius: 6px;
+    border-radius: 4px;
     font-family: "SF", monospace;
-    font-size: 85%;
+    font-size: 60%;
     color: #d49300;
     box-shadow: 0 2px 0 rgba(0,0,0,0.5);
     white-space: nowrap;
@@ -1301,14 +1311,14 @@ kbd {
 /* ── Shortcuts modal glossary link ── */
 .shortcuts-modal-glossary {
     border-top: 1px solid rgba(212, 147, 0, 0.2);
-    margin-top: 10px;
-    padding-top: 10px;
+    margin-top: 7px;
+    padding-top: 7px;
     text-align: center;
 }
 
 .glossary-modal-link {
     font-family: "Bender", cursive;
-    font-size: 90%;
+    font-size: 63%;
     color: #d49300 !important;
     text-decoration: none !important;
     letter-spacing: 0.5px;
