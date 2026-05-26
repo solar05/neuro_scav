@@ -671,11 +671,7 @@ body {
     left: 0;
     right: 0;
     height: 150px;
-    /* background: linear-gradient(135deg, #2c5530, #4a7c59); */
-    /* border-top: 3px solid #8B4513; */
-    /* box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.3); */
     z-index: 1000;
-    transition: bottom 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
 .gnome-footer.show {

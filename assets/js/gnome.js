@@ -56,25 +56,23 @@ class GnomeFooter {
     }
 
     onGnomeClick() {
-        // Воспроизводим звук
+        if (!this.isVisible) return;
+        this.isVisible = false;
+
         this.playGnomeSound();
-        
-        // Добавляем анимацию прыжка гнома
+
         this.gnomeImage.classList.add('clicked');
-        
-        // Убираем класс анимации через время её выполнения
         setTimeout(() => {
             this.gnomeImage.classList.remove('clicked');
         }, 600);
-        
-        // Скрываем футер с задержкой
+
         setTimeout(() => {
             this.hideFooter();
         }, 800);
     }
 
     playGnomeSound() {
-        this.gnomeSound.play();
+        this.gnomeSound.play().catch(() => {});
     }
 }
 

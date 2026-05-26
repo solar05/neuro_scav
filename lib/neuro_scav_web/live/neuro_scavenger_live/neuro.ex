@@ -1,7 +1,8 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
   use NeuroScavWeb, :live_view
+  use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, PubSub, StatsCounterServer}
+  alias NeuroScav.{Locale, PubSub}
 
   @turnstile Application.compile_env(:phoenix_turnstile, :adapter, Turnstile)
 
@@ -50,12 +51,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Neuro do
     end
   end
 
-  @impl true
-  def handle_event("gnome_clicked", _, socket) do
-    StatsCounterServer.gnome_captured()
-
+  def on_gnome_clicked(socket) do
     {:noreply,
-     assign(socket, :neuro_scavenger, scav(Locale.get_text("Gnome catched"), "gnome"))
+     socket
+     |> assign(:neuro_scavenger, scav(Locale.get_text("Gnome catched"), "gnome"))
      |> Turnstile.refresh()}
   end
 

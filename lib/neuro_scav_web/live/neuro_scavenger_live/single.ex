@@ -1,7 +1,8 @@
 defmodule NeuroScavWeb.NeuroScavengerLive.Single do
   use NeuroScavWeb, :live_view
+  use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, PubSub, StatsCounterServer}
+  alias NeuroScav.{Locale, PubSub}
 
   @impl true
   def mount(_params, session, socket) do
@@ -35,10 +36,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Single do
     {:noreply, socket}
   end
 
-  @impl true
-  def handle_event("gnome_clicked", _, socket) do
-    StatsCounterServer.gnome_captured()
-
+  def on_gnome_clicked(socket) do
     gnome_name = Locale.get_text("Gnome catched")
     share_token = Base.url_encode64("#{gnome_name}|gnome", padding: false)
 

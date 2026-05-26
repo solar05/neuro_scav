@@ -23,7 +23,7 @@
     "rarity_text",
     "socket =",
     "def handle_info(_msg, socket), do: {:noreply, socket}",
-    "#{pct}%"
+    "use NeuroScavWeb.GnomeCapture"
   ],
   "skip_files": [
     "lib/neuro_scav/plugins/neuro_scav.ex",
