@@ -17,10 +17,10 @@ defmodule PromEx.Plugins.NeuroScav do
   end
 
   @spec processed_request_count() :: [atom()]
-  def processed_request_count(), do: @processed_request_count
+  def processed_request_count, do: @processed_request_count
 
   @spec processed_request_measure() :: [atom()]
-  def processed_request_measure(), do: @processed_request_measure
+  def processed_request_measure, do: @processed_request_measure
 
   defp processed_request_measure(metric_prefix) do
     Event.build(

@@ -24,8 +24,8 @@ defmodule NeuroScav.PubSub do
       NeuroScav.PubSub.broadcast_statistics(updated_stats)
   """
 
-  alias Phoenix.PubSub
   alias NeuroScav.PubSub.Topics
+  alias Phoenix.PubSub
 
   @doc """
   Subscribe to user-specific events.
@@ -48,7 +48,7 @@ defmodule NeuroScav.PubSub do
   All statistics counter changes are broadcast to this topic.
   """
   @spec subscribe_statistics() :: :ok | {:error, term()}
-  def subscribe_statistics() do
+  def subscribe_statistics do
     PubSub.subscribe(NeuroScav.PubSub, Topics.statistics_topic())
   end
 

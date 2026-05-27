@@ -10,6 +10,8 @@
 
 /package*
 
+/examples
+
 # The directory Mix downloads your dependencies sources to.
 /deps/
 

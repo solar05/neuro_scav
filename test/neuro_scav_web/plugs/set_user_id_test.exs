@@ -29,7 +29,7 @@ defmodule NeuroScavWeb.SetUserIdTest do
     end
   end
 
-  defp prepare_conn() do
+  defp prepare_conn do
     conn(:get, "/")
     |> fetch_query_params()
     |> Plug.Session.call(Plug.Session.init(@settings))

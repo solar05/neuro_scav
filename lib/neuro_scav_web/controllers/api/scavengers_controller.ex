@@ -1,7 +1,7 @@
 defmodule NeuroScavWeb.Api.ScavengersController do
   use NeuroScavWeb, :controller
 
-  alias NeuroScav.{ScavengersServer, Locale, Scavengers}
+  alias NeuroScav.{Locale, Scavengers, ScavengersServer}
 
   def generate_single(conn, _params) do
     locale = Locale.setup_locale(fetch_locale_from(conn))

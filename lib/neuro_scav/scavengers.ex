@@ -12,7 +12,7 @@ defmodule NeuroScav.Scavengers do
 
   def get_statistics(id), do: Repo.get(Statistics, id)
 
-  def get_statistics() do
+  def get_statistics do
     from(Statistics, order_by: [:id], limit: 1)
     |> Repo.one()
   end

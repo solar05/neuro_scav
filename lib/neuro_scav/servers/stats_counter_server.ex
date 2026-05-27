@@ -55,7 +55,7 @@ defmodule NeuroScav.StatsCounterServer do
 
   use GenServer
 
-  alias NeuroScav.{Scavengers, PubSub}
+  alias NeuroScav.{PubSub, Scavengers}
 
   @available_counters [:common, :uncommon, :rare, :epic, :legendary, :neuro, :gnome]
 
@@ -67,7 +67,7 @@ defmodule NeuroScav.StatsCounterServer do
   List of counter atoms that can be incremented.
   """
   @spec available_counters() :: list(atom())
-  def available_counters(), do: @available_counters
+  def available_counters, do: @available_counters
 
   @doc """
   Increment a single counter by 1.
@@ -112,7 +112,7 @@ defmodule NeuroScav.StatsCounterServer do
   `:ok`
   """
   @spec gnome_captured() :: :ok
-  def gnome_captured(), do: update_counter(:gnome)
+  def gnome_captured, do: update_counter(:gnome)
 
   @doc """
   Increment multiple counters, each by 1.
