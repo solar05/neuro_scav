@@ -3,13 +3,8 @@ defmodule NeuroScavWeb.ShareController do
 
   @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
 
-  @canvas_w 1200
-  @canvas_h 630
-  @card_cx 450
-  @card_cy 75
-  @card_cw 300
-  @card_ch 480
-  @card_art_h 215
+  @canvas %{w: 1200, h: 630}
+  @card %{cx: 450, cy: 75, cw: 300, ch: 480, art_h: 215}
 
   # Theme SVG inner content loaded at compile time (outer <svg> tags stripped)
   @theme_svgs Map.new(@card_themes, fn theme ->
@@ -106,73 +101,41 @@ defmodule NeuroScavWeb.ShareController do
 
     badge_label = rarity |> String.upcase() |> xml_escape()
     lines = name |> String.split(" ", parts: 3) |> Enum.map(&xml_escape/1)
-    num_lines = length(lines)
 
-    max_part = lines |> Enum.map(&String.length/1) |> Enum.max()
+    %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @card
 
-    font_size =
-      cond do
-        max_part > 14 -> 22
-        max_part > 10 -> 26
-        num_lines == 1 -> 36
-        true -> 30
-      end
-
-    line_h = round(font_size * 1.4)
-    name_box_h = num_lines * line_h + 32
-
-    cx = @card_cx
-    cy = @card_cy
-    cw = @card_cw
-    ch = @card_ch
-    art_h = @card_art_h
-    mid_x = cx + div(cw, 2)
-
-    name_box_x = cx + 15
-    name_box_w = cw - 30
-    name_box_y = cy + art_h + 12
-    name_box_bottom = name_box_y + name_box_h
-
-    text_block_h = (num_lines - 1) * line_h
-    name_text_y = name_box_y + div(name_box_h - text_block_h, 2) + div(font_size * 2, 3) - 10
-
-    badge_w = 120
-    badge_h = 32
-    badge_x = mid_x - div(badge_w, 2)
-    badge_y = name_box_bottom + 10
+    %{
+      font_size: font_size,
+      line_h: line_h,
+      mid_x: mid_x,
+      name_box_x: name_box_x,
+      name_box_y: name_box_y,
+      name_box_w: name_box_w,
+      name_box_h: name_box_h,
+      name_text_y: name_text_y,
+      badge_x: badge_x,
+      badge_y: badge_y,
+      badge_w: badge_w,
+      badge_h: badge_h
+    } = card_layout(lines)
 
     tspans = name_tspans(lines, mid_x, line_h)
 
-    decorations = rarity_decorations(rarity, border_color, cx, cy, cw, ch)
+    decorations = rarity_decorations(rarity, border_color, @card)
 
     name_box_fill = "url(#name-grad)"
     name_grad_def = name_gradient(rarity, border_color, text_color)
 
     """
-    <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas_w}" height="#{@canvas_h}">
+    <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
       <defs>
-        <style>
-          @font-face {
-            font-family: 'Bender';
-            font-weight: normal;
-            src: url('data:font/otf;base64,#{@font_normal}') format('opentype');
-          }
-          @font-face {
-            font-family: 'Bender';
-            font-weight: bold;
-            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-          }
-          @font-face {
-            font-family: 'BenderBold';
-            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-          }
-        </style>
+        #{font_style_defs()}
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
         </clipPath>
         #{name_grad_def}
       </defs>
-      <rect width="#{@canvas_w}" height="#{@canvas_h}" fill="#000000"/>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
       <g clip-path="url(#card-clip)">
@@ -202,6 +165,74 @@ defmodule NeuroScavWeb.ShareController do
             fill="#{border_color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
     </svg>
     """
+  end
+
+  defp font_style_defs do
+    """
+    <style>
+          @font-face {
+            font-family: 'Bender';
+            font-weight: normal;
+            src: url('data:font/otf;base64,#{@font_normal}') format('opentype');
+          }
+          @font-face {
+            font-family: 'Bender';
+            font-weight: bold;
+            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
+          }
+          @font-face {
+            font-family: 'BenderBold';
+            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
+          }
+        </style>
+    """
+  end
+
+  defp card_layout(lines) do
+    num_lines = length(lines)
+    max_part = lines |> Enum.map(&String.length/1) |> Enum.max()
+
+    font_size =
+      cond do
+        max_part > 14 -> 22
+        max_part > 10 -> 26
+        num_lines == 1 -> 36
+        true -> 30
+      end
+
+    line_h = round(font_size * 1.4)
+    name_box_h = num_lines * line_h + 32
+
+    %{cx: cx, cy: cy, cw: cw, art_h: art_h} = @card
+    mid_x = cx + div(cw, 2)
+
+    name_box_x = cx + 15
+    name_box_w = cw - 30
+    name_box_y = cy + art_h + 12
+    name_box_bottom = name_box_y + name_box_h
+
+    text_block_h = (num_lines - 1) * line_h
+    name_text_y = name_box_y + div(name_box_h - text_block_h, 2) + div(font_size * 2, 3) - 10
+
+    badge_w = 120
+    badge_h = 32
+    badge_x = mid_x - div(badge_w, 2)
+    badge_y = name_box_bottom + 10
+
+    %{
+      font_size: font_size,
+      line_h: line_h,
+      mid_x: mid_x,
+      name_box_x: name_box_x,
+      name_box_y: name_box_y,
+      name_box_w: name_box_w,
+      name_box_h: name_box_h,
+      name_text_y: name_text_y,
+      badge_x: badge_x,
+      badge_y: badge_y,
+      badge_w: badge_w,
+      badge_h: badge_h
+    }
   end
 
   defp name_tspans(lines, mid_x, line_h) do
@@ -237,17 +268,13 @@ defmodule NeuroScavWeb.ShareController do
     """
   end
 
-  defp rarity_decorations(rarity, color, cx, cy, cw, ch) do
+  defp rarity_decorations(rarity, color, %{cx: cx, cy: cy, cw: cw, ch: ch}) do
     mid_x = cx + div(cw, 2)
 
-    tl = cbracket(cx - 8, cy - 8, 22, 1, 1, color)
-    tr = cbracket(cx + cw + 8, cy - 8, 22, -1, 1, color)
-    bl = cbracket(cx - 8, cy + ch + 8, 22, 1, -1, color)
-    br = cbracket(cx + cw + 8, cy + ch + 8, 22, -1, -1, color)
-
-    diamond = fn x, y, r ->
-      ~s(<polygon points="#{x},#{y - r} #{x + r},#{y} #{x},#{y + r} #{x - r},#{y}" fill="#{color}"/>)
-    end
+    tl = corner_bracket(cx - 8, cy - 8, 22, 1, 1, color)
+    tr = corner_bracket(cx + cw + 8, cy - 8, 22, -1, 1, color)
+    bl = corner_bracket(cx - 8, cy + ch + 8, 22, 1, -1, color)
+    br = corner_bracket(cx + cw + 8, cy + ch + 8, 22, -1, -1, color)
 
     inner_glow =
       ~s(<rect x="#{cx + 5}" y="#{cy + 5}" width="#{cw - 10}" height="#{ch - 10}" rx="17" fill="none" stroke="#{color}" stroke-width="1" opacity="0.2"/>)
@@ -262,14 +289,14 @@ defmodule NeuroScavWeb.ShareController do
           tr,
           bl,
           br,
-          diamond.(mid_x, cy, 6),
-          diamond.(mid_x, cy + ch, 6),
-          diamond.(cx, mid_y, 5),
-          diamond.(cx + cw, mid_y, 5),
-          diamond.(cx + div(cw, 4), cy, 3),
-          diamond.(cx + div(cw * 3, 4), cy, 3),
-          diamond.(cx + div(cw, 4), cy + ch, 3),
-          diamond.(cx + div(cw * 3, 4), cy + ch, 3)
+          diamond_svg(mid_x, cy, 6, color),
+          diamond_svg(mid_x, cy + ch, 6, color),
+          diamond_svg(cx, mid_y, 5, color),
+          diamond_svg(cx + cw, mid_y, 5, color),
+          diamond_svg(cx + div(cw, 4), cy, 3, color),
+          diamond_svg(cx + div(cw * 3, 4), cy, 3, color),
+          diamond_svg(cx + div(cw, 4), cy + ch, 3, color),
+          diamond_svg(cx + div(cw * 3, 4), cy + ch, 3, color)
         ]
         |> Enum.join("\n")
 
@@ -282,10 +309,10 @@ defmodule NeuroScavWeb.ShareController do
           tr,
           bl,
           br,
-          diamond.(mid_x, cy, 5),
-          diamond.(mid_x, cy + ch, 5),
-          diamond.(cx, mid_y, 4),
-          diamond.(cx + cw, mid_y, 4)
+          diamond_svg(mid_x, cy, 5, color),
+          diamond_svg(mid_x, cy + ch, 5, color),
+          diamond_svg(cx, mid_y, 4, color),
+          diamond_svg(cx + cw, mid_y, 4, color)
         ]
         |> Enum.join("\n")
 
@@ -295,9 +322,9 @@ defmodule NeuroScavWeb.ShareController do
         [
           tl,
           tr,
-          diamond.(mid_x, cy, 4),
-          diamond.(cx, mid_y, 3),
-          diamond.(cx + cw, mid_y, 3)
+          diamond_svg(mid_x, cy, 4, color),
+          diamond_svg(cx, mid_y, 3, color),
+          diamond_svg(cx + cw, mid_y, 3, color)
         ]
         |> Enum.join("\n")
 
@@ -307,22 +334,18 @@ defmodule NeuroScavWeb.ShareController do
       "gnome" ->
         rainbow = ~w(#ff6b6b #ffaa33 #ffe044 #44ee88 #44aaff #bb55ff #ff44bb)
 
-        rdiamond = fn x, y, r, c ->
-          ~s(<polygon points="#{x},#{y - r} #{x + r},#{y} #{x},#{y + r} #{x - r},#{y}" fill="#{c}"/>)
-        end
-
         top_diamonds =
           rainbow
           |> Enum.with_index()
           |> Enum.map(fn {c, i} ->
-            rdiamond.(cx + 20 + i * 40, cy, if(i == 3, do: 6, else: 4), c)
+            diamond_svg(cx + 20 + i * 40, cy, gnome_diamond_radius(i), c)
           end)
 
         bottom_diamonds =
           rainbow
           |> Enum.with_index()
           |> Enum.map(fn {c, i} ->
-            rdiamond.(cx + 20 + i * 40, cy + ch, if(i == 3, do: 6, else: 4), c)
+            diamond_svg(cx + 20 + i * 40, cy + ch, gnome_diamond_radius(i), c)
           end)
 
         side_diamonds =
@@ -330,7 +353,7 @@ defmodule NeuroScavWeb.ShareController do
           |> Enum.with_index()
           |> Enum.flat_map(fn {c, i} ->
             y = cy + 40 + i * 57
-            [rdiamond.(cx, y, 4, c), rdiamond.(cx + cw, y, 4, c)]
+            [diamond_svg(cx, y, 4, c), diamond_svg(cx + cw, y, 4, c)]
           end)
 
         ([inner_glow, tl, tr, bl, br] ++ top_diamonds ++ bottom_diamonds ++ side_diamonds)
@@ -341,7 +364,14 @@ defmodule NeuroScavWeb.ShareController do
     end
   end
 
-  defp cbracket(x, y, arm, dx, dy, color) do
+  defp gnome_diamond_radius(3), do: 6
+  defp gnome_diamond_radius(_), do: 4
+
+  defp diamond_svg(x, y, r, color) do
+    ~s(<polygon points="#{x},#{y - r} #{x + r},#{y} #{x},#{y + r} #{x - r},#{y}" fill="#{color}"/>)
+  end
+
+  defp corner_bracket(x, y, arm, dx, dy, color) do
     ~s(<path d="M #{x},#{y + dy * arm} L #{x},#{y} L #{x + dx * arm},#{y}" fill="none" stroke="#{color}" stroke-width="2"/>)
   end
 
