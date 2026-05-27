@@ -27,7 +27,7 @@ class GnomeFooter {
 
         const initialNumber = LEFT_INTERVAL[Math.floor(Math.random() * LEFT_INTERVAL.length)];
         const coefficient = RIGHT_INTERVAL[Math.floor(Math.random() * RIGHT_INTERVAL.length)];
-        const randomTime = 1;
+        const randomTime = initialNumber * coefficient;
 
         this.timeoutId = setTimeout(() => {
             if (!this.isVisible) {
