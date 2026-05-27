@@ -1336,13 +1336,84 @@ kbd {
     background: #000;
 }
 
+.share-card-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+/* Rarity shadow — offset rect behind the card */
+.share-card-wrap::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px;
+    width: 100%; height: 100%;
+    border-radius: 16px;
+    background: var(--rc);
+    opacity: 0.15;
+    z-index: 0;
+    pointer-events: none;
+}
+
 .share-card {
+    position: relative;
+    z-index: 1;
     width: 320px;
     border-radius: 16px;
     overflow: hidden;
     font-family: "Bender", cursive;
-    background: #0d0d0d;
+    background: #0d0d12;
+    border: 4px solid var(--rc, #555);
 }
+
+.share-card.has-inner-glow {
+    box-shadow: inset 0 0 14px var(--rc-glow, transparent);
+}
+
+/* ── Corner brackets ── */
+.cb {
+    position: absolute;
+    width: 22px; height: 22px;
+    border: 2px solid var(--rc);
+    pointer-events: none;
+    z-index: 2;
+}
+.cb-tl { top: -8px;    left: -8px;    border-right: none;  border-bottom: none; }
+.cb-tr { top: -8px;    right: -8px;   border-left: none;   border-bottom: none; }
+.cb-bl { bottom: -8px; left: -8px;    border-right: none;  border-top: none; }
+.cb-br { bottom: -8px; right: -8px;   border-left: none;   border-top: none; }
+
+/* ── Edge diamonds ── */
+.dm {
+    position: absolute;
+    width: 12px; height: 12px;
+    background: var(--rc);
+    transform: rotate(45deg);
+    pointer-events: none;
+    z-index: 2;
+}
+.dm-tc { top: -6px;    left: calc(50% - 6px); }
+.dm-bc { bottom: -6px; left: calc(50% - 6px); }
+.dm-lm { left: -5px;   top: calc(50% - 5px); width: 10px; height: 10px; }
+.dm-rm { right: -5px;  top: calc(50% - 5px); width: 10px; height: 10px; }
+.dm-sm { width: 7px; height: 7px; }
+.dm-tc.dm-sm { top: -3.5px; }
+.dm-bc.dm-sm { bottom: -3.5px; }
+.dm-lm.dm-sm { left: -3.5px; top: calc(50% - 3.5px); }
+.dm-rm.dm-sm { right: -3.5px; top: calc(50% - 3.5px); }
+
+/* ── Gnome rainbow diamonds ── */
+.gd {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--gc);
+    transform: rotate(45deg);
+    pointer-events: none;
+    z-index: 2;
+}
+.gd.gd-t  { top: -4px;    margin-left: -4px; }
+.gd.gd-b  { bottom: -4px; margin-left: -4px; }
+.gd.gd-ls { left: -4px;   margin-top: -4px; }
+.gd.gd-rs { right: -4px;  margin-top: -4px; }
 
 .share-card-art {
     height: 160px;

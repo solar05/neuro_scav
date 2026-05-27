@@ -135,6 +135,31 @@ defmodule NeuroScavWeb.ShareController do
 
     decorations = rarity_decorations(rarity, border_color, cx, cy, cw, ch)
 
+    name_box_fill = "url(#name-grad)"
+
+    name_grad_def =
+      if rarity == "gnome" do
+        """
+              <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#ff4444"/>
+                <stop offset="14%"  stop-color="#ff8800"/>
+                <stop offset="28%"  stop-color="#ffdd00"/>
+                <stop offset="43%"  stop-color="#44cc55"/>
+                <stop offset="57%"  stop-color="#2299ff"/>
+                <stop offset="71%"  stop-color="#9944ff"/>
+                <stop offset="85%"  stop-color="#ff44bb"/>
+                <stop offset="100%" stop-color="#ff4444"/>
+              </linearGradient>
+        """
+      else
+        """
+              <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%"   stop-color="#{border_color}"/>
+                <stop offset="100%" stop-color="#{text_color}"/>
+              </linearGradient>
+        """
+      end
+
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
       <defs>
@@ -157,6 +182,7 @@ defmodule NeuroScavWeb.ShareController do
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
         </clipPath>
+        #{name_grad_def}
       </defs>
       <rect width="1200" height="630" fill="#000000"/>
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
@@ -169,11 +195,11 @@ defmodule NeuroScavWeb.ShareController do
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{border_color}" stroke-width="4"/>
       #{decorations}
       <line x1="#{cx}" y1="#{name_box_y - 7}" x2="#{cx + cw}" y2="#{name_box_y - 7}" stroke="#{border_color}" stroke-width="1" opacity="0.5"/>
-      <rect x="#{name_box_x}" y="#{name_box_y}" width="#{name_box_w}" height="#{name_box_h}" rx="16" fill="#0d0d1a" stroke="#{border_color}" stroke-width="1.5"/>
+      <rect x="#{name_box_x}" y="#{name_box_y}" width="#{name_box_w}" height="#{name_box_h}" rx="16" fill="#{name_box_fill}"/>
       <text x="#{mid_x}" y="#{name_text_y}"
             font-family="Bender, Arial, sans-serif"
             font-size="#{font_size}" font-weight="bold"
-            fill="#{text_color}" stroke="#000000" stroke-width="1" paint-order="stroke"
+            fill="#ffffff"
             text-anchor="middle">
         #{tspans}
       </text>

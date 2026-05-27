@@ -1,21 +1,70 @@
 <%= if @name do %>
+  <%
+    {border_color, glow_color} = case @rarity do
+      "legendary" -> {"#ff8c00", "rgba(255,140,0,0.22)"}
+      "epic"      -> {"#9932cc", "rgba(153,50,204,0.22)"}
+      "rare"      -> {"#1e90ff", "rgba(30,144,255,0.18)"}
+      "uncommon"  -> {"#22aa44", "rgba(34,170,68,0.15)"}
+      "gnome"     -> {"#ff44bb", "rgba(255,68,187,0.22)"}
+      _           -> {"#888888", "rgba(136,136,136,0.1)"}
+    end
+    r = @rarity
+    gnome_h = ~w(#ff6b6b #ffaa33 #44ee88 #44aaff #ff44bb)
+    gnome_v = ~w(#ffe044 #44ee88 #bb55ff)
+  %>
   <div class="share-page">
-    <div class={"share-card border-#{@rarity}"}>
-      <div class={"share-card-art theme-#{@theme}"}>
-        <div class="share-card-art-inner">
-          <div class="share-art-lines"></div>
+    <div class="share-card-wrap" style={"--rc: #{border_color}; --rc-glow: #{glow_color}"}>
+      <span class="cb cb-tl"></span>
+      <span class="cb cb-tr"></span>
+      <span class="cb cb-bl"></span>
+      <span class="cb cb-br"></span>
+      <%= if r in ["rare", "epic", "legendary", "gnome"] do %>
+        <span class="dm dm-tc"></span>
+        <span class="dm dm-bc"></span>
+        <span class="dm dm-lm"></span>
+        <span class="dm dm-rm"></span>
+      <% end %>
+      <%= if r == "legendary" do %>
+        <span class="dm dm-tc dm-sm" style="left: 25%;"></span>
+        <span class="dm dm-tc dm-sm" style="left: 75%;"></span>
+        <span class="dm dm-bc dm-sm" style="left: 25%;"></span>
+        <span class="dm dm-bc dm-sm" style="left: 75%;"></span>
+        <span class="dm dm-lm dm-sm"></span>
+        <span class="dm dm-rm dm-sm"></span>
+      <% end %>
+      <%= if r == "epic" do %>
+        <span class="dm dm-lm dm-sm"></span>
+        <span class="dm dm-rm dm-sm"></span>
+      <% end %>
+      <%= if r == "gnome" do %>
+        <%= for {c, i} <- Enum.with_index(gnome_h) do %>
+          <% x = 24 + i * 68 %>
+          <span class="gd gd-t" style={"left: #{x}px; --gc: #{c}"}></span>
+          <span class="gd gd-b" style={"left: #{x}px; --gc: #{c}"}></span>
+        <% end %>
+        <%= for {c, i} <- Enum.with_index(gnome_v) do %>
+          <% y = 65 + i * 100 %>
+          <span class="gd gd-ls" style={"top: #{y}px; --gc: #{c}"}></span>
+          <span class="gd gd-rs" style={"top: #{y}px; --gc: #{c}"}></span>
+        <% end %>
+      <% end %>
+      <div class={"share-card#{if r in ["epic", "legendary", "gnome"], do: " has-inner-glow", else: ""}"}>
+        <div class={"share-card-art theme-#{@theme}"}>
+          <div class="share-card-art-inner">
+            <div class="share-art-lines"></div>
+          </div>
         </div>
-      </div>
-      <div class="share-card-body">
-        <p class={"share-card-name #{@rarity}-name"}>
-          {@name}
-        </p>
-        <span class={"share-rarity-badge #{@rarity}"}>
-          {@rarity}
-        </span>
-      </div>
-      <div class="share-card-footer">
-        <span class="share-brand">scavgen</span>
+        <div class="share-card-body">
+          <p class={"share-card-name #{r}-name"}>
+            {@name}
+          </p>
+          <span class={"share-rarity-badge #{r}"}>
+            {r}
+          </span>
+        </div>
+        <div class="share-card-footer">
+          <span class="share-brand">scavgen</span>
+        </div>
       </div>
     </div>
 
@@ -32,12 +81,18 @@
   </div>
 <% else %>
   <div class="share-page">
-    <div class="share-card border-common">
-      <div class="share-card-art theme-void">
-        <div class="share-card-art-inner"></div>
-      </div>
-      <div class="share-card-body">
-        <p class="share-card-name common-name">invalid link</p>
+    <div class="share-card-wrap" style="--rc: #888888; --rc-glow: rgba(136,136,136,0.1)">
+      <span class="cb cb-tl"></span>
+      <span class="cb cb-tr"></span>
+      <span class="cb cb-bl"></span>
+      <span class="cb cb-br"></span>
+      <div class="share-card">
+        <div class="share-card-art theme-void">
+          <div class="share-card-art-inner"></div>
+        </div>
+        <div class="share-card-body">
+          <p class="share-card-name common-name">invalid link</p>
+        </div>
       </div>
     </div>
     <div class="share-actions">
