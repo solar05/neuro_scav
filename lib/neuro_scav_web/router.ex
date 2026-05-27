@@ -30,6 +30,7 @@ defmodule NeuroScavWeb.Router do
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
 
     get "/share/:token", ShareController, :show
+    get "/share/:token/image", ShareController, :og_image
   end
 
   scope "/api", NeuroScavWeb.Api do
