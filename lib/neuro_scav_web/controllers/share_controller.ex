@@ -92,7 +92,7 @@ defmodule NeuroScavWeb.ShareController do
             resources_dir: System.tmp_dir!()
           )
         rescue
-          _ -> {:error, :nif_unavailable}
+          e -> {:error, e}
         end
 
       case result do
@@ -103,8 +103,10 @@ defmodule NeuroScavWeb.ShareController do
           |> put_resp_header("etag", ~s("#{etag}"))
           |> send_resp(200, :binary.list_to_bin(buffer))
 
-        {:error, _reason} ->
-          send_resp(conn, 500, "")
+        {:error, reason} ->
+          require Logger
+          Logger.error("og_image render failed for token=#{token}: #{inspect(reason)}")
+          send_resp(conn, 503, "")
       end
     end
   end
