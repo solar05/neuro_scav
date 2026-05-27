@@ -40,11 +40,12 @@ defmodule NeuroScavWeb.ShareController do
              |> Base.encode64()
 
   @rarity_colors %{
-    "legendary" => {"#ff8c00", "#ff8c00"},
-    "epic" => {"#9932cc", "#9932cc"},
-    "rare" => {"#1e90ff", "#25abd7"},
-    "uncommon" => {"#006400", "#006400"},
-    "common" => {"#888888", "#444444"}
+    "legendary" => {"#ff8c00", "#ffd060"},
+    "epic" => {"#9932cc", "#cc80ff"},
+    "rare" => {"#1e90ff", "#80d0ff"},
+    "uncommon" => {"#22aa44", "#66cc88"},
+    "common" => {"#888888", "#aaaaaa"},
+    "gnome" => {"#ff44bb", "#ffe044"}
   }
 
   def show(conn, %{"token" => token}) do
@@ -84,7 +85,7 @@ defmodule NeuroScavWeb.ShareController do
 
   # canvas 1200×630, card 300×480 centered → cx=450, cy=75, mid_x=600
   defp build_og_svg(name, rarity, theme) do
-    {border_color, name_box_color} = Map.get(@rarity_colors, rarity, {"#888888", "#444444"})
+    {border_color, text_color} = Map.get(@rarity_colors, rarity, {"#888888", "#aaaaaa"})
     theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
 
     badge_label = rarity |> String.upcase() |> xml_escape()
@@ -116,9 +117,8 @@ defmodule NeuroScavWeb.ShareController do
     name_box_y = cy + art_h + 12
     name_box_bottom = name_box_y + name_box_h
 
-    # Center text block vertically in name box
     text_block_h = (num_lines - 1) * line_h
-    name_text_y = name_box_y + div(name_box_h - text_block_h, 2) + div(font_size * 2, 3)
+    name_text_y = name_box_y + div(name_box_h - text_block_h, 2) + div(font_size * 2, 3) - 10
 
     badge_w = 120
     badge_h = 32
@@ -133,6 +133,8 @@ defmodule NeuroScavWeb.ShareController do
         ~s(<tspan x="#{mid_x}" dy="#{dy}">#{line}</tspan>)
       end)
 
+    decorations = rarity_decorations(rarity, border_color, cx, cy, cw, ch)
+
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
       <defs>
@@ -145,6 +147,10 @@ defmodule NeuroScavWeb.ShareController do
           @font-face {
             font-family: 'Bender';
             font-weight: bold;
+            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
+          }
+          @font-face {
+            font-family: 'BenderBold';
             src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
           }
         </style>
@@ -161,23 +167,130 @@ defmodule NeuroScavWeb.ShareController do
         </svg>
       </g>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{border_color}" stroke-width="4"/>
-      <rect x="#{name_box_x}" y="#{name_box_y}" width="#{name_box_w}" height="#{name_box_h}" rx="16" fill="#{name_box_color}"/>
+      #{decorations}
+      <line x1="#{cx}" y1="#{name_box_y - 7}" x2="#{cx + cw}" y2="#{name_box_y - 7}" stroke="#{border_color}" stroke-width="1" opacity="0.5"/>
+      <rect x="#{name_box_x}" y="#{name_box_y}" width="#{name_box_w}" height="#{name_box_h}" rx="16" fill="#0d0d1a" stroke="#{border_color}" stroke-width="1.5"/>
       <text x="#{mid_x}" y="#{name_text_y}"
             font-family="Bender, Arial, sans-serif"
             font-size="#{font_size}" font-weight="bold"
-            fill="#ffffff" text-anchor="middle">
+            fill="#{text_color}" stroke="#000000" stroke-width="1" paint-order="stroke"
+            text-anchor="middle">
         #{tspans}
       </text>
-      <rect x="#{badge_x}" y="#{badge_y}" width="#{badge_w}" height="#{badge_h}" rx="16" fill="#16161e"/>
+      <rect x="#{badge_x}" y="#{badge_y}" width="#{badge_w}" height="#{badge_h}" rx="16" fill="#16161e" stroke="#{border_color}" stroke-width="1" stroke-opacity="0.5"/>
       <text x="#{mid_x}" y="#{badge_y + 22}"
-            font-family="Bender, Arial, sans-serif"
-            font-size="12" font-weight="bold" letter-spacing="2"
-            fill="#aaaaaa" text-anchor="middle">#{badge_label}</text>
+            font-family="BenderBold, Arial, sans-serif"
+            font-size="18" letter-spacing="2"
+            fill="#{border_color}" fill-opacity="0.9" text-anchor="middle">#{badge_label}</text>
       <text x="#{cx + cw - 14}" y="#{cy + ch - 16}"
             font-family="Bender, 'Courier New', monospace"
-            font-size="11" fill="#444444" text-anchor="end">scavgen</text>
+            font-size="16" font-weight="bold" letter-spacing="2"
+            fill="#{border_color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
     </svg>
     """
+  end
+
+  defp rarity_decorations(rarity, color, cx, cy, cw, ch) do
+    mid_x = cx + div(cw, 2)
+    mid_y = cy + div(ch, 2)
+
+    tl = cbracket(cx - 8, cy - 8, 22, 1, 1, color)
+    tr = cbracket(cx + cw + 8, cy - 8, 22, -1, 1, color)
+    bl = cbracket(cx - 8, cy + ch + 8, 22, 1, -1, color)
+    br = cbracket(cx + cw + 8, cy + ch + 8, 22, -1, -1, color)
+
+    diamond = fn x, y, r ->
+      ~s(<polygon points="#{x},#{y - r} #{x + r},#{y} #{x},#{y + r} #{x - r},#{y}" fill="#{color}"/>)
+    end
+
+    inner_glow =
+      ~s(<rect x="#{cx + 5}" y="#{cy + 5}" width="#{cw - 10}" height="#{ch - 10}" rx="17" fill="none" stroke="#{color}" stroke-width="1" opacity="0.2"/>)
+
+    case rarity do
+      "legendary" ->
+        [
+          inner_glow,
+          tl,
+          tr,
+          bl,
+          br,
+          diamond.(mid_x, cy, 6),
+          diamond.(mid_x, cy + ch, 6),
+          diamond.(cx, mid_y, 5),
+          diamond.(cx + cw, mid_y, 5),
+          diamond.(cx + div(cw, 4), cy, 3),
+          diamond.(cx + div(cw * 3, 4), cy, 3),
+          diamond.(cx + div(cw, 4), cy + ch, 3),
+          diamond.(cx + div(cw * 3, 4), cy + ch, 3)
+        ]
+        |> Enum.join("\n")
+
+      "epic" ->
+        [
+          inner_glow,
+          tl,
+          tr,
+          bl,
+          br,
+          diamond.(mid_x, cy, 5),
+          diamond.(mid_x, cy + ch, 5),
+          diamond.(cx, mid_y, 4),
+          diamond.(cx + cw, mid_y, 4)
+        ]
+        |> Enum.join("\n")
+
+      "rare" ->
+        [
+          tl,
+          tr,
+          diamond.(mid_x, cy, 4),
+          diamond.(cx, mid_y, 3),
+          diamond.(cx + cw, mid_y, 3)
+        ]
+        |> Enum.join("\n")
+
+      "uncommon" ->
+        [tl, tr] |> Enum.join("\n")
+
+      "gnome" ->
+        rainbow = ~w(#ff6b6b #ffaa33 #ffe044 #44ee88 #44aaff #bb55ff #ff44bb)
+
+        rdiamond = fn x, y, r, c ->
+          ~s(<polygon points="#{x},#{y - r} #{x + r},#{y} #{x},#{y + r} #{x - r},#{y}" fill="#{c}"/>)
+        end
+
+        top_diamonds =
+          rainbow
+          |> Enum.with_index()
+          |> Enum.map(fn {c, i} ->
+            rdiamond.(cx + 20 + i * 40, cy, if(i == 3, do: 6, else: 4), c)
+          end)
+
+        bottom_diamonds =
+          rainbow
+          |> Enum.with_index()
+          |> Enum.map(fn {c, i} ->
+            rdiamond.(cx + 20 + i * 40, cy + ch, if(i == 3, do: 6, else: 4), c)
+          end)
+
+        side_diamonds =
+          rainbow
+          |> Enum.with_index()
+          |> Enum.flat_map(fn {c, i} ->
+            y = cy + 40 + i * 57
+            [rdiamond.(cx, y, 4, c), rdiamond.(cx + cw, y, 4, c)]
+          end)
+
+        ([inner_glow, tl, tr, bl, br] ++ top_diamonds ++ bottom_diamonds ++ side_diamonds)
+        |> Enum.join("\n")
+
+      _ ->
+        ""
+    end
+  end
+
+  defp cbracket(x, y, arm, dx, dy, color) do
+    ~s(<path d="M #{x},#{y + dy * arm} L #{x},#{y} L #{x + dx * arm},#{y}" fill="none" stroke="#{color}" stroke-width="2"/>)
   end
 
   defp xml_escape(str) do

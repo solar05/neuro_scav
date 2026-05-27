@@ -20,17 +20,21 @@ defmodule NeuroScavWeb.ShareControllerTest do
     "legendary" => "#ff8c00",
     "epic" => "#9932cc",
     "rare" => "#1e90ff",
-    "uncommon" => "#006400",
-    "common" => "#888888"
+    "uncommon" => "#22aa44",
+    "common" => "#888888",
+    "gnome" => "#ff44bb"
   }
 
   @rarity_badge_colors %{
     "legendary" => "#ff8c00",
     "epic" => "#9932cc",
-    "rare" => "#25abd7",
-    "uncommon" => "#006400",
-    "common" => "#444444"
+    "rare" => "#1e90ff",
+    "uncommon" => "#22aa44",
+    "common" => "#888888",
+    "gnome" => "#ff44bb"
   }
+
+  @gnome_rainbow_colors ~w(#ff6b6b #ffaa33 #ffe044 #44ee88 #44aaff #bb55ff #ff44bb)
 
   defp token_for(name, rarity) do
     Base.url_encode64("#{name}|#{rarity}", padding: false)
@@ -299,11 +303,11 @@ defmodule NeuroScavWeb.ShareControllerTest do
       end
     end
 
-    test "rare rarity uses different colors for border and badge", %{conn: conn} do
+    test "rare rarity uses border color for both stroke and badge text", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Test Name", "rare")}/image")
       body = response(conn, 200)
       assert body =~ ~s(stroke="#1e90ff")
-      assert body =~ ~s(fill="#25abd7")
+      assert body =~ ~s(fill="#1e90ff")
     end
 
     test "theme is deterministic — same name always produces the same SVG", %{conn: conn} do
@@ -362,7 +366,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
 
     test "SVG contains scavgen branding", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      assert response(conn, 200) =~ "scavgen"
+      assert response(conn, 200) =~ "SCAVGEN"
     end
 
     test "works with Russian name", %{conn: conn} do
@@ -374,10 +378,49 @@ defmodule NeuroScavWeb.ShareControllerTest do
     end
 
     test "works with all rarity levels", %{conn: conn} do
-      for rarity <- ~w(common uncommon rare epic legendary) do
+      for rarity <- ~w(common uncommon rare epic legendary gnome) do
         conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}/image")
         assert response(conn, 200) =~ String.upcase(rarity)
       end
+    end
+  end
+
+  describe "og_image/2 gnome rarity" do
+    test "badge label is GNOME", %{conn: conn} do
+      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
+      assert response(conn, 200) =~ "GNOME"
+    end
+
+    test "border color is gnome pink", %{conn: conn} do
+      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
+      assert response(conn, 200) =~ ~s(stroke="#ff44bb")
+    end
+
+    test "name text uses gnome gold color", %{conn: conn} do
+      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
+      assert response(conn, 200) =~ ~s(fill="#ffe044")
+    end
+
+    test "SVG contains all rainbow diamond colors", %{conn: conn} do
+      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
+      body = response(conn, 200)
+
+      for color <- @gnome_rainbow_colors do
+        assert body =~ color, "expected rainbow color #{color} in gnome SVG"
+      end
+    end
+
+    test "gnome has more decoration polygons than legendary", %{conn: conn} do
+      gnome_svg =
+        conn |> get(~p"/share/#{token_for("Test Name", "gnome")}/image") |> response(200)
+
+      legendary_svg =
+        conn |> get(~p"/share/#{token_for("Test Name", "legendary")}/image") |> response(200)
+
+      gnome_polygons = gnome_svg |> String.split("<polygon") |> length()
+      legendary_polygons = legendary_svg |> String.split("<polygon") |> length()
+
+      assert gnome_polygons > legendary_polygons
     end
   end
 
