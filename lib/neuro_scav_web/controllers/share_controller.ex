@@ -23,20 +23,6 @@ defmodule NeuroScavWeb.ShareController do
                 {theme, content}
               end)
 
-  @font_normal_path Path.join([
-                      to_string(:code.priv_dir(:neuro_scav)),
-                      "static",
-                      "fonts",
-                      "Bender.otf"
-                    ])
-
-  @font_bold_path Path.join([
-                    to_string(:code.priv_dir(:neuro_scav)),
-                    "static",
-                    "fonts",
-                    "BenderBold.otf"
-                  ])
-
   # Fonts embedded as base64 at compile time so the SVG is self-contained
   @font_normal Path.join([
                  to_string(:code.priv_dir(:neuro_scav)),
@@ -98,11 +84,18 @@ defmodule NeuroScavWeb.ShareController do
     else
       svg = build_og_svg(name, rarity, theme)
 
-      case Resvg.svg_string_to_png_buffer(svg,
-             font_files: [@font_normal_path, @font_bold_path],
-             skip_system_fonts: true,
-             resources_dir: System.tmp_dir!()
-           ) do
+      result =
+        try do
+          Resvg.svg_string_to_png_buffer(svg,
+            font_files: font_paths(),
+            skip_system_fonts: true,
+            resources_dir: System.tmp_dir!()
+          )
+        rescue
+          _ -> {:error, :nif_unavailable}
+        end
+
+      case result do
         {:ok, buffer} ->
           conn
           |> put_resp_content_type("image/png")
@@ -111,11 +104,7 @@ defmodule NeuroScavWeb.ShareController do
           |> send_resp(200, :binary.list_to_bin(buffer))
 
         {:error, _reason} ->
-          conn
-          |> put_resp_content_type("image/svg+xml")
-          |> put_resp_header("cache-control", "public, max-age=86400")
-          |> put_resp_header("etag", ~s("#{etag}"))
-          |> send_resp(200, svg)
+          send_resp(conn, 500, "")
       end
     end
   end
@@ -407,6 +396,12 @@ defmodule NeuroScavWeb.ShareController do
 
   defp xml_escape(str) do
     str |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
+  end
+
+  defp font_paths do
+    priv = to_string(:code.priv_dir(:neuro_scav))
+    fonts_dir = Path.join([priv, "static", "fonts"])
+    [Path.join(fonts_dir, "Bender.otf"), Path.join(fonts_dir, "BenderBold.otf")]
   end
 
   defp decode_token(token) do
