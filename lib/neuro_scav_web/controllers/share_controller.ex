@@ -23,6 +23,20 @@ defmodule NeuroScavWeb.ShareController do
                 {theme, content}
               end)
 
+  @font_normal_path Path.join([
+                      to_string(:code.priv_dir(:neuro_scav)),
+                      "static",
+                      "fonts",
+                      "Bender.otf"
+                    ])
+
+  @font_bold_path Path.join([
+                    to_string(:code.priv_dir(:neuro_scav)),
+                    "static",
+                    "fonts",
+                    "BenderBold.otf"
+                  ])
+
   # Fonts embedded as base64 at compile time so the SVG is self-contained
   @font_normal Path.join([
                  to_string(:code.priv_dir(:neuro_scav)),
@@ -82,11 +96,27 @@ defmodule NeuroScavWeb.ShareController do
       |> put_resp_header("etag", ~s("#{etag}"))
       |> send_resp(304, "")
     else
-      conn
-      |> put_resp_content_type("image/svg+xml")
-      |> put_resp_header("cache-control", "public, max-age=86400")
-      |> put_resp_header("etag", ~s("#{etag}"))
-      |> send_resp(200, build_og_svg(name, rarity, theme))
+      svg = build_og_svg(name, rarity, theme)
+
+      case Resvg.svg_string_to_png_buffer(svg,
+             font_files: [@font_normal_path, @font_bold_path],
+             skip_system_fonts: true,
+             resources_dir: System.tmp_dir!()
+           ) do
+        {:ok, buffer} ->
+          conn
+          |> put_resp_content_type("image/png")
+          |> put_resp_header("cache-control", "public, max-age=86400")
+          |> put_resp_header("etag", ~s("#{etag}"))
+          |> send_resp(200, :binary.list_to_bin(buffer))
+
+        {:error, _reason} ->
+          conn
+          |> put_resp_content_type("image/svg+xml")
+          |> put_resp_header("cache-control", "public, max-age=86400")
+          |> put_resp_header("etag", ~s("#{etag}"))
+          |> send_resp(200, svg)
+      end
     end
   end
 
@@ -128,8 +158,8 @@ defmodule NeuroScavWeb.ShareController do
 
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
+      #{font_style_defs()}
       <defs>
-        #{font_style_defs()}
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
         </clipPath>
@@ -156,8 +186,8 @@ defmodule NeuroScavWeb.ShareController do
       </text>
       <rect x="#{badge_x}" y="#{badge_y}" width="#{badge_w}" height="#{badge_h}" rx="16" fill="#16161e" stroke="#{border_color}" stroke-width="1" stroke-opacity="0.5"/>
       <text x="#{mid_x}" y="#{badge_y + 22}"
-            font-family="BenderBold, Arial, sans-serif"
-            font-size="18" letter-spacing="2"
+            font-family="Bender, Arial, sans-serif"
+            font-size="18" font-weight="bold" letter-spacing="2"
             fill="#{border_color}" fill-opacity="0.9" text-anchor="middle">#{badge_label}</text>
       <text x="#{cx + cw - 14}" y="#{cy + ch - 16}"
             font-family="Bender, 'Courier New', monospace"
@@ -170,21 +200,21 @@ defmodule NeuroScavWeb.ShareController do
   defp font_style_defs do
     """
     <style>
-          @font-face {
-            font-family: 'Bender';
-            font-weight: normal;
-            src: url('data:font/otf;base64,#{@font_normal}') format('opentype');
-          }
-          @font-face {
-            font-family: 'Bender';
-            font-weight: bold;
-            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-          }
-          @font-face {
-            font-family: 'BenderBold';
-            src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-          }
-        </style>
+      @font-face {
+        font-family: 'Bender';
+        font-weight: normal;
+        src: url('data:font/otf;base64,#{@font_normal}') format('opentype');
+      }
+      @font-face {
+        font-family: 'Bender';
+        font-weight: bold;
+        src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
+      }
+      @font-face {
+        font-family: 'BenderBold';
+        src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
+      }
+    </style>
     """
   end
 

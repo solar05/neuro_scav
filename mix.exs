@@ -77,6 +77,7 @@ defmodule NeuroScav.MixProject do
       {:uniq, "~> 0.4"},
       {:phoenix_turnstile, "~> 1.2"},
       {:hammer, "~> 6.1"},
+      {:resvg, "~> 0.5.0"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},

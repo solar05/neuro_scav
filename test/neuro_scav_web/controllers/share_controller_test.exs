@@ -3,39 +3,6 @@ defmodule NeuroScavWeb.ShareControllerTest do
 
   @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
 
-  @theme_bg1 %{
-    "void" => "#0d0d2e",
-    "lava" => "#3a0800",
-    "swamp" => "#0d2210",
-    "arctic" => "#0a1e2e",
-    "storm" => "#060615",
-    "rust" => "#1a0f08",
-    "toxic" => "#0e1400",
-    "blood" => "#100202",
-    "abyss" => "#001820",
-    "nebula" => "#130820"
-  }
-
-  @rarity_border_colors %{
-    "legendary" => "#ff8c00",
-    "epic" => "#9932cc",
-    "rare" => "#1e90ff",
-    "uncommon" => "#22aa44",
-    "common" => "#888888",
-    "gnome" => "#ff44bb"
-  }
-
-  @rarity_badge_colors %{
-    "legendary" => "#ff8c00",
-    "epic" => "#9932cc",
-    "rare" => "#1e90ff",
-    "uncommon" => "#22aa44",
-    "common" => "#888888",
-    "gnome" => "#ff44bb"
-  }
-
-  @gnome_rainbow_colors ~w(#ff6b6b #ffaa33 #ffe044 #44ee88 #44aaff #bb55ff #ff44bb)
-
   defp token_for(name, rarity) do
     Base.url_encode64("#{name}|#{rarity}", padding: false)
   end
@@ -246,15 +213,19 @@ defmodule NeuroScavWeb.ShareControllerTest do
     end
   end
 
+  @png_signature <<137, 80, 78, 71, 13, 10, 26, 10>>
+
+  defp valid_png?(binary), do: binary_part(binary, 0, 8) == @png_signature
+
   describe "og_image/2 with a valid token" do
     test "returns 200", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
       assert response(conn, 200)
     end
 
-    test "content-type is image/svg+xml", %{conn: conn} do
+    test "content-type is image/png", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      assert ["image/svg+xml" <> _] = get_resp_header(conn, "content-type")
+      assert ["image/png" <> _] = get_resp_header(conn, "content-type")
     end
 
     test "sets public cache-control header", %{conn: conn} do
@@ -262,164 +233,82 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert ["public, max-age=86400"] = get_resp_header(conn, "cache-control")
     end
 
-    test "returns valid SVG with correct dimensions", %{conn: conn} do
+    test "returns a valid PNG image", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      body = response(conn, 200)
-      assert body =~ ~s(<svg xmlns="http://www.w3.org/2000/svg")
-      assert body =~ ~s(width="1200")
-      assert body =~ ~s(height="630")
+      assert valid_png?(response(conn, 200))
     end
 
-    test "SVG contains the scavenger name", %{conn: conn} do
+    test "PNG is non-trivial (larger than a blank image)", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      body = response(conn, 200)
-      # Name is split into tspan elements per word in the new card design
-      assert body =~ "Alice"
-      assert body =~ "Adams"
+      assert byte_size(response(conn, 200)) > 10_000
     end
 
-    test "SVG contains the rarity text", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      # Badge shows uppercase rarity in the new card design
-      assert response(conn, 200) =~ "RARE"
-    end
-
-    test "SVG uses rarity-specific border color", %{conn: conn} do
-      for {rarity, color} <- @rarity_border_colors do
-        conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}/image")
-
-        assert response(conn, 200) =~ ~s(stroke="#{color}"),
-               "expected stroke #{color} for rarity #{rarity}"
-      end
-    end
-
-    test "SVG uses rarity-specific badge color", %{conn: conn} do
-      for {rarity, color} <- @rarity_badge_colors do
-        conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}/image")
-
-        assert response(conn, 200) =~ ~s(fill="#{color}"),
-               "expected fill #{color} for rarity #{rarity}"
-      end
-    end
-
-    test "rare rarity uses border color for both stroke and badge text", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Test Name", "rare")}/image")
-      body = response(conn, 200)
-      assert body =~ ~s(stroke="#1e90ff")
-      assert body =~ ~s(fill="#1e90ff")
-    end
-
-    test "theme is deterministic — same name always produces the same SVG", %{conn: conn} do
+    test "PNG output is deterministic — same name always produces the same image", %{conn: conn} do
       token = token_for("Иван Петров", "legendary")
-      svg1 = conn |> get(~p"/share/#{token}/image") |> response(200)
-      svg2 = Phoenix.ConnTest.build_conn() |> get(~p"/share/#{token}/image") |> response(200)
-      assert svg1 == svg2
+      png1 = conn |> get(~p"/share/#{token}/image") |> response(200)
+      png2 = Phoenix.ConnTest.build_conn() |> get(~p"/share/#{token}/image") |> response(200)
+      assert png1 == png2
     end
 
-    test "SVG art background matches expected theme for the given name", %{conn: conn} do
-      name = "Alice Adams"
-      theme = expected_theme(name)
-      expected_bg1 = Map.fetch!(@theme_bg1, theme)
-
-      conn = get(conn, ~p"/share/#{token_for(name, "rare")}/image")
-      assert response(conn, 200) =~ expected_bg1
-    end
-
-    test "different names with different themes produce different art backgrounds", %{conn: conn} do
+    test "different names produce different PNG images", %{conn: conn} do
       names = ~w(Alice Bob Charlie Diana Eve Frank Grace Henry Iris Jake Karl)
 
-      svgs =
+      pngs =
         Enum.map(names, fn name ->
           conn |> get(~p"/share/#{token_for(name, "common")}/image") |> response(200)
         end)
 
-      unique_svgs = Enum.uniq(svgs)
-      assert length(unique_svgs) > 1
+      assert Enum.uniq(pngs) |> length() > 1
     end
 
-    test "ampersand in name is XML-escaped", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Alice & Bob", "common")}/image")
-      body = response(conn, 200)
-      assert body =~ "&amp;"
-      refute body =~ " & "
+    test "different rarities for the same name produce different PNG images", %{conn: conn} do
+      pngs =
+        for rarity <- ~w(common uncommon rare epic legendary gnome) do
+          conn |> get(~p"/share/#{token_for("Test Name", rarity)}/image") |> response(200)
+        end
+
+      assert Enum.uniq(pngs) |> length() > 1
     end
 
-    test "angle brackets in name are XML-escaped", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("<script>", "common")}/image")
-      body = response(conn, 200)
-      assert body =~ "&lt;"
-      refute body =~ "<script>"
-    end
-
-    test "short name uses larger font than long name", %{conn: conn} do
-      short_conn = get(conn, ~p"/share/#{token_for("Al Bo", "common")}/image")
-
-      long_conn =
-        get(conn, ~p"/share/#{token_for("Bartholomew Konstantinopolsky", "common")}/image")
-
-      short_font = extract_name_font_size(response(short_conn, 200))
-      long_font = extract_name_font_size(response(long_conn, 200))
-
-      assert short_font > long_font
-    end
-
-    test "SVG contains scavgen branding", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Alice Adams", "rare")}/image")
-      assert response(conn, 200) =~ "SCAVGEN"
+    test "names with special characters produce valid PNG", %{conn: conn} do
+      for name <- ["Alice & Bob", "<script>alert(1)</script>", "O'Brien"] do
+        conn = get(conn, ~p"/share/#{token_for(name, "common")}/image")
+        assert valid_png?(response(conn, 200)), "expected valid PNG for name: #{name}"
+      end
     end
 
     test "works with Russian name", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Иван Петров", "legendary")}/image")
-      body = response(conn, 200)
-      assert body =~ "Иван"
-      assert body =~ "Петров"
-      assert body =~ "LEGENDARY"
+      assert valid_png?(response(conn, 200))
     end
 
     test "works with all rarity levels", %{conn: conn} do
       for rarity <- ~w(common uncommon rare epic legendary gnome) do
         conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}/image")
-        assert response(conn, 200) =~ String.upcase(rarity)
+        assert valid_png?(response(conn, 200)), "expected valid PNG for rarity: #{rarity}"
       end
     end
   end
 
   describe "og_image/2 gnome rarity" do
-    test "badge label is GNOME", %{conn: conn} do
+    test "returns valid PNG", %{conn: conn} do
       conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
-      assert response(conn, 200) =~ "GNOME"
+      assert valid_png?(response(conn, 200))
     end
 
-    test "border color is gnome pink", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
-      assert response(conn, 200) =~ ~s(stroke="#ff44bb")
-    end
-
-    test "name text uses gnome gold color", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
-      assert response(conn, 200) =~ ~s(fill="#ffe044")
-    end
-
-    test "SVG contains all rainbow diamond colors", %{conn: conn} do
-      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
-      body = response(conn, 200)
-
-      for color <- @gnome_rainbow_colors do
-        assert body =~ color, "expected rainbow color #{color} in gnome SVG"
-      end
-    end
-
-    test "gnome has more decoration polygons than legendary", %{conn: conn} do
-      gnome_svg =
+    test "gnome PNG differs from legendary PNG for the same name", %{conn: conn} do
+      gnome_png =
         conn |> get(~p"/share/#{token_for("Test Name", "gnome")}/image") |> response(200)
 
-      legendary_svg =
+      legendary_png =
         conn |> get(~p"/share/#{token_for("Test Name", "legendary")}/image") |> response(200)
 
-      gnome_polygons = gnome_svg |> String.split("<polygon") |> length()
-      legendary_polygons = legendary_svg |> String.split("<polygon") |> length()
+      assert gnome_png != legendary_png
+    end
 
-      assert gnome_polygons > legendary_polygons
+    test "gnome PNG is non-trivial", %{conn: conn} do
+      conn = get(conn, ~p"/share/#{token_for("Gnome Captured", "gnome")}/image")
+      assert byte_size(response(conn, 200)) > 10_000
     end
   end
 
@@ -429,29 +318,20 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert response(conn, 200)
     end
 
-    test "content-type is image/svg+xml", %{conn: conn} do
+    test "content-type is image/png", %{conn: conn} do
       conn = get(conn, ~p"/share/not-valid-token/image")
-      assert ["image/svg+xml" <> _] = get_resp_header(conn, "content-type")
+      assert ["image/png" <> _] = get_resp_header(conn, "content-type")
     end
 
-    test "returns valid SVG", %{conn: conn} do
+    test "returns a valid PNG image", %{conn: conn} do
       conn = get(conn, ~p"/share/not-valid-token/image")
-      assert response(conn, 200) =~ ~s(<svg xmlns="http://www.w3.org/2000/svg")
+      assert valid_png?(response(conn, 200))
     end
 
-    test "SVG for token with no pipe separator is also valid", %{conn: conn} do
+    test "token with no pipe separator also returns a valid PNG", %{conn: conn} do
       token = Base.url_encode64("JustANameNoPipe", padding: false)
       conn = get(conn, ~p"/share/#{token}/image")
-      body = response(conn, 200)
-      assert body =~ ~s(<svg)
-      assert body =~ ~s(width="1200")
-    end
-  end
-
-  defp extract_name_font_size(svg) do
-    case Regex.run(~r/font-size="(\d+)"/, svg) do
-      [_, size] -> String.to_integer(size)
-      _ -> 0
+      assert valid_png?(response(conn, 200))
     end
   end
 end
