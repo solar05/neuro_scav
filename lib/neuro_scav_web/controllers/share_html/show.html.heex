@@ -1,17 +1,17 @@
 <%= if @name do %>
-  <%
-    {border_color, glow_color} = case @rarity do
+  <% {border_color, glow_color} =
+    case @rarity do
       "legendary" -> {"#ff8c00", "rgba(255,140,0,0.22)"}
-      "epic"      -> {"#9932cc", "rgba(153,50,204,0.22)"}
-      "rare"      -> {"#1e90ff", "rgba(30,144,255,0.18)"}
-      "uncommon"  -> {"#22aa44", "rgba(34,170,68,0.15)"}
-      "gnome"     -> {"#ff44bb", "rgba(255,68,187,0.22)"}
-      _           -> {"#888888", "rgba(136,136,136,0.1)"}
+      "epic" -> {"#9932cc", "rgba(153,50,204,0.22)"}
+      "rare" -> {"#1e90ff", "rgba(30,144,255,0.18)"}
+      "uncommon" -> {"#22aa44", "rgba(34,170,68,0.15)"}
+      "gnome" -> {"#ff44bb", "rgba(255,68,187,0.22)"}
+      _ -> {"#888888", "rgba(136,136,136,0.1)"}
     end
-    r = @rarity
-    gnome_h = ~w(#ff6b6b #ffaa33 #44ee88 #44aaff #ff44bb)
-    gnome_v = ~w(#ffe044 #44ee88 #bb55ff)
-  %>
+
+  r = @rarity
+  gnome_h = ~w(#ff6b6b #ffaa33 #44ee88 #44aaff #ff44bb)
+  gnome_v = ~w(#ffe044 #44ee88 #bb55ff) %>
   <div class="share-page">
     <div class="share-card-wrap" style={"--rc: #{border_color}; --rc-glow: #{glow_color}"}>
       <span class="cb cb-tl"></span>
@@ -48,7 +48,7 @@
           <span class="gd gd-rs" style={"top: #{y}px; --gc: #{c}"}></span>
         <% end %>
       <% end %>
-      <div class={"share-card#{if r in ["epic", "legendary", "gnome"], do: " has-inner-glow", else: ""}"}>
+      <div class={"share-card border-#{r}#{if r in ["epic", "legendary", "gnome"], do: " has-inner-glow", else: ""}"}>
         <div class={"share-card-art theme-#{@theme}"}>
           <div class="share-card-art-inner">
             <div class="share-art-lines"></div>

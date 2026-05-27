@@ -41,8 +41,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
   end
 
   defp expected_theme(name) do
-    idx = abs(:erlang.phash2(name)) |> rem(length(@card_themes))
-    Enum.at(@card_themes, idx)
+    Enum.at(@card_themes, :erlang.phash2(name, length(@card_themes)))
   end
 
   describe "show/2 with a valid token" do

@@ -3,6 +3,14 @@ defmodule NeuroScavWeb.ShareController do
 
   @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
 
+  @canvas_w 1200
+  @canvas_h 630
+  @card_cx 450
+  @card_cy 75
+  @card_cw 300
+  @card_ch 480
+  @card_art_h 215
+
   # Theme SVG inner content loaded at compile time (outer <svg> tags stripped)
   @theme_svgs Map.new(@card_themes, fn theme ->
                 content =
@@ -72,15 +80,23 @@ defmodule NeuroScavWeb.ShareController do
         :error -> {"???", "common", "void"}
       end
 
-    conn
-    |> put_resp_content_type("image/svg+xml")
-    |> put_resp_header("cache-control", "public, max-age=86400")
-    |> send_resp(200, build_og_svg(name, rarity, theme))
+    etag = :crypto.hash(:md5, token) |> Base.encode16(case: :lower)
+
+    if get_req_header(conn, "if-none-match") == [~s("#{etag}")] do
+      conn
+      |> put_resp_header("etag", ~s("#{etag}"))
+      |> send_resp(304, "")
+    else
+      conn
+      |> put_resp_content_type("image/svg+xml")
+      |> put_resp_header("cache-control", "public, max-age=86400")
+      |> put_resp_header("etag", ~s("#{etag}"))
+      |> send_resp(200, build_og_svg(name, rarity, theme))
+    end
   end
 
   defp pick_theme(name) do
-    index = abs(:erlang.phash2(name)) |> rem(length(@card_themes))
-    Enum.at(@card_themes, index)
+    Enum.at(@card_themes, :erlang.phash2(name, length(@card_themes)))
   end
 
   # canvas 1200×630, card 300×480 centered → cx=450, cy=75, mid_x=600
@@ -105,11 +121,11 @@ defmodule NeuroScavWeb.ShareController do
     line_h = round(font_size * 1.4)
     name_box_h = num_lines * line_h + 32
 
-    cx = 450
-    cy = 75
-    cw = 300
-    ch = 480
-    art_h = 215
+    cx = @card_cx
+    cy = @card_cy
+    cw = @card_cw
+    ch = @card_ch
+    art_h = @card_art_h
     mid_x = cx + div(cw, 2)
 
     name_box_x = cx + 15
@@ -125,43 +141,15 @@ defmodule NeuroScavWeb.ShareController do
     badge_x = mid_x - div(badge_w, 2)
     badge_y = name_box_bottom + 10
 
-    tspans =
-      lines
-      |> Enum.with_index()
-      |> Enum.map_join("\n      ", fn {line, i} ->
-        dy = if i == 0, do: 0, else: line_h
-        ~s(<tspan x="#{mid_x}" dy="#{dy}">#{line}</tspan>)
-      end)
+    tspans = name_tspans(lines, mid_x, line_h)
 
     decorations = rarity_decorations(rarity, border_color, cx, cy, cw, ch)
 
     name_box_fill = "url(#name-grad)"
-
-    name_grad_def =
-      if rarity == "gnome" do
-        """
-              <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stop-color="#ff4444"/>
-                <stop offset="14%"  stop-color="#ff8800"/>
-                <stop offset="28%"  stop-color="#ffdd00"/>
-                <stop offset="43%"  stop-color="#44cc55"/>
-                <stop offset="57%"  stop-color="#2299ff"/>
-                <stop offset="71%"  stop-color="#9944ff"/>
-                <stop offset="85%"  stop-color="#ff44bb"/>
-                <stop offset="100%" stop-color="#ff4444"/>
-              </linearGradient>
-        """
-      else
-        """
-              <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%"   stop-color="#{border_color}"/>
-                <stop offset="100%" stop-color="#{text_color}"/>
-              </linearGradient>
-        """
-      end
+    name_grad_def = name_gradient(rarity, border_color, text_color)
 
     """
-    <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+    <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas_w}" height="#{@canvas_h}">
       <defs>
         <style>
           @font-face {
@@ -184,7 +172,7 @@ defmodule NeuroScavWeb.ShareController do
         </clipPath>
         #{name_grad_def}
       </defs>
-      <rect width="1200" height="630" fill="#000000"/>
+      <rect width="#{@canvas_w}" height="#{@canvas_h}" fill="#000000"/>
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
       <g clip-path="url(#card-clip)">
@@ -216,9 +204,41 @@ defmodule NeuroScavWeb.ShareController do
     """
   end
 
+  defp name_tspans(lines, mid_x, line_h) do
+    lines
+    |> Enum.with_index()
+    |> Enum.map_join("\n      ", fn {line, i} ->
+      dy = if i == 0, do: 0, else: line_h
+      ~s(<tspan x="#{mid_x}" dy="#{dy}">#{line}</tspan>)
+    end)
+  end
+
+  defp name_gradient("gnome", _border_color, _text_color) do
+    """
+          <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#ff4444"/>
+            <stop offset="14%"  stop-color="#ff8800"/>
+            <stop offset="28%"  stop-color="#ffdd00"/>
+            <stop offset="43%"  stop-color="#44cc55"/>
+            <stop offset="57%"  stop-color="#2299ff"/>
+            <stop offset="71%"  stop-color="#9944ff"/>
+            <stop offset="85%"  stop-color="#ff44bb"/>
+            <stop offset="100%" stop-color="#ff4444"/>
+          </linearGradient>
+    """
+  end
+
+  defp name_gradient(_rarity, border_color, text_color) do
+    """
+          <linearGradient id="name-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%"   stop-color="#{border_color}"/>
+            <stop offset="100%" stop-color="#{text_color}"/>
+          </linearGradient>
+    """
+  end
+
   defp rarity_decorations(rarity, color, cx, cy, cw, ch) do
     mid_x = cx + div(cw, 2)
-    mid_y = cy + div(ch, 2)
 
     tl = cbracket(cx - 8, cy - 8, 22, 1, 1, color)
     tr = cbracket(cx + cw + 8, cy - 8, 22, -1, 1, color)
@@ -234,6 +254,8 @@ defmodule NeuroScavWeb.ShareController do
 
     case rarity do
       "legendary" ->
+        mid_y = cy + div(ch, 2)
+
         [
           inner_glow,
           tl,
@@ -252,6 +274,8 @@ defmodule NeuroScavWeb.ShareController do
         |> Enum.join("\n")
 
       "epic" ->
+        mid_y = cy + div(ch, 2)
+
         [
           inner_glow,
           tl,
@@ -266,6 +290,8 @@ defmodule NeuroScavWeb.ShareController do
         |> Enum.join("\n")
 
       "rare" ->
+        mid_y = cy + div(ch, 2)
+
         [
           tl,
           tr,
@@ -320,16 +346,13 @@ defmodule NeuroScavWeb.ShareController do
   end
 
   defp xml_escape(str) do
-    str
-    |> String.replace("&", "&amp;")
-    |> String.replace("<", "&lt;")
-    |> String.replace(">", "&gt;")
-    |> String.replace("\"", "&quot;")
+    str |> Phoenix.HTML.html_escape() |> Phoenix.HTML.safe_to_string()
   end
 
   defp decode_token(token) do
     with {:ok, decoded} <- Base.url_decode64(token, padding: false),
-         [name, rarity] <- String.split(decoded, "|", parts: 2) do
+         [name, rarity] when name != "" and rarity != "" <-
+           String.split(decoded, "|", parts: 2) do
       {:ok, name, rarity}
     else
       _ -> :error
