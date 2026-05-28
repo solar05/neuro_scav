@@ -41,6 +41,11 @@ function triggerScreenShake() {
   setTimeout(() => document.body.classList.remove('screen-shake'), 400);
 }
 
+// ── Haptic feedback (mobile only) ──
+function vibrate(pattern) {
+  if (navigator.vibrate) navigator.vibrate(pattern);
+}
+
 // ── Confetti burst (legendary) ──
 function launchConfetti() {
   const canvas = document.createElement('canvas');
@@ -53,8 +58,9 @@ function launchConfetti() {
   const colors = ['#ff8c00', '#ffd700', '#ff4500', '#fff4a3', '#ffb347', '#ffffff', '#ff6347'];
   const cx = canvas.width / 2;
   const cy = canvas.height * 0.35;
+  const isMobile = window.innerWidth < 768;
 
-  const particles = Array.from({length: 90}, () => {
+  const particles = Array.from({length: isMobile ? 45 : 90}, () => {
     const angle = (Math.random() * Math.PI * 2);
     const speed = Math.random() * 7 + 3;
     return {
@@ -72,7 +78,7 @@ function launchConfetti() {
   });
 
   let frame = 0;
-  const totalFrames = 100;
+  const totalFrames = isMobile ? 70 : 100;
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -165,8 +171,10 @@ const ScavNameHook = {
     void el.offsetWidth;
     if (el.closest('.gnome-name, .team-gnome-name')) {
       el.classList.add('gnome-appear');
+      vibrate([50, 30, 50, 30, 50]);
     } else if (el.closest('.neuro-name')) {
       el.classList.add('neuro-appear');
+      vibrate(20);
     } else if (el.closest('.queue-name')) {
       el.classList.add('queue-appear');
     } else if (el.closest('.error-name')) {
@@ -175,14 +183,18 @@ const ScavNameHook = {
       el.classList.add('legendary-appear');
       triggerRarityFlash('legendary');
       launchConfetti();
+      vibrate([100, 50, 100, 50, 200]);
     } else if (el.closest('.epic-name, .team-epic-name')) {
       el.classList.add('epic-appear');
       triggerRarityFlash('epic');
       triggerScreenShake();
+      vibrate([70, 30, 70]);
     } else if (el.closest('.rare-name, .team-rare-name')) {
       el.classList.add('rare-appear');
+      vibrate(30);
     } else {
       el.classList.add('scav-appear');
+      vibrate(15);
     }
   }
 }

@@ -1,4 +1,5 @@
-const CACHE_NAME = 'scavgen-v1';
+const CACHE_VERSION = 'v2';
+const CACHE_NAME = `scavgen-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   '/',
@@ -27,7 +28,9 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
+        keys
+          .filter((key) => key.startsWith('scavgen-') && key !== CACHE_NAME)
+          .map((key) => caches.delete(key))
       )
     )
   );
@@ -49,6 +52,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Статика (assets, шрифты, изображения, звуки) — Cache-First
+  // Phoenix fingerprints asset filenames, so cached files are always fresh
   if (
     url.pathname.startsWith('/assets/') ||
     url.pathname.startsWith('/fonts/') ||
@@ -58,8 +62,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request).then(
         (cached) => cached || fetch(event.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
           return response;
         })
       )
@@ -67,12 +73,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML-страницы — Network-First с fallback на offline
+  // HTML-страницы — Network-First с fallback на кеш, затем offline.html
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+        }
         return response;
       })
       .catch(() =>
