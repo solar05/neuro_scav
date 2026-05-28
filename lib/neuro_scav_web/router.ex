@@ -19,6 +19,12 @@ defmodule NeuroScavWeb.Router do
     plug NeuroScavWeb.Plugs.RateLimit, limit: 200, window_ms: 60_000
   end
 
+  # Minimal pipeline for static assets served by controllers (e.g. og:image).
+  # Must not have plug :accepts, ["html"] — crawlers request these with Accept: image/*
+  pipeline :image do
+    plug :accepts, ["html", "png", "jpg", "jpeg", "gif", "webp"]
+  end
+
   scope "/", NeuroScavWeb do
     pipe_through :browser
 
@@ -30,6 +36,11 @@ defmodule NeuroScavWeb.Router do
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
 
     get "/share/:token", ShareController, :show
+  end
+
+  scope "/", NeuroScavWeb do
+    pipe_through :image
+
     get "/share/:token/image", ShareController, :og_image
   end
 
