@@ -760,6 +760,10 @@ body {
 
 /* ── Mobile UX improvements ── */
 @media (max-width: 768px) {
+    .rarity-bars-wrapper {
+        display: none;
+    }
+
     /* Smooth active state for buttons */
     .btn:active {
         transform: scale(0.97);
@@ -1050,6 +1054,22 @@ body {
 .common {
     color: #a5a5a5;
     animation: textShimmerCommon 4s ease-in-out infinite;
+}
+
+/* ── Statistics table: lighter rarity colors for readability on dark bg ── */
+.table-scav .epic {
+    color: #cc77ee;
+    animation: none;
+}
+
+.table-scav .uncommon {
+    color: #4caf50;
+    animation: none;
+}
+
+.table-scav .common {
+    color: #c8c8c8;
+    animation: none;
 }
 
 
