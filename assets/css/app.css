@@ -423,7 +423,7 @@ body {
 }
 
 .navbar-scav {
-    flex-wrap: wrap;
+    flex-wrap: wrap !important;
     padding: 0.5rem 0;
 }
 
@@ -456,7 +456,7 @@ body {
 
 @media (max-width: 768px) {
     body {
-        padding: 10px;
+        padding: 6px;
     }
 
     .blended-reg-bg {
@@ -472,8 +472,9 @@ body {
     }
 
     .background-container {
-        max-width: 95%;
-        padding: 15px;
+        max-width: 100%;
+        padding: 12px;
+        border-radius: 16px;
     }
 
     .navbar {
@@ -483,13 +484,21 @@ body {
     .container-nav {
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        margin-bottom: 4px;
+    }
+
+    .navbar-scav > .collapse.navbar-collapse {
+        flex: 1 1 100%;
+        width: 100%;
     }
 
     .cf-turnstile {
-        max-width: 90% !important;
-        width: 90% !important;
-        transform-origin: 0 0;
-        transform: scale(0.75);
+        max-width: 100% !important;
+        width: 100% !important;
+        transform: none;
+        transform-origin: unset;
     }
 
     .navbar-nav {
@@ -509,12 +518,45 @@ body {
         margin-top: 5px;
         font-size: 0.85rem;
         white-space: nowrap;
+        min-height: 44px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
     }
 
     .navbar-right {
         width: 100%;
+        margin-top: 6px;
+    }
+
+    .navbar-right .navbar-nav {
+        width: 100%;
+    }
+
+    .lang-dropdown {
+        width: 100%;
+    }
+
+    .lang-dropdown-btn {
+        display: flex;
+        width: 100%;
+        box-sizing: border-box;
+        min-height: 44px;
+        align-items: center;
         justify-content: center;
-        margin-top: 10px;
+        padding: 8px 16px;
+        border-radius: 12px;
+    }
+
+    .lang-dropdown-menu {
+        width: 100%;
+        left: 0;
+        right: 0;
+        border-radius: 10px;
+    }
+
+    .lang-dropdown-item {
+        padding: 12px 14px;
     }
 
     .display-4 {
@@ -549,6 +591,36 @@ body {
         height: auto;
         min-height: 44px;
     }
+
+    .rarity-bars-total {
+        font-size: 1.5rem;
+    }
+
+    .rarity-bar-label {
+        font-size: 1.3rem;
+    }
+
+    .rarity-bar-pct {
+        font-size: 1.1rem;
+        min-width: 32px;
+    }
+
+    .rarity-bar-track {
+        height: 18px;
+    }
+
+    .rarity-bars-container {
+        column-gap: 0.5rem;
+        row-gap: 0.4rem;
+    }
+
+    .btn-lg {
+        min-height: 52px;
+    }
+
+    .background-container {
+        border-radius: 16px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -558,7 +630,7 @@ body {
     }
 
     body {
-        padding: 5px;
+        padding: 4px;
     }
 
     .table-scav {
@@ -570,11 +642,13 @@ body {
 
     .background-container {
         padding: 10px;
+        border-radius: 12px;
     }
 
     .nav-link {
         font-size: 0.75rem;
         padding: 6px 2px;
+        min-height: 44px;
     }
 
     .display-4 {
@@ -600,6 +674,23 @@ body {
 
     .team-table .text-container {
         padding: 6px 8px;
+    }
+
+    .rarity-bars-total {
+        font-size: 1.3rem;
+    }
+
+    .rarity-bar-label {
+        font-size: 1rem;
+    }
+
+    .rarity-bar-pct {
+        font-size: 0.9rem;
+        min-width: 28px;
+    }
+
+    .rarity-bars-container {
+        column-gap: 0.4rem;
     }
 }
 
@@ -628,6 +719,27 @@ body {
         font-size: 0.75rem;
         border: none;
     }
+
+    .background-container {
+        border-radius: 10px;
+    }
+
+    .rarity-bars-total {
+        font-size: 1.1rem;
+    }
+
+    .rarity-bar-label {
+        font-size: 0.9rem;
+    }
+
+    .rarity-bar-pct {
+        font-size: 0.8rem;
+        min-width: 24px;
+    }
+
+    .rarity-bar-track {
+        height: 14px;
+    }
 }
 
 /* Улучшения для WebView */
@@ -635,6 +747,65 @@ body {
     touch-action: manipulation;
     -webkit-user-select: none;
     user-select: none;
+}
+
+/* ── Mobile UX improvements ── */
+@media (max-width: 768px) {
+    /* Smooth active state for buttons */
+    .btn:active {
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+    }
+
+    /* Active nav link — bottom accent bar */
+    .nav-link.blended-active,
+    .nav-link.blended-old-nav {
+        position: relative;
+    }
+
+    .nav-link.blended-active::after,
+    .nav-link.blended-old-nav::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 20%;
+        right: 20%;
+        height: 3px;
+        border-radius: 2px 2px 0 0;
+        background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Tighter content container padding on mobile */
+    .container.pt-2 {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    /* Make page containers edge-to-edge within the background card */
+    .container {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    /* Better scav name display */
+    .scav-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        word-break: break-word;
+    }
+
+    /* Team table cells more compact */
+    .team-table td {
+        height: auto;
+        padding: 0;
+    }
+
+    /* Stats table better spacing */
+    .td-scav {
+        padding: 8px 6px;
+    }
 }
 
 @supports (padding-top: env(safe-area-inset-top)) {
@@ -647,19 +818,19 @@ body {
 
     @media (max-width: 768px) {
         body {
-            padding-top: calc(10px + env(safe-area-inset-top));
-            padding-left: calc(10px + env(safe-area-inset-left));
-            padding-right: calc(10px + env(safe-area-inset-right));
-            padding-bottom: calc(10px + env(safe-area-inset-bottom));
+            padding-top: calc(6px + env(safe-area-inset-top));
+            padding-left: calc(6px + env(safe-area-inset-left));
+            padding-right: calc(6px + env(safe-area-inset-right));
+            padding-bottom: calc(6px + env(safe-area-inset-bottom));
         }
     }
 
     @media (max-width: 480px) {
         body {
-            padding-top: calc(5px + env(safe-area-inset-top));
-            padding-left: calc(5px + env(safe-area-inset-left));
-            padding-right: calc(5px + env(safe-area-inset-right));
-            padding-bottom: calc(5px + env(safe-area-inset-bottom));
+            padding-top: calc(4px + env(safe-area-inset-top));
+            padding-left: calc(4px + env(safe-area-inset-left));
+            padding-right: calc(4px + env(safe-area-inset-right));
+            padding-bottom: calc(4px + env(safe-area-inset-bottom));
         }
     }
 }
@@ -1595,4 +1766,10 @@ kbd {
     font-size: 1.78rem;
     color: #888;
     text-align: right;
+}
+
+@media (max-width: 340px) {
+    .share-card {
+        width: calc(100vw - 48px);
+    }
 }
