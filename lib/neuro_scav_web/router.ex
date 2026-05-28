@@ -19,10 +19,10 @@ defmodule NeuroScavWeb.Router do
     plug NeuroScavWeb.Plugs.RateLimit, limit: 200, window_ms: 60_000
   end
 
-  # Minimal pipeline for static assets served by controllers (e.g. og:image).
-  # Must not have plug :accepts, ["html"] — crawlers request these with Accept: image/*
+  # Pipeline for image endpoints fetched by crawlers (og:image, etc.).
+  # No plug :accepts — Telegram and other bots send arbitrary Accept headers
+  # (image/*, image/png, */*) and should never get a 406.
   pipeline :image do
-    plug :accepts, ["html", "png", "jpg", "jpeg", "gif", "webp"]
   end
 
   scope "/", NeuroScavWeb do

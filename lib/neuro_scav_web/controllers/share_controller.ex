@@ -98,7 +98,7 @@ defmodule NeuroScavWeb.ShareController do
       case result do
         {:ok, buffer} ->
           conn
-          |> put_resp_content_type("image/png")
+          |> put_resp_content_type("image/png", nil)
           |> put_resp_header("cache-control", "public, max-age=86400")
           |> put_resp_header("etag", ~s("#{etag}"))
           |> send_resp(200, :binary.list_to_bin(buffer))
