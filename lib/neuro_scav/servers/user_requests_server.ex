@@ -10,6 +10,8 @@ defmodule NeuroScav.UserRequestsServer do
   alias PromEx.Plugins.NeuroScav, as: NeuroPromex
 
   @requests_limit 10
+  # Requests older than this are dropped without processing
+  @request_ttl_seconds 300
 
   @spec schedule_request(String.t(), String.t()) ::
           :scheduled | :already_scheduled | :requests_limit_reached
@@ -39,7 +41,8 @@ defmodule NeuroScav.UserRequestsServer do
       nil ->
         if Enum.count(state) < @requests_limit do
           new_state =
-            state ++ [%{"user_id" => user_id, "scheduled_at" => now(), "locale" => locale}]
+            [%{"user_id" => user_id, "scheduled_at" => now(), "locale" => locale} | state]
+            |> Enum.reverse()
 
           {:reply, :scheduled, Map.put(settings, :state, new_state)}
         else
@@ -62,11 +65,22 @@ defmodule NeuroScav.UserRequestsServer do
   @impl true
   def handle_info(:process_request, %{
         schedule_timer: schedule_timer,
-        state: state,
+        state: [%{"user_id" => user_id, "locale" => locale} = request | new_state],
         client: client
       }) do
-    [%{"user_id" => user_id, "locale" => locale} | new_state] = state
+    if expired?(request) do
+      Logger.info("Dropping expired request for user #{user_id}")
+      PubSub.broadcast(user_id, {:neuro_generation_error, :neuro_scavenger})
+      notify_user_places(new_state)
+      schedule_server_seconds(schedule_timer)
+      {:noreply, %{schedule_timer: schedule_timer, state: new_state, client: client}}
+    else
+      new_settings = execute_request(user_id, locale, new_state, client, schedule_timer)
+      {:noreply, new_settings}
+    end
+  end
 
+  defp execute_request(user_id, locale, new_state, client, schedule_timer) do
     Logger.info("Processing request #{user_id}")
     notify_user_places(user_id)
 
@@ -85,21 +99,24 @@ defmodule NeuroScav.UserRequestsServer do
       end)
 
     formatted_exec_time = format_exec_time(exec_time)
-
     export_request_processed_info(formatted_exec_time)
     Logger.info("Done processing request #{user_id} about #{formatted_exec_time / 1000} seconds")
-
     schedule_server_seconds(schedule_timer)
-    {:noreply, %{schedule_timer: schedule_timer, state: new_state, client: client}}
+    %{schedule_timer: schedule_timer, state: new_state, client: client}
   end
 
   defp find_request(requests, id) do
     Enum.find(requests, fn %{"user_id" => user_id} -> user_id == id end)
   end
 
-  defp now do
-    DateTime.utc_now() |> DateTime.add(3, :hour)
+  defp now, do: DateTime.utc_now()
+
+  @spec expired?(map()) :: boolean()
+  defp expired?(%{"scheduled_at" => scheduled_at}) do
+    DateTime.diff(DateTime.utc_now(), scheduled_at, :second) > @request_ttl_seconds
   end
+
+  defp expired?(_), do: false
 
   defp schedule_server_seconds(time) do
     Process.send_after(__MODULE__, :process_request, :timer.seconds(time))

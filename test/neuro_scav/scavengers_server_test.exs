@@ -19,8 +19,7 @@ defmodule NeuroScav.ScavengersServerTest do
   end
 
   setup do
-    default_settings = %{module_name: FixtureNames}
-    {:ok, _pid} = GenServer.start_link(Server, default_settings, name: Server)
+    start_supervised!({Server, %{module_name: FixtureNames}})
     :ok
   end
 
@@ -34,7 +33,7 @@ defmodule NeuroScav.ScavengersServerTest do
 
     test "adjust test coverage" do
       assert Server.generate_single("some-id", "en") == :ok
-      Process.sleep(100)
+      _ = :sys.get_state(Server)
     end
   end
 
@@ -52,7 +51,7 @@ defmodule NeuroScav.ScavengersServerTest do
 
     test "adjust test coverage" do
       assert Server.generate_team("some-id", "en") == :ok
-      Process.sleep(100)
+      _ = :sys.get_state(Server)
     end
   end
 

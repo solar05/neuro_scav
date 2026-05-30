@@ -9,17 +9,15 @@ defmodule NeuroScavWeb.Plugs.RateLimit do
   import Plug.Conn
 
   def init(options) do
-    Enum.into(options, %{
+    %{
       limit: Keyword.get(options, :limit, 60),
       window_ms: Keyword.get(options, :window_ms, 60_000)
-    })
+    }
   end
 
-  def call(conn, options) do
+  def call(conn, %{limit: limit, window_ms: window_ms}) do
     ip = get_client_ip(conn)
     key = "rate_limit:#{ip}"
-    limit = Map.get(options, :limit, 60)
-    window_ms = Map.get(options, :window_ms, 60_000)
 
     case Hammer.check_rate(key, window_ms, limit) do
       {:allow, _count} ->

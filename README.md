@@ -230,7 +230,7 @@ Check if the API is running.
 
 #### Generate Single Scavenger
 
-**GET** `/api/generate_single`
+**POST** `/api/generate_single`
 
 Generate a single scavenger hunt item.
 
@@ -260,7 +260,7 @@ Generate a single scavenger hunt item.
 
 #### Generate Team Scavengers
 
-**GET** `/api/generate_team`
+**POST** `/api/generate_team`
 
 Generate a team-based scavenger hunt (multiple items).
 
@@ -321,13 +321,13 @@ The response contains counts of discovered scavengers grouped by rarity level.
 curl http://localhost:4000/api/health
 
 # Generate single scavenger with English locale
-curl "http://localhost:4000/api/generate_single?lang=en"
+curl -X POST "http://localhost:4000/api/generate_single?lang=en"
 
 # Generate single scavenger with Russian locale
-curl "http://localhost:4000/api/generate_single?lang=ru"
+curl -X POST "http://localhost:4000/api/generate_single?lang=ru"
 
 # Generate team scavengers
-curl "http://localhost:4000/api/generate_team"
+curl -X POST "http://localhost:4000/api/generate_team"
 
 # Get statistics
 curl http://localhost:4000/api/stats

@@ -48,8 +48,8 @@ defmodule NeuroScavWeb.Router do
     pipe_through :api
 
     get "/health", HealthController, :health
-    get "/generate_single", ScavengersController, :generate_single
-    get "/generate_team", ScavengersController, :generate_team
+    post "/generate_single", ScavengersController, :generate_single
+    post "/generate_team", ScavengersController, :generate_team
     get "/stats", ScavengersController, :stats
   end
 

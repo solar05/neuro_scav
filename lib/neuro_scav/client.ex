@@ -129,5 +129,5 @@ defmodule NeuroScav.Client do
   @spec present_language(String.t()) :: String.t()
   defp present_language("en"), do: "en"
   defp present_language("ru"), do: "ru"
-  defp present_language(_), do: "ru"
+  defp present_language(_), do: "en"
 end
