@@ -582,11 +582,11 @@ defmodule NeuroScavWeb.CoreComponents do
   def navlink(%{path: path, action: action} = assigns) do
     selected_class =
       if old_buttons?(action) && old_path?(path) do
-        if path == "/#{action}",
+        if active_navlink?(path, action),
           do: "nav-item nav-link blended-old-nav",
           else: "nav-item nav-link blend-old-font"
       else
-        if path == "/#{action}",
+        if active_navlink?(path, action),
           do: "nav-item nav-link blended-active",
           else: "nav-item nav-link blend-font"
       end
@@ -615,8 +615,11 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   defp old_path?(path) do
-    path in ["/single_scavenger", "/team_scavengers", "/statistics", "/glossary"]
+    path in ["/", "/team_scavengers", "/statistics", "/glossary"]
   end
+
+  defp active_navlink?("/", :single_scavenger), do: true
+  defp active_navlink?(path, action), do: path == "/#{action}"
 
   attr :lang, :string, required: true
   attr :path, :string, required: true

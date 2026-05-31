@@ -30,7 +30,6 @@ defmodule NeuroScavWeb.Router do
 
     live "/", NeuroScavengerLive.Single, :single_scavenger
     live "/neuro_scavengers", NeuroScavengerLive.Neuro, :neuro_scavengers
-    live "/single_scavenger", NeuroScavengerLive.Single, :single_scavenger
     live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
     live "/glossary", NeuroScavengerLive.Glossary, :glossary

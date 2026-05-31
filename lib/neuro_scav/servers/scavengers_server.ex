@@ -301,8 +301,8 @@ defmodule NeuroScav.ScavengersServer do
   """
   @spec epic?(String.t()) :: boolean()
   def epic?(name) do
-    parts = String.split(name, " ")
-    rhyme_suffix(List.first(parts)) == rhyme_suffix(List.last(parts))
+    {first, last} = split_name(name)
+    rhyme_suffix(first) == rhyme_suffix(last)
   end
 
   @vowels ~w(a e i o u а е ё и о у ы э ю я)
@@ -339,10 +339,8 @@ defmodule NeuroScav.ScavengersServer do
   """
   @spec rare?(String.t()) :: boolean()
   def rare?(name) do
-    splitted_name = String.split(name, " ")
-    first_name = List.first(splitted_name)
-    last_name = List.last(splitted_name)
-    String.first(first_name) == String.first(last_name)
+    {first, last} = split_name(name)
+    String.first(first) == String.first(last)
   end
 
   @doc """
@@ -362,9 +360,13 @@ defmodule NeuroScav.ScavengersServer do
   """
   @spec uncommon?(String.t()) :: boolean()
   def uncommon?(name) do
-    splitted_name = String.split(name, " ")
-    first_name = List.first(splitted_name)
-    last_name = List.last(splitted_name)
-    String.length(first_name) == String.length(last_name)
+    {first, last} = split_name(name)
+    String.length(first) == String.length(last)
+  end
+
+  @spec split_name(String.t()) :: {String.t(), String.t()}
+  defp split_name(name) do
+    parts = String.split(name, " ")
+    {List.first(parts), List.last(parts)}
   end
 end
