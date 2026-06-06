@@ -15,14 +15,14 @@ A Phoenix-based web application for neural scavenger hunts. NeuroScav provides r
 
 ## Tech Stack
 
-- **Framework**: [Phoenix](https://www.phoenixframework.org/) 1.8+
+- **Framework**: [Phoenix](https://www.phoenixframework.org/) 1.7.21+
 - **Language**: Elixir 1.14+
 - **Database**: PostgreSQL with Ecto ORM
 - **Real-time Communication**: Phoenix LiveView & PubSub
 - **UI**: Tailwind CSS & Heroicons
 - **AI**: Ollama for local LLM inference
 - **State Management**: Finitomata state machines
-- **HTTP Client**: Req (HTTP client library)
+- **HTTP Client**: Finch (AI calls go through the [Ollama](https://hex.pm/packages/ollama) client, which is built on Req)
 - **Server**: Bandit
 - **Monitoring**: PromEx for Prometheus metrics
 - **Code Quality**: Credo linter
@@ -235,7 +235,7 @@ Check if the API is running.
 Generate a single scavenger hunt item.
 
 **Query Parameters:**
-- `lang` (optional): Language preference (`en` or `ru`). Defaults to language from cookies or `en`.
+- `lang` (optional): Language preference (`en`, `ru`, `de`, or `ja`). Defaults to language from cookies or `ru`.
 
 **Response** (200 OK):
 ```json
@@ -265,7 +265,7 @@ Generate a single scavenger hunt item.
 Generate a team-based scavenger hunt (multiple items).
 
 **Query Parameters:**
-- `lang` (optional): Language preference (`en` or `ru`). Defaults to language from cookies or `en`.
+- `lang` (optional): Language preference (`en`, `ru`, `de`, or `ja`). Defaults to language from cookies or `ru`.
 
 **Response** (200 OK):
 ```json
@@ -350,7 +350,7 @@ Contributions are welcome! Please ensure:
 
 ## License
 
-See LICENSE file for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ## Support
 

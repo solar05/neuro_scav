@@ -11,7 +11,7 @@ config :neuro_scav,
   ecto_repos: [NeuroScav.Repo],
   generators: [timestamp_type: :utc_datetime]
 
-config :neuro_scav, NeuroScavWeb.Gettext, locales: ~w(en ru), default_locale: "ru"
+config :neuro_scav, NeuroScavWeb.Gettext, locales: ~w(en ru de ja), default_locale: "ru"
 
 # Configures the endpoint
 config :neuro_scav, NeuroScavWeb.Endpoint,
