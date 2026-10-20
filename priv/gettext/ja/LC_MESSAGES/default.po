@@ -193,3 +193,39 @@ msgstr "Noomu ga nigerumaeni tsukamaero!"
 
 msgid "Share"
 msgstr "Kyouyuu"
+
+msgid "Wheel"
+msgstr "Ruuretto"
+
+msgid "Spin"
+msgstr "Mawasu"
+
+msgid "Wheel placeholder"
+msgstr "Dare ga ataru?"
+
+msgid "Wheel entries hint"
+msgstr "Ichi gyou ni hitotsu"
+
+msgid "Wheel default 1"
+msgstr "Sukabu"
+
+msgid "Wheel default 2"
+msgstr "Noomu"
+
+msgid "Wheel default 3"
+msgstr "Bandiito"
+
+msgid "Wheel entries"
+msgstr "Koumoku"
+
+msgid "Winner"
+msgstr "Shousha"
+
+msgid "Remove winner question"
+msgstr "Kono koumoku wo kesu?"
+
+msgid "Remove"
+msgstr "Kesu"
+
+msgid "Keep"
+msgstr "Nokosu"

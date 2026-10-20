@@ -107,6 +107,23 @@ function launchConfetti() {
   requestAnimationFrame(draw);
 }
 
+// ── Wheel spin music: played inside the click so mobile autoplay rules allow it ──
+window.addEventListener('wheel:play', (e) => {
+  e.target.currentTime = 0;
+  e.target.play().catch(() => {});
+});
+
+// Clip is as long as the longest spin, so shorter spins fade it out on reveal.
+// Step counter, not volume check: iOS ignores audio.volume writes.
+window.addEventListener('wheel:stop', (e) => {
+  const audio = e.target;
+  let step = 10;
+  const fade = setInterval(() => {
+    audio.volume = --step / 10;
+    if (step === 0) { clearInterval(fade); audio.pause(); audio.volume = 1; }
+  }, 40);
+});
+
 // ── Shortcuts modal toggle (exposed on window for inline onclick) ──
 window.toggleShortcutsModal = function() {
   const modal = document.getElementById('shortcuts-modal');
@@ -239,7 +256,8 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     const btn = document.getElementById('btn-single') ||
                 document.getElementById('btn-team') ||
-                document.getElementById('neuroButton');
+                document.getElementById('neuroButton') ||
+                document.getElementById('btn-wheel');
     if (btn && !btn.disabled) btn.click();
   } else if (e.key === '1') {
     window.location.href = '/single_scavenger';

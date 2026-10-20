@@ -29,7 +29,7 @@
   </head>
   <body
     style="background-color: black;"
-    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary], do: "scav-old-back", else: "scav-back"}"}
+    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel], do: "scav-old-back", else: "scav-back"}"}
   >
     <div class="background-container">
       <div class="container container-nav">
@@ -47,6 +47,9 @@
               </.navlink>
               <.navlink path={~p"/statistics"} action={@live_action}>
                 {gettext("Stats")}
+              </.navlink>
+              <.navlink path={~p"/wheel"} action={@live_action}>
+                {gettext("Wheel")}
               </.navlink>
             </div>
           </div>

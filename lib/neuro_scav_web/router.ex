@@ -13,6 +13,7 @@ defmodule NeuroScavWeb.Router do
   end
 
   pipeline :api do
+    plug CORSPlug, origin: &NeuroScavWeb.Router.cors_origins/0
     plug :accepts, ["json"]
     plug :fetch_session
     plug NeuroScavWeb.Plugs.SetLocale
@@ -33,6 +34,7 @@ defmodule NeuroScavWeb.Router do
     live "/team_scavengers", NeuroScavengerLive.Team, :team_scavengers
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
+    live "/wheel", NeuroScavengerLive.Wheel, :wheel
 
     get "/share/:token", ShareController, :show
   end
@@ -50,7 +52,13 @@ defmodule NeuroScavWeb.Router do
     post "/generate_single", ScavengersController, :generate_single
     post "/generate_team", ScavengersController, :generate_team
     get "/stats", ScavengersController, :stats
+
+    # CORS preflight: CORSPlug halts before the action, this only catches stray OPTIONS
+    options "/*path", HealthController, :options
   end
+
+  @doc false
+  def cors_origins, do: Application.get_env(:neuro_scav, :cors_origins, [])
 
   # Other scopes may use custom stacks.
   # scope "/api", NeuroScavWeb do

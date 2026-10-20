@@ -23,6 +23,15 @@ end
 config :neuro_scav, NeuroScav.NeuroClient,
   api_url: System.get_env("NEURO_MODEL_API_URL") || "http://localhost:11434/api"
 
+# Allowed CORS origins for /api, comma-separated: "https://a.com, https://b.com"
+config :neuro_scav,
+  cors_origins:
+    "CORS_ORIGINS"
+    |> System.get_env("")
+    |> String.split(",", trim: true)
+    |> Enum.map(&String.trim/1)
+    |> Enum.reject(&(&1 == ""))
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

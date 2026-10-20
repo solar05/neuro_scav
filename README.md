@@ -78,6 +78,9 @@ NEURO_MODEL_API_URL=http://localhost:11434/api
 # Turnstile CAPTCHA (optional for development)
 TURNSTILE_SITE_KEY=your_site_key
 TURNSTILE_SECRET_KEY=your_secret_key
+
+# CORS origins allowed for /api (comma-separated, empty = no cross-origin access)
+CORS_ORIGINS=http://localhost:3000, https://example.com
 ```
 
 ### Database
@@ -173,6 +176,9 @@ TURNSTILE_SECRET_KEY=<your_key>
 
 # Clustering (optional)
 DNS_CLUSTER_QUERY=<query>
+
+# CORS origins allowed for /api (comma-separated)
+CORS_ORIGINS=https://example.com, https://app.example.com
 ```
 
 ## Development Tasks

@@ -206,3 +206,39 @@ msgstr "Поймай гнома, пока не убежал!"
 
 msgid "Share"
 msgstr "Поделиться"
+
+msgid "Wheel"
+msgstr "Колесо"
+
+msgid "Spin"
+msgstr "Крутить"
+
+msgid "Wheel placeholder"
+msgstr "Кому повезёт?"
+
+msgid "Wheel entries hint"
+msgstr "По одной позиции на строку"
+
+msgid "Wheel default 1"
+msgstr "Дичок"
+
+msgid "Wheel default 2"
+msgstr "Гном"
+
+msgid "Wheel default 3"
+msgstr "Бандит"
+
+msgid "Wheel entries"
+msgstr "Позиции"
+
+msgid "Winner"
+msgstr "Победитель"
+
+msgid "Remove winner question"
+msgstr "Убрать позицию из колеса?"
+
+msgid "Remove"
+msgstr "Убрать"
+
+msgid "Keep"
+msgstr "Оставить"

@@ -611,11 +611,11 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   defp old_buttons?(action) do
-    action in [:single_scavenger, :team_scavengers, :statistics, :glossary]
+    action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel]
   end
 
   defp old_path?(path) do
-    path in ["/", "/team_scavengers", "/statistics", "/glossary"]
+    path in ["/", "/team_scavengers", "/statistics", "/glossary", "/wheel"]
   end
 
   defp active_navlink?("/", :single_scavenger), do: true

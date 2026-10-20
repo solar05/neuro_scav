@@ -193,3 +193,39 @@ msgstr "Fang den Gnom, bevor er wegläuft!"
 
 msgid "Share"
 msgstr "Teilen"
+
+msgid "Wheel"
+msgstr "Rad"
+
+msgid "Spin"
+msgstr "Drehen"
+
+msgid "Wheel placeholder"
+msgstr "Wer hat Glück?"
+
+msgid "Wheel entries hint"
+msgstr "Ein Eintrag pro Zeile"
+
+msgid "Wheel default 1"
+msgstr "Plünderer"
+
+msgid "Wheel default 2"
+msgstr "Gnom"
+
+msgid "Wheel default 3"
+msgstr "Bandit"
+
+msgid "Wheel entries"
+msgstr "Einträge"
+
+msgid "Winner"
+msgstr "Gewinner"
+
+msgid "Remove winner question"
+msgstr "Diesen Eintrag vom Rad entfernen?"
+
+msgid "Remove"
+msgstr "Entfernen"
+
+msgid "Keep"
+msgstr "Behalten"

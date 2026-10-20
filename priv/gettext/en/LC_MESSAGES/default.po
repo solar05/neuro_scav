@@ -206,3 +206,39 @@ msgstr "Catch the gnome before he runs!"
 
 msgid "Share"
 msgstr "Share"
+
+msgid "Wheel"
+msgstr "Wheel"
+
+msgid "Spin"
+msgstr "Spin"
+
+msgid "Wheel placeholder"
+msgstr "Who's lucky?"
+
+msgid "Wheel entries hint"
+msgstr "One entry per line"
+
+msgid "Wheel default 1"
+msgstr "Scav"
+
+msgid "Wheel default 2"
+msgstr "Gnome"
+
+msgid "Wheel default 3"
+msgstr "Bandit"
+
+msgid "Wheel entries"
+msgstr "Entries"
+
+msgid "Winner"
+msgstr "Winner"
+
+msgid "Remove winner question"
+msgstr "Remove this entry from the wheel?"
+
+msgid "Remove"
+msgstr "Remove"
+
+msgid "Keep"
+msgstr "Keep"

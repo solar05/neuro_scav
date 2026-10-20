@@ -1,0 +1,95 @@
+<div class="container pt-2">
+  <h2 class="text-center blended-reg-bg scav-container">{gettext("Wheel placeholder")}</h2>
+  <div class="wheel-layout">
+    <div class="wheel-stage">
+      <button
+        id="btn-wheel"
+        class="wheel-wrap"
+        aria-label={gettext("Spin")}
+        disabled={@spinning or @entries == []}
+        phx-click={JS.dispatch("wheel:play", to: "#wheel-audio") |> JS.push("spin")}
+      >
+        <span class="wheel-pointer"></span>
+        <svg
+          id="wheel"
+          class="wheel-svg"
+          viewBox="0 0 200 200"
+          style={"transform: rotate(#{@rotation}deg); transition-duration: #{@spin_ms}ms"}
+        >
+          <circle :if={@entries == []} cx="100" cy="100" r="98" fill="#3a3a46" />
+          <g :for={segment <- segments(@entries)}>
+            <path d={segment.path} fill={segment.fill} stroke="#212529" stroke-width="0.5" />
+            <text
+              x="186"
+              y="100"
+              text-anchor="end"
+              dominant-baseline="middle"
+              fill={segment.text}
+              font-size={segment.font_size}
+              transform={"rotate(#{segment.rotate} 100 100)"}
+            >
+              {segment.label}
+            </text>
+          </g>
+        </svg>
+        <span class="wheel-hub btn-old-blended">{gettext("Spin")}</span>
+      </button>
+    </div>
+    <audio id="wheel-audio" src={~p"/sounds/wheel_spin.mp3"} preload="auto"></audio>
+    <div class="wheel-panel">
+      <div class="wheel-panel-header">
+        <span>{gettext("Wheel entries")}</span>
+        <span class="wheel-panel-count">{length(@entries)}/{@max_entries}</span>
+      </div>
+      <form id="wheel-form" phx-change="update_entries">
+        <textarea
+          id="wheel-entries"
+          name="entries"
+          class="wheel-entries"
+          rows="10"
+          phx-debounce="300"
+          disabled={@spinning}
+          placeholder={gettext("Wheel entries hint")}
+        >{Enum.join(@entries, "\n")}</textarea>
+      </form>
+    </div>
+  </div>
+
+  <div
+    :if={@winner}
+    id="wheel-winner"
+    class="shortcuts-modal"
+    phx-window-keydown="close_winner"
+    phx-key="Escape"
+    phx-mounted={JS.dispatch("wheel:stop", to: "#wheel-audio")}
+  >
+    <div class="shortcuts-modal-content wheel-winner" phx-click-away="close_winner">
+      <div class="shortcuts-modal-header">
+        <span>{gettext("Winner")}</span>
+        <button class="shortcuts-modal-close" phx-click="close_winner">X</button>
+      </div>
+      <div class="shortcuts-modal-body">
+        <h2 class="text-center scav-container legendary-name">
+          <span id="wheel-winner-name" phx-hook="ScavName">{@winner}</span>
+        </h2>
+        <p class="wheel-winner-question">{gettext("Remove winner question")}</p>
+        <div class="d-flex gap-2">
+          <button
+            id="btn-remove-winner"
+            class="btn btn-old-blended blended flex-fill"
+            phx-click="remove_winner"
+          >
+            {gettext("Remove")}
+          </button>
+          <button
+            id="btn-keep-winner"
+            class="btn blend-old-font flex-fill"
+            phx-click="close_winner"
+          >
+            {gettext("Keep")}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
