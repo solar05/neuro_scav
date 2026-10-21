@@ -602,7 +602,8 @@ defmodule NeuroScavWeb.CoreComponents do
       {"/statistics", gettext("Stats")},
       {"/wheel", gettext("Wheel")},
       {"/check_name", gettext("Name check")},
-      {"/collection", gettext("Collection")}
+      {"/collection", gettext("Collection")},
+      {"/battle", gettext("Battle")}
     ]
 
     {current_path, current_label} =
@@ -664,7 +665,8 @@ defmodule NeuroScavWeb.CoreComponents do
       :glossary,
       :wheel,
       :check_name,
-      :collection
+      :collection,
+      :battle
     ]
   end
 
@@ -676,7 +678,8 @@ defmodule NeuroScavWeb.CoreComponents do
       "/glossary",
       "/wheel",
       "/check_name",
-      "/collection"
+      "/collection",
+      "/battle"
     ]
   end
 
@@ -825,16 +828,20 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   @doc """
-  Renders a button that copies the share-card link for a scavenger or a whole team.
+  Renders a button that copies a link: the share card of a scavenger or a whole
+  team, or any other `path` of the site.
 
   ## Examples
 
       <.share_button name="Alice Adams" rarity={:rare} />
       <.share_button team={[%{name: "Alice Adams", rarity: :rare}]} />
+      <.share_button path={~p"/battle/abc"} label="Copy invite" />
   """
   attr :name, :string, default: nil
   attr :rarity, :any, default: nil
   attr :team, :list, default: nil, doc: "members with :name and :rarity"
+  attr :path, :string, default: nil
+  attr :label, :string, default: nil
   attr :class, :string, default: "btn-old-blended"
 
   def share_button(assigns) do
@@ -847,11 +854,13 @@ defmodule NeuroScavWeb.CoreComponents do
         data-url={@path}
         onclick="var btn=this; var url=window.location.origin+btn.dataset.url; navigator.clipboard.writeText(url).then(function(){var orig=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=orig;},1500);});"
       >
-        {gettext("Share")}
+        {@label || gettext("Share")}
       </button>
     </p>
     """
   end
+
+  defp share_path(%{path: path}) when is_binary(path), do: path
 
   # tokens are decoded by NeuroScavWeb.ShareController
   defp share_path(%{team: [_ | _] = team}) do

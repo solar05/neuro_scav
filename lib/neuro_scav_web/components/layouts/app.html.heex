@@ -2,5 +2,9 @@
   <div class="mx-auto max-w-2xl">
     <.flash_group flash={@flash} />
     {@inner_content}
+    <div :if={assigns[:online_count]} id="online-counter" class="online-counter">
+      <span class="online-dot"></span>
+      {gettext("Online: %{count}", count: @online_count)}
+    </div>
   </div>
 </main>

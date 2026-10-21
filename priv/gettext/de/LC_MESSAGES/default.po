@@ -271,3 +271,93 @@ msgstr "Ziehe Legendäre bei Einzeln und Team — sie erscheinen hier"
 
 msgid "Added to collection"
 msgstr "Neuer Legendärer in deiner Sammlung!"
+
+msgid "Battle"
+msgstr "Duell"
+
+msgid "Battle title"
+msgstr "Wildling-Duell"
+
+msgid "Battle rules"
+msgstr "Erstelle einen Raum und schick den Link deinem Gegner. Jeder zieht eine Wildling-Karte und darf einmal neu ziehen. Drei Runden — Stärke, Geschick, Glück: wer mehr Runden gewinnt, gewinnt."
+
+msgid "Battle rules short"
+msgstr "Zieh eine Karte: einmal neu ziehen ist erlaubt, die neue Karte kämpft dann sofort"
+
+msgid "Create battle"
+msgstr "Raum erstellen"
+
+msgid "Battle not found"
+msgstr "Raum nicht gefunden oder bereits geschlossen"
+
+msgid "Create new battle"
+msgstr "Neuen erstellen"
+
+msgid "Copy invite"
+msgstr "Einladung kopieren"
+
+msgid "Send invite hint"
+msgstr "Schick den Link deinem Gegner: wer ihn zuerst öffnet, spielt gegen dich"
+
+msgid "Spectator"
+msgstr "Du schaust zu: dieses Match hat schon zwei Spieler"
+
+msgid "You"
+msgstr "Du"
+
+msgid "Opponent"
+msgstr "Gegner"
+
+msgid "Player %{n}"
+msgstr "Spieler %{n}"
+
+msgid "Waiting for opponent"
+msgstr "Warte auf den Gegner…"
+
+msgid "Draw card"
+msgstr "Karte ziehen"
+
+msgid "Redraw"
+msgstr "Neu ziehen"
+
+msgid "Fight"
+msgstr "Kämpfen!"
+
+msgid "Drawing card"
+msgstr "Zieht eine Karte…"
+
+msgid "Card ready"
+msgstr "Karte bereit"
+
+msgid "Victory"
+msgstr "Sieg!"
+
+msgid "Defeat"
+msgstr "Niederlage"
+
+msgid "Draw result"
+msgstr "Unentschieden"
+
+msgid "Winner %{name}"
+msgstr "%{name} gewinnt"
+
+msgid "Rematch"
+msgstr "Revanche"
+
+msgid "Stat strength"
+msgstr "Stärke"
+
+msgid "Stat agility"
+msgstr "Geschick"
+
+msgid "Stat luck"
+msgstr "Glück"
+
+msgid "Play with bot"
+msgstr "Gegen einen Bot spielen"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Online: %{count}"
+msgstr "Online: %{count}"

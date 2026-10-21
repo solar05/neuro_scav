@@ -14,6 +14,10 @@ defmodule NeuroScav.Application do
         NeuroScav.Repo,
         {DNSCluster, query: Application.get_env(:neuro_scav, :dns_cluster_query) || :ignore},
         {Phoenix.PubSub, name: NeuroScav.PubSub},
+        NeuroScavWeb.Presence,
+        # Card battle rooms: one process per invite link
+        {Registry, keys: :unique, name: NeuroScav.BattleRegistry},
+        {DynamicSupervisor, name: NeuroScav.BattleSupervisor, strategy: :one_for_one},
         # Start the Finch HTTP client for sending emails
         {Finch, name: NeuroScav.Finch},
         # Start a worker by calling: NeuroScav.Worker.start_link(arg)

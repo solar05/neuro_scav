@@ -58,6 +58,7 @@ defmodule NeuroScavWeb do
         layout: {NeuroScavWeb.Layouts, :app}
 
       on_mount NeuroScavWeb.LegendaryToast
+      on_mount NeuroScavWeb.OnlineCounter
 
       unquote(html_helpers())
     end

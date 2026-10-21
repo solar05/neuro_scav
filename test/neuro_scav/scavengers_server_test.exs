@@ -105,6 +105,13 @@ defmodule NeuroScav.ScavengersServerTest do
       assert_receive {:legendary_found, %{user_id: "finder"}}
     end
 
+    test "uncounted generations (bot cards) are not broadcast" do
+      NeuroScav.PubSub.subscribe_finds()
+
+      assert %{name: "Кеша Пивосос", rarity: :legendary} = Server.generate_uncounted("ru")
+      refute_received {:legendary_found, _}
+    end
+
     test "other rarities are not broadcast" do
       NeuroScav.PubSub.subscribe_finds()
 

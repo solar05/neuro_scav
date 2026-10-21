@@ -1,0 +1,124 @@
+<div class="container pt-2">
+  <h2 class="text-center blended-reg-bg scav-container">{gettext("Battle title")}</h2>
+
+  <div :if={is_nil(@room_id)} class="battle-lobby">
+    <p class="battle-note">{gettext("Battle rules")}</p>
+    <button
+      id="btn-battle-create"
+      class="btn btn-old-blended btn-lg blended w-100"
+      phx-click="create"
+      phx-throttle="1000"
+    >
+      {gettext("Create battle")}
+    </button>
+    <button
+      id="btn-battle-bot"
+      class="btn blend-old-font btn-lg w-100 mt-3"
+      phx-click="create_bot"
+      phx-throttle="1000"
+    >
+      {gettext("Play with bot")}
+    </button>
+  </div>
+
+  <div :if={@closed} class="battle-lobby">
+    <p class="battle-note">{gettext("Battle not found")}</p>
+    <.link navigate={~p"/battle"} class="btn btn-old-blended btn-lg blended w-100">
+      {gettext("Create new battle")}
+    </.link>
+  </div>
+
+  <div :if={@battle} id="battle">
+    <%= cond do %>
+      <% @battle.result -> %>
+        <p class="battle-result">{result_text(@battle, @user_id)}</p>
+      <% not player?(@battle, @user_id) -> %>
+        <p class="battle-note">{gettext("Spectator")}</p>
+      <% length(@battle.players) == 1 -> %>
+        <p class="battle-note">{gettext("Send invite hint")}</p>
+        <.share_button path={~p"/battle/#{@battle.id}"} label={gettext("Copy invite")} />
+      <% true -> %>
+        <p class="battle-note">{gettext("Battle rules short")}</p>
+    <% end %>
+
+    <div class="battle-arena">
+      <div
+        :for={seat <- seats(@battle, @user_id)}
+        class={["wheel-panel battle-seat", seat.outcome && "battle-seat-#{seat.outcome}"]}
+      >
+        <div class="wheel-panel-header">
+          <span>{seat.label}</span>
+          <span :if={seat.score} class="wheel-panel-count">{seat.score}</span>
+        </div>
+        <div class="battle-seat-body">
+          <%= cond do %>
+            <% seat.card -> %>
+              <div class={"battle-card-name #{seat.card.rarity}-name"}>
+                <span
+                  id={"battle-card-#{seat.index}"}
+                  phx-hook="ScavName"
+                  data-collect={seat.own? && gettext("Added to collection")}
+                >
+                  {seat.card.name}
+                </span>
+              </div>
+              <p class={"battle-card-rarity #{seat.card.rarity}"}>
+                {rarity_text(seat.card.rarity)}
+              </p>
+              <ul class="battle-stats">
+                <li
+                  :for={stat <- NeuroScav.BattleRoom.stats()}
+                  class={["battle-stat", stat in seat.won && "battle-stat-win"]}
+                >
+                  <span>{stat_label(stat)}</span>
+                  <span class="battle-stat-bar">
+                    <span style={"width: #{seat.card.stats[stat]}%"}></span>
+                  </span>
+                  <b>{seat.card.stats[stat]}</b>
+                </li>
+              </ul>
+            <% is_nil(seat.player) -> %>
+              <p class="battle-wait">{gettext("Waiting for opponent")}</p>
+            <% seat.own? -> %>
+            <% seat.ready? -> %>
+              <p class="battle-wait">{gettext("Card ready")}</p>
+            <% true -> %>
+              <p class="battle-wait">{gettext("Drawing card")}</p>
+          <% end %>
+
+          <div :if={seat.own? and is_nil(@battle.result)} class="battle-actions">
+            <button
+              :if={seat.can_draw?}
+              id="btn-battle-draw"
+              class="btn btn-old-blended blended"
+              phx-click="draw"
+              phx-throttle="1000"
+            >
+              {if seat.card, do: gettext("Redraw"), else: gettext("Draw card")}
+            </button>
+            <button
+              :if={seat.can_fight?}
+              id="btn-battle-ready"
+              class="btn btn-old-blended blended"
+              phx-click="ready"
+              phx-throttle="1000"
+            >
+              {gettext("Fight")}
+            </button>
+            <p :if={seat.ready?} class="battle-wait">{gettext("Waiting for opponent")}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button
+      :if={@battle.result && player?(@battle, @user_id)}
+      id="btn-battle-rematch"
+      class="btn btn-old-blended btn-lg blended w-100 mt-3"
+      phx-click="rematch"
+      phx-throttle="1000"
+    >
+      {gettext("Rematch")}
+    </button>
+  </div>
+</div>

@@ -284,3 +284,93 @@ msgstr "Выбивай легендарок на «Дичке» и в «Комп
 
 msgid "Added to collection"
 msgstr "Новая легендарка в коллекции!"
+
+msgid "Battle"
+msgstr "Битва"
+
+msgid "Battle title"
+msgstr "Битва дичков"
+
+msgid "Battle rules"
+msgstr "Создай комнату и отправь ссылку сопернику. Каждый тянет карту дичка и может один раз перетянуть. Три раунда — сила, ловкость, удача: кто выиграл больше раундов, тот и победил."
+
+msgid "Battle rules short"
+msgstr "Тяни карту: перетянуть можно один раз, после этого карта сразу идёт в бой"
+
+msgid "Create battle"
+msgstr "Создать комнату"
+
+msgid "Battle not found"
+msgstr "Комната не найдена или уже закрыта"
+
+msgid "Create new battle"
+msgstr "Создать новую"
+
+msgid "Copy invite"
+msgstr "Скопировать приглашение"
+
+msgid "Send invite hint"
+msgstr "Отправь ссылку сопернику: первый, кто её откроет, сыграет с тобой"
+
+msgid "Spectator"
+msgstr "Ты зритель: в этом матче уже два игрока"
+
+msgid "You"
+msgstr "Ты"
+
+msgid "Opponent"
+msgstr "Соперник"
+
+msgid "Player %{n}"
+msgstr "Игрок %{n}"
+
+msgid "Waiting for opponent"
+msgstr "Ждём соперника…"
+
+msgid "Draw card"
+msgstr "Вытянуть карту"
+
+msgid "Redraw"
+msgstr "Перетянуть"
+
+msgid "Fight"
+msgstr "В бой!"
+
+msgid "Drawing card"
+msgstr "Тянет карту…"
+
+msgid "Card ready"
+msgstr "Карта готова"
+
+msgid "Victory"
+msgstr "Победа!"
+
+msgid "Defeat"
+msgstr "Поражение"
+
+msgid "Draw result"
+msgstr "Ничья"
+
+msgid "Winner %{name}"
+msgstr "Победил %{name}"
+
+msgid "Rematch"
+msgstr "Реванш"
+
+msgid "Stat strength"
+msgstr "Сила"
+
+msgid "Stat agility"
+msgstr "Ловкость"
+
+msgid "Stat luck"
+msgstr "Удача"
+
+msgid "Play with bot"
+msgstr "Играть с ботом"
+
+msgid "Bot"
+msgstr "Бот"
+
+msgid "Online: %{count}"
+msgstr "Онлайн: %{count}"

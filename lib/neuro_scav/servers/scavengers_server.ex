@@ -111,6 +111,24 @@ defmodule NeuroScav.ScavengersServer do
     GenServer.call(__MODULE__, {:generate_team, locale})
   end
 
+  @doc """
+  Generate a single scavenger for `user_id` synchronously (a battle card).
+
+  Counts in statistics and announces legendaries like the other generations.
+  """
+  @spec generate_card(String.t(), String.t()) :: map()
+  def generate_card(user_id, locale) do
+    GenServer.call(__MODULE__, {:generate_card, user_id, locale})
+  end
+
+  @doc """
+  Generate a scavenger without counting it in statistics or announcing it (bot players).
+  """
+  @spec generate_uncounted(String.t()) :: map()
+  def generate_uncounted(locale) do
+    GenServer.call(__MODULE__, {:generate_uncounted, locale})
+  end
+
   # Public API - Asynchronous
 
   @doc """
@@ -212,6 +230,21 @@ defmodule NeuroScav.ScavengersServer do
 
     NeuroScav.StatsCounterServer.update_counter(scavenger.rarity)
     announce_legendaries([scavenger], nil)
+
+    {:reply, scavenger, state}
+  end
+
+  @impl true
+  def handle_call({:generate_uncounted, locale}, _from, state) do
+    {:reply, generate_scavenger(state, locale), state}
+  end
+
+  @impl true
+  def handle_call({:generate_card, user_id, locale}, _from, state) do
+    scavenger = generate_scavenger(state, locale)
+
+    NeuroScav.StatsCounterServer.update_counter(scavenger.rarity)
+    announce_legendaries([scavenger], user_id)
 
     {:reply, scavenger, state}
   end

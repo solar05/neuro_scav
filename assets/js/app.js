@@ -329,6 +329,8 @@ document.addEventListener('keydown', (e) => {
     window.location.href = '/check_name';
   } else if (e.key === '7') {
     window.location.href = '/collection';
+  } else if (e.key === '8') {
+    window.location.href = '/battle';
   } else if (e.key === '?') {
     window.toggleShortcutsModal();
   } else if (e.key === 'Escape') {

@@ -118,6 +118,22 @@ defmodule NeuroScav.PubSub do
   end
 
   @doc """
+  Subscribe to updates of a card battle room.
+  """
+  @spec subscribe_battle(String.t()) :: :ok | {:error, term()}
+  def subscribe_battle(id) do
+    PubSub.subscribe(NeuroScav.PubSub, Topics.battle_topic(id))
+  end
+
+  @doc """
+  Broadcast a card battle room message to its players and spectators.
+  """
+  @spec broadcast_battle(String.t(), term()) :: :ok | {:error, term()}
+  def broadcast_battle(id, message) do
+    PubSub.broadcast(NeuroScav.PubSub, Topics.battle_topic(id), message)
+  end
+
+  @doc """
   Get the global statistics topic name.
 
   Returns: "statistics:lobby"

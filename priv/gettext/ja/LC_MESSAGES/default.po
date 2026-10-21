@@ -271,3 +271,93 @@ msgstr "Tantai to Chiimu de densetsu wo hikou — koko ni hyouji saremasu"
 
 msgid "Added to collection"
 msgstr "Zukan ni tsuika!"
+
+msgid "Battle"
+msgstr "Batoru"
+
+msgid "Battle title"
+msgstr "Yabanjin batoru"
+
+msgid "Battle rules"
+msgstr "Heya wo tsukutte aite ni rinku wo okurou. Kaado wa ikkai dake hikinaoseru. San raundo — chikara, binshou, un: ooku katta hou no kachi."
+
+msgid "Battle rules short"
+msgstr "Kaado wo hikou: hikinaoshi wa ikkai dake, atarashii kaado wa sugu tatakau"
+
+msgid "Create battle"
+msgstr "Heya wo tsukuru"
+
+msgid "Battle not found"
+msgstr "Heya ga mitsukarimasen"
+
+msgid "Create new battle"
+msgstr "Atarashiku tsukuru"
+
+msgid "Copy invite"
+msgstr "Shoutai rinku wo kopii"
+
+msgid "Send invite hint"
+msgstr "Rinku wo okurou: saisho ni hiraita hito ga aite ni naru"
+
+msgid "Spectator"
+msgstr "Kansen-chuu: kono shiai wa mou futari imasu"
+
+msgid "You"
+msgstr "Anata"
+
+msgid "Opponent"
+msgstr "Aite"
+
+msgid "Player %{n}"
+msgstr "Pureiyaa %{n}"
+
+msgid "Waiting for opponent"
+msgstr "Aite wo matteimasu…"
+
+msgid "Draw card"
+msgstr "Kaado wo hiku"
+
+msgid "Redraw"
+msgstr "Hikinaosu"
+
+msgid "Fight"
+msgstr "Tatakau!"
+
+msgid "Drawing card"
+msgstr "Kaado wo hiiteimasu…"
+
+msgid "Card ready"
+msgstr "Kaado junbi OK"
+
+msgid "Victory"
+msgstr "Shouri!"
+
+msgid "Defeat"
+msgstr "Haiboku"
+
+msgid "Draw result"
+msgstr "Hikiwake"
+
+msgid "Winner %{name}"
+msgstr "%{name} no kachi"
+
+msgid "Rematch"
+msgstr "Ribenji"
+
+msgid "Stat strength"
+msgstr "Chikara"
+
+msgid "Stat agility"
+msgstr "Binshou"
+
+msgid "Stat luck"
+msgstr "Un"
+
+msgid "Play with bot"
+msgstr "Botto to taisen"
+
+msgid "Bot"
+msgstr "Botto"
+
+msgid "Online: %{count}"
+msgstr "Onrain: %{count}"

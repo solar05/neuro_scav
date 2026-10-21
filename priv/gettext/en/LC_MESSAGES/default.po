@@ -284,3 +284,93 @@ msgstr "Roll legendaries in Single and Team — they will show up here"
 
 msgid "Added to collection"
 msgstr "New legendary in your collection!"
+
+msgid "Battle"
+msgstr "Battle"
+
+msgid "Battle title"
+msgstr "Scavenger battle"
+
+msgid "Battle rules"
+msgstr "Create a room and send the link to your opponent. Each of you draws a scavenger card and may redraw once. Three rounds — strength, agility, luck: whoever wins more rounds wins."
+
+msgid "Battle rules short"
+msgstr "Draw a card: you may redraw once, and the redrawn card goes straight into battle"
+
+msgid "Create battle"
+msgstr "Create a room"
+
+msgid "Battle not found"
+msgstr "Room not found or already closed"
+
+msgid "Create new battle"
+msgstr "Create a new one"
+
+msgid "Copy invite"
+msgstr "Copy invite link"
+
+msgid "Send invite hint"
+msgstr "Send the link to your opponent: the first one to open it plays against you"
+
+msgid "Spectator"
+msgstr "You are watching: this match already has two players"
+
+msgid "You"
+msgstr "You"
+
+msgid "Opponent"
+msgstr "Opponent"
+
+msgid "Player %{n}"
+msgstr "Player %{n}"
+
+msgid "Waiting for opponent"
+msgstr "Waiting for the opponent…"
+
+msgid "Draw card"
+msgstr "Draw a card"
+
+msgid "Redraw"
+msgstr "Redraw"
+
+msgid "Fight"
+msgstr "Fight!"
+
+msgid "Drawing card"
+msgstr "Drawing a card…"
+
+msgid "Card ready"
+msgstr "Card is ready"
+
+msgid "Victory"
+msgstr "Victory!"
+
+msgid "Defeat"
+msgstr "Defeat"
+
+msgid "Draw result"
+msgstr "Draw"
+
+msgid "Winner %{name}"
+msgstr "%{name} wins"
+
+msgid "Rematch"
+msgstr "Rematch"
+
+msgid "Stat strength"
+msgstr "Strength"
+
+msgid "Stat agility"
+msgstr "Agility"
+
+msgid "Stat luck"
+msgstr "Luck"
+
+msgid "Play with bot"
+msgstr "Play against a bot"
+
+msgid "Bot"
+msgstr "Bot"
+
+msgid "Online: %{count}"
+msgstr "Online: %{count}"

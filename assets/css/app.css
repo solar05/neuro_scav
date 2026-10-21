@@ -1551,6 +1551,45 @@ table {
     }
 }
 
+/* ── Online counter: bottom-left, mirrors the help button ── */
+.online-counter {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border: 2px solid #d49300;
+    border-radius: 22px;
+    background-color: #3a3a46;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+    color: #d49300;
+    font: 18px/1 "Bender";
+    pointer-events: none;
+}
+
+.online-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4caf50;
+    box-shadow: 0 0 6px #4caf50;
+}
+
+/* mobile: a fixed badge would cover the content, so it closes the page instead */
+@media (max-width: 768px) {
+    .online-counter {
+        position: static;
+        width: fit-content;
+        margin: 16px auto 0;
+        padding: 4px 10px;
+        box-shadow: none;
+        font-size: 14px;
+    }
+}
+
 /* ── Shortcuts modal ── */
 .shortcuts-modal {
     position: fixed;
@@ -2073,6 +2112,128 @@ kbd {
         min-height: 52px;
         font-size: 16px;
     }
+}
+
+/* ── Card battle ── */
+.battle-lobby {
+    max-width: 640px;
+    margin: 0 auto;
+}
+
+.battle-note {
+    margin: 0.5rem 0 1rem;
+    color: #a5a5a5;
+    font-size: 18px;
+    text-align: center;
+}
+
+.battle-result {
+    margin: 0.5rem 0 1rem;
+    color: #ffd060;
+    font-size: 32px;
+    text-align: center;
+}
+
+.battle-arena {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+@media (max-width: 768px) {
+    .battle-arena {
+        grid-template-columns: 1fr;
+    }
+}
+
+.battle-seat-lost {
+    opacity: 0.55;
+}
+
+.battle-seat-body {
+    padding: 14px;
+    font-family: "Bender";
+}
+
+.battle-card-name {
+    padding: 10px 14px;
+    border-radius: 18px;
+    background-color: #7e7f8b;
+    color: #fff;
+    font-size: 24px;
+    text-align: center;
+    word-break: break-word;
+}
+
+.battle-card-rarity {
+    margin: 8px 0 12px;
+    font-size: 18px;
+    text-align: center;
+}
+
+.battle-stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.battle-stat {
+    display: grid;
+    grid-template-columns: 6.5em 1fr 2.5em;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: #a5a5a5;
+    font-size: 18px;
+}
+
+.battle-stat b {
+    color: #fff;
+    font-weight: normal;
+    text-align: right;
+}
+
+.battle-stat-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: #212529;
+    overflow: hidden;
+}
+
+.battle-stat-bar > span {
+    display: block;
+    height: 100%;
+    background: #7e7f8b;
+}
+
+.battle-stat-win {
+    background: rgba(212, 147, 0, 0.15);
+    color: #ffd060;
+}
+
+.battle-stat-win .battle-stat-bar > span {
+    background: #d49300;
+}
+
+.battle-wait {
+    margin: 8px 0;
+    color: #a5a5a5;
+    font-size: 18px;
+    text-align: center;
+}
+
+.battle-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.battle-actions .btn {
+    flex: 1;
+    font-size: 20px;
 }
 
 /* ── Team share card ── */

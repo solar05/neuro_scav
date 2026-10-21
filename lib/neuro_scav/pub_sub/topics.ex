@@ -41,6 +41,12 @@ defmodule NeuroScav.PubSub.Topics do
   @spec finds_topic() :: String.t()
   def finds_topic, do: "finds:lobby"
 
+  @doc """
+  Topic of one card battle room; carries `{:battle_updated, state}` and `:battle_closed`.
+  """
+  @spec battle_topic(String.t()) :: String.t()
+  def battle_topic(id), do: "battle:#{id}"
+
   # User-specific topics
   @doc """
   User-specific topic for events related to a particular user.
