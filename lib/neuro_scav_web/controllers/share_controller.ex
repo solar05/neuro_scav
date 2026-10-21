@@ -52,19 +52,55 @@ defmodule NeuroScavWeb.ShareController do
     "neuro" => {"#4d6bfe", "#00e5ff"}
   }
 
+  # best first; picks the team card's frame color
+  @rarity_rank ~w(gnome legendary epic neuro rare uncommon common)
+  @max_team_members NeuroScav.ScavengersServer.max_team_members()
+  @team_card %{cx: 320, cy: 75, cw: 560, ch: 480, art_h: 110}
+
   def show(conn, %{"token" => token}) do
     case decode_token(token) do
       {:ok, name, rarity} ->
         conn
-        |> put_root_layout(html: {NeuroScavWeb.Layouts, :share})
-        |> put_layout(false)
-        |> render(:show, name: name, rarity: rarity, theme: pick_theme(name), token: token)
+        |> put_share_layout()
+        |> render(:show,
+          name: name,
+          rarity: rarity,
+          theme: pick_theme(name),
+          token: token,
+          title: "#{name} — #{rarity}",
+          description: "A #{rarity} scavenger from scavgen",
+          share_path: ~p"/share/#{token}"
+        )
 
       :error ->
         conn
         |> put_status(:bad_request)
-        |> put_root_layout(html: {NeuroScavWeb.Layouts, :share})
-        |> put_layout(false)
+        |> put_share_layout()
+        |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+    end
+  end
+
+  def team(conn, %{"token" => token}) do
+    case decode_team_token(token) do
+      {:ok, members} ->
+        best = best_rarity(members)
+
+        conn
+        |> put_share_layout()
+        |> render(:team,
+          members: Enum.map(members, &Map.put(&1, :color, rarity_color(&1.rarity))),
+          border_color: rarity_color(best),
+          theme: pick_theme(Enum.map_join(members, & &1.name)),
+          token: token,
+          title: "Scavenger team — #{best}",
+          description: Enum.map_join(members, ", ", & &1.name),
+          share_path: ~p"/share/team/#{token}"
+        )
+
+      :error ->
+        conn
+        |> put_status(:bad_request)
+        |> put_share_layout()
         |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
     end
   end
@@ -76,18 +112,37 @@ defmodule NeuroScavWeb.ShareController do
         :error -> {"???", "common", "void"}
       end
 
-    etag = :crypto.hash(:md5, token) |> Base.encode16(case: :lower)
+    send_png(conn, token, fn -> build_og_svg(name, rarity, theme) end)
+  end
+
+  def team_og_image(conn, %{"token" => token}) do
+    members =
+      case decode_team_token(token) do
+        {:ok, members} -> members
+        :error -> [%{name: "???", rarity: "common"}]
+      end
+
+    theme = pick_theme(Enum.map_join(members, & &1.name))
+    send_png(conn, "team:" <> token, fn -> build_team_og_svg(members, theme) end)
+  end
+
+  defp put_share_layout(conn) do
+    conn
+    |> put_root_layout(html: {NeuroScavWeb.Layouts, :share})
+    |> put_layout(false)
+  end
+
+  defp send_png(conn, cache_key, build_svg) do
+    etag = :crypto.hash(:md5, cache_key) |> Base.encode16(case: :lower)
 
     if get_req_header(conn, "if-none-match") == [~s("#{etag}")] do
       conn
       |> put_resp_header("etag", ~s("#{etag}"))
       |> send_resp(304, "")
     else
-      svg = build_og_svg(name, rarity, theme)
-
       result =
         try do
-          Resvg.svg_string_to_png_buffer(svg,
+          Resvg.svg_string_to_png_buffer(build_svg.(),
             font_files: font_paths(),
             skip_system_fonts: true,
             resources_dir: System.tmp_dir!()
@@ -106,7 +161,7 @@ defmodule NeuroScavWeb.ShareController do
 
         {:error, reason} ->
           require Logger
-          Logger.error("og_image render failed for token=#{token}: #{inspect(reason)}")
+          Logger.error("og_image render failed for #{cache_key}: #{inspect(reason)}")
           send_resp(conn, 503, "")
       end
     end
@@ -181,6 +236,55 @@ defmodule NeuroScavWeb.ShareController do
             font-family="Bender, Arial, sans-serif"
             font-size="18" font-weight="bold" letter-spacing="2"
             fill="#{border_color}" fill-opacity="0.9" text-anchor="middle">#{badge_label}</text>
+      <text x="#{cx + cw - 14}" y="#{cy + ch - 16}"
+            font-family="Bender, 'Courier New', monospace"
+            font-size="16" font-weight="bold" letter-spacing="2"
+            fill="#{border_color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
+    </svg>
+    """
+  end
+
+  # canvas 1200×630, team card 560×480 centered: theme art strip, then one row per member
+  defp build_team_og_svg(members, theme) do
+    %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @team_card
+    best = best_rarity(members)
+    border_color = rarity_color(best)
+    theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
+
+    rows =
+      members
+      |> Enum.with_index()
+      |> Enum.map_join("\n", fn {%{name: name, rarity: rarity}, i} ->
+        y = cy + art_h + 20 + i * 62
+        color = rarity_color(rarity)
+
+        """
+          <rect x="#{cx + 20}" y="#{y}" width="#{cw - 40}" height="52" rx="12" fill="#16161e" stroke="#{color}" stroke-width="2"/>
+          <text x="#{cx + 40}" y="#{y + 35}" font-family="Bender, Arial, sans-serif" font-size="26" font-weight="bold" fill="#ffffff">#{name |> String.slice(0, 24) |> xml_escape()}</text>
+          <text x="#{cx + cw - 40}" y="#{y + 33}" font-family="Bender, Arial, sans-serif" font-size="16" font-weight="bold" letter-spacing="2" fill="#{color}" text-anchor="end">#{rarity |> String.upcase() |> xml_escape()}</text>
+        """
+      end)
+
+    """
+    <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
+      #{font_style_defs()}
+      <defs>
+        <clipPath id="card-clip">
+          <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
+        </clipPath>
+      </defs>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
+      <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
+      <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
+      <g clip-path="url(#card-clip)">
+        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
+          #{theme_inner}
+        </svg>
+      </g>
+      <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{border_color}" stroke-width="4"/>
+      #{rarity_decorations(best, border_color, @team_card)}
+      <line x1="#{cx}" y1="#{cy + art_h}" x2="#{cx + cw}" y2="#{cy + art_h}" stroke="#{border_color}" stroke-width="1" opacity="0.5"/>
+      #{rows}
       <text x="#{cx + cw - 14}" y="#{cy + ch - 16}"
             font-family="Bender, 'Courier New', monospace"
             font-size="16" font-weight="bold" letter-spacing="2"
@@ -416,4 +520,25 @@ defmodule NeuroScavWeb.ShareController do
       _ -> :error
     end
   end
+
+  # one "name|rarity" line per member
+  defp decode_team_token(token) do
+    with {:ok, decoded} <- Base.url_decode64(token, padding: false),
+         lines when length(lines) in 1..@max_team_members <- String.split(decoded, "\n"),
+         pairs = Enum.map(lines, &String.split(&1, "|", parts: 2)),
+         true <- Enum.all?(pairs, &match?([name, rarity] when name != "" and rarity != "", &1)) do
+      {:ok, Enum.map(pairs, fn [name, rarity] -> %{name: name, rarity: rarity} end)}
+    else
+      _ -> :error
+    end
+  end
+
+  defp best_rarity(members) do
+    members
+    |> Enum.map(& &1.rarity)
+    |> Enum.min_by(&(Enum.find_index(@rarity_rank, fn r -> r == &1 end) || length(@rarity_rank)))
+  end
+
+  defp rarity_color(rarity),
+    do: @rarity_colors |> Map.get(rarity, {"#888888", "#aaaaaa"}) |> elem(0)
 end

@@ -9,7 +9,11 @@
           phx-value-index={index}
         >
           <span class={"text-container team-#{member && member.rarity}-name"}>
-            <span id={"team-name-#{index}"} phx-hook="ScavName">
+            <span
+              id={"team-name-#{index}"}
+              phx-hook="ScavName"
+              data-collect={gettext("Added to collection")}
+            >
               {(member && member.name) || gettext("Single placeholder")}
             </span>
             <span :if={index in @locked} class="team-lock">🔒</span>
@@ -29,4 +33,5 @@
       {gettext("Generate team")}
     </.link>
   </p>
+  <.share_button :if={@team != []} team={@team} />
 </div>

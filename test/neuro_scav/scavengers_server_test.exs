@@ -71,6 +71,49 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
+  describe "suggest_last_names/4" do
+    test "capitalizes the first name and puts legendary names first" do
+      assert Server.suggest_last_names("кеша", "ru", FixtureNames) == [
+               legendary: ["Кеша Пивосос"]
+             ]
+    end
+
+    test "leaves out common pairs" do
+      assert Server.suggest_last_names("Victor", "en", FixtureNames) == []
+    end
+
+    test "every suggestion has the rarity of its group" do
+      groups = Server.suggest_last_names("Гена", "ru")
+      assert groups != []
+
+      for {rarity, names} <- groups do
+        assert length(names) in 1..6
+        for name <- names, do: assert(Server.check_name(name).rarity == rarity)
+      end
+    end
+  end
+
+  describe "legendary announcements" do
+    test "generated legendaries are broadcast with the finder's id" do
+      NeuroScav.PubSub.subscribe_finds()
+
+      Server.generate_single("finder", "ru")
+      assert_receive {:legendary_found, %{user_id: "finder", name: "Кеша Пивосос"}}
+
+      Server.generate_team("finder", "ru", 2)
+      assert_receive {:legendary_found, %{user_id: "finder"}}
+      assert_receive {:legendary_found, %{user_id: "finder"}}
+    end
+
+    test "other rarities are not broadcast" do
+      NeuroScav.PubSub.subscribe_finds()
+
+      Server.generate_single("finder", "en")
+      _ = :sys.get_state(Server)
+      refute_received {:legendary_found, _}
+    end
+  end
+
   describe "odds/2" do
     test "counts every first × last pair" do
       assert Server.odds(FixtureNames, "ru") == %{legendary: 100.0}

@@ -243,10 +243,31 @@ msgid "Check name placeholder"
 msgstr "Prüfe deinen Namen: Vorname Nachname"
 
 msgid "Check name hint"
-msgstr "Gib Vor- und Nachnamen ein"
+msgstr "Gib Vor- und Nachnamen ein oder nur den Vornamen für Nachnamen"
 
 msgid "Name check"
 msgstr "Prüfung"
 
 msgid "Check name title"
 msgstr "Welcher Wildling bist du?"
+
+msgid "Last names for %{name}"
+msgstr "Nachnamen für „%{name}“"
+
+msgid "No suggestions"
+msgstr "Nichts gefunden"
+
+msgid "Someone found legendary %{name}"
+msgstr "Jemand hat gerade einen Legendären gezogen: %{name}"
+
+msgid "Collection"
+msgstr "Sammlung"
+
+msgid "Collection title"
+msgstr "Legendäre Wildlinge"
+
+msgid "Collection hint"
+msgstr "Ziehe Legendäre bei Einzeln und Team — sie erscheinen hier"
+
+msgid "Added to collection"
+msgstr "Neuer Legendärer in deiner Sammlung!"

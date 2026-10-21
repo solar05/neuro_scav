@@ -82,7 +82,8 @@ defmodule NeuroScav.MixProject do
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:lazy_html, ">= 0.1.0", only: :test},
       {:excoveralls, "~> 0.18", only: :test},
-      {:systemd, "~> 0.6"}
+      {:systemd, "~> 0.6"},
+      {:ex_slop, "~> 0.4", only: [:dev, :test], runtime: false}
     ]
   end
 

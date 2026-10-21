@@ -334,4 +334,48 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert valid_png?(response(conn, 200))
     end
   end
+
+  describe "team share" do
+    defp team_token(members) do
+      members
+      |> Enum.map_join("\n", fn {name, rarity} -> "#{name}|#{rarity}" end)
+      |> Base.url_encode64(padding: false)
+    end
+
+    @team [{"Алиса Аврора", "rare"}, {"Дед Мороз", "legendary"}, {"Вася Пупкин", "common"}]
+
+    test "lists every member with its rarity", %{conn: conn} do
+      html = conn |> get(~p"/share/team/#{team_token(@team)}") |> html_response(200)
+
+      for {name, rarity} <- @team do
+        assert html =~ name
+        assert html =~ rarity
+      end
+    end
+
+    test "titles the card by the best rarity and points og:image at the team image", %{conn: conn} do
+      token = team_token(@team)
+      html = conn |> get(~p"/share/team/#{token}") |> html_response(200)
+
+      assert html =~ "Scavenger team — legendary"
+      assert html =~ "/share/team/#{token}/image"
+    end
+
+    test "rejects broken tokens", %{conn: conn} do
+      for token <- [
+            "not base64!",
+            team_token([{"", "rare"}]),
+            Base.url_encode64("no separator", padding: false),
+            team_token(List.duplicate({"A B", "common"}, 6))
+          ] do
+        assert conn |> get(~p"/share/team/#{token}") |> html_response(400) =~ "invalid link"
+      end
+    end
+
+    test "renders a PNG card", %{conn: conn} do
+      conn = get(conn, ~p"/share/team/#{team_token(@team)}/image")
+      assert valid_png?(response(conn, 200))
+      assert ["image/png" <> _] = get_resp_header(conn, "content-type")
+    end
+  end
 end

@@ -20,12 +20,32 @@
         autofocus
         autocomplete="off"
         autocapitalize="words"
-        pattern="\S+(\s+\S+)+"
         placeholder={gettext("Check name placeholder")}
-        title={gettext("Check name hint")}
       />
       <button class="btn btn-old-blended blended">{gettext("Check name")}</button>
     </.form>
+    <div :if={@suggestions} id="name-suggestions" class="name-suggestions">
+      <p class="name-suggestions-title">
+        {gettext("Last names for %{name}", name: @suggestions.first)}
+      </p>
+      <p :if={@suggestions.groups == []} class="name-suggestions-title">
+        {gettext("No suggestions")}
+      </p>
+      <div :for={{rarity, names} <- @suggestions.groups} class={"suggest-row suggest-#{rarity}"}>
+        <span class="suggest-label">{rarity_label(rarity)}</span>
+        <button
+          :for={name <- names}
+          type="button"
+          class="suggest-chip"
+          phx-click={
+            JS.push("check_name", value: %{name: name})
+            |> JS.dispatch("scav:reveal", to: "#scav-name")
+          }
+        >
+          {name}
+        </button>
+      </div>
+    </div>
   </div>
   <.share_button :if={@scavenger.rarity} name={@scavenger.name} rarity={@scavenger.rarity} />
 </div>

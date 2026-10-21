@@ -35,6 +35,12 @@ defmodule NeuroScav.PubSub.Topics do
   @spec statistics_topic() :: String.t()
   def statistics_topic, do: "statistics:lobby"
 
+  @doc """
+  Global topic for legendary finds, shown to everyone else as a toast.
+  """
+  @spec finds_topic() :: String.t()
+  def finds_topic, do: "finds:lobby"
+
   # User-specific topics
   @doc """
   User-specific topic for events related to a particular user.

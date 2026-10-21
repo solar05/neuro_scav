@@ -96,6 +96,28 @@ defmodule NeuroScav.PubSub do
   end
 
   @doc """
+  Subscribe to legendary finds made by any user.
+  """
+  @spec subscribe_finds() :: :ok | {:error, term()}
+  def subscribe_finds do
+    PubSub.subscribe(NeuroScav.PubSub, Topics.finds_topic())
+  end
+
+  @doc """
+  Announce a legendary find to every connected page.
+
+  `user_id` (nil for API calls) lets the finder's own pages skip the toast.
+  """
+  @spec broadcast_find(String.t() | nil, String.t()) :: :ok | {:error, term()}
+  def broadcast_find(user_id, name) do
+    PubSub.broadcast(
+      NeuroScav.PubSub,
+      Topics.finds_topic(),
+      {:legendary_found, %{user_id: user_id, name: name}}
+    )
+  end
+
+  @doc """
   Get the global statistics topic name.
 
   Returns: "statistics:lobby"

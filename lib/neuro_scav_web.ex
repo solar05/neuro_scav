@@ -57,6 +57,8 @@ defmodule NeuroScavWeb do
       use Phoenix.LiveView,
         layout: {NeuroScavWeb.Layouts, :app}
 
+      on_mount NeuroScavWeb.LegendaryToast
+
       unquote(html_helpers())
     end
   end

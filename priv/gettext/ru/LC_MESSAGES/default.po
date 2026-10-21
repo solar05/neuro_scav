@@ -256,10 +256,31 @@ msgid "Check name placeholder"
 msgstr "Проверь своё имя: Имя Фамилия"
 
 msgid "Check name hint"
-msgstr "Введи имя и фамилию через пробел"
+msgstr "Введи имя и фамилию или только имя, чтобы подобрать фамилию"
 
 msgid "Name check"
 msgstr "Проверка"
 
 msgid "Check name title"
 msgstr "Что ты такое?"
+
+msgid "Last names for %{name}"
+msgstr "Фамилии для «%{name}»"
+
+msgid "No suggestions"
+msgstr "Ничего не нашлось"
+
+msgid "Someone found legendary %{name}"
+msgstr "Кто-то только что выбил легендарку: %{name}"
+
+msgid "Collection"
+msgstr "Коллекция"
+
+msgid "Collection title"
+msgstr "Легендарные дички"
+
+msgid "Collection hint"
+msgstr "Выбивай легендарок на «Дичке» и в «Компании» — они появятся здесь"
+
+msgid "Added to collection"
+msgstr "Новая легендарка в коллекции!"

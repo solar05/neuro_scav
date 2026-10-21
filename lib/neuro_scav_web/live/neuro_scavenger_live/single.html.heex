@@ -1,6 +1,8 @@
 <div class="container pt-2">
   <h2 class={"text-center blended-reg-bg scav-container #{@scavenger.rarity}-name"}>
-    <span id="scav-name" phx-hook="ScavName">{@scavenger.name}</span>
+    <span id="scav-name" phx-hook="ScavName" data-collect={gettext("Added to collection")}>
+      {@scavenger.name}
+    </span>
   </h2>
   <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap mt-3">
     <h3 class={"blended-reg-bg rarity-label #{@scavenger.rarity} mb-0"}>

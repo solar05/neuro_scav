@@ -601,7 +601,8 @@ defmodule NeuroScavWeb.CoreComponents do
       {"/team_scavengers", gettext("Team")},
       {"/statistics", gettext("Stats")},
       {"/wheel", gettext("Wheel")},
-      {"/check_name", gettext("Name check")}
+      {"/check_name", gettext("Name check")},
+      {"/collection", gettext("Collection")}
     ]
 
     {current_path, current_label} =
@@ -656,11 +657,27 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   defp old_buttons?(action) do
-    action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel, :check_name]
+    action in [
+      :single_scavenger,
+      :team_scavengers,
+      :statistics,
+      :glossary,
+      :wheel,
+      :check_name,
+      :collection
+    ]
   end
 
   defp old_path?(path) do
-    path in ["/", "/team_scavengers", "/statistics", "/glossary", "/wheel", "/check_name"]
+    path in [
+      "/",
+      "/team_scavengers",
+      "/statistics",
+      "/glossary",
+      "/wheel",
+      "/check_name",
+      "/collection"
+    ]
   end
 
   defp active_navlink?("/", :single_scavenger), do: true
@@ -808,22 +825,26 @@ defmodule NeuroScavWeb.CoreComponents do
   end
 
   @doc """
-  Renders a button that copies the share-card link for a scavenger.
+  Renders a button that copies the share-card link for a scavenger or a whole team.
 
-  ## Example
+  ## Examples
 
       <.share_button name="Alice Adams" rarity={:rare} />
+      <.share_button team={[%{name: "Alice Adams", rarity: :rare}]} />
   """
-  attr :name, :string, required: true
-  attr :rarity, :any, required: true
+  attr :name, :string, default: nil
+  attr :rarity, :any, default: nil
+  attr :team, :list, default: nil, doc: "members with :name and :rarity"
   attr :class, :string, default: "btn-old-blended"
 
   def share_button(assigns) do
+    assigns = assign(assigns, :path, share_path(assigns))
+
     ~H"""
     <p class="lead mt-2">
       <button
         class={"btn #{@class} btn-lg blended d-flex justify-content-center w-100"}
-        data-url={"/share/#{Base.url_encode64("#{@name}|#{@rarity}", padding: false)}"}
+        data-url={@path}
         onclick="var btn=this; var url=window.location.origin+btn.dataset.url; navigator.clipboard.writeText(url).then(function(){var orig=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=orig;},1500);});"
       >
         {gettext("Share")}
@@ -831,6 +852,15 @@ defmodule NeuroScavWeb.CoreComponents do
     </p>
     """
   end
+
+  # tokens are decoded by NeuroScavWeb.ShareController
+  defp share_path(%{team: [_ | _] = team}) do
+    members = Enum.map_join(team, "\n", &"#{&1.name}|#{&1.rarity}")
+    "/share/team/#{Base.url_encode64(members, padding: false)}"
+  end
+
+  defp share_path(%{name: name, rarity: rarity}),
+    do: "/share/#{Base.url_encode64("#{name}|#{rarity}", padding: false)}"
 
   @doc """
   Renders rarity distribution as animated progress bars.

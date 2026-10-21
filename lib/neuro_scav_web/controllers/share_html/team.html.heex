@@ -1,0 +1,35 @@
+<div class="share-page">
+  <div class="share-card-wrap" style={"--rc: #{@border_color}; --rc-glow: transparent"}>
+    <span class="cb cb-tl"></span>
+    <span class="cb cb-tr"></span>
+    <span class="cb cb-bl"></span>
+    <span class="cb cb-br"></span>
+    <div class="share-card share-team-card">
+      <div class={"share-card-art share-team-art theme-#{@theme}"}>
+        <div class="share-card-art-inner">
+          <div class="share-art-lines"></div>
+        </div>
+      </div>
+      <ol class="share-team-list">
+        <li :for={member <- @members} class="share-team-row" style={"--mc: #{member.color}"}>
+          <span class="share-team-name">{member.name}</span>
+          <span class="share-team-rarity">{member.rarity}</span>
+        </li>
+      </ol>
+      <div class="share-card-footer">
+        <span class="share-brand">scavgen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="share-actions">
+    <button
+      class="share-copy-btn"
+      data-url={url(~p"/share/team/#{@token}")}
+      onclick="var btn=this; navigator.clipboard.writeText(btn.dataset.url).then(function(){var orig=btn.textContent; btn.textContent='copied!'; setTimeout(function(){btn.textContent=orig;},1500);});"
+    >
+      copy link
+    </button>
+    <a href={~p"/team_scavengers"} class="share-try-btn">try yourself</a>
+  </div>
+</div>

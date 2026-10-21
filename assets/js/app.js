@@ -107,6 +107,47 @@ function launchConfetti() {
   requestAnimationFrame(draw);
 }
 
+// ── Toasts: legendary finds by others, collection updates ──
+function showToast(text) {
+  let box = document.getElementById('scav-toasts');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'scav-toasts';
+    box.setAttribute('role', 'status');
+    document.body.appendChild(box);
+  }
+  // a burst of finds shouldn't bury the page
+  while (box.children.length >= 3) box.firstElementChild.remove();
+  const toast = document.createElement('div');
+  toast.className = 'scav-toast';
+  toast.textContent = text;
+  box.appendChild(toast);
+  setTimeout(() => toast.classList.add('scav-toast-hide'), 4500);
+  setTimeout(() => toast.remove(), 5000);
+}
+
+window.addEventListener('phx:legendary-found', (e) => showToast(e.detail.text));
+
+// ── Legendary collection: kept per browser, shown on /collection ──
+const COLLECTION_KEY = 'scavgen:legendaries';
+
+function loadCollection() {
+  try { return JSON.parse(localStorage.getItem(COLLECTION_KEY)) || []; } catch { return []; }
+}
+
+function collectLegendary(name, toastText) {
+  const found = loadCollection();
+  if (found.includes(name)) return;
+  found.push(name);
+  try { localStorage.setItem(COLLECTION_KEY, JSON.stringify(found)); } catch { return; }
+  showToast(toastText);
+}
+
+const CollectionHook = {
+  mounted() { this.pushEvent('load_collection', {names: loadCollection()}); },
+  reconnected() { this.mounted(); }
+};
+
 // ── Wheel spin music: played inside the click so mobile autoplay rules allow it ──
 window.addEventListener('wheel:play', (e) => {
   e.target.currentTime = 0;
@@ -122,6 +163,11 @@ window.addEventListener('wheel:stop', (e) => {
     audio.volume = --step / 10;
     if (step === 0) { clearInterval(fade); audio.pause(); audio.volume = 1; }
   }, 40);
+});
+
+// ── Bring the result into view (check page suggestions sit below it) ──
+window.addEventListener('scav:reveal', (e) => {
+  e.target.scrollIntoView({behavior: 'smooth', block: 'center'});
 });
 
 // ── Shortcuts modal toggle (exposed on window for inline onclick) ──
@@ -198,6 +244,8 @@ const ScavNameHook = {
       el.classList.add('error-appear');
     } else if (el.closest('.legendary-name, .team-legendary-name')) {
       el.classList.add('legendary-appear');
+      // only generated names count, not checked ones (data-collect holds the toast text)
+      if (el.dataset.collect) collectLegendary(el.textContent.trim(), el.dataset.collect);
       triggerRarityFlash('legendary');
       launchConfetti();
       vibrate([100, 50, 100, 50, 200]);
@@ -222,7 +270,8 @@ let liveSocket = new LiveSocket("/live", Socket, {
   params: {_csrf_token: csrfToken},
   hooks: {
     Turnstile: makeTurnstileHook(),
-    ScavName: ScavNameHook
+    ScavName: ScavNameHook,
+    Collection: CollectionHook
   }
 })
 
@@ -278,6 +327,8 @@ document.addEventListener('keydown', (e) => {
     window.location.href = '/wheel';
   } else if (e.key === '6') {
     window.location.href = '/check_name';
+  } else if (e.key === '7') {
+    window.location.href = '/collection';
   } else if (e.key === '?') {
     window.toggleShortcutsModal();
   } else if (e.key === 'Escape') {

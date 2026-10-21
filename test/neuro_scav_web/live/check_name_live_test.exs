@@ -27,10 +27,28 @@ defmodule NeuroScavWeb.CheckNameLiveTest do
     assert html =~ "Легендарная находка!"
   end
 
-  test "ignores a single word", %{conn: conn} do
-    {:ok, lv, _html} = live(conn, ~p"/check_name")
+  describe "last name suggestions" do
+    test "a single word lists last names instead of checking it", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/check_name")
 
-    assert lv |> form("#check-name-form", %{name: "Вася"}) |> render_submit() =~
-             "Что ты такое?"
+      html = lv |> form("#check-name-form", %{name: "Гена"}) |> render_submit()
+      assert html =~ "Фамилии для «Гена»"
+      assert html =~ "Что ты такое?"
+      assert lv |> element("#name-suggestions .suggest-chip") |> has_element?()
+    end
+
+    test "clicking a suggestion checks that name", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/check_name")
+      lv |> form("#check-name-form", %{name: "Гена"}) |> render_submit()
+
+      chip =
+        lv |> element("#name-suggestions .suggest-row:first-of-type .suggest-chip:first-of-type")
+
+      name = chip |> render() |> LazyHTML.from_fragment() |> LazyHTML.text() |> String.trim()
+      chip |> render_click()
+
+      assert lv |> element("#scav-name") |> render() =~ name
+      refute lv |> element("#scav-name") |> render() =~ "Что ты такое?"
+    end
   end
 end

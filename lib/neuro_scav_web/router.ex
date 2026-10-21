@@ -36,14 +36,17 @@ defmodule NeuroScavWeb.Router do
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
     live "/wheel", NeuroScavengerLive.Wheel, :wheel
     live "/check_name", NeuroScavengerLive.CheckName, :check_name
+    live "/collection", NeuroScavengerLive.Collection, :collection
 
     get "/share/:token", ShareController, :show
+    get "/share/team/:token", ShareController, :team
   end
 
   scope "/", NeuroScavWeb do
     pipe_through :image
 
     get "/share/:token/image", ShareController, :og_image
+    get "/share/team/:token/image", ShareController, :team_og_image
   end
 
   scope "/api", NeuroScavWeb.Api do

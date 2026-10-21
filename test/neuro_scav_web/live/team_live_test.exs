@@ -48,5 +48,21 @@ defmodule NeuroScavWeb.TeamLiveTest do
     end
   end
 
+  describe "Share" do
+    test "shares the whole team once it is generated", %{conn: conn} do
+      {:ok, lv, html} = live(conn, ~p"/team_scavengers")
+      refute html =~ ~s(data-url="/share/team/)
+
+      send(lv.pid, {:team_generated, team(~w(A1 A2 A3 A4 A5))})
+
+      expected =
+        Base.url_encode64(Enum.map_join(~w(A1 A2 A3 A4 A5), "\n", &"#{&1}|common"),
+          padding: false
+        )
+
+      assert render(lv) =~ ~s(data-url="/share/team/#{expected}")
+    end
+  end
+
   defp team(names), do: Enum.map(names, &%{name: &1, rarity: :common})
 end
