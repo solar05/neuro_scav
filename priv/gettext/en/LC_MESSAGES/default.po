@@ -242,3 +242,24 @@ msgstr "Remove"
 
 msgid "Keep"
 msgstr "Keep"
+
+msgid "Chance"
+msgstr "Chance"
+
+msgid "Team lock hint"
+msgstr "Tap a name to lock it"
+
+msgid "Check name"
+msgstr "Check"
+
+msgid "Check name placeholder"
+msgstr "Check your name: First Last"
+
+msgid "Check name hint"
+msgstr "Enter a first and last name"
+
+msgid "Name check"
+msgstr "Check"
+
+msgid "Check name title"
+msgstr "What scavenger are you?"

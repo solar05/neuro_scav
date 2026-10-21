@@ -47,6 +47,19 @@ defmodule NeuroScavWeb.NeuroScavengerLiveTest do
                "Достигнут лимит запросов"
     end
 
+    test "share button appears only for a generated neuro name", %{conn: conn} do
+      {:ok, index_live, html} = live(conn, ~p"/neuro_scavengers")
+      refute html =~ ~s(data-url="/share/)
+
+      send(index_live.pid, {:neuro_generated, "Вася Пупкин"})
+
+      token = Base.url_encode64("Вася Пупкин|neuro", padding: false)
+      assert render(index_live) =~ ~s(data-url="/share/#{token}")
+
+      send(index_live.pid, {:queue_place_updated, 2})
+      refute render(index_live) =~ ~s(data-url="/share/)
+    end
+
     test "when captcha fails", %{conn: conn} do
       TurnstileMock.set_error(true)
       on_exit(fn -> TurnstileMock.set_error(false) end)

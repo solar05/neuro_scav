@@ -2,7 +2,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
   use NeuroScavWeb, :live_view
   use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, PubSub}
+  alias NeuroScav.{Locale, PubSub, ScavengersServer}
 
   @impl true
   def mount(_params, session, socket) do
@@ -18,28 +18,72 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
     new_socket =
       socket
       |> assign(:team, [])
+      |> assign(:locked, MapSet.new())
       |> assign(:user_locale, locale)
       |> assign(:user_id, user_id)
 
     {:ok, new_socket}
   end
 
+  @impl true
   def handle_event("generate_team", _value, socket) do
-    NeuroScav.ScavengersServer.generate_team(socket.assigns.user_id, socket.assigns.user_locale)
+    %{user_id: user_id, user_locale: locale, locked: locked} = socket.assigns
+    count = ScavengersServer.max_team_members() - MapSet.size(locked)
+    if count > 0, do: ScavengersServer.generate_team(user_id, locale, count)
 
     {:noreply, socket}
   end
 
-  def on_gnome_clicked(socket), do: {:noreply, assign(socket, :team, gnome_team())}
+  def handle_event("toggle_lock", %{"index" => index}, socket) do
+    index = String.to_integer(index)
+    %{locked: locked, team: team} = socket.assigns
+
+    locked =
+      cond do
+        index in locked -> MapSet.delete(locked, index)
+        index in 0..(length(team) - 1)//1 -> MapSet.put(locked, index)
+        true -> locked
+      end
+
+    {:noreply, assign(socket, :locked, locked)}
+  end
+
+  def on_gnome_clicked(socket),
+    do: {:noreply, assign(socket, team: gnome_team(), locked: MapSet.new())}
 
   # pubsub callbacks
   @impl true
-  def handle_info({:team_generated, team}, socket) do
-    {:noreply, assign(socket, :team, team)}
+  def handle_info({:team_generated, fresh}, socket) do
+    {:noreply, assign(socket, :team, refill(socket.assigns.team, fresh, socket.assigns.locked))}
   end
 
+  # Locked slots keep their member, the others take fresh ones in order.
+  defp refill([], fresh, _locked), do: fresh
+
+  defp refill(team, fresh, locked) do
+    {team, _unused} =
+      team
+      |> Enum.with_index()
+      |> Enum.map_reduce(fresh, fn
+        {member, index}, [next | rest] = fresh ->
+          if MapSet.member?(locked, index), do: {member, fresh}, else: {next, rest}
+
+        {member, _index}, [] ->
+          {member, []}
+      end)
+
+    team
+  end
+
+  defp slots(team),
+    do: Enum.map(0..(ScavengersServer.max_team_members() - 1), &{&1, Enum.at(team, &1)})
+
+  defp slot_style(0), do: "border-radius: 10px 10px 0px 0px;"
+  defp slot_style(4), do: "border-radius: 0px 0px 10px 10px; border-bottom: none;"
+  defp slot_style(_), do: nil
+
   defp gnome_team do
-    1..NeuroScav.ScavengersServer.max_team_members()
+    1..ScavengersServer.max_team_members()
     |> Enum.map(fn _ ->
       %{
         name: Locale.get_text("Gnome catched"),

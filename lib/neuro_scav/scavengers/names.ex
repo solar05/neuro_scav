@@ -208,7 +208,8 @@ defmodule NeuroScav.Scavengers.Names do
     "Иван",
     "Ваня",
     "Ивасик",
-    "Рафаэль"
+    "Рафаэль",
+    "Леха"
   ]
   @last_names_ru [
     "Самогонкин",
@@ -1101,7 +1102,13 @@ defmodule NeuroScav.Scavengers.Names do
     "Ivan",
     "Vanya",
     "Ivasik",
-    "Rafael"
+    "Rafael",
+    "Boca",
+    "Kabanchik",
+    "Olezha",
+    "Zhan",
+    "Lekha",
+    "Seryoga"
   ]
   @last_names_en [
     "Worker",
@@ -1694,7 +1701,26 @@ defmodule NeuroScav.Scavengers.Names do
     "Stink",
     "Smell",
     "Erudite",
-    "Balabolkin"
+    "Balabolkin",
+    "Poshly",
+    "Vist",
+    "Jocka",
+    "Kalyanshchik",
+    "Zavodskoy",
+    "Zhykh",
+    "the Boar",
+    "Infarct",
+    "Vsola",
+    "Plukha",
+    "Zhilisty",
+    "Animeshnik",
+    "Kukhnyy",
+    "Sukhodrischev",
+    "Zhirik",
+    "Moroz",
+    "Kozhan",
+    "Lepekha",
+    "Pirat"
   ]
   @legendary_names_ru [
     "Олег Пошлый",
@@ -1743,7 +1769,7 @@ defmodule NeuroScav.Scavengers.Names do
     "Boca Jocka",
     "Ilya Kalyanshchik",
     "Ilya Zavodskoy",
-    "Andrew Weekend",
+    "Andrei Weekend",
     "Ilya Kosiposha",
     "Artyomka Zhykh",
     "Kostyan Pumpkin",
@@ -1763,7 +1789,7 @@ defmodule NeuroScav.Scavengers.Names do
     "Nikita Baskerville",
     "Nikita Kukhnyy",
     "Nikita Sukhodrischev",
-    "Oleza Zhirik",
+    "Olezha Zhirik",
     "Ded Moroz",
     "Ivan Kozhan",
     "Lekha Lepekha",
@@ -1956,7 +1982,9 @@ defmodule NeuroScav.Scavengers.Names do
     "Streithammel",
     "Wirrkopf",
     "Schreihals",
-    "Schafskopf"
+    "Schafskopf",
+    "Bier",
+    "Kohl"
   ]
   @legendary_names_de [
     "Bernd Bratwurst",
@@ -2045,7 +2073,12 @@ defmodule NeuroScav.Scavengers.Names do
     "Yuuji",
     "Souta",
     "Riku",
-    "Satoshi"
+    "Satoshi",
+    "Eikichi",
+    "Minato",
+    "Raito",
+    "Jiraiya",
+    "Orochimaru"
   ]
   @last_names_ja [
     "Tanaka",
@@ -2134,21 +2167,26 @@ defmodule NeuroScav.Scavengers.Names do
     "Keikan",
     "Isha",
     "Ryourinin",
-    "Shokunin"
+    "Shokunin",
+    "Onizuka",
+    "Son",
+    "Ouji",
+    "Sensei",
+    "Sama"
   ]
   @legendary_names_ja [
-    "Tanaka Tarou",
-    "Yamada Jirou",
-    "Uchiha Sasuke",
-    "Uzumaki Naruto",
-    "Kurosaki Ichigo",
-    "Sakata Gintoki",
-    "Himura Kenshin",
-    "Onizuka Eikichi",
-    "Namikaze Minato",
-    "Hatake Kakashi",
-    "Yagami Raito",
-    "Son Gokuu",
+    "Tarou Tanaka",
+    "Jirou Yamada",
+    "Sasuke Uchiha",
+    "Naruto Uzumaki",
+    "Ichigo Kurosaki",
+    "Gintoki Sakata",
+    "Kenshin Himura",
+    "Eikichi Onizuka",
+    "Minato Namikaze",
+    "Kakashi Hatake",
+    "Raito Yagami",
+    "Gokuu Son",
     "Vegeta Ouji",
     "Jiraiya Sensei",
     "Orochimaru Sama"

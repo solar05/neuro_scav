@@ -162,7 +162,7 @@ msgid "legendary rule"
 msgstr "Namae ga rejendarii risuto ni aru"
 
 msgid "legendary examples"
-msgstr "Tanaka Tarou · Uchiha Sasuke · Hatake Kakashi"
+msgstr "Tarou Tanaka · Sasuke Uchiha · Kakashi Hatake"
 
 msgid "epic rule"
 msgstr "Namae to myouji ga iun"
@@ -229,3 +229,24 @@ msgstr "Kesu"
 
 msgid "Keep"
 msgstr "Nokosu"
+
+msgid "Chance"
+msgstr "Kakuritsu"
+
+msgid "Team lock hint"
+msgstr "Namae wo tappu shite kotei"
+
+msgid "Check name"
+msgstr "Shiraberu"
+
+msgid "Check name placeholder"
+msgstr "Namae wo shiraberu: Namae Myouji"
+
+msgid "Check name hint"
+msgstr "Namae to myouji wo nyuuryoku"
+
+msgid "Name check"
+msgstr "Chekku"
+
+msgid "Check name title"
+msgstr "Anata wa donna yabanjin?"

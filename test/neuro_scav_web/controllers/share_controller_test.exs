@@ -28,7 +28,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
     end
 
     test "renders rarity CSS class on the badge", %{conn: conn} do
-      for rarity <- ~w(common uncommon rare epic legendary gnome) do
+      for rarity <- ~w(common uncommon rare epic legendary gnome neuro) do
         conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}")
         assert html_response(conn, 200) =~ ~s(share-rarity-badge #{rarity})
       end
@@ -159,7 +159,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
     end
 
     test "works with all rarity levels", %{conn: conn} do
-      for rarity <- ~w(common uncommon rare epic legendary gnome) do
+      for rarity <- ~w(common uncommon rare epic legendary gnome neuro) do
         conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}")
         assert html_response(conn, 200) =~ rarity
       end
@@ -263,7 +263,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
 
     test "different rarities for the same name produce different PNG images", %{conn: conn} do
       pngs =
-        for rarity <- ~w(common uncommon rare epic legendary gnome) do
+        for rarity <- ~w(common uncommon rare epic legendary gnome neuro) do
           conn |> get(~p"/share/#{token_for("Test Name", rarity)}/image") |> response(200)
         end
 
@@ -283,7 +283,7 @@ defmodule NeuroScavWeb.ShareControllerTest do
     end
 
     test "works with all rarity levels", %{conn: conn} do
-      for rarity <- ~w(common uncommon rare epic legendary gnome) do
+      for rarity <- ~w(common uncommon rare epic legendary gnome neuro) do
         conn = get(conn, ~p"/share/#{token_for("Test Name", rarity)}/image")
         assert valid_png?(response(conn, 200)), "expected valid PNG for rarity: #{rarity}"
       end

@@ -242,3 +242,24 @@ msgstr "Убрать"
 
 msgid "Keep"
 msgstr "Оставить"
+
+msgid "Chance"
+msgstr "Шанс"
+
+msgid "Team lock hint"
+msgstr "Нажми на имя, чтобы закрепить его"
+
+msgid "Check name"
+msgstr "Проверить"
+
+msgid "Check name placeholder"
+msgstr "Проверь своё имя: Имя Фамилия"
+
+msgid "Check name hint"
+msgstr "Введи имя и фамилию через пробел"
+
+msgid "Name check"
+msgstr "Проверка"
+
+msgid "Check name title"
+msgstr "Что ты такое?"

@@ -6,6 +6,7 @@
       "rare" -> {"#1e90ff", "rgba(30,144,255,0.18)"}
       "uncommon" -> {"#22aa44", "rgba(34,170,68,0.15)"}
       "gnome" -> {"#ff44bb", "rgba(255,68,187,0.22)"}
+      "neuro" -> {"#4d6bfe", "rgba(77,107,254,0.22)"}
       _ -> {"#888888", "rgba(136,136,136,0.1)"}
     end
 
@@ -18,7 +19,7 @@
       <span class="cb cb-tr"></span>
       <span class="cb cb-bl"></span>
       <span class="cb cb-br"></span>
-      <%= if r in ["rare", "epic", "legendary", "gnome"] do %>
+      <%= if r in ["rare", "epic", "legendary", "gnome", "neuro"] do %>
         <span class="dm dm-tc"></span>
         <span class="dm dm-bc"></span>
         <span class="dm dm-lm"></span>
@@ -32,7 +33,7 @@
         <span class="dm dm-lm dm-sm"></span>
         <span class="dm dm-rm dm-sm"></span>
       <% end %>
-      <%= if r == "epic" do %>
+      <%= if r in ["epic", "neuro"] do %>
         <span class="dm dm-lm dm-sm"></span>
         <span class="dm dm-rm dm-sm"></span>
       <% end %>
@@ -48,7 +49,7 @@
           <span class="gd gd-rs" style={"top: #{y}px; --gc: #{c}"}></span>
         <% end %>
       <% end %>
-      <div class={"share-card border-#{r}#{if r in ["epic", "legendary", "gnome"], do: " has-inner-glow", else: ""}"}>
+      <div class={"share-card border-#{r}#{if r in ["epic", "legendary", "gnome", "neuro"], do: " has-inner-glow", else: ""}"}>
         <div class={"share-card-art theme-#{@theme}"}>
           <div class="share-card-art-inner">
             <div class="share-art-lines"></div>

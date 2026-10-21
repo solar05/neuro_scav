@@ -22,6 +22,15 @@
     <.live_title default="scavgen">
       {assigns[:page_title]}
     </.live_title>
+    <%!-- without preload the navbar is laid out in the fallback font first and jumps on every page load --%>
+    <link rel="preload" href={~p"/fonts/Bender.otf"} as="font" type="font/otf" crossorigin />
+    <link
+      rel="preload"
+      href={~p"/fonts/SFProText-Regular.ttf"}
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <script defer phx-track-static type="text/javascript" src={~p"/assets/app.js"}>
     </script>
@@ -29,27 +38,16 @@
   </head>
   <body
     style="background-color: black;"
-    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel], do: "scav-old-back", else: "scav-back"}"}
+    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel, :check_name], do: "scav-old-back", else: "scav-back"}"}
   >
     <div class="background-container">
       <div class="container container-nav">
         <nav class="navbar navbar-expand navbar-light navbar-scav">
           <div class="collapse navbar-collapse show">
             <div class="navbar-nav">
-              <.navlink path={~p"/"} action={@live_action}>
-                {gettext("Single")}
-              </.navlink>
-              <.navlink path={~p"/team_scavengers"} action={@live_action}>
-                {gettext("Team")}
-              </.navlink>
+              <.nav_menu action={@live_action} />
               <.navlink path={~p"/neuro_scavengers"} action={@live_action}>
                 {gettext("Neuro-scav")}
-              </.navlink>
-              <.navlink path={~p"/statistics"} action={@live_action}>
-                {gettext("Stats")}
-              </.navlink>
-              <.navlink path={~p"/wheel"} action={@live_action}>
-                {gettext("Wheel")}
               </.navlink>
             </div>
           </div>
@@ -127,6 +125,14 @@
               <tr>
                 <td><kbd>4</kbd></td>
                 <td>{gettext("Stats")}</td>
+              </tr>
+              <tr>
+                <td><kbd>5</kbd></td>
+                <td>{gettext("Wheel")}</td>
+              </tr>
+              <tr>
+                <td><kbd>6</kbd></td>
+                <td>{gettext("Name check")}</td>
               </tr>
               <tr>
                 <td><kbd>?</kbd></td>

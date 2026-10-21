@@ -158,8 +158,15 @@ defmodule NeuroScav.ScavengersServer do
   Updates statistics counters with team rarities
   """
   @spec generate_team(String.t(), String.t()) :: :ok
-  def generate_team(user_id, locale) do
-    GenServer.cast(__MODULE__, {:generate_team, user_id, locale})
+  def generate_team(user_id, locale), do: generate_team(user_id, locale, @max_team_members)
+
+  @doc """
+  Like `generate_team/2`, but generates only `count` members — used to reroll
+  the unlocked slots of a team.
+  """
+  @spec generate_team(String.t(), String.t(), pos_integer()) :: :ok
+  def generate_team(user_id, locale, count) when count in 1..@max_team_members do
+    GenServer.cast(__MODULE__, {:generate_team, user_id, locale, count})
   end
 
   # GenServer Callbacks
@@ -175,7 +182,15 @@ defmodule NeuroScav.ScavengersServer do
 
   @impl true
   def init(%{module_name: names} = _default_state) do
-    state = %{
+    state = load_names(names)
+
+    Logger.info("Scavenger server started")
+    {:ok, state}
+  end
+
+  @spec load_names(module()) :: map()
+  defp load_names(names) do
+    %{
       "first_names_ru" => names.first_names_ru(),
       "last_names_ru" => names.last_names_ru(),
       "first_names_en" => names.first_names_en(),
@@ -189,9 +204,6 @@ defmodule NeuroScav.ScavengersServer do
       "last_names_de" => names.last_names_de(),
       "legendary_names_de" => names.legendary_names_de()
     }
-
-    Logger.info("Scavenger server started")
-    {:ok, state}
   end
 
   @impl true
@@ -224,8 +236,8 @@ defmodule NeuroScav.ScavengersServer do
     {:noreply, state}
   end
 
-  def handle_cast({:generate_team, user_id, locale}, state) do
-    team = 1..@max_team_members |> Enum.map(fn _ -> generate_scavenger(state, locale) end)
+  def handle_cast({:generate_team, user_id, locale, count}, state) do
+    team = 1..count |> Enum.map(fn _ -> generate_scavenger(state, locale) end)
 
     team
     |> Enum.map(fn scav -> scav.rarity end)
@@ -251,16 +263,64 @@ defmodule NeuroScav.ScavengersServer do
 
     name = "#{first_name} #{last_name}"
 
-    rarity =
-      cond do
-        legendary?(names, name, locale) == true -> :legendary
-        epic?(name) == true -> :epic
-        rare?(name) == true -> :rare
-        uncommon?(name) == true -> :uncommon
-        true -> :common
+    %{name: name, rarity: rarity(names, name, locale)}
+  end
+
+  @spec rarity(map(), String.t(), String.t()) :: atom()
+  defp rarity(names, name, locale) do
+    if legendary?(names, name, locale), do: :legendary, else: rule_rarity(name)
+  end
+
+  @spec rule_rarity(String.t()) :: atom()
+  defp rule_rarity(name) do
+    cond do
+      epic?(name) -> :epic
+      rare?(name) -> :rare
+      uncommon?(name) -> :uncommon
+      true -> :common
+    end
+  end
+
+  @doc """
+  Rarity of a name typed by a user, by the same rules as generation.
+
+  Legendary names are matched case-insensitively against every locale's list
+  and returned in their canonical spelling.
+  """
+  @spec check_name(String.t(), module()) :: map()
+  def check_name(name, names \\ NeuroScav.Scavengers.Names) do
+    state = load_names(names)
+    downcased = String.downcase(name)
+
+    legendary =
+      ~w(ru en de ja)
+      |> Enum.flat_map(&Map.fetch!(state, "legendary_names_#{&1}"))
+      |> Enum.find(&(String.downcase(&1) == downcased))
+
+    if legendary,
+      do: %{name: legendary, rarity: :legendary},
+      else: %{name: name, rarity: rule_rarity(name)}
+  end
+
+  @doc """
+  Exact chance (in percent) of each rarity for `locale`.
+
+  Walks every first × last name pair from the `names` module, so it takes
+  seconds — call it once (e.g. at compile time), not per request.
+  """
+  @spec odds(module(), String.t()) :: %{atom() => float()}
+  def odds(names, locale) do
+    state = load_names(names)
+    first_names = Map.fetch!(state, "first_names_#{locale}")
+    last_names = Map.fetch!(state, "last_names_#{locale}")
+    total = length(first_names) * length(last_names)
+
+    counts =
+      for first <- first_names, last <- last_names, reduce: %{} do
+        acc -> Map.update(acc, rarity(state, "#{first} #{last}", locale), 1, &(&1 + 1))
       end
 
-    %{name: name, rarity: rarity}
+    Map.new(counts, fn {rarity, count} -> {rarity, count * 100 / total} end)
   end
 
   @doc """

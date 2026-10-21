@@ -20,6 +20,8 @@ defmodule NeuroScav.Client do
 
   - `"en"` - English
   - `"ru"` - Russian
+  - `"de"` - German
+  - `"ja"` - Japanese (romaji)
 
   ## Example
 
@@ -61,7 +63,7 @@ defmodule NeuroScav.Client do
 
   ## Parameters
 
-  - `language` - Language code ("en" or "ru"), defaults to "en"
+  - `language` - Language code ("en", "ru", "de" or "ja"), defaults to "en"
 
   ## Returns
 
@@ -127,7 +129,6 @@ defmodule NeuroScav.Client do
 
   @doc false
   @spec present_language(String.t()) :: String.t()
-  defp present_language("en"), do: "en"
-  defp present_language("ru"), do: "ru"
+  defp present_language(language) when language in ~w(en ru de ja), do: language
   defp present_language(_), do: "en"
 end

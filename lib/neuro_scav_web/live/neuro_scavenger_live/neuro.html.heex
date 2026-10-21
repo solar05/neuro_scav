@@ -33,6 +33,12 @@
       </div>
     </.form>
   </p>
+  <.share_button
+    :if={@neuro_scavenger.rarity == "neuro"}
+    name={@neuro_scavenger.name}
+    rarity="neuro"
+    class="btn-blended-neuro"
+  />
   <script>
     document.getElementById('neuro_form').addEventListener('submit', function() {
       document.getElementById('neuroButton').disabled = true;

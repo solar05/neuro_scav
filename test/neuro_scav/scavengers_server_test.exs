@@ -55,6 +55,29 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
+  describe "check_name/2" do
+    test "matches legendary names case-insensitively and returns their spelling" do
+      assert Server.check_name("кеша пивосос", FixtureNames) ==
+               %{name: "Кеша Пивосос", rarity: :legendary}
+    end
+
+    test "applies the generation rules to other names" do
+      assert Server.check_name("Alice Adams", FixtureNames) == %{
+               name: "Alice Adams",
+               rarity: :rare
+             }
+
+      assert Server.check_name("Victor Beersucker", FixtureNames).rarity == :common
+    end
+  end
+
+  describe "odds/2" do
+    test "counts every first × last pair" do
+      assert Server.odds(FixtureNames, "ru") == %{legendary: 100.0}
+      assert Server.odds(FixtureNames, "en") == %{common: 100.0}
+    end
+  end
+
   describe "rarity functions" do
     test "legendary?/3" do
       assert Server.legendary?(%{"legendary_names_ru" => ["Кеша Пивосос"]}, "Кеша Пивосос", "ru")

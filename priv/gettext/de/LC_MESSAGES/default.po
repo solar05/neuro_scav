@@ -229,3 +229,24 @@ msgstr "Entfernen"
 
 msgid "Keep"
 msgstr "Behalten"
+
+msgid "Chance"
+msgstr "Chance"
+
+msgid "Team lock hint"
+msgstr "Tippe auf einen Namen, um ihn festzuhalten"
+
+msgid "Check name"
+msgstr "Prüfen"
+
+msgid "Check name placeholder"
+msgstr "Prüfe deinen Namen: Vorname Nachname"
+
+msgid "Check name hint"
+msgstr "Gib Vor- und Nachnamen ein"
+
+msgid "Name check"
+msgstr "Prüfung"
+
+msgid "Check name title"
+msgstr "Welcher Wildling bist du?"

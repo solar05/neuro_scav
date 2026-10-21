@@ -17,6 +17,10 @@
         <td class="td-scav-desc">
           {gettext("legendary rule")}
           <br /><small class="glossary-example">{gettext("legendary examples")}</small>
+          <br />
+          <small class="glossary-chance">
+            {gettext("Chance")}: {chance(@odds, :legendary)}
+          </small>
         </td>
       </tr>
       <tr>
@@ -26,6 +30,7 @@
         <td class="td-scav-desc">
           {gettext("epic rule")}
           <br /><small class="glossary-example">{gettext("epic examples")}</small>
+          <br /><small class="glossary-chance">{gettext("Chance")}: {chance(@odds, :epic)}</small>
         </td>
       </tr>
       <tr>
@@ -35,6 +40,7 @@
         <td class="td-scav-desc">
           {gettext("rare rule")}
           <br /><small class="glossary-example">{gettext("rare examples")}</small>
+          <br /><small class="glossary-chance">{gettext("Chance")}: {chance(@odds, :rare)}</small>
         </td>
       </tr>
       <tr>
@@ -44,6 +50,10 @@
         <td class="td-scav-desc">
           {gettext("uncommon rule")}
           <br /><small class="glossary-example">{gettext("uncommon examples")}</small>
+          <br />
+          <small class="glossary-chance">
+            {gettext("Chance")}: {chance(@odds, :uncommon)}
+          </small>
         </td>
       </tr>
       <tr>
@@ -52,6 +62,10 @@
         </td>
         <td class="td-scav-desc">
           {gettext("common rule")}
+          <br />
+          <small class="glossary-chance">
+            {gettext("Chance")}: {chance(@odds, :common)}
+          </small>
         </td>
       </tr>
       <tr>

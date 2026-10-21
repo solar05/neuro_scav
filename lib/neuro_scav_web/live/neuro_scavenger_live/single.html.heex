@@ -17,15 +17,5 @@
       {gettext("Generate single")}
     </.link>
   </p>
-  <%= if @share_token do %>
-    <p class="lead mt-2">
-      <button
-        class="btn btn-old-blended btn-lg blended d-flex justify-content-center w-100"
-        data-url={"/share/#{@share_token}"}
-        onclick="var btn=this; var url=window.location.origin+btn.dataset.url; navigator.clipboard.writeText(url).then(function(){var orig=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=orig;},1500);});"
-      >
-        {gettext("Share")}
-      </button>
-    </p>
-  <% end %>
+  <.share_button :if={@scavenger.rarity} name={@scavenger.name} rarity={@scavenger.rarity} />
 </div>

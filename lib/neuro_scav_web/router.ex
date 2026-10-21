@@ -35,6 +35,7 @@ defmodule NeuroScavWeb.Router do
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
     live "/wheel", NeuroScavengerLive.Wheel, :wheel
+    live "/check_name", NeuroScavengerLive.CheckName, :check_name
 
     get "/share/:token", ShareController, :show
   end

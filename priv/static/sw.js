@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v3';
+const CACHE_VERSION = 'v4';
 const CACHE_NAME = `scavgen-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -51,11 +51,12 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Статика (assets, шрифты, изображения, звуки) — Cache-First
-  // Phoenix fingerprints asset filenames, so cached files are always fresh
+  // Cache-First только для того, что не устаревает: файлы с хэшем в имени
+  // (phx.digest в prod: app-<md5>.css) и изображения/звуки. В dev /assets/app.css
+  // без хэша — он идёт Network-First ниже, иначе SW навсегда отдаёт старый CSS
+  const fingerprinted = /-[0-9a-f]{32}\.\w+$/.test(url.pathname);
   if (
-    url.pathname.startsWith('/assets/') ||
-    url.pathname.startsWith('/fonts/') ||
+    fingerprinted ||
     url.pathname.startsWith('/images/') ||
     url.pathname.startsWith('/sounds/')
   ) {
@@ -73,7 +74,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML-страницы — Network-First с fallback на кеш, затем offline.html
+  // HTML-страницы и статика без хэша — Network-First с fallback на кеш, затем offline.html
   event.respondWith(
     fetch(event.request)
       .then((response) => {

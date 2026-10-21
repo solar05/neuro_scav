@@ -247,6 +247,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// ── Close page/lang dropdowns on outside click ──
+document.addEventListener('click', (e) => {
+  document.querySelectorAll('details.lang-dropdown[open]').forEach((d) => {
+    if (!d.contains(e.target)) d.open = false;
+  });
+});
+
 // ── Keyboard shortcuts ──
 document.addEventListener('keydown', (e) => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
@@ -260,13 +267,17 @@ document.addEventListener('keydown', (e) => {
                 document.getElementById('btn-wheel');
     if (btn && !btn.disabled) btn.click();
   } else if (e.key === '1') {
-    window.location.href = '/single_scavenger';
+    window.location.href = '/';
   } else if (e.key === '2') {
     window.location.href = '/team_scavengers';
   } else if (e.key === '3') {
     window.location.href = '/neuro_scavengers';
   } else if (e.key === '4') {
     window.location.href = '/statistics';
+  } else if (e.key === '5') {
+    window.location.href = '/wheel';
+  } else if (e.key === '6') {
+    window.location.href = '/check_name';
   } else if (e.key === '?') {
     window.toggleShortcutsModal();
   } else if (e.key === 'Escape') {

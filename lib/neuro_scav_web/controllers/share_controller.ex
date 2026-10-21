@@ -48,7 +48,8 @@ defmodule NeuroScavWeb.ShareController do
     "rare" => {"#1e90ff", "#80d0ff"},
     "uncommon" => {"#22aa44", "#66cc88"},
     "common" => {"#888888", "#aaaaaa"},
-    "gnome" => {"#ff44bb", "#ffe044"}
+    "gnome" => {"#ff44bb", "#ffe044"},
+    "neuro" => {"#4d6bfe", "#00e5ff"}
   }
 
   def show(conn, %{"token" => token}) do
@@ -321,7 +322,7 @@ defmodule NeuroScavWeb.ShareController do
         ]
         |> Enum.join("\n")
 
-      "epic" ->
+      rarity when rarity in ["epic", "neuro"] ->
         mid_y = cy + div(ch, 2)
 
         [

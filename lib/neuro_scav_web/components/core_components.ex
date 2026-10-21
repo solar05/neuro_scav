@@ -580,15 +580,69 @@ defmodule NeuroScavWeb.CoreComponents do
   slot :inner_block, required: true
 
   def navlink(%{path: path, action: action} = assigns) do
+    assigns =
+      assigns
+      |> assign(:destination_url, path)
+      |> assign(:selected, navlink_class(path, action))
+
+    ~H"""
+    <a class={["nav-item", @selected]} href={@destination_url}>{render_slot(@inner_block)}</a>
+    """
+  end
+
+  @doc """
+  Page menu: the current page (Single by default) in the navbar, the rest in a dropdown.
+  """
+  attr :action, :atom, required: true
+
+  def nav_menu(%{action: action} = assigns) do
+    items = [
+      {"/", gettext("Single")},
+      {"/team_scavengers", gettext("Team")},
+      {"/statistics", gettext("Stats")},
+      {"/wheel", gettext("Wheel")},
+      {"/check_name", gettext("Name check")}
+    ]
+
+    {current_path, current_label} =
+      Enum.find(items, hd(items), fn {path, _} -> active_navlink?(path, action) end)
+
+    assigns =
+      assigns
+      |> assign(:items, items)
+      |> assign(:current_label, current_label)
+      |> assign(:summary_class, navlink_class(current_path, action))
+      |> assign(:is_old, old_buttons?(action))
+
+    ~H"""
+    <details class={["nav-item lang-dropdown nav-dropdown", @is_old && "lang-dropdown-old"]}>
+      <summary class={@summary_class}>
+        <span class="nav-dropdown-label">{@current_label}</span>
+        <span class="lang-dropdown-arrow">▾</span>
+      </summary>
+      <div class="lang-dropdown-menu">
+        <a
+          :for={{path, label} <- @items}
+          class={["lang-dropdown-item", active_navlink?(path, @action) && "lang-dropdown-item-active"]}
+          href={path}
+        >
+          {label}
+        </a>
+      </div>
+    </details>
+    """
+  end
+
+  defp navlink_class(path, action) do
     selected_class =
       if old_buttons?(action) && old_path?(path) do
         if active_navlink?(path, action),
-          do: "nav-item nav-link blended-old-nav",
-          else: "nav-item nav-link blend-old-font"
+          do: "nav-link blended-old-nav",
+          else: "nav-link blend-old-font"
       else
         if active_navlink?(path, action),
-          do: "nav-item nav-link blended-active",
-          else: "nav-item nav-link blend-font"
+          do: "nav-link blended-active",
+          else: "nav-link blend-font"
       end
 
     ai_powered_class =
@@ -598,24 +652,15 @@ defmodule NeuroScavWeb.CoreComponents do
         ""
       end
 
-    final_class = "#{selected_class} #{ai_powered_class}" |> String.trim()
-
-    assigns =
-      assigns
-      |> assign(:destination_url, path)
-      |> assign(:selected, final_class)
-
-    ~H"""
-    <a class={@selected} href={@destination_url}>{render_slot(@inner_block)}</a>
-    """
+    "#{selected_class} #{ai_powered_class}" |> String.trim()
   end
 
   defp old_buttons?(action) do
-    action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel]
+    action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel, :check_name]
   end
 
   defp old_path?(path) do
-    path in ["/", "/team_scavengers", "/statistics", "/glossary", "/wheel"]
+    path in ["/", "/team_scavengers", "/statistics", "/glossary", "/wheel", "/check_name"]
   end
 
   defp active_navlink?("/", :single_scavenger), do: true
@@ -760,6 +805,31 @@ defmodule NeuroScavWeb.CoreComponents do
     else
       Gettext.dgettext(NeuroScavWeb.Gettext, "errors", msg, opts)
     end
+  end
+
+  @doc """
+  Renders a button that copies the share-card link for a scavenger.
+
+  ## Example
+
+      <.share_button name="Alice Adams" rarity={:rare} />
+  """
+  attr :name, :string, required: true
+  attr :rarity, :any, required: true
+  attr :class, :string, default: "btn-old-blended"
+
+  def share_button(assigns) do
+    ~H"""
+    <p class="lead mt-2">
+      <button
+        class={"btn #{@class} btn-lg blended d-flex justify-content-center w-100"}
+        data-url={"/share/#{Base.url_encode64("#{@name}|#{@rarity}", padding: false)}"}
+        onclick="var btn=this; var url=window.location.origin+btn.dataset.url; navigator.clipboard.writeText(url).then(function(){var orig=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=orig;},1500);});"
+      >
+        {gettext("Share")}
+      </button>
+    </p>
+    """
   end
 
   @doc """

@@ -1,0 +1,31 @@
+<div class="container pt-2">
+  <h2 class={"text-center blended-reg-bg scav-container #{@scavenger.rarity}-name"}>
+    <span id="scav-name" phx-hook="ScavName">{@scavenger.name}</span>
+  </h2>
+  <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap mt-3">
+    <h3 class={"blended-reg-bg rarity-label #{@scavenger.rarity} mb-0"}>
+      {@scavenger.rarity_text}
+    </h3>
+  </div>
+  <div class="wheel-panel check-name-panel">
+    <div class="wheel-panel-header">
+      <span>{gettext("Check name hint")}</span>
+    </div>
+    <.form for={%{}} id="check-name-form" class="check-name-form" phx-submit="check_name">
+      <.input
+        name="name"
+        value=""
+        maxlength="40"
+        required
+        autofocus
+        autocomplete="off"
+        autocapitalize="words"
+        pattern="\S+(\s+\S+)+"
+        placeholder={gettext("Check name placeholder")}
+        title={gettext("Check name hint")}
+      />
+      <button class="btn btn-old-blended blended">{gettext("Check name")}</button>
+    </.form>
+  </div>
+  <.share_button :if={@scavenger.rarity} name={@scavenger.name} rarity={@scavenger.rarity} />
+</div>
