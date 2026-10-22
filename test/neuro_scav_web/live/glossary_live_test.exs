@@ -7,5 +7,6 @@ defmodule NeuroScavWeb.GlossaryLiveTest do
     {:ok, _live, html} = live(conn, ~p"/glossary")
 
     assert html =~ ~r/Шанс: \d+\.\d+%/
+    assert html =~ "Шанс: 0.05%"
   end
 end

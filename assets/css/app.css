@@ -2217,6 +2217,94 @@ kbd {
     background: #d49300;
 }
 
+.battle-size {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+/* same size either way, or the toggle jumps on click */
+.battle-size .btn {
+    flex: 1;
+    font-size: 24px;
+}
+
+/* a team is five cards per seat: smaller cards, the pairs line up across seats */
+.battle-team .battle-card + .battle-card {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #3a3a46;
+}
+
+.battle-team .battle-card-name {
+    padding: 6px 10px;
+    font-size: 18px;
+}
+
+.battle-team .battle-card-rarity {
+    margin: 4px 0 6px;
+    font-size: 14px;
+}
+
+.battle-team .battle-stat {
+    margin-bottom: 2px;
+    padding: 2px 8px;
+    font-size: 14px;
+}
+
+/* ── Battle reveal: #battle sets --step and --rounds, each round row its --round ── */
+.battle-stat-win {
+    animation: battle-round-win 0.3s ease calc(var(--round) * var(--step)) backwards;
+}
+
+.battle-stat-win .battle-stat-bar > span {
+    animation: battle-round-bar 0.3s ease calc(var(--round) * var(--step)) backwards;
+}
+
+@keyframes battle-round-win {
+    from { background: transparent; color: #a5a5a5; }
+}
+
+@keyframes battle-round-bar {
+    from { background: #7e7f8b; }
+}
+
+/* every score the badge goes through sits in one cell, each next one covers the last */
+.battle-score {
+    display: inline-grid;
+}
+
+.battle-score > span {
+    grid-area: 1 / 1;
+    background: inherit;
+    text-align: center;
+    animation: battle-score-step 0.2s ease calc(var(--round) * var(--step)) backwards;
+}
+
+@keyframes battle-score-step {
+    from { opacity: 0; }
+}
+
+/* the outcome waits for the last round; hidden, so rematch can't be clicked early */
+.battle-reveal-end {
+    animation: battle-reveal-end 0.4s ease calc(var(--rounds) * var(--step)) backwards;
+}
+
+@keyframes battle-reveal-end {
+    from { opacity: 0; visibility: hidden; }
+}
+
+/* two classes: outranks .wheel-panel below, so its pulse is listed again */
+.battle-seat.battle-seat-lost {
+    animation:
+        borderPulseGold 2.5s ease-in-out infinite,
+        battle-seat-lost 0.4s ease calc(var(--rounds) * var(--step)) backwards;
+}
+
+@keyframes battle-seat-lost {
+    from { opacity: 1; }
+}
+
 .battle-wait {
     margin: 8px 0;
     color: #a5a5a5;
@@ -2224,11 +2312,37 @@ kbd {
     text-align: center;
 }
 
+/* one height whether it holds buttons, a status line or nothing */
 .battle-actions {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 10px;
+    min-height: 46px;
     margin-top: 12px;
+}
+
+.battle-actions .battle-wait {
+    flex: 1;
+    margin: 0;
+}
+
+/* the result and the note overlap in one cell: the taller one sets the height */
+.battle-status {
+    display: grid;
+}
+
+.battle-status > * {
+    grid-area: 1 / 1;
+}
+
+.battle-hidden {
+    visibility: hidden;
+}
+
+.battle-card-unknown {
+    background-color: #3a3a46;
+    color: #7e7f8b;
 }
 
 .battle-actions .btn {

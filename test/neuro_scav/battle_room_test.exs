@@ -21,6 +21,13 @@ defmodule NeuroScav.BattleRoomTest do
       assert Enum.all?(Map.values(card.stats), &(&1 in 1..75))
     end
 
+    test "the gnome beats the best legendary in every stat" do
+      gnome = BattleRoom.card(%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome})
+      best = 75 + 25
+
+      assert Enum.all?(Map.values(gnome.stats), &(&1 > best))
+    end
+
     test "rarity adds a bonus to every stat" do
       common = BattleRoom.card(%{name: "Алиса Аврора", rarity: :common})
       legendary = BattleRoom.card(%{name: "Алиса Аврора", rarity: :legendary})
@@ -73,27 +80,8 @@ defmodule NeuroScav.BattleRoomTest do
       assert {:ok, %{result: nil}} = BattleRoom.ready(id, "a")
       {:ok, %{result: result, cards: cards}} = BattleRoom.ready(id, "b")
 
-      for stat <- BattleRoom.stats() do
-        {a, b} = {cards["a"].stats[stat], cards["b"].stats[stat]}
-
-        expected =
-          cond do
-            a > b -> "a"
-            b > a -> "b"
-            true -> :draw
-          end
-
-        assert result.rounds[stat] == expected
-      end
-
-      expected_winner =
-        cond do
-          result.score["a"] > result.score["b"] -> "a"
-          result.score["b"] > result.score["a"] -> "b"
-          true -> :draw
-        end
-
-      assert result.winner == expected_winner
+      assert [_card] = cards["a"]
+      assert_rules(result, cards)
       assert BattleRoom.draw(id, "a", "ru") == {:error, :not_allowed}
     end
 
@@ -112,7 +100,70 @@ defmodule NeuroScav.BattleRoomTest do
 
       assert cards == %{}
     end
+
+    test "a rematch keeps the count of battles won", %{id: id} do
+      {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+      {:ok, _battle} = BattleRoom.draw(id, "b", "ru")
+      {:ok, _battle} = BattleRoom.ready(id, "a")
+      {:ok, %{result: %{winner: winner}, wins: wins}} = BattleRoom.ready(id, "b")
+
+      assert wins == if(winner == :draw, do: %{}, else: %{winner => 1})
+      assert {:ok, %{wins: ^wins}} = BattleRoom.rematch(id, "a")
+    end
   end
+
+  test "in a team battle every stat of every pair is a round" do
+    {:ok, id} = BattleRoom.create("a", size: BattleRoom.team_size())
+    [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
+    on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
+
+    {:ok, _battle} = BattleRoom.join(id, "b")
+    {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+    {:ok, _battle} = BattleRoom.draw(id, "b", "ru")
+    {:ok, _battle} = BattleRoom.ready(id, "a")
+    {:ok, %{result: result, cards: cards}} = BattleRoom.ready(id, "b")
+
+    assert length(cards["a"]) == BattleRoom.team_size()
+    assert length(result.rounds) == BattleRoom.team_size()
+    assert_rules(result, cards)
+  end
+
+  test "a room is a duel unless it asks for a full team" do
+    for {opts, size} <- [{[], 1}, {[size: 3], 1}, {[size: BattleRoom.team_size()], 5}] do
+      {:ok, id} = BattleRoom.create("a", opts)
+      [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
+      on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
+
+      assert {:ok, %{size: ^size}} = BattleRoom.join(id, "a")
+    end
+  end
+
+  # the rules spelled out: cards meet slot by slot, every stat of a pair is a round
+  defp assert_rules(result, %{"a" => cards_a, "b" => cards_b}) do
+    expected_rounds =
+      Enum.zip_with(cards_a, cards_b, fn a, b ->
+        Map.new(BattleRoom.stats(), &{&1, higher(a.stats[&1], b.stats[&1])})
+      end)
+
+    assert result.rounds == expected_rounds
+
+    winners = Enum.flat_map(expected_rounds, &Map.values/1)
+    score = %{"a" => Enum.count(winners, &(&1 == "a")), "b" => Enum.count(winners, &(&1 == "b"))}
+    assert result.score == score
+
+    expected_winner =
+      cond do
+        score["a"] > score["b"] -> "a"
+        score["b"] > score["a"] -> "b"
+        true -> :draw
+      end
+
+    assert result.winner == expected_winner
+  end
+
+  defp higher(a, b) when a > b, do: "a"
+  defp higher(a, b) when b > a, do: "b"
+  defp higher(_a, _b), do: :draw
 
   describe "bot" do
     # a long think time keeps the bot waiting until the test sends :bot_turn itself
@@ -154,7 +205,8 @@ defmodule NeuroScav.BattleRoomTest do
     test "keeps only an above-average card, otherwise redraws", %{bot_pid: pid} do
       bot = BattleRoom.bot()
       battle = bot_turn(pid)
-      total = battle.cards[bot].stats |> Map.values() |> Enum.sum()
+      [card] = battle.cards[bot]
+      total = card.stats |> Map.values() |> Enum.sum()
 
       assert bot in battle.redrawn or total >= 114
     end

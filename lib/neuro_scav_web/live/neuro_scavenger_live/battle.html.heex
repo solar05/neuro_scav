@@ -3,9 +3,32 @@
 
   <div :if={is_nil(@room_id)} class="battle-lobby">
     <p class="battle-note">{gettext("Battle rules")}</p>
+    <div class="battle-size">
+      <button
+        :for={size <- [1, NeuroScav.BattleRoom.team_size()]}
+        id={"btn-battle-size-#{size}"}
+        class={[
+          "btn btn-lg",
+          if(size == @size, do: "btn-old-blended blended", else: "blend-old-font")
+        ]}
+        phx-click="size"
+        phx-value-size={size}
+      >
+        {size} × {size}
+      </button>
+    </div>
+    <p :if={@size > 1} class="battle-note">{gettext("Team battle rules")}</p>
+    <button
+      id="btn-battle-find"
+      class="btn btn-old-blended btn-lg blended w-100"
+      phx-click="find"
+      phx-throttle="1000"
+    >
+      {gettext("Find opponent")}
+    </button>
     <button
       id="btn-battle-create"
-      class="btn btn-old-blended btn-lg blended w-100"
+      class="btn blend-old-font btn-lg w-100 mt-3"
       phx-click="create"
       phx-throttle="1000"
     >
@@ -28,18 +51,41 @@
     </.link>
   </div>
 
-  <div :if={@battle} id="battle">
-    <%= cond do %>
-      <% @battle.result -> %>
-        <p class="battle-result">{result_text(@battle, @user_id)}</p>
-      <% not player?(@battle, @user_id) -> %>
-        <p class="battle-note">{gettext("Spectator")}</p>
-      <% length(@battle.players) == 1 -> %>
-        <p class="battle-note">{gettext("Send invite hint")}</p>
-        <.share_button path={~p"/battle/#{@battle.id}"} label={gettext("Copy invite")} />
-      <% true -> %>
-        <p class="battle-note">{gettext("Battle rules short")}</p>
-    <% end %>
+  <%!-- every part keeps its size through the battle, so nothing jumps:
+       the result and the note share one cell, unknown cards are placeholders,
+       the action row has one height and ends with the rematch button --%>
+  <div :if={@battle} id="battle" style={reveal_style(@battle)}>
+    <div class="battle-status">
+      <p class={[
+        "battle-result",
+        if(@battle.result, do: "battle-reveal-end", else: "battle-hidden")
+      ]}>
+        {result_text(@battle, @user_id)}
+      </p>
+      <div class={@battle.result && "battle-hidden"}>
+        <%= cond do %>
+          <% not player?(@battle, @user_id) -> %>
+            <p class="battle-note">{gettext("Spectator")}</p>
+          <% length(@battle.players) == 1 -> %>
+            <p class="battle-note">
+              {if @battle.open,
+                do: gettext("Searching opponent"),
+                else: gettext("Send invite hint")}
+            </p>
+            <.share_button path={~p"/battle/#{@battle.id}"} label={gettext("Copy invite")} />
+          <% true -> %>
+            <p class="battle-note">{gettext("Battle rules short")}</p>
+        <% end %>
+      </div>
+    </div>
+
+    <p
+      :if={length(@battle.players) == 2}
+      id="battle-series"
+      class={["battle-note", @battle.result && "battle-reveal-end"]}
+    >
+      {gettext("Series %{score}", score: series(@battle, @user_id))}
+    </p>
 
     <div class="battle-arena">
       <div
@@ -48,77 +94,104 @@
       >
         <div class="wheel-panel-header">
           <span>{seat.label}</span>
-          <span :if={seat.score} class="wheel-panel-count">{seat.score}</span>
+          <span :if={seat.score_steps} class="wheel-panel-count battle-score">
+            <span :for={{score, round} <- seat.score_steps} style={"--round: #{round}"}>
+              {score}
+            </span>
+          </span>
         </div>
-        <div class="battle-seat-body">
-          <%= cond do %>
-            <% seat.card -> %>
-              <div class={"battle-card-name #{seat.card.rarity}-name"}>
+        <div class={["battle-seat-body", @battle.size > 1 && "battle-team"]}>
+          <div
+            :for={
+              {card, slot} <- Enum.with_index(seat.cards || List.duplicate(nil, @battle.size))
+            }
+            class="battle-card"
+          >
+            <%= if card do %>
+              <div class={"battle-card-name #{card.rarity}-name"}>
                 <span
-                  id={"battle-card-#{seat.index}"}
+                  id={"battle-card-#{seat.index}-#{slot}"}
                   phx-hook="ScavName"
                   data-collect={seat.own? && gettext("Added to collection")}
                 >
-                  {seat.card.name}
+                  {card.name}
                 </span>
               </div>
-              <p class={"battle-card-rarity #{seat.card.rarity}"}>
-                {rarity_text(seat.card.rarity)}
+              <p class={"battle-card-rarity #{card.rarity}"}>
+                {rarity_text(card.rarity)}
               </p>
               <ul class="battle-stats">
                 <li
-                  :for={stat <- NeuroScav.BattleRoom.stats()}
-                  class={["battle-stat", stat in seat.won && "battle-stat-win"]}
+                  :for={{stat, i} <- Enum.with_index(NeuroScav.BattleRoom.stats())}
+                  class={["battle-stat", stat in card.won && "battle-stat-win"]}
+                  style={"--round: #{slot * length(NeuroScav.BattleRoom.stats()) + i}"}
                 >
                   <span>{stat_label(stat)}</span>
                   <span class="battle-stat-bar">
-                    <span style={"width: #{seat.card.stats[stat]}%"}></span>
+                    <span style={"width: #{card.stats[stat]}%"}></span>
                   </span>
-                  <b>{seat.card.stats[stat]}</b>
+                  <b>{card.stats[stat]}</b>
                 </li>
               </ul>
-            <% is_nil(seat.player) -> %>
-              <p class="battle-wait">{gettext("Waiting for opponent")}</p>
-            <% seat.own? -> %>
-            <% seat.ready? -> %>
-              <p class="battle-wait">{gettext("Card ready")}</p>
-            <% true -> %>
-              <p class="battle-wait">{gettext("Drawing card")}</p>
-          <% end %>
+            <% else %>
+              <%!-- no id or hook: the real card replaces it and plays its reveal --%>
+              <div class="battle-card-name battle-card-unknown"><span>?</span></div>
+              <p class="battle-card-rarity">&nbsp;</p>
+              <ul class="battle-stats">
+                <li :for={stat <- NeuroScav.BattleRoom.stats()} class="battle-stat">
+                  <span>{stat_label(stat)}</span>
+                  <span class="battle-stat-bar"></span>
+                  <b>?</b>
+                </li>
+              </ul>
+            <% end %>
+          </div>
 
-          <div :if={seat.own? and is_nil(@battle.result)} class="battle-actions">
-            <button
-              :if={seat.can_draw?}
-              id="btn-battle-draw"
-              class="btn btn-old-blended blended"
-              phx-click="draw"
-              phx-throttle="1000"
-            >
-              {if seat.card, do: gettext("Redraw"), else: gettext("Draw card")}
-            </button>
-            <button
-              :if={seat.can_fight?}
-              id="btn-battle-ready"
-              class="btn btn-old-blended blended"
-              phx-click="ready"
-              phx-throttle="1000"
-            >
-              {gettext("Fight")}
-            </button>
-            <p :if={seat.ready?} class="battle-wait">{gettext("Waiting for opponent")}</p>
+          <div class="battle-actions">
+            <%= cond do %>
+              <% @battle.result -> %>
+                <button
+                  :if={seat.own?}
+                  id="btn-battle-rematch"
+                  class="btn btn-old-blended blended battle-reveal-end"
+                  phx-click="rematch"
+                  phx-throttle="1000"
+                >
+                  {gettext("Rematch")}
+                </button>
+              <% seat.own? -> %>
+                <button
+                  :if={seat.can_draw?}
+                  id="btn-battle-draw"
+                  class="btn btn-old-blended blended"
+                  phx-click="draw"
+                  phx-throttle="1000"
+                >
+                  <%= cond do %>
+                    <% seat.cards -> %>
+                      {gettext("Redraw")}
+                    <% @battle.size > 1 -> %>
+                      {gettext("Draw team")}
+                    <% true -> %>
+                      {gettext("Draw card")}
+                  <% end %>
+                </button>
+                <button
+                  :if={seat.can_fight?}
+                  id="btn-battle-ready"
+                  class="btn btn-old-blended blended"
+                  phx-click="ready"
+                  phx-throttle="1000"
+                >
+                  {gettext("Fight")}
+                </button>
+                <p :if={seat.ready?} class="battle-wait">{gettext("Waiting for opponent")}</p>
+              <% true -> %>
+                <p class="battle-wait">{seat_status(seat)}</p>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
-
-    <button
-      :if={@battle.result && player?(@battle, @user_id)}
-      id="btn-battle-rematch"
-      class="btn btn-old-blended btn-lg blended w-100 mt-3"
-      phx-click="rematch"
-      phx-throttle="1000"
-    >
-      {gettext("Rematch")}
-    </button>
   </div>
 </div>

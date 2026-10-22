@@ -189,7 +189,7 @@ msgid "neuro rule"
 msgstr "Von einer KI generiert"
 
 msgid "gnome rule"
-msgstr "Fang den Gnom, bevor er wegläuft!"
+msgstr "Fang den Gnom, bevor er wegläuft! Manchmal fällt er auch von selbst — und schlägt im Kampf jede Karte."
 
 msgid "Share"
 msgstr "Teilen"
@@ -279,7 +279,7 @@ msgid "Battle title"
 msgstr "Wildling-Duell"
 
 msgid "Battle rules"
-msgstr "Erstelle einen Raum und schick den Link deinem Gegner. Jeder zieht eine Wildling-Karte und darf einmal neu ziehen. Drei Runden — Stärke, Geschick, Glück: wer mehr Runden gewinnt, gewinnt."
+msgstr "Finde einen zufälligen Gegner oder erstelle einen Raum und schick den Link einem Freund. Jeder zieht eine Wildling-Karte und darf einmal neu ziehen. Drei Runden — Stärke, Geschick, Glück: wer mehr Runden gewinnt, gewinnt."
 
 msgid "Battle rules short"
 msgstr "Zieh eine Karte: einmal neu ziehen ist erlaubt, die neue Karte kämpft dann sofort"
@@ -361,3 +361,18 @@ msgstr "Bot"
 
 msgid "Online: %{count}"
 msgstr "Online: %{count}"
+
+msgid "Series %{score}"
+msgstr "Serie: %{score}"
+
+msgid "Find opponent"
+msgstr "Gegner finden"
+
+msgid "Searching opponent"
+msgstr "Suche nach einem Gegner… Der Kampf beginnt, sobald jemand ebenfalls „Gegner finden“ drückt. Oder lade jemanden per Link ein:"
+
+msgid "Draw team"
+msgstr "Team ziehen"
+
+msgid "Team battle rules"
+msgstr "5 × 5: Wildlinge kämpfen paarweise Platz für Platz, jeder Wert jedes Paares ist eine Runde. Wer mehr Runden gewinnt, gewinnt."

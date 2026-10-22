@@ -24,7 +24,7 @@ defmodule NeuroScavWeb.Api.ScavengersControllerTest do
       assert Map.has_key?(scavenger, "name")
       assert Map.has_key?(scavenger, "rarity")
       assert is_binary(scavenger["name"])
-      assert scavenger["rarity"] in ["common", "uncommon", "rare", "epic", "legendary"]
+      assert scavenger["rarity"] in ["common", "uncommon", "rare", "epic", "legendary", "gnome"]
     end
 
     test "POST /api/generate_single with lang param uses specified locale", %{conn: conn} do
@@ -90,7 +90,7 @@ defmodule NeuroScavWeb.Api.ScavengersControllerTest do
         assert Map.has_key?(scavenger, "name")
         assert Map.has_key?(scavenger, "rarity")
         assert is_binary(scavenger["name"])
-        assert scavenger["rarity"] in ["common", "uncommon", "rare", "epic", "legendary"]
+        assert scavenger["rarity"] in ["common", "uncommon", "rare", "epic", "legendary", "gnome"]
       end)
     end
 
@@ -136,6 +136,36 @@ defmodule NeuroScavWeb.Api.ScavengersControllerTest do
     end
   end
 
+  describe "check_name/2" do
+    test "GET /api/check_name returns the rarity and battle stats of a name", %{conn: conn} do
+      conn = get(conn, ~p"/api/check_name?#{[name: "  Алиса   Аврора "]}")
+
+      card = NeuroScav.BattleRoom.card(%{name: "Алиса Аврора", rarity: :rare})
+
+      assert json_response(conn, 200) == %{
+               "scavenger" => %{
+                 "name" => "Алиса Аврора",
+                 "rarity" => "rare",
+                 "stats" => Map.new(card.stats, fn {stat, value} -> {to_string(stat), value} end)
+               }
+             }
+    end
+
+    test "GET /api/check_name finds legendaries in their canonical spelling", %{conn: conn} do
+      conn = get(conn, ~p"/api/check_name?#{[name: "олег пошлый"]}")
+
+      assert %{"name" => "Олег Пошлый", "rarity" => "legendary"} =
+               json_response(conn, 200)["scavenger"]
+    end
+
+    test "GET /api/check_name needs a first and a last name", %{conn: conn} do
+      assert %{"error" => _} =
+               conn |> get(~p"/api/check_name?#{[name: "Алиса"]}") |> json_response(422)
+
+      assert %{"error" => _} = conn |> get(~p"/api/check_name") |> json_response(422)
+    end
+  end
+
   describe "integration tests" do
     test "multiple generate_single calls produce scavengers", %{conn: conn} do
       conn1 = post(conn, ~p"/api/generate_single")
@@ -174,7 +204,7 @@ defmodule NeuroScavWeb.Api.ScavengersControllerTest do
       Enum.each(team, fn member ->
         assert is_map(member)
         assert String.length(member["name"]) > 0
-        assert member["rarity"] in ["common", "uncommon", "rare", "epic", "legendary"]
+        assert member["rarity"] in ["common", "uncommon", "rare", "epic", "legendary", "gnome"]
       end)
     end
   end

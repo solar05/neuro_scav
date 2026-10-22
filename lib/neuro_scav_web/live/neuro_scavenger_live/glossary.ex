@@ -6,7 +6,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Glossary do
   alias NeuroScav.Scavengers.Names
 
   # Walks every name pair (seconds of work), so it runs once at compile time
-  @odds Map.new(~w(ru en de ja), &{&1, ScavengersServer.odds(Names, &1)})
+  @odds Map.new(~w(ru en de ja), fn locale ->
+          odds = ScavengersServer.odds(Names, locale)
+          {locale, Map.put(odds, :gnome, 100 / ScavengersServer.gnome_odds())}
+        end)
 
   @impl true
   def mount(_params, session, socket) do

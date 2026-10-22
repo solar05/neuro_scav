@@ -19,8 +19,25 @@ defmodule NeuroScav.ScavengersServerTest do
   end
 
   setup do
-    start_supervised!({Server, %{module_name: FixtureNames}})
+    start_supervised!({Server, %{module_name: FixtureNames, gnome_odds: nil}})
     :ok
+  end
+
+  describe "gnome drop" do
+    setup do
+      stop_supervised!(Server)
+      start_supervised!({Server, %{module_name: FixtureNames, gnome_odds: 1}})
+      :ok
+    end
+
+    test "replaces a generated scavenger with the gnome, named in the locale" do
+      assert Server.generate_single("ru") == %{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}
+
+      assert Enum.all?(
+               Server.generate_team("en"),
+               &(&1 == %{name: "Gnome Gnomich", rarity: :gnome})
+             )
+    end
   end
 
   describe "generate_single/1" do

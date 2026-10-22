@@ -7,7 +7,7 @@
       :for={name <- @legendaries}
       class={["collection-card", MapSet.member?(@found, name) && "collection-card-found"]}
     >
-      {if MapSet.member?(@found, name), do: name, else: "???"}
+      {if MapSet.member?(@found, name), do: name, else: mask(name)}
     </div>
   </div>
 </div>

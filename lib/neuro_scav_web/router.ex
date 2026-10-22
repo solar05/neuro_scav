@@ -58,6 +58,7 @@ defmodule NeuroScavWeb.Router do
     post "/generate_single", ScavengersController, :generate_single
     post "/generate_team", ScavengersController, :generate_team
     get "/stats", ScavengersController, :stats
+    get "/check_name", ScavengersController, :check_name
 
     # CORS preflight: CORSPlug halts before the action, this only catches stray OPTIONS
     options "/*path", HealthController, :options

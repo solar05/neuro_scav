@@ -17,13 +17,19 @@ defmodule NeuroScav.ScavengersServer do
 
   This algorithm is deterministic - the same name always generates the same rarity.
 
+  ## Gnome
+
+  Apart from the rules, any generated scavenger is the gnome (rarity `:gnome`,
+  the name from the gnome footer) with a chance of 1 in `gnome_odds/0`. The
+  `:gnome_odds` setting overrides it, `nil` turns the drop off (tests).
+
   ## Generated Scavengers
 
   Each scavenger is a map with:
   ```elixir
   %{
     name: "FirstName LastName",
-    rarity: :common | :uncommon | :rare | :epic | :legendary
+    rarity: :common | :uncommon | :rare | :epic | :legendary | :gnome
   }
   ```
 
@@ -53,9 +59,10 @@ defmodule NeuroScav.ScavengersServer do
 
   use GenServer
 
-  alias NeuroScav.PubSub
+  alias NeuroScav.{Locale, PubSub}
 
   @max_team_members 5
+  @gnome_odds 2_000
 
   # Public API - Synchronous
 
@@ -199,8 +206,9 @@ defmodule NeuroScav.ScavengersServer do
   end
 
   @impl true
-  def init(%{module_name: names} = _default_state) do
-    state = load_names(names)
+  def init(%{module_name: names} = settings) do
+    state =
+      names |> load_names() |> Map.put(:gnome_odds, Map.get(settings, :gnome_odds, @gnome_odds))
 
     Logger.info("Scavenger server started")
     {:ok, state}
@@ -294,9 +302,26 @@ defmodule NeuroScav.ScavengersServer do
   @spec max_team_members() :: integer()
   def max_team_members, do: @max_team_members
 
+  @doc "A generated scavenger is the gnome with a chance of 1 in this."
+  @spec gnome_odds() :: pos_integer()
+  def gnome_odds, do: @gnome_odds
+
   @doc false
   @spec generate_scavenger(map(), String.t()) :: map()
-  defp generate_scavenger(names, locale) do
+  defp generate_scavenger(%{gnome_odds: odds} = names, locale) do
+    if odds && :rand.uniform(odds) == 1,
+      do: gnome(locale),
+      else: name_pair(names, locale)
+  end
+
+  defp gnome(locale) do
+    name =
+      Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn -> Locale.get_text("Gnome catched") end)
+
+    %{name: name, rarity: :gnome}
+  end
+
+  defp name_pair(names, locale) do
     first_name =
       Map.get(names, "first_names_#{locale}") |> Enum.random()
 

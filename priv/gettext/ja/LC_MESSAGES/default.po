@@ -189,7 +189,7 @@ msgid "neuro rule"
 msgstr "Ninkou AI de seisei sareta"
 
 msgid "gnome rule"
-msgstr "Noomu ga nigerumaeni tsukamaero!"
+msgstr "Noomu ga nigerumaeni tsukamaero! Tokidoki jibun de deru koto mo aru — batoru de wa dono kaado ni mo katsu."
 
 msgid "Share"
 msgstr "Kyouyuu"
@@ -279,7 +279,7 @@ msgid "Battle title"
 msgstr "Yabanjin batoru"
 
 msgid "Battle rules"
-msgstr "Heya wo tsukutte aite ni rinku wo okurou. Kaado wa ikkai dake hikinaoseru. San raundo — chikara, binshou, un: ooku katta hou no kachi."
+msgstr "Randamu na aite wo sagasu ka, heya wo tsukutte tomodachi ni rinku wo okurou. Kaado wa ikkai dake hikinaoseru. San raundo — chikara, binshou, un: ooku katta hou no kachi."
 
 msgid "Battle rules short"
 msgstr "Kaado wo hikou: hikinaoshi wa ikkai dake, atarashii kaado wa sugu tatakau"
@@ -361,3 +361,18 @@ msgstr "Botto"
 
 msgid "Online: %{count}"
 msgstr "Onrain: %{count}"
+
+msgid "Series %{score}"
+msgstr "Shiriizu: %{score}"
+
+msgid "Find opponent"
+msgstr "Aite wo sagasu"
+
+msgid "Searching opponent"
+msgstr "Aite wo sagashite imasu… Dareka ga 「Aite wo sagasu」 wo osu to batoru ga hajimarimasu. Rinku de tomodachi wo shoutai mo dekimasu:"
+
+msgid "Draw team"
+msgstr "Chiimu wo hiku"
+
+msgid "Team battle rules"
+msgstr "5 × 5: suroto goto ni pea de tatakau. Kaku pea no kaku suteeta ga ichi raundo. Ooku katta hou no kachi."

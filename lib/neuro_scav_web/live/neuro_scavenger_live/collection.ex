@@ -30,4 +30,14 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Collection do
     found = MapSet.intersection(MapSet.new(names), MapSet.new(socket.assigns.legendaries))
     {:noreply, assign(socket, :found, found)}
   end
+
+  # a hint for names not found yet: first letters and length, "Олег Пошлый" -> "О••• П•••••"
+  defp mask(name) do
+    name
+    |> String.split(" ")
+    |> Enum.map_join(" ", fn word ->
+      {head, rest} = String.split_at(word, 1)
+      head <> String.duplicate("•", String.length(rest))
+    end)
+  end
 end

@@ -111,7 +111,7 @@ mix phx.gen.secret    # Generate random secret for SECRET_KEY_BASE
 - **Uncommon**: First and last names have equal length
 - **Common**: Default fallback
 
-This enables reproducible results and fast computation.
+This enables reproducible results and fast computation. The one random exception is the **gnome**: any generated scavenger is replaced by the gnome with a 1 in 2000 chance (`ScavengersServer.gnome_odds/0`); in battle its card beats every other card.
 
 ## Project Structure
 
@@ -244,6 +244,7 @@ PubSub.subscribe(:single_scavenger, %{"user_id" => user_id})
 - `GET /api/generate_single?lang=en` - Generate single scavenger
 - `GET /api/generate_team?lang=en` - Generate team of 5 scavengers
 - `GET /api/stats` - Get aggregated statistics
+- `GET /api/check_name?name=First Last` - Rarity and battle card stats of a name
 
 ## When Modifying This Codebase
 

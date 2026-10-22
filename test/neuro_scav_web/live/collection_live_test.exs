@@ -12,6 +12,7 @@ defmodule NeuroScavWeb.CollectionLiveTest do
     assert html =~ "0 / #{total}"
     refute has_element?(lv, ".collection-card-found")
     refute html =~ "Олег Пошлый"
+    assert html =~ "О••• П•••••"
   end
 
   test "names saved in the browser are revealed, unknown ones ignored", %{conn: conn} do

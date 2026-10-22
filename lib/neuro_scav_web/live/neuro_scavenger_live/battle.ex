@@ -3,8 +3,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   use NeuroScavWeb.GnomeCapture
 
   alias NeuroScav.{BattleRoom, Locale, PubSub}
+  alias NeuroScavWeb.Presence
 
   @bot BattleRoom.bot()
+  @team_size BattleRoom.team_size()
+  # open rooms whose owner is waiting on the page, keyed by room id
+  @queue "battle_queue"
 
   # /battle is the lobby, /battle/:id the room behind an invite link
   @impl true
@@ -18,7 +22,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
         user_id: Map.get(session, "user_id"),
         room_id: params["id"],
         battle: nil,
-        closed: false
+        closed: false,
+        queued: false,
+        size: 1
       )
 
     {:ok, join(socket)}
@@ -30,7 +36,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
       PubSub.subscribe_battle(id)
 
       case BattleRoom.join(id, socket.assigns.user_id) do
-        {:ok, battle} -> assign(socket, :battle, battle)
+        {:ok, battle} -> socket |> assign(:battle, battle) |> queue()
         {:error, :not_found} -> assign(socket, :closed, true)
       end
     else
@@ -41,13 +47,28 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   defp join(socket), do: socket
 
   @impl true
-  def handle_event("create", _params, socket) do
-    {:ok, id} = BattleRoom.create(socket.assigns.user_id)
+  def handle_event("size", %{"size" => size}, socket),
+    do: {:noreply, assign(socket, :size, if(size == "#{@team_size}", do: @team_size, else: 1))}
+
+  def handle_event("create", _params, %{assigns: assigns} = socket) do
+    {:ok, id} = BattleRoom.create(assigns.user_id, size: assigns.size)
+    {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+  end
+
+  def handle_event("find", _params, %{assigns: %{user_id: user_id, size: size}} = socket) do
+    waiting = for {id, %{metas: [%{size: ^size} | _]}} <- Presence.list(@queue), do: id
+
+    id =
+      Enum.find(waiting, &seated?(BattleRoom.join(&1, user_id), user_id)) ||
+        open_room(user_id, size)
+
     {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
   end
 
   def handle_event("create_bot", _params, %{assigns: assigns} = socket) do
-    {:ok, id} = BattleRoom.create_with_bot(assigns.user_id, assigns.user_locale)
+    {:ok, id} =
+      BattleRoom.create_with_bot(assigns.user_id, assigns.user_locale, size: assigns.size)
+
     {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
   end
 
@@ -60,6 +81,28 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   def handle_event("rematch", _params, %{assigns: assigns} = socket),
     do: act(socket, BattleRoom.rematch(assigns.room_id, assigns.user_id))
 
+  # another searcher may have taken the seat first, then the room just shows the battle
+  defp seated?({:ok, battle}, user_id), do: player?(battle, user_id)
+  defp seated?({:error, :not_found}, _user_id), do: false
+
+  defp open_room(user_id, size) do
+    {:ok, id} = BattleRoom.create(user_id, open: true, size: size)
+    id
+  end
+
+  # Presence drops the entry by itself when the owner's page closes
+  defp queue(%{assigns: %{battle: battle, user_id: user_id, queued: queued}} = socket) do
+    waiting = match?(%{open: true, players: [^user_id]}, battle)
+
+    cond do
+      waiting and not queued -> Presence.track(self(), @queue, battle.id, %{size: battle.size})
+      queued and not waiting -> Presence.untrack(self(), @queue, socket.assigns.room_id)
+      true -> :ok
+    end
+
+    assign(socket, :queued, waiting)
+  end
+
   defp act(socket, {:ok, battle}), do: {:noreply, assign(socket, :battle, battle)}
   defp act(socket, {:error, :not_found}), do: {:noreply, assign(socket, :closed, true)}
   # double clicks and stale buttons: the broadcast state is already the truth
@@ -67,10 +110,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   @impl true
   def handle_info({:battle_updated, battle}, socket),
-    do: {:noreply, assign(socket, :battle, battle)}
+    do: {:noreply, socket |> assign(:battle, battle) |> queue()}
 
   def handle_info(:battle_closed, socket),
-    do: {:noreply, assign(socket, closed: true, battle: nil)}
+    do: {:noreply, socket |> assign(closed: true, battle: nil) |> queue()}
 
   # View helpers
 
@@ -91,12 +134,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     label: nil,
     player: nil,
     own?: false,
-    card: nil,
+    cards: nil,
     ready?: false,
     can_draw?: false,
     can_fight?: false,
-    won: [],
-    score: nil,
+    score_steps: nil,
     outcome: nil
   }
 
@@ -114,25 +156,29 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   defp seat_state(_battle, %{player: nil} = seat), do: seat
 
-  # before the reveal only the viewer's own card is rendered
+  # before the reveal only the viewer's own cards are rendered;
+  # each card gets `won`, the stats it took in its pair
   defp seat_state(%{result: nil} = battle, %{player: player, own?: own?} = seat) do
-    card = battle.cards[player]
+    cards = battle.cards[player]
 
     %{
       seat
-      | card: if(own?, do: card),
+      | cards: if(own? and cards, do: Enum.map(cards, &Map.put(&1, :won, []))),
         ready?: player in battle.ready,
-        can_draw?: own? and (card == nil or player not in battle.redrawn),
-        can_fight?: own? and card != nil and player not in battle.ready
+        # a ready card is final, as BattleRoom.draw/3 enforces
+        can_draw?:
+          own? and (cards == nil or player not in battle.redrawn) and player not in battle.ready,
+        can_fight?: own? and cards != nil and player not in battle.ready
     }
   end
 
   defp seat_state(%{result: result} = battle, %{player: player} = seat) do
+    won = Enum.map(result.rounds, fn rounds -> for {stat, ^player} <- rounds, do: stat end)
+
     %{
       seat
-      | card: battle.cards[player],
-        won: for({stat, ^player} <- result.rounds, do: stat),
-        score: result.score[player],
+      | cards: Enum.zip_with(battle.cards[player], won, &Map.put(&1, :won, &2)),
+        score_steps: score_steps(result.rounds, player),
         outcome: outcome(result, player)
     }
   end
@@ -148,19 +194,45 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
       else: gettext("Player %{n}", n: Enum.find_index(battle.players, &(&1 == player)) + 1)
   end
 
+  # what the other seat is up to, shown in its action row
+  defp seat_status(%{player: nil}), do: gettext("Waiting for opponent")
+  defp seat_status(%{ready?: true}), do: gettext("Card ready")
+  defp seat_status(_seat), do: gettext("Drawing card")
+
   defp outcome(%{winner: :draw}, _player), do: :draw
   defp outcome(%{winner: player}, player), do: :won
   defp outcome(_result, _player), do: :lost
 
+  # holds the line while there is no result yet
+  defp result_text(%{result: nil}, _user_id), do: "\u00a0"
   defp result_text(%{result: %{winner: :draw}}, _user_id), do: gettext("Draw result")
 
   defp result_text(%{result: %{winner: winner}} = battle, user_id) do
     cond do
       winner == user_id -> gettext("Victory")
       player?(battle, user_id) -> gettext("Defeat")
-      true -> gettext("Winner %{name}", name: battle.cards[winner].name)
+      true -> gettext("Winner %{name}", name: hd(battle.cards[winner]).name)
     end
   end
+
+  # The reveal lights the rounds up one by one (CSS delays of --round × --step),
+  # then shows the outcome after --rounds steps. A duel's 3 rounds take 600ms
+  # each, a team battle's 15 rounds 240ms each.
+  defp reveal_style(%{size: size}) do
+    rounds = size * length(BattleRoom.stats())
+    "--rounds: #{rounds}; --step: #{min(600, div(3_600, rounds))}ms"
+  end
+
+  # the score as it grows during the reveal: {score, round it is reached in}
+  defp score_steps(rounds, player) do
+    winners = for slot <- rounds, stat <- BattleRoom.stats(), do: slot[stat]
+    won_in = for {^player, round} <- Enum.with_index(winners), do: round
+    [{0, 0} | Enum.with_index(won_in, fn round, won -> {won + 1, round} end)]
+  end
+
+  # battles won in this room in seat order, e.g. "2 : 1"
+  defp series(battle, user_id),
+    do: battle |> seats(user_id) |> Enum.map_join(" : ", &Map.get(battle.wins, &1.player, 0))
 
   defp stat_label(stat), do: Locale.get_text("Stat #{stat}")
   defp rarity_text(rarity), do: Locale.get_text(Atom.to_string(rarity))

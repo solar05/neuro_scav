@@ -15,7 +15,7 @@ defmodule NeuroScavWeb.BattleLiveTest do
 
   defp card_name(view, index) do
     view
-    |> element("#battle-card-#{index}")
+    |> element("#battle-card-#{index}-0")
     |> render()
     |> LazyHTML.from_fragment()
     |> LazyHTML.text()
@@ -59,7 +59,7 @@ defmodule NeuroScavWeb.BattleLiveTest do
 
     lv |> element("#btn-battle-draw") |> render_click()
     lv |> element("#btn-battle-ready") |> render_click()
-    refute render(lv) =~ "battle-result"
+    assert has_element?(lv, ".battle-result.battle-hidden")
 
     send(pid, :bot_turn)
     _ = :sys.get_state(pid)
@@ -67,6 +67,121 @@ defmodule NeuroScavWeb.BattleLiveTest do
 
     assert html =~ "Победа!" or html =~ "Поражение" or html =~ "Ничья"
     assert has_element?(lv, "#btn-battle-rematch")
+  end
+
+  defp find_opponent(user_id) do
+    {:ok, lobby, _html} = live(conn_for(user_id), ~p"/battle")
+
+    assert {:error, {:live_redirect, %{to: "/battle/" <> id}}} =
+             lobby |> element("#btn-battle-find") |> render_click()
+
+    id
+  end
+
+  test "find opponent seats two searchers in one room" do
+    id = find_opponent("a")
+    stop_room_on_exit(id)
+
+    {:ok, room_a, html} = live(conn_for("a"), ~p"/battle/#{id}")
+    assert html =~ "Ищем соперника"
+
+    assert find_opponent("b") == id
+    assert render(room_a) =~ "перетянуть можно один раз"
+
+    # a full room leaves the queue, so the next searcher waits in a new one
+    other = find_opponent("c")
+    stop_room_on_exit(other)
+    assert other != id
+  end
+
+  test "a room is offered only while its owner waits on the page" do
+    id = find_opponent("a")
+    stop_room_on_exit(id)
+
+    other = find_opponent("b")
+    stop_room_on_exit(other)
+    assert other != id
+  end
+
+  test "the lobby switches to a team battle" do
+    {:ok, lv, html} = live(conn_for("a"), ~p"/battle")
+    refute html =~ "дички бьются парами"
+
+    assert lv |> element("#btn-battle-size-5") |> render_click() =~ "дички бьются парами"
+
+    assert {:error, {:live_redirect, %{to: "/battle/" <> id}}} =
+             lv |> element("#btn-battle-bot") |> render_click()
+
+    stop_room_on_exit(id)
+    assert {:ok, %{size: 5}} = BattleRoom.join(id, "a")
+  end
+
+  test "a team battle shows five cards a side after the reveal" do
+    {:ok, id} = BattleRoom.create("a", size: BattleRoom.team_size())
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+    # unknown cards are placeholders, so the arena has all ten slots from the start
+    assert card_slots(a) == 10
+
+    assert a |> element("#btn-battle-draw") |> render_click() =~ "Перетянуть"
+    assert has_element?(a, "#battle-card-0-4")
+    refute has_element?(b, "#battle-card-1-0")
+    assert card_slots(b) == 10
+
+    a |> element("#btn-battle-ready") |> render_click()
+    b |> element("#btn-battle-draw") |> render_click()
+    b |> element("#btn-battle-ready") |> render_click()
+    assert card_slots(a) == 10
+
+    for view <- [a, b], seat <- [0, 1], do: assert(has_element?(view, "#battle-card-#{seat}-4"))
+
+    # the reveal: 15 rounds of 240ms, each seat's score steps up in the rounds it won
+    html = render(a)
+    assert html =~ "--rounds: 15; --step: 240ms"
+
+    seats = html |> LazyHTML.from_fragment() |> LazyHTML.query(".battle-seat")
+    assert Enum.count(seats) == 2
+
+    for seat <- seats do
+      steps = seat |> LazyHTML.query(".battle-score > span") |> Enum.map(&score_step/1)
+      won_in = seat |> LazyHTML.query(".battle-stat-win") |> Enum.map(&round_of/1) |> Enum.sort()
+
+      assert steps == [{0, 0} | Enum.with_index(won_in, fn round, won -> {won + 1, round} end)]
+    end
+  end
+
+  defp card_slots(view),
+    do:
+      view
+      |> render()
+      |> LazyHTML.from_fragment()
+      |> LazyHTML.query(".battle-card")
+      |> Enum.count()
+
+  defp score_step(span),
+    do: {span |> LazyHTML.text() |> String.trim() |> String.to_integer(), round_of(span)}
+
+  defp round_of(node) do
+    [style] = LazyHTML.attribute(node, "style")
+    [round] = Regex.run(~r/--round: (\d+)/, style, capture: :all_but_first)
+    String.to_integer(round)
+  end
+
+  test "find opponent pairs only searchers of the same size" do
+    {:ok, lobby, _html} = live(conn_for("a"), ~p"/battle")
+    lobby |> element("#btn-battle-size-5") |> render_click()
+
+    assert {:error, {:live_redirect, %{to: "/battle/" <> team_id}}} =
+             lobby |> element("#btn-battle-find") |> render_click()
+
+    stop_room_on_exit(team_id)
+    {:ok, _room, _html} = live(conn_for("a"), ~p"/battle/#{team_id}")
+
+    duel_id = find_opponent("b")
+    stop_room_on_exit(duel_id)
+    assert duel_id != team_id
   end
 
   test "an unknown room offers to start a new one" do
@@ -93,6 +208,8 @@ defmodule NeuroScavWeb.BattleLiveTest do
 
     a |> element("#btn-battle-ready") |> render_click()
     assert render(b) =~ "Карта готова"
+    # fighting locks the card in: no redraw offered while waiting
+    refute has_element?(a, "#btn-battle-draw")
 
     b |> element("#btn-battle-draw") |> render_click()
     b |> element("#btn-battle-ready") |> render_click()
@@ -106,6 +223,12 @@ defmodule NeuroScavWeb.BattleLiveTest do
              {"Поражение", "Победа!"},
              {"Ничья", "Ничья"}
            ]
+
+    # each player sees their own wins first
+    [[mine], [theirs]] =
+      Regex.scan(~r/\d+/, a |> element("#battle-series") |> render())
+
+    assert b |> element("#battle-series") |> render() =~ "#{theirs} : #{mine}"
 
     assert has_element?(a, "#btn-battle-rematch")
     refute has_element?(c, "#btn-battle-rematch")

@@ -318,6 +318,33 @@ The response contains counts of discovered scavengers grouped by rarity level.
 
 ---
 
+#### Check a Name
+
+**GET** `/api/check_name`
+
+Rarity and battle card of any name, by the same rules as generation. Checks are not counted in statistics.
+
+**Query Parameters:**
+- `name` (required): First and last name. Extra spaces are dropped, the name is cut to 40 characters. Legendary names match case-insensitively.
+
+**Response** (200 OK):
+```json
+{
+  "scavenger": {
+    "name": "Олег Пошлый",
+    "rarity": "legendary",
+    "stats": {"strength": 63, "agility": 41, "luck": 88}
+  }
+}
+```
+
+**Response** (422 Unprocessable Entity) when `name` is missing or has a single word:
+```json
+{"error": "name must have a first and a last name"}
+```
+
+---
+
 ### Usage Examples
 
 #### cURL
@@ -337,6 +364,9 @@ curl -X POST "http://localhost:4000/api/generate_team"
 
 # Get statistics
 curl http://localhost:4000/api/stats
+
+# Check a name
+curl -G "http://localhost:4000/api/check_name" --data-urlencode "name=Олег Пошлый"
 ```
 
 ---
