@@ -3027,11 +3027,65 @@ kbd {
     font-weight: normal;
 }
 
-.raid-legend {
-    margin: 12px 0 0;
-    color: #a5a5a5;
-    font-size: 14px;
+/* the legend's button in the event's header, beside the encounter's number */
+.raid-event-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.raid-legend-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background-color: #212529;
+    color: #d49300;
+    font-size: 15px;
+    line-height: 24px;
+    cursor: pointer;
+}
+
+.raid-legend-btn:hover,
+.raid-legend-btn:focus-visible {
+    color: #ffd060;
+}
+
+.raid-legend-icon {
+    display: inline-block;
+    width: 1.6em;
     text-align: center;
+}
+
+/* an option's icon: on hover it lights up and tells what it means */
+.raid-icon {
+    position: relative;
+    display: inline-block;
+    padding: 0 2px;
+    border-radius: 6px;
+    cursor: help;
+    transition: background-color 0.15s;
+}
+
+.raid-icon:hover {
+    background-color: rgba(255, 208, 96, 0.3);
+}
+
+.raid-icon:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: #212529;
+    color: #ffd060;
+    font-size: 13px;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .raid-team-link {

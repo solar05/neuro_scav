@@ -90,8 +90,23 @@
           >
             <div class="wheel-panel-header">
               <span>{if Raid.boss?(event), do: "☠ "}{event_title(event)}</span>
-              <span class="wheel-panel-count">
-                {gettext("Raid step %{n} %{total}", n: @raid.step + 1, total: length(@raid.route))}
+              <span class="raid-event-meta">
+                <button
+                  id="btn-raid-legend"
+                  type="button"
+                  class="raid-legend-btn"
+                  title={gettext("Raid legend")}
+                  aria-label={gettext("Raid legend")}
+                  phx-click={JS.remove_class("hidden", to: "#raid-legend")}
+                >
+                  ?
+                </button>
+                <span class="wheel-panel-count">
+                  {gettext("Raid step %{n} %{total}",
+                    n: @raid.step + 1,
+                    total: length(@raid.route)
+                  )}
+                </span>
               </span>
             </div>
             <div class="raid-event-body">
@@ -110,11 +125,11 @@
                 <small :if={option.locked}>{locked_text(option)}</small>
                 <small :if={option.stat && not option.locked}>
                   {stat_label(option.stat)} · {performer(option)} · {option.chance}%
-                  <span class="raid-option-icons">{option_icons(option)}</span>
+                  <.icons option={option} />
                 </small>
                 <small :if={option.key && not option.locked}>
                   🔑 {item_name(option.key)} · {option.member.name}
-                  <span class="raid-option-icons">{option_icons(option)}</span>
+                  <.icons option={option} />
                 </small>
                 <small :if={option.path}>{event_text(option.path)}</small>
                 <small :if={
@@ -122,15 +137,9 @@
                     not option.locked
                 }>
                   {gettext("Raid safe")}
-                  <span class="raid-option-icons">{option_icons(option)}</span>
+                  <.icons option={option} />
                 </small>
               </button>
-              <p class="raid-legend">
-                {gettext("Raid legend %{value}", value: Raid.stat_step())}
-              </p>
-              <p class="raid-legend">
-                {gettext("Raid retreat legend %{limit}", limit: Raid.retreat_limit())}
-              </p>
               <button
                 id="btn-raid-leave"
                 class="btn blend-old-font btn-sm w-100 mt-2"
@@ -163,6 +172,7 @@
             </div>
           </div>
         <% end %>
+        <.legend />
       </div>
     <% @members || @run -> %>
       <%!-- the dead render of a squad link or a run: the raid starts or comes back once connected --%>

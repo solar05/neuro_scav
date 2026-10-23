@@ -844,9 +844,6 @@ msgstr "Clear the Lab"
 msgid "Raid labs agility"
 msgstr "Run for the safes"
 
-msgid "Raid legend %{value}"
-msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 🏆 boss trophy, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}, 🔁 the squad stays put and meets something else"
-
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} got better: %{stat} +%{value}!"
 
@@ -1390,9 +1387,6 @@ msgstr "Ask for an autograph"
 msgid "Raid retreat locked"
 msgstr "No more running — time to take a risk"
 
-msgid "Raid retreat legend %{limit}"
-msgstr "🏃 a retreat: no more than %{limit} in a row"
-
 msgid "Raid leave"
 msgstr "Leave the raid"
 
@@ -1554,3 +1548,36 @@ msgstr "%{name} trusted a «friend» at the exit."
 
 msgid "Raid death 19 %{name}"
 msgstr "%{name} fell through the textures and never came back."
+
+msgid "Raid legend"
+msgstr "Legend"
+
+msgid "Raid icon loot"
+msgstr "loot"
+
+msgid "Raid icon revive"
+msgstr "bring a fighter back"
+
+msgid "Raid icon train %{value}"
+msgstr "stat +%{value}"
+
+msgid "Raid icon promote"
+msgstr "rarity up"
+
+msgid "Raid icon trophy"
+msgstr "boss trophy"
+
+msgid "Raid icon lose"
+msgstr "a fighter at risk"
+
+msgid "Raid icon drop"
+msgstr "loot at risk"
+
+msgid "Raid icon wound %{value}"
+msgstr "stat −%{value}"
+
+msgid "Raid icon stall"
+msgstr "the squad stays put and meets something else"
+
+msgid "Raid icon retreat %{limit}"
+msgstr "a retreat: no more than %{limit} in a row"

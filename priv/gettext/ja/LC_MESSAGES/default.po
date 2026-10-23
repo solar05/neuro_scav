@@ -833,9 +833,6 @@ msgstr "Rabo wo seiatsu"
 msgid "Raid labs agility"
 msgstr "Kinko made hashiru"
 
-msgid "Raid legend %{value}"
-msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 🏆 bosu torofii, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}, 🔁 sono ba ni todomari, betsu no dekigoto"
-
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} ga kitaerareta: %{stat} +%{value}!"
 
@@ -1379,9 +1376,6 @@ msgstr "Sain wo tanomu"
 msgid "Raid retreat locked"
 msgstr "Mou nigerarenai — kiken wo okasu shika nai"
 
-msgid "Raid retreat legend %{limit}"
-msgstr "🏃 tettai: renzoku %{limit}-kai made"
-
 msgid "Raid leave"
 msgstr "Reido wo nukeru"
 
@@ -1543,3 +1537,36 @@ msgstr "%{name} wa deguchi no «tomodachi» wo shinjita."
 
 msgid "Raid death 19 %{name}"
 msgstr "%{name} wa tekusuchaa wo surinukete, nidoto modoranakatta."
+
+msgid "Raid legend"
+msgstr "Hanrei"
+
+msgid "Raid icon loot"
+msgstr "ruuto"
+
+msgid "Raid icon revive"
+msgstr "nakama fukki"
+
+msgid "Raid icon train %{value}"
+msgstr "suteeta +%{value}"
+
+msgid "Raid icon promote"
+msgstr "rea-do appu"
+
+msgid "Raid icon trophy"
+msgstr "bosu torofii"
+
+msgid "Raid icon lose"
+msgstr "nakama ni kiken"
+
+msgid "Raid icon drop"
+msgstr "ruuto ni kiken"
+
+msgid "Raid icon wound %{value}"
+msgstr "suteeta −%{value}"
+
+msgid "Raid icon stall"
+msgstr "sono ba ni todomari, betsu no dekigoto"
+
+msgid "Raid icon retreat %{limit}"
+msgstr "tettai: renzoku %{limit}-kai made"

@@ -6,8 +6,20 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   @max_name_length 40
   # what an option may bring and cost, shown on its button (legend under the options)
-  @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
-  @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸", stall: "🔁"}
+  # what an option may bring and cost, each icon telling its meaning on hover,
+  # all of them in the legend (see legend/1)
+  @icons [
+    loot: "💰",
+    revive: "➕",
+    train: "💪",
+    promote: "⭐",
+    trophy: "🏆",
+    lose: "💀",
+    drop: "🎒",
+    wound: "🩸",
+    stall: "🔁",
+    retreat: "🏃"
+  ]
   # the ways a death is told: "Raid lost %{name}" and "Raid death n %{name}" for n in 1..19
   @deaths 20
   @daytime_icons %{morning: "🌅", day: "☀️", evening: "🌇", night: "🌙"}
@@ -252,6 +264,67 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp hide_stash, do: JS.add_class("hidden", to: "#raid-stash")
 
+  @doc """
+  What the icons on the options mean: a compact modal like the stash's, opened
+  by the small button in the event's header (`#btn-raid-legend`), so the
+  legend takes no room on the page. It sits outside the event's panel, which
+  clips what it holds.
+  """
+  def legend(assigns) do
+    ~H"""
+    <div
+      id="raid-legend"
+      class="shortcuts-modal hidden"
+      phx-window-keydown={hide_legend()}
+      phx-key="Escape"
+    >
+      <div class="raid-stash-backdrop" phx-click={hide_legend()}></div>
+      <div class="shortcuts-modal-content raid-stash">
+        <div class="shortcuts-modal-header">
+          <span>{gettext("Raid legend")}</span>
+          <button type="button" class="shortcuts-modal-close" phx-click={hide_legend()}>X</button>
+        </div>
+        <ul class="raid-stash-list">
+          <li :for={key <- icon_keys()}>
+            <span class="raid-legend-icon">{option_icon(key)}</span> {icon_meaning(key)}
+          </li>
+        </ul>
+      </div>
+    </div>
+    """
+  end
+
+  defp hide_legend, do: JS.add_class("hidden", to: "#raid-legend")
+
+  attr :option, :map, required: true
+
+  # an option's icons, each telling what it means on hover
+  defp icons(assigns) do
+    ~H"""
+    <span class="raid-option-icons">
+      <span
+        :for={key <- option_icons(@option)}
+        class="raid-icon"
+        data-tip={icon_meaning(key)}
+        aria-label={icon_meaning(key)}
+      >
+        {option_icon(key)}
+      </span>
+    </span>
+    """
+  end
+
+  defp icon_keys, do: Keyword.keys(@icons)
+  defp option_icon(key), do: Keyword.fetch!(@icons, key)
+
+  defp icon_meaning(:train), do: gettext("Raid icon train %{value}", value: Raid.stat_step())
+  defp icon_meaning(:wound), do: gettext("Raid icon wound %{value}", value: Raid.stat_step())
+
+  defp icon_meaning(:retreat),
+    do: gettext("Raid icon retreat %{limit}", limit: Raid.retreat_limit())
+
+  defp icon_meaning(key), do: Locale.get_text("Raid icon #{key}")
+
   # the stash with the finder's name and whether they're still around (the item works)
   defp stash_entries(%{stash: stash, squad: squad}) do
     for %{item: item, owner: index} <- stash do
@@ -442,12 +515,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     end
   end
 
-  # a retreat is marked: only so many of them in a row
+  # the icons an option shows: what it brings and costs (a pass or nothing has
+  # none), and a retreat is marked: only so many of them in a row
   defp option_icons(%{reward: reward, risk: risk, retreat: retreat}),
-    do:
-      [@reward_icons[reward], @risk_icons[risk], if(retreat, do: "🏃")]
-      |> Enum.reject(&is_nil/1)
-      |> Enum.join(" ")
+    do: Enum.filter([reward, risk, retreat && :retreat], &Keyword.has_key?(@icons, &1))
 
   # "10–13"
   defp steps_text, do: "#{Raid.steps().first}–#{Raid.steps().last}"

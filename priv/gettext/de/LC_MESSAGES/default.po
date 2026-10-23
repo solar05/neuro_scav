@@ -833,9 +833,6 @@ msgstr "Das Labor säubern"
 msgid "Raid labs agility"
 msgstr "Zu den Tresoren rennen"
 
-msgid "Raid legend %{value}"
-msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 🏆 Boss-Trophäe, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}, 🔁 der Trupp bleibt stehen, etwas anderes kommt"
-
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} wird besser: %{stat} +%{value}!"
 
@@ -1379,9 +1376,6 @@ msgstr "Um ein Autogramm bitten"
 msgid "Raid retreat locked"
 msgstr "Schluss mit dem Rückzug — jetzt heißt es Risiko"
 
-msgid "Raid retreat legend %{limit}"
-msgstr "🏃 ein Rückzug: höchstens %{limit} hintereinander"
-
 msgid "Raid leave"
 msgstr "Raid verlassen"
 
@@ -1543,3 +1537,36 @@ msgstr "%{name} vertraute einem „Freund“ am Ausgang."
 
 msgid "Raid death 19 %{name}"
 msgstr "%{name} fiel durch die Texturen und kam nie zurück."
+
+msgid "Raid legend"
+msgstr "Legende"
+
+msgid "Raid icon loot"
+msgstr "Beute"
+
+msgid "Raid icon revive"
+msgstr "einen Kämpfer zurückholen"
+
+msgid "Raid icon train %{value}"
+msgstr "Wert +%{value}"
+
+msgid "Raid icon promote"
+msgstr "Seltenheit steigt"
+
+msgid "Raid icon trophy"
+msgstr "Boss-Trophäe"
+
+msgid "Raid icon lose"
+msgstr "ein Kämpfer in Gefahr"
+
+msgid "Raid icon drop"
+msgstr "Beute in Gefahr"
+
+msgid "Raid icon wound %{value}"
+msgstr "Wert −%{value}"
+
+msgid "Raid icon stall"
+msgstr "der Trupp bleibt stehen, etwas anderes kommt"
+
+msgid "Raid icon retreat %{limit}"
+msgstr "ein Rückzug: höchstens %{limit} hintereinander"

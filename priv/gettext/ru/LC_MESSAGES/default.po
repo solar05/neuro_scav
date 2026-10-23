@@ -844,9 +844,6 @@ msgstr "Зачистить лабу"
 msgid "Raid labs agility"
 msgstr "Пробежать до сейфов"
 
-msgid "Raid legend %{value}"
-msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 🏆 — трофей босса, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}, 🔁 — останетесь на месте, и придёт другое событие"
-
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} набил руку: %{stat} +%{value}!"
 
@@ -1390,9 +1387,6 @@ msgstr "Попросить автограф"
 msgid "Raid retreat locked"
 msgstr "Хватит отступать — придётся рискнуть"
 
-msgid "Raid retreat legend %{limit}"
-msgstr "🏃 — отступление: подряд можно не больше %{limit}"
-
 msgid "Raid leave"
 msgstr "Покинуть рейд"
 
@@ -1554,3 +1548,36 @@ msgstr "%{name} поверил «другу» у выхода."
 
 msgid "Raid death 19 %{name}"
 msgstr "%{name} провалился в текстуры и не вернулся."
+
+msgid "Raid legend"
+msgstr "Обозначения"
+
+msgid "Raid icon loot"
+msgstr "лут"
+
+msgid "Raid icon revive"
+msgstr "вернуть бойца"
+
+msgid "Raid icon train %{value}"
+msgstr "стат +%{value}"
+
+msgid "Raid icon promote"
+msgstr "редкость выше"
+
+msgid "Raid icon trophy"
+msgstr "трофей босса"
+
+msgid "Raid icon lose"
+msgstr "можно потерять бойца"
+
+msgid "Raid icon drop"
+msgstr "можно потерять лут"
+
+msgid "Raid icon wound %{value}"
+msgstr "стат −%{value}"
+
+msgid "Raid icon stall"
+msgstr "останетесь на месте, и придёт другое событие"
+
+msgid "Raid icon retreat %{limit}"
+msgstr "отступление: подряд можно не больше %{limit}"
