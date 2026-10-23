@@ -2010,3 +2010,6 @@ msgstr "Ничего не вынесли"
 
 msgid "Raid result kia"
 msgstr "погиб"
+
+msgid "Share region"
+msgstr "Норвинская область · Тарков"

@@ -2010,3 +2010,6 @@ msgstr "Carried nothing out"
 
 msgid "Raid result kia"
 msgstr "KIA"
+
+msgid "Share region"
+msgstr "Norvinsk Region · Tarkov"

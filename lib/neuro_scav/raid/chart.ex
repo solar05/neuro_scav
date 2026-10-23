@@ -34,9 +34,11 @@ defmodule NeuroScav.Raid.Chart do
   @spec steps() :: Range.t()
   def steps, do: @steps
 
-  @doc "Every location a random map may be."
+  @doc "Every location a random map may be, in their names' order."
   @spec locations() :: [atom()]
-  def locations, do: Map.keys(@locations)
+  # sorted: a small map's atom keys come in the VM's atom-table order, which
+  # differs between runs (and share cards pick a location by its index)
+  def locations, do: @locations |> Map.keys() |> Enum.sort()
 
   @doc """
   A random map of `location` (a random one by default), as many layers long

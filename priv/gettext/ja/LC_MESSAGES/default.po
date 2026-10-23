@@ -1999,3 +1999,6 @@ msgstr "Nani mo mochikaerenakatta"
 
 msgid "Raid result kia"
 msgstr "senshi"
+
+msgid "Share region"
+msgstr "Norubinsuku-shuu · Tarukofu"

@@ -1,15 +1,13 @@
-<div class="share-page">
+<%!-- the region's tactical map behind, in the location's colour; the card's strip a scene of the location --%>
+<div class={["share-page share-map-page", @location_class]}>
+  <p class="share-region">{gettext("Share region")}</p>
   <div class="share-card-wrap" style={"--rc: #{@border_color}; --rc-glow: transparent"}>
     <span class="cb cb-tl"></span>
     <span class="cb cb-tr"></span>
     <span class="cb cb-bl"></span>
     <span class="cb cb-br"></span>
     <div class="share-card share-team-card">
-      <div class={"share-card-art share-team-art theme-#{@theme}"}>
-        <div class="share-card-art-inner">
-          <div class="share-art-lines"></div>
-        </div>
-      </div>
+      <div class={"share-card-art share-raid-art share-art-#{@art}"}></div>
       <div class="share-raid-head">
         <p class="share-raid-location">{@location || gettext("Raid")}</p>
         <p class="share-raid-verdict">{@verdict}</p>

@@ -1786,27 +1786,12 @@ kbd {
 .gd.gd-ls { left: -4px;   margin-top: -4px; }
 .gd.gd-rs { right: -4px;  margin-top: -4px; }
 
+/* a scene of a location (.share-art-*), its ground kept */
 .share-card-art {
     height: 160px;
-    position: relative;
-    overflow: hidden;
-}
-
-.share-card-art-inner {
-    position: absolute;
-    inset: 0;
-}
-
-.share-art-lines {
-    position: absolute;
-    inset: 0;
-    background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 18px,
-        rgba(255,255,255,0.03) 18px,
-        rgba(255,255,255,0.03) 19px
-    );
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 .share-card-body {
@@ -1882,29 +1867,6 @@ kbd {
 .share-try-btn:hover {
     color: #d49300 !important;
     border-color: #d49300;
-}
-
-/* ── 10 card art themes ── */
-.share-card-art.theme-void   { background: url('/images/share/void.svg')   center/cover no-repeat; }
-.share-card-art.theme-lava   { background: url('/images/share/lava.svg')   center/cover no-repeat; }
-.share-card-art.theme-swamp  { background: url('/images/share/swamp.svg')  center/cover no-repeat; }
-.share-card-art.theme-arctic { background: url('/images/share/arctic.svg') center/cover no-repeat; }
-.share-card-art.theme-storm  { background: url('/images/share/storm.svg')  center/cover no-repeat; }
-.share-card-art.theme-rust   { background: url('/images/share/rust.svg')   center/cover no-repeat; }
-.share-card-art.theme-toxic  { background: url('/images/share/toxic.svg')  center/cover no-repeat; }
-.share-card-art.theme-blood  { background: url('/images/share/blood.svg')  center/cover no-repeat; }
-.share-card-art.theme-abyss  { background: url('/images/share/abyss.svg')  center/cover no-repeat; }
-.share-card-art.theme-nebula { background: url('/images/share/nebula.svg') center/cover no-repeat; }
-
-/* scan-line overlay на все темы */
-.share-art-lines {
-    background-image: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 3px,
-        rgba(0,0,0,0.08) 3px,
-        rgba(0,0,0,0.08) 4px
-    );
 }
 
 /* ── Rarity progress bars ── */
@@ -3736,6 +3698,42 @@ svg[class^="tabler-"] {
     letter-spacing: 1px;
     text-transform: uppercase;
 }
+
+/* a share card lies on the region's tactical map, washed in its location's
+   colour (the raid's own tints), darker at the edges; the card's strip is a
+   scene of the location */
+.share-map-page {
+    /* the body's a flex row: the whole width, not the card's */
+    width: 100%;
+    background:
+        radial-gradient(ellipse at center, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 90%),
+        linear-gradient(var(--raid-tint, transparent), var(--raid-tint, transparent)),
+        url('/images/share/map.svg') center / cover no-repeat,
+        #0d110b;
+}
+
+.share-region {
+    margin: 0 0 18px;
+    color: #9aab68;
+    font: bold 13px "Bender";
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.share-raid-art {
+    height: 150px;
+}
+
+.share-art-customs { background-image: url('/images/share/locations/customs.svg'); }
+.share-art-woods { background-image: url('/images/share/locations/woods.svg'); }
+.share-art-shoreline { background-image: url('/images/share/locations/shoreline.svg'); }
+.share-art-interchange { background-image: url('/images/share/locations/interchange.svg'); }
+.share-art-reserve { background-image: url('/images/share/locations/reserve.svg'); }
+.share-art-lighthouse { background-image: url('/images/share/locations/lighthouse.svg'); }
+.share-art-streets { background-image: url('/images/share/locations/streets.svg'); }
+.share-art-factory { background-image: url('/images/share/locations/factory.svg'); }
+.share-art-labs { background-image: url('/images/share/locations/labs.svg'); }
+.share-art-default { background-image: url('/images/share/locations/default.svg'); }
 
 /* a raid's result: where and how it went above the squad's rows, the loot under them */
 .share-raid-head {
