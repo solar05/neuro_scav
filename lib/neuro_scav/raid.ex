@@ -5,7 +5,7 @@ defmodule NeuroScav.Raid do
   The squad meets a number of events (`steps/0`, picked per raid) one by one.
   Each event offers two or three options; an option either needs a stat check or is safe (nothing happens).
   A check is made by the alive member best at that stat counting their own
-  loot: the chance is the stat (battle card, `BattleRoom.card/1`) plus the
+  loot: the chance is the stat (`card/1`, a lowered battle card) plus the
   bonuses of the loot that member found, minus the option's difficulty, kept
   within 5..95%. Loot helps its finder only, and only while they're alive: a
   fallen member's loot stays in the stash, inactive, and works again if they
@@ -80,6 +80,9 @@ defmodule NeuroScav.Raid do
 
   @rarities [:common, :uncommon, :rare, :epic, :legendary]
   @stat_step 10
+  # the share (%) of a battle card's name part a raid stat keeps: with whole
+  # cards the best of five passes nearly every check
+  @base_share 70
 
   # loot: the stats it adds to every check of the squad (some take a little too)
   @loot %{
@@ -151,7 +154,7 @@ defmodule NeuroScav.Raid do
       members
       |> Enum.with_index()
       |> Enum.map(fn {member, index} ->
-        member |> BattleRoom.card() |> Map.merge(%{index: index, alive: true})
+        member |> card() |> Map.merge(%{index: index, alive: true})
       end)
 
     %{
@@ -161,6 +164,26 @@ defmodule NeuroScav.Raid do
       stash: [],
       last: nil
     }
+  end
+
+  @doc """
+  A member's raid card: the battle card (`BattleRoom.card/1`) with the part
+  that comes from the name cut to `@base_share` percent (1 at least), the
+  rarity bonus kept whole. The gnome stays a joker.
+  """
+  @spec card(%{name: String.t(), rarity: atom()}) :: map()
+  def card(%{rarity: :gnome} = member), do: BattleRoom.card(member)
+
+  def card(member) do
+    card = BattleRoom.card(member)
+    bonus = BattleRoom.rarity_bonus(card.rarity)
+
+    stats =
+      Map.new(card.stats, fn {stat, value} ->
+        {stat, max(div((value - bonus) * @base_share, 100), 1) + bonus}
+      end)
+
+    %{card | stats: stats}
   end
 
   @doc "The event the squad stands at, nil once the raid is over."

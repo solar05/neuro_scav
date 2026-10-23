@@ -9,7 +9,7 @@ defmodule NeuroScav.RaidTest do
     %{name: "Дед Мороз", rarity: :legendary}
   ]
 
-  defp best(stat), do: @squad |> Enum.map(&BattleRoom.card/1) |> Enum.max_by(& &1.stats[stat])
+  defp best(stat), do: @squad |> Enum.map(&Raid.card/1) |> Enum.max_by(& &1.stats[stat])
   defp index_of(card), do: Enum.find_index(@squad, &(&1.name == card.name))
 
   test "a new raid walks 10 to 13 different events with the whole squad alive" do
@@ -128,6 +128,18 @@ defmodule NeuroScav.RaidTest do
   describe "stats and rarity" do
     defp actor(raid, index), do: Enum.at(raid.squad, index)
 
+    test "a raid card cuts the name part of a battle card and keeps the rarity bonus" do
+      for member <- @squad, stat <- BattleRoom.stats() do
+        battle = BattleRoom.card(member).stats[stat] - BattleRoom.rarity_bonus(member.rarity)
+        raid = Raid.card(member).stats[stat] - BattleRoom.rarity_bonus(member.rarity)
+
+        assert raid == max(div(battle * 70, 100), 1)
+      end
+
+      gnome = %{name: "Гном", rarity: :gnome}
+      assert Raid.card(gnome) == BattleRoom.card(gnome)
+    end
+
     test "a training success raises the checked stat of the member who did it" do
       raid = Raid.new(@squad, [:obdolbos])
       [%{member: member}, _safe] = Raid.options(raid)
@@ -211,7 +223,7 @@ defmodule NeuroScav.RaidTest do
 
       best_agility =
         @squad
-        |> Enum.map(&BattleRoom.card/1)
+        |> Enum.map(&Raid.card/1)
         |> Enum.map(&(&1.stats.agility + if(&1.name == finder.name, do: 10, else: 0)))
         |> Enum.max()
 
@@ -223,7 +235,7 @@ defmodule NeuroScav.RaidTest do
 
       strongest_other =
         @squad
-        |> Enum.map(&BattleRoom.card/1)
+        |> Enum.map(&Raid.card/1)
         |> Enum.reject(&(&1.name == finder.name))
         |> Enum.max_by(& &1.stats.strength)
 
