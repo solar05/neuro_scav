@@ -303,6 +303,20 @@ defmodule NeuroScavWeb.RaidLiveTest do
     end
   end
 
+  test "the legend and every icon's meaning are translated in every language" do
+    msgids =
+      ["Raid legend", "Raid icon train %{value}", "Raid icon wound %{value}"] ++
+        ["Raid icon retreat %{limit}"] ++
+        Enum.map(~w(loot revive promote trophy lose drop stall), &"Raid icon #{&1}")
+
+    for locale <- ~w(ru en de ja), msgid <- msgids do
+      Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
+        told = Gettext.gettext(NeuroScavWeb.Gettext, msgid, value: 10, limit: 2)
+        refute told =~ "Raid ", "#{locale}: #{msgid}"
+      end)
+    end
+  end
+
   test "every weather and every time of day is translated in every language" do
     catalog = Catalog.compiled()
 
@@ -530,6 +544,34 @@ defmodule NeuroScavWeb.RaidLiveTest do
       # a click made before the stall, at the same encounter, meant the event that's gone
       render_click(lv, "choose", %{"index" => "0", "turn" => "0"})
       refute has_element?(lv, "#raid-outcome-2")
+    end
+
+    test "the legend sits behind a button, in a modal; an icon tells its meaning on hover",
+         %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:bait])
+
+      assert has_element?(lv, "#raid-event-0 .wheel-panel-header #btn-raid-legend")
+      refute has_element?(lv, ".raid-legend")
+
+      legend = lv |> element("#raid-legend.hidden") |> render()
+
+      for meaning <- [
+            ru("Raid icon loot"),
+            ru("Raid icon lose"),
+            ru("Raid icon stall"),
+            ru("Raid icon train %{value}", value: 10),
+            ru("Raid icon retreat %{limit}", limit: 2)
+          ],
+          do: assert(legend =~ meaning)
+
+      # the bait: an agility check for loot that may kill, or the safe way, a retreat
+      assert has_element?(lv, ~s(#raid-option-0 .raid-icon[data-tip="#{ru("Raid icon loot")}"]))
+      assert has_element?(lv, ~s(#raid-option-0 .raid-icon[data-tip="#{ru("Raid icon lose")}"]))
+
+      assert has_element?(
+               lv,
+               ~s(#raid-option-1 .raid-icon[data-tip="#{ru("Raid icon retreat %{limit}", limit: 2)}"])
+             )
     end
 
     test "a boss stands out in red", %{conn: conn} do

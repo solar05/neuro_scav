@@ -1581,3 +1581,114 @@ msgstr "the squad stays put and meets something else"
 
 msgid "Raid icon retreat %{limit}"
 msgstr "a retreat: no more than %{limit} in a row"
+
+msgid "Raid elevator"
+msgstr "Freight elevator"
+
+msgid "Raid elevator text"
+msgstr "The elevator to the Lab creaks, jerks and stops between floors."
+
+msgid "Raid elevator agility"
+msgstr "Climb out through the hatch"
+
+msgid "Raid elevator strength"
+msgstr "Force the doors open"
+
+msgid "Raid elevator keycard"
+msgstr "Restart it with the keycard"
+
+msgid "Raid extract_queue"
+msgstr "Queue at the exit"
+
+msgid "Raid extract_queue text"
+msgstr "Three PMCs are queuing at the exit. Each pretends not to see the others."
+
+msgid "Raid extract_queue agility"
+msgstr "Quietly join the end"
+
+msgid "Raid extract_queue strength"
+msgstr "Jump the queue"
+
+msgid "Raid moonshine_still"
+msgstr "Moonshine still"
+
+msgid "Raid moonshine_still text"
+msgstr "A moonshine still bubbles in the basement. It smells like the best loot on the map."
+
+msgid "Raid moonshine_still luck"
+msgstr "Have a taste"
+
+msgid "Raid quest_item"
+msgstr "Quest item"
+
+msgid "Raid quest_item text"
+msgstr "The quest item lies in the middle of the square. Covered by three snipers. A classic."
+
+msgid "Raid quest_item agility"
+msgstr "Grab it and run"
+
+msgid "Raid mosin_chad"
+msgstr "Mosin chad"
+
+msgid "Raid mosin_chad text"
+msgstr "An armorless PMC with a Mosin rushes past, yelling: “Headshot or nothing!”"
+
+msgid "Raid mosin_chad agility"
+msgstr "Dodge"
+
+msgid "Raid mosin_chad strength"
+msgstr "Fire back"
+
+msgid "Raid wipe_day"
+msgstr "Wipe day"
+
+msgid "Raid wipe_day text"
+msgstr "It's wipe day. Everyone runs around in beanies with a PM, and nobody has anything at all."
+
+msgid "Raid wipe_day strength"
+msgstr "Have a pistol brawl"
+
+msgid "Raid therapist_quest"
+msgstr "Therapist's task"
+
+msgid "Raid therapist_quest text"
+msgstr "Therapist on the radio: “Bring me four flash drives and condensed milk. For the patients, of course.”"
+
+msgid "Raid therapist_quest luck"
+msgstr "Look for flash drives"
+
+msgid "Raid footsteps"
+msgstr "Footsteps"
+
+msgid "Raid footsteps text"
+msgstr "Footsteps come from everywhere: above, below and, it seems, from inside the wall."
+
+msgid "Raid footsteps luck"
+msgstr "Guess where they come from"
+
+msgid "Raid footsteps agility"
+msgstr "Freeze and wait"
+
+msgid "Raid bush_wookie"
+msgstr "Bush wookie"
+
+msgid "Raid bush_wookie text"
+msgstr "A bush rustles and quietly giggles. It's a PMC in a ghillie suit."
+
+msgid "Raid bush_wookie strength"
+msgstr "Shoot the bush"
+
+msgid "Raid bush_wookie luck"
+msgstr "Pretend you didn't notice"
+
+msgid "Raid chatty_scav"
+msgstr "Chatty scav"
+
+msgid "Raid chatty_scav text"
+msgstr "From round the corner: “Hey, who are you?! Come on, goodbye!”"
+
+msgid "Raid chatty_scav luck"
+msgstr "Shout “Friendly!”"
+
+msgid "Raid chatty_scav strength"
+msgstr "Head for the voice"

@@ -163,6 +163,31 @@ defmodule NeuroScav.Raid.Catalog do
     ],
     # a stall: clearing the way may take so long that something else turns up
     roadblock: [{:strength, 10, :pass, :stall}, {:agility, 5, :pass, :wound}],
+    # Tarkov once more
+    elevator: [
+      {:agility, 10, :pass, :stall},
+      {:strength, 5, :pass, :wound},
+      {:key, :keycard, :pass}
+    ],
+    extract_queue: %{
+      options: [{:agility, 10, :pass, :lose}, {:strength, 15, :loot, :lose}],
+      modes: %{agility: :weakest}
+    },
+    moonshine_still: [{:luck, 5, :train, :wound}, :safe],
+    quest_item: [{:agility, 15, :loot, :lose}, :safe],
+    mosin_chad: [{:agility, 10, :pass, :lose}, {:strength, 10, :loot, :lose}],
+    wipe_day: [{:strength, 0, :train, :wound}, :safe],
+    therapist_quest: [{:luck, 15, :loot, :nothing}, :safe],
+    footsteps: %{
+      options: [{:luck, 10, :pass, :lose}, {:agility, 5, :pass, :wound}],
+      modes: %{agility: :weakest}
+    },
+    bush_wookie: [{:strength, 10, :loot, :lose}, {:luck, 5, :pass, :drop}],
+    chatty_scav: %{
+      options: [{:luck, 5, :pass, :wound}, {:strength, 10, :loot, :lose}],
+      scav: true,
+      karma: %{strength: -1}
+    },
     jaeger_quest: %{options: [{:agility, 25, :promote, :wound}, :safe], weight: 0.3},
     bitcoin_farm: %{
       options: [{:strength, 15, :loot, :lose}, {:luck, 10, :loot, :wound}],

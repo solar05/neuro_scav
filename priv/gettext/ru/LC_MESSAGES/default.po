@@ -1581,3 +1581,114 @@ msgstr "останетесь на месте, и придёт другое со�
 
 msgid "Raid icon retreat %{limit}"
 msgstr "отступление: подряд можно не больше %{limit}"
+
+msgid "Raid elevator"
+msgstr "Грузовой лифт"
+
+msgid "Raid elevator text"
+msgstr "Лифт в Лабораторию скрипит, дёргается и встаёт между этажами."
+
+msgid "Raid elevator agility"
+msgstr "Вылезти через люк"
+
+msgid "Raid elevator strength"
+msgstr "Разжать двери"
+
+msgid "Raid elevator keycard"
+msgstr "Перезапустить лифт ключ-картой"
+
+msgid "Raid extract_queue"
+msgstr "Очередь на выход"
+
+msgid "Raid extract_queue text"
+msgstr "У выхода очередь из трёх ЧВК. Все делают вид, что не замечают друг друга."
+
+msgid "Raid extract_queue agility"
+msgstr "Тихо встать в конец"
+
+msgid "Raid extract_queue strength"
+msgstr "Пролезть без очереди"
+
+msgid "Raid moonshine_still"
+msgstr "Самогонный аппарат"
+
+msgid "Raid moonshine_still text"
+msgstr "В подвале булькает самогонный аппарат. Пахнет как лучший лут на карте."
+
+msgid "Raid moonshine_still luck"
+msgstr "Продегустировать"
+
+msgid "Raid quest_item"
+msgstr "Квестовый предмет"
+
+msgid "Raid quest_item text"
+msgstr "Предмет для задания лежит посреди площади. Под прицелом трёх снайперов. Классика."
+
+msgid "Raid quest_item agility"
+msgstr "Схватить и бежать"
+
+msgid "Raid mosin_chad"
+msgstr "Чад с мосинкой"
+
+msgid "Raid mosin_chad text"
+msgstr "Мимо проносится ЧВК без брони с мосинкой и орёт: «Хэдшот или ничего!»"
+
+msgid "Raid mosin_chad agility"
+msgstr "Увернуться"
+
+msgid "Raid mosin_chad strength"
+msgstr "Ответить огнём"
+
+msgid "Raid wipe_day"
+msgstr "День вайпа"
+
+msgid "Raid wipe_day text"
+msgstr "Сегодня вайп. Все бегают в шапках с ПМ, и у всех ровным счётом ничего."
+
+msgid "Raid wipe_day strength"
+msgstr "Подраться на пистолетах"
+
+msgid "Raid therapist_quest"
+msgstr "Задание Терапевта"
+
+msgid "Raid therapist_quest text"
+msgstr "Терапевт по рации: «Принесите четыре флешки и сгущёнку. Для пациентов, конечно»."
+
+msgid "Raid therapist_quest luck"
+msgstr "Поискать флешки"
+
+msgid "Raid footsteps"
+msgstr "Звук шагов"
+
+msgid "Raid footsteps text"
+msgstr "Шаги слышно отовсюду: сверху, снизу и, кажется, изнутри стены."
+
+msgid "Raid footsteps luck"
+msgstr "Угадать, откуда идут"
+
+msgid "Raid footsteps agility"
+msgstr "Замереть и ждать"
+
+msgid "Raid bush_wookie"
+msgstr "Куст-вуки"
+
+msgid "Raid bush_wookie text"
+msgstr "Куст шевелится и тихо хихикает. Это ЧВК в маскхалате."
+
+msgid "Raid bush_wookie strength"
+msgstr "Прострелить куст"
+
+msgid "Raid bush_wookie luck"
+msgstr "Сделать вид, что не заметили"
+
+msgid "Raid chatty_scav"
+msgstr "Болтливый дикий"
+
+msgid "Raid chatty_scav text"
+msgstr "Из-за угла доносится: «Эй, ты кто такой?! Давай, до свидания!»"
+
+msgid "Raid chatty_scav luck"
+msgstr "Крикнуть «Свой!»"
+
+msgid "Raid chatty_scav strength"
+msgstr "Пойти на голос"

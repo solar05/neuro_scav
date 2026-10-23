@@ -1570,3 +1570,114 @@ msgstr "der Trupp bleibt stehen, etwas anderes kommt"
 
 msgid "Raid icon retreat %{limit}"
 msgstr "ein Rückzug: höchstens %{limit} hintereinander"
+
+msgid "Raid elevator"
+msgstr "Lastenaufzug"
+
+msgid "Raid elevator text"
+msgstr "Der Aufzug ins Labor quietscht, ruckelt und bleibt zwischen den Etagen stehen."
+
+msgid "Raid elevator agility"
+msgstr "Durch die Luke klettern"
+
+msgid "Raid elevator strength"
+msgstr "Die Türen aufstemmen"
+
+msgid "Raid elevator keycard"
+msgstr "Mit der Schlüsselkarte neu starten"
+
+msgid "Raid extract_queue"
+msgstr "Schlange am Ausgang"
+
+msgid "Raid extract_queue text"
+msgstr "Am Ausgang stehen drei PMCs Schlange. Jeder tut so, als sähe er die anderen nicht."
+
+msgid "Raid extract_queue agility"
+msgstr "Sich leise hinten anstellen"
+
+msgid "Raid extract_queue strength"
+msgstr "Sich vordrängeln"
+
+msgid "Raid moonshine_still"
+msgstr "Schnapsbrennerei"
+
+msgid "Raid moonshine_still text"
+msgstr "Im Keller blubbert eine Schnapsbrennerei. Es riecht nach der besten Beute der Karte."
+
+msgid "Raid moonshine_still luck"
+msgstr "Eine Kostprobe nehmen"
+
+msgid "Raid quest_item"
+msgstr "Questgegenstand"
+
+msgid "Raid quest_item text"
+msgstr "Der Questgegenstand liegt mitten auf dem Platz. Im Visier von drei Scharfschützen. Ein Klassiker."
+
+msgid "Raid quest_item agility"
+msgstr "Schnappen und rennen"
+
+msgid "Raid mosin_chad"
+msgstr "Mosin-Chad"
+
+msgid "Raid mosin_chad text"
+msgstr "Ein PMC ohne Weste rast mit einer Mosin vorbei und brüllt: „Headshot oder nichts!“"
+
+msgid "Raid mosin_chad agility"
+msgstr "Ausweichen"
+
+msgid "Raid mosin_chad strength"
+msgstr "Zurückschießen"
+
+msgid "Raid wipe_day"
+msgstr "Wipe-Tag"
+
+msgid "Raid wipe_day text"
+msgstr "Heute ist Wipe. Alle rennen mit Mütze und PM herum, und keiner hat irgendetwas."
+
+msgid "Raid wipe_day strength"
+msgstr "Eine Pistolenschlägerei anfangen"
+
+msgid "Raid therapist_quest"
+msgstr "Therapists Auftrag"
+
+msgid "Raid therapist_quest text"
+msgstr "Therapist am Funk: „Bringt mir vier USB-Sticks und Kondensmilch. Für die Patienten, natürlich.“"
+
+msgid "Raid therapist_quest luck"
+msgstr "Nach USB-Sticks suchen"
+
+msgid "Raid footsteps"
+msgstr "Schritte"
+
+msgid "Raid footsteps text"
+msgstr "Schritte kommen von überall: von oben, von unten und, wie es scheint, aus der Wand."
+
+msgid "Raid footsteps luck"
+msgstr "Raten, woher sie kommen"
+
+msgid "Raid footsteps agility"
+msgstr "Erstarren und warten"
+
+msgid "Raid bush_wookie"
+msgstr "Busch-Wookie"
+
+msgid "Raid bush_wookie text"
+msgstr "Ein Busch raschelt und kichert leise. Es ist ein PMC im Tarnanzug."
+
+msgid "Raid bush_wookie strength"
+msgstr "Den Busch erschießen"
+
+msgid "Raid bush_wookie luck"
+msgstr "So tun, als hätte man nichts bemerkt"
+
+msgid "Raid chatty_scav"
+msgstr "Gesprächiger Wildling"
+
+msgid "Raid chatty_scav text"
+msgstr "Hinter der Ecke ruft es: „He, wer bist du?! Na los, auf Wiedersehen!“"
+
+msgid "Raid chatty_scav luck"
+msgstr "„Freund!“ rufen"
+
+msgid "Raid chatty_scav strength"
+msgstr "Der Stimme nachgehen"

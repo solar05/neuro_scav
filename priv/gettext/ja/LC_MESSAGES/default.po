@@ -1570,3 +1570,114 @@ msgstr "sono ba ni todomari, betsu no dekigoto"
 
 msgid "Raid icon retreat %{limit}"
 msgstr "tettai: renzoku %{limit}-kai made"
+
+msgid "Raid elevator"
+msgstr "Kamotsu erebeetaa"
+
+msgid "Raid elevator text"
+msgstr "Rabo e no erebeetaa ga kishimi, yure, kai no aida de tomatta."
+
+msgid "Raid elevator agility"
+msgstr "Tenjou no hacchi kara deru"
+
+msgid "Raid elevator strength"
+msgstr "Doa wo kojiakeru"
+
+msgid "Raid elevator keycard"
+msgstr "Kii kaado de saikidou"
+
+msgid "Raid extract_queue"
+msgstr "Dasshutsu no gyouretsu"
+
+msgid "Raid extract_queue text"
+msgstr "Deguchi ni PMC ga sannin narande iru. Minna otagai ni kidzukanai furi wo shite iru."
+
+msgid "Raid extract_queue agility"
+msgstr "Shizuka ni saigobi ni narabu"
+
+msgid "Raid extract_queue strength"
+msgstr "Warikomu"
+
+msgid "Raid moonshine_still"
+msgstr "Mitsuzou souchi"
+
+msgid "Raid moonshine_still text"
+msgstr "Chikashitsu de mitsuzou souchi ga gubogubo itte iru. Mappu de saikou no ruuto no nioi ga suru."
+
+msgid "Raid moonshine_still luck"
+msgstr "Ajimi suru"
+
+msgid "Raid quest_item"
+msgstr "Kuesuto aitemu"
+
+msgid "Raid quest_item text"
+msgstr "Kuesuto aitemu ga hiroba no mannaka ni aru. Sogekishu sannin no shikai no naka. Teiban da."
+
+msgid "Raid quest_item agility"
+msgstr "Tsukande hashiru"
+
+msgid "Raid mosin_chad"
+msgstr "Mosin no chaddo"
+
+msgid "Raid mosin_chad text"
+msgstr "Boudan-gu nashi no PMC ga Mosin wo motte kakenukeru: «Heddoshotto ka, nanimo nashi da!»"
+
+msgid "Raid mosin_chad agility"
+msgstr "Kawasu"
+
+msgid "Raid mosin_chad strength"
+msgstr "Uchikaesu"
+
+msgid "Raid wipe_day"
+msgstr "Waipu no hi"
+
+msgid "Raid wipe_day text"
+msgstr "Kyou wa waipu. Minna boushi to PM de hashirimawari, dare mo nanimo motte inai."
+
+msgid "Raid wipe_day strength"
+msgstr "Pisutoru de kenka suru"
+
+msgid "Raid therapist_quest"
+msgstr "Serapisuto no ninmu"
+
+msgid "Raid therapist_quest text"
+msgstr "Musen de Serapisuto: «USB memori yon-ko to kondensu miruku wo motte kite. Kanja no tame yo, mochiron.»"
+
+msgid "Raid therapist_quest luck"
+msgstr "USB memori wo sagasu"
+
+msgid "Raid footsteps"
+msgstr "Ashioto"
+
+msgid "Raid footsteps text"
+msgstr "Ashioto ga achikochi kara kikoeru: ue kara, shita kara, sorekara kabe no naka kara mo."
+
+msgid "Raid footsteps luck"
+msgstr "Doko kara ka ateru"
+
+msgid "Raid footsteps agility"
+msgstr "Katamatte matsu"
+
+msgid "Raid bush_wookie"
+msgstr "Shigemi no ukii"
+
+msgid "Raid bush_wookie text"
+msgstr "Shigemi ga yurete kusukusu waratte iru. Giri suutsu no PMC da."
+
+msgid "Raid bush_wookie strength"
+msgstr "Shigemi wo utsu"
+
+msgid "Raid bush_wookie luck"
+msgstr "Kidzukanai furi wo suru"
+
+msgid "Raid chatty_scav"
+msgstr "Oshaberi na yabanjin"
+
+msgid "Raid chatty_scav text"
+msgstr "Kado no mukou kara: «Oi, omae dare da?! Hora, sayounara!»"
+
+msgid "Raid chatty_scav luck"
+msgstr "«Mikata da!» to sakebu"
+
+msgid "Raid chatty_scav strength"
+msgstr "Koe no hou e iku"

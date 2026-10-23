@@ -2699,16 +2699,12 @@ kbd {
     font-size: 13px;
 }
 
+/* minmax(0, 1fr): a column may shrink below its card's content, or the cards
+   push the grid wider than the row and over the stash button */
 .raid-squad {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 8px;
-}
-
-@media (max-width: 768px) {
-    .raid-squad {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 .raid-member {
@@ -2726,6 +2722,7 @@ kbd {
 
 .raid-member .battle-card-rarity {
     margin: 4px 0 6px;
+    color: #a5a5a5;
     font-size: 13px;
     text-align: center;
 }
@@ -3027,11 +3024,17 @@ kbd {
     font-weight: normal;
 }
 
-/* the legend's button in the event's header, beside the encounter's number */
+/* the legend's button in the event's header, beside the encounter's number:
+   they keep to one line, the event's title wraps instead */
 .raid-event-meta {
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     gap: 6px;
+}
+
+.raid-event-meta .wheel-panel-count {
+    white-space: nowrap;
 }
 
 .raid-legend-btn {
@@ -3090,6 +3093,104 @@ kbd {
 
 .raid-team-link {
     color: #d49300;
+}
+
+/* On a phone the raid has to fit the screen: three compact cards a row (two
+   rows for the squad, not three), the stash a slim bar under them rather than
+   a column beside, smaller route dots that keep to one line */
+@media (max-width: 768px) {
+    .raid-squad {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .raid-squad-row {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .raid-stash-btn {
+        flex: 0 0 auto;
+        flex-direction: row;
+        gap: 8px;
+        padding: 6px 12px;
+    }
+
+    .raid-stash-icon {
+        font-size: 20px;
+    }
+
+    .raid-stash-btn b {
+        font-size: 16px;
+    }
+
+    .raid-member {
+        padding: 6px;
+    }
+
+    .raid-member .battle-card-name {
+        padding: 3px 4px;
+        font-size: 12px;
+    }
+
+    .raid-member .battle-card-rarity {
+        margin: 2px 0 4px;
+        font-size: 11px;
+    }
+
+    .raid-member .battle-stat {
+        padding: 0 2px;
+        font-size: 12px;
+    }
+
+    .raid-member-lost::after {
+        font-size: 28px;
+    }
+
+    .raid-route {
+        gap: 6px;
+    }
+
+    .raid-dot {
+        width: 12px;
+        height: 12px;
+    }
+
+    .raid-event .wheel-panel-header {
+        gap: 8px;
+        padding: 6px 10px;
+        font-size: 17px;
+    }
+
+    /* in the corner by the name it would cover the name on a card this narrow */
+    .raid-member-loot {
+        top: auto;
+        bottom: 4px;
+        right: 4px;
+    }
+}
+
+/* a touch screen has no hover: a tapped icon would keep its tip over the
+   button's text; the legend ("?") tells the icons there */
+@media (hover: none) {
+    .raid-icon:hover {
+        background-color: transparent;
+    }
+
+    .raid-icon:hover::after {
+        content: none;
+    }
+}
+
+/* the narrowest phones: a little smaller still, so a stat and its value keep to the card */
+@media (max-width: 360px) {
+    .raid-member .battle-card-name {
+        font-size: 11px;
+    }
+
+    .raid-member .battle-stat {
+        font-size: 11px;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
