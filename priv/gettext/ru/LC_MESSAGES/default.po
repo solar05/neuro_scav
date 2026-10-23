@@ -939,3 +939,105 @@ msgstr "Смотритель маяка обещает особую сделку
 
 msgid "Raid lightkeeper agility"
 msgstr "Дойти до маяка"
+
+msgid "Item propital"
+msgstr "Пропитал"
+
+msgid "Item etg"
+msgstr "eTG-change"
+
+msgid "Item slick"
+msgstr "Бронежилет «Слик»"
+
+msgid "Item altyn"
+msgstr "Шлем «Алтын»"
+
+msgid "Item moonshine"
+msgstr "Самогон"
+
+msgid "Item bitcoin"
+msgstr "Физический биткоин"
+
+msgid "Item keycard"
+msgstr "Красная ключ-карта"
+
+msgid "Item nvg"
+msgstr "ПНВ"
+
+msgid "Raid rogues"
+msgstr "Мародёры на водоочистной"
+
+msgid "Raid rogues text"
+msgstr "На вышках водоочистной сидят мародёры с пулемётами."
+
+msgid "Raid rogues agility"
+msgstr "Прорваться к складам"
+
+msgid "Raid rogues luck"
+msgstr "Отойти вдоль берега"
+
+msgid "Raid bunker"
+msgstr "Бункер ЗБ-016"
+
+msgid "Raid bunker text"
+msgstr "Дверь бункера приоткрыта, внутри темно и подозрительно тихо."
+
+msgid "Raid bunker luck"
+msgstr "Спуститься"
+
+msgid "Raid mechanic"
+msgstr "Задание Механика"
+
+msgid "Raid mechanic text"
+msgstr "Механик просит забрать флешку из сейфа в цеху: «В долгу не останусь»."
+
+msgid "Raid mechanic agility"
+msgstr "Взяться за дело"
+
+msgid "Raid train"
+msgstr "Выход на поезде"
+
+msgid "Raid train text"
+msgstr "Подходит поезд. До отправления минута, к вагонам бегут все."
+
+msgid "Raid train agility"
+msgstr "Запрыгнуть в вагон"
+
+msgid "Raid trunk"
+msgstr "Багажник с сигналкой"
+
+msgid "Raid trunk text"
+msgstr "На парковке машина с приоткрытым багажником. Зацепишь — завоет сигнализация."
+
+msgid "Raid trunk luck"
+msgstr "Обыскать багажник"
+
+msgid "Raid goons"
+msgstr "Гончие"
+
+msgid "Raid goons text"
+msgstr "Издалека доносится свист: по карте идут Рыцарь, Бигпайп и Бёрдай."
+
+msgid "Raid goons strength"
+msgstr "Устроить засаду"
+
+msgid "Raid goons agility"
+msgstr "Уйти лесом"
+
+msgid "Raid flea"
+msgstr "Барахолка"
+
+msgid "Raid flea text"
+msgstr "Связной предлагает обменять трофей на снаряжение получше. Говорит, без обмана."
+
+msgid "Raid flea luck"
+msgstr "Обменяться"
+
+msgid "Raid tower"
+msgstr "Радиовышка"
+
+msgid "Raid tower text"
+msgstr "С вышки видно всю карту. Залезть — значит засветиться."
+
+msgid "Raid tower agility"
+msgstr "Залезть наверх"

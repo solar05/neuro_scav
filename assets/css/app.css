@@ -3008,6 +3008,39 @@ kbd {
     margin-top: 6px;
 }
 
+/* a fallen finder's loot doesn't work until they're back */
+.raid-stash-inactive {
+    opacity: 0.45;
+}
+
+/* how many items a member carries: loot works for its finder alone */
+.raid-member-loot {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    padding: 0 6px;
+    border-radius: 8px;
+    background: rgba(33, 37, 41, 0.9);
+    color: #ffd060;
+    font-size: 12px;
+}
+
+/* who found it, on its own line under the item */
+.raid-stash-owner {
+    display: block;
+    color: #d0d0d0;
+    font-size: 13px;
+}
+
+.raid-stash-owner::before {
+    content: "— ";
+}
+
+.raid-stash-owner-dead {
+    color: #ff5252;
+    text-decoration: line-through;
+}
+
 .raid-stash-list b {
     color: #ffd060;
     font-weight: normal;

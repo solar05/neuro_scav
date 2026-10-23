@@ -4,19 +4,22 @@ defmodule NeuroScav.Raid do
 
   The squad meets a number of events (`steps/0`, picked per raid) one by one.
   Each event offers two or three options; an option either needs a stat check or is safe (nothing happens).
-  A check is made by the alive member best at that stat: the chance is the
-  stat (battle card, `BattleRoom.card/1`) plus the squad's loot bonuses minus
-  the option's difficulty, kept within 5..95%. What a success brings and a
-  failure costs depends on the option:
+  A check is made by the alive member best at that stat counting their own
+  loot: the chance is the stat (battle card, `BattleRoom.card/1`) plus the
+  bonuses of the loot that member found, minus the option's difficulty, kept
+  within 5..95%. Loot helps its finder only, and only while they're alive: a
+  fallen member's loot stays in the stash, inactive, and works again if they
+  come back. What a success brings and a failure costs depends on the option:
 
-  - success: `:pass`, `:loot` (an item to the stash), `:revive` (the first
+  - success: `:pass`, `:loot` (an item to the stash, `%{item, owner}` with
+    the finder's index), `:revive` (the first
     fallen member is back; with nobody fallen it's a pass), `:train` (the
     member's checked stat grows by `stat_step/0`) or `:promote` (the member's
     rarity goes one up, the stats grow by the difference of rarity bonuses;
     at the top it's a `:train`)
   - failure: `:lose` (the member doesn't make it out), `:wound` (the checked
-    stat drops by `stat_step/0`, to 1 at least), `:drop` (the last item of
-    the stash is gone) or `:nothing`
+    stat drops by `stat_step/0`, to 1 at least), `:drop` (the last active
+    item of the stash is gone) or `:nothing`
 
   Routes pick events by weight: the promoting ones are rare.
 
@@ -58,10 +61,18 @@ defmodule NeuroScav.Raid do
     dead_pmc: [{:luck, 5, :loot, :lose}, :safe],
     labs: [{:strength, 25, :loot, :lose}, {:agility, 20, :loot, :lose}, :safe],
     obdolbos: [{:luck, 0, :train, :wound}, :safe],
-    skirmish: [{:strength, 5, :train, :wound}, {:agility, 0, :pass, :wound}],
+    skirmish: [{:strength, 5, :train, :wound}, {:agility, 0, :pass, :lose}],
     stairs: [{:agility, 10, :train, :wound}, :safe],
     veteran: [{:strength, 20, :promote, :wound}, :safe],
-    lightkeeper: [{:agility, 25, :promote, :lose}, :safe]
+    lightkeeper: [{:agility, 25, :promote, :lose}, :safe],
+    rogues: [{:agility, 20, :loot, :lose}, {:luck, 10, :pass, :drop}],
+    bunker: [{:luck, 5, :loot, :lose}, :safe],
+    mechanic: [{:agility, 10, :loot, :lose}, :safe],
+    train: [{:agility, 5, :pass, :lose}, :safe],
+    trunk: [{:luck, 0, :loot, :wound}, :safe],
+    goons: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
+    flea: [{:luck, 0, :loot, :drop}, :safe],
+    tower: [{:agility, 5, :train, :lose}, :safe]
   }
 
   # how often an event comes up on a route, 1 unless listed
@@ -70,13 +81,24 @@ defmodule NeuroScav.Raid do
   @rarities [:common, :uncommon, :rare, :epic, :legendary]
   @stat_step 10
 
-  # loot: the stats it adds to every check of the squad
+  # loot: the stats it adds to every check of the squad (some take a little too)
   @loot %{
     sj6: %{strength: 10},
     meldonin: %{agility: 10},
     rooster: %{luck: 10},
-    ledx: %{strength: 5, agility: 5, luck: 5}
+    ledx: %{strength: 5, agility: 5, luck: 5},
+    propital: %{strength: 5, agility: 5},
+    etg: %{agility: 15, luck: -5},
+    slick: %{strength: 15},
+    altyn: %{strength: 10, agility: -5},
+    moonshine: %{strength: 10, luck: -5},
+    bitcoin: %{luck: 5},
+    keycard: %{luck: 15},
+    nvg: %{agility: 5, luck: 5}
   }
+
+  # how often a kind of loot turns up, 1 unless listed: the valuables are rare
+  @loot_weights %{ledx: 0.3, keycard: 0.3, slick: 0.5}
 
   @steps 10..13
 
@@ -97,10 +119,17 @@ defmodule NeuroScav.Raid do
   weight (keys `u^(1/weight)`, the largest win), so rare events seldom show up.
   """
   @spec route() :: [atom()]
-  def route do
-    events()
-    |> Enum.sort_by(&(-:math.pow(:rand.uniform(), 1 / Map.get(@weights, &1, 1))))
-    |> Enum.take(Enum.random(@steps))
+  def route, do: draw(events(), @weights, Enum.random(@steps))
+
+  @doc "A random find, drawn by weight like a route: the valuables are rare."
+  @spec random_item() :: atom()
+  def random_item, do: hd(draw(loot(), @loot_weights, 1))
+
+  # `count` different keys, each with a chance by its weight (1 unless listed)
+  defp draw(keys, weights, count) do
+    keys
+    |> Enum.sort_by(&(-:math.pow(:rand.uniform(), 1 / Map.get(weights, &1, 1))))
+    |> Enum.take(count)
   end
 
   @doc "Every kind of loot, for picking a find."
@@ -160,11 +189,23 @@ defmodule NeuroScav.Raid do
   defp option(_raid, :safe), do: %{stat: nil, member: nil, chance: nil, reward: nil, risk: nil}
 
   defp option(raid, {stat, difficulty, success, failure}) do
-    member = raid |> alive() |> Enum.max_by(& &1.stats[stat])
-    bonus = raid.stash |> Enum.map(&Map.get(@loot[&1], stat, 0)) |> Enum.sum()
-    chance = (member.stats[stat] + bonus - difficulty) |> max(5) |> min(95)
+    member = raid |> alive() |> Enum.max_by(&with_loot(raid, &1, stat))
+    chance = (with_loot(raid, member, stat) - difficulty) |> max(5) |> min(95)
     %{stat: stat, member: member, chance: chance, reward: success, risk: failure}
   end
+
+  # a member's stat with the bonuses of the loot they found
+  defp with_loot(raid, member, stat) do
+    for %{item: item, owner: owner} <- raid.stash,
+        owner == member.index,
+        reduce: member.stats[stat] do
+      value -> value + Map.get(@loot[item], stat, 0)
+    end
+  end
+
+  @doc "Whether a stash entry works: its finder is alive."
+  @spec active?(map(), map()) :: boolean()
+  def active?(raid, %{owner: owner}), do: Enum.at(raid.squad, owner).alive
 
   @doc """
   Takes option `index` of the current event: a check succeeds when `roll`
@@ -172,7 +213,7 @@ defmodule NeuroScav.Raid do
   happened, for the page to tell.
   """
   @spec choose(map(), non_neg_integer(), 1..100, atom()) :: map()
-  def choose(raid, index, roll, item \\ Enum.random(Map.keys(@loot))) do
+  def choose(raid, index, roll, item \\ random_item()) do
     event = event(raid)
 
     case event && Enum.at(Map.fetch!(@events, event), index) do
@@ -204,15 +245,26 @@ defmodule NeuroScav.Raid do
   defp settle(raid, :lose, member, _item, last),
     do: raid |> set_alive(member.index, false) |> step(last)
 
-  defp settle(raid, :loot, _member, item, last),
-    do: step(%{raid | stash: raid.stash ++ [item]}, %{last | item: item})
+  defp settle(raid, :loot, member, item, last),
+    do:
+      step(%{raid | stash: raid.stash ++ [%{item: item, owner: member.index}]}, %{
+        last
+        | item: item
+      })
 
   # the last item found goes first; an empty stash has nothing to give
-  defp settle(%{stash: []} = raid, :drop, _member, _item, last), do: step(raid, last)
-
+  # the last active item goes: a fallen member's loot is no use to give away
   defp settle(raid, :drop, _member, _item, last) do
-    {dropped, stash} = List.pop_at(raid.stash, -1)
-    step(%{raid | stash: stash}, %{last | item: dropped})
+    active = for {entry, index} <- Enum.with_index(raid.stash), active?(raid, entry), do: index
+
+    case List.last(active) do
+      nil ->
+        step(raid, last)
+
+      index ->
+        {dropped, stash} = List.pop_at(raid.stash, index)
+        step(%{raid | stash: stash}, %{last | item: dropped.item})
+    end
   end
 
   defp settle(raid, :revive, _member, _item, last) do

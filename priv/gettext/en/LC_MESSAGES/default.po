@@ -939,3 +939,105 @@ msgstr "The Lightkeeper promises a special deal to whoever reaches him alive."
 
 msgid "Raid lightkeeper agility"
 msgstr "Make it to the lighthouse"
+
+msgid "Item propital"
+msgstr "Propital"
+
+msgid "Item etg"
+msgstr "eTG-change"
+
+msgid "Item slick"
+msgstr "Slick body armor"
+
+msgid "Item altyn"
+msgstr "Altyn helmet"
+
+msgid "Item moonshine"
+msgstr "Moonshine"
+
+msgid "Item bitcoin"
+msgstr "Physical Bitcoin"
+
+msgid "Item keycard"
+msgstr "Red keycard"
+
+msgid "Item nvg"
+msgstr "Night vision goggles"
+
+msgid "Raid rogues"
+msgstr "Rogues at the water treatment plant"
+
+msgid "Raid rogues text"
+msgstr "Rogues with machine guns sit in the towers of the water treatment plant."
+
+msgid "Raid rogues agility"
+msgstr "Break through to the warehouses"
+
+msgid "Raid rogues luck"
+msgstr "Back off along the shore"
+
+msgid "Raid bunker"
+msgstr "Bunker ZB-016"
+
+msgid "Raid bunker text"
+msgstr "The bunker door is ajar; inside it's dark and suspiciously quiet."
+
+msgid "Raid bunker luck"
+msgstr "Go down"
+
+msgid "Raid mechanic"
+msgstr "A task from Mechanic"
+
+msgid "Raid mechanic text"
+msgstr "Mechanic asks you to grab a flash drive from a safe in the workshop: “I'll make it worth your while.”"
+
+msgid "Raid mechanic agility"
+msgstr "Take the job"
+
+msgid "Raid train"
+msgstr "Train extract"
+
+msgid "Raid train text"
+msgstr "The train pulls in. One minute to departure, everyone runs for the cars."
+
+msgid "Raid train agility"
+msgstr "Jump on board"
+
+msgid "Raid trunk"
+msgstr "A trunk with an alarm"
+
+msgid "Raid trunk text"
+msgstr "A car in the lot with its trunk ajar. Bump it and the alarm goes off."
+
+msgid "Raid trunk luck"
+msgstr "Search the trunk"
+
+msgid "Raid goons"
+msgstr "The Goons"
+
+msgid "Raid goons text"
+msgstr "A whistle from afar: Knight, Big Pipe and Birdeye are roaming the map."
+
+msgid "Raid goons strength"
+msgstr "Set up an ambush"
+
+msgid "Raid goons agility"
+msgstr "Slip away through the woods"
+
+msgid "Raid flea"
+msgstr "Flea market"
+
+msgid "Raid flea text"
+msgstr "A contact offers to swap a trophy for better gear. Says it's no scam."
+
+msgid "Raid flea luck"
+msgstr "Make the swap"
+
+msgid "Raid tower"
+msgstr "The radio tower"
+
+msgid "Raid tower text"
+msgstr "You can see the whole map from the tower. Climb it and everyone sees you."
+
+msgid "Raid tower agility"
+msgstr "Climb to the top"

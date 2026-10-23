@@ -928,3 +928,105 @@ msgstr "Toudai mori wa ikite tadoritsuita mono ni tokubetsu na torihiki wo yakus
 
 msgid "Raid lightkeeper agility"
 msgstr "Toudai made tadoritsuku"
+
+msgid "Item propital"
+msgstr "Puropitaru"
+
+msgid "Item etg"
+msgstr "eTG-change"
+
+msgid "Item slick"
+msgstr "Surikku boudan-chokki"
+
+msgid "Item altyn"
+msgstr "Arutin herumetto"
+
+msgid "Item moonshine"
+msgstr "Mitsuzou-shu"
+
+msgid "Item bitcoin"
+msgstr "Butsuri bittokoin"
+
+msgid "Item keycard"
+msgstr "Akai kii kaado"
+
+msgid "Item nvg"
+msgstr "Anshi goguru"
+
+msgid "Raid rogues"
+msgstr "Josuijou no roogu"
+
+msgid "Raid rogues text"
+msgstr "Josuijou no tou ni kikanjuu wo motta roogu ga iru."
+
+msgid "Raid rogues agility"
+msgstr "Souko made toppa"
+
+msgid "Raid rogues luck"
+msgstr "Kishibe zoi ni sagaru"
+
+msgid "Raid bunker"
+msgstr "Bunkaa ZB-016"
+
+msgid "Raid bunker text"
+msgstr "Bunkaa no doa ga sukoshi aite iru. Naka wa kurakute, ayashii hodo shizuka."
+
+msgid "Raid bunker luck"
+msgstr "Oriru"
+
+msgid "Raid mechanic"
+msgstr "Mekanikku no irai"
+
+msgid "Raid mechanic text"
+msgstr "Mekanikku ga koujou no kinko kara USB wo totte kite kure to iu: «Rei wa suru.»"
+
+msgid "Raid mechanic agility"
+msgstr "Hikiukeru"
+
+msgid "Raid train"
+msgstr "Ressha de dasshutsu"
+
+msgid "Raid train text"
+msgstr "Ressha ga kuru. Hassha made ippun, minna ga sharyou e hashiru."
+
+msgid "Raid train agility"
+msgstr "Tobinoru"
+
+msgid "Raid trunk"
+msgstr "Keihouki-tsuki no toranku"
+
+msgid "Raid trunk text"
+msgstr "Chuushajou ni toranku no aita kuruma. Fureru to keihou ga naru."
+
+msgid "Raid trunk luck"
+msgstr "Toranku wo sagasu"
+
+msgid "Raid goons"
+msgstr "Guunzu"
+
+msgid "Raid goons text"
+msgstr "Tooku kara kuchibue: Naito, Biggu Paipu, Baadai ga mappu wo aruku."
+
+msgid "Raid goons strength"
+msgstr "Machibuse suru"
+
+msgid "Raid goons agility"
+msgstr "Mori wo tootte nigeru"
+
+msgid "Raid flea"
+msgstr "Nomi no ichi"
+
+msgid "Raid flea text"
+msgstr "Renrakuin ga senrihin wo motto ii soubi to koukan shiyou to iu. Sagi ja nai sou da."
+
+msgid "Raid flea luck"
+msgstr "Koukan suru"
+
+msgid "Raid tower"
+msgstr "Rajio tou"
+
+msgid "Raid tower text"
+msgstr "Tou kara mappu zentai ga mieru. Noboreba, minna ni mirareru."
+
+msgid "Raid tower agility"
+msgstr "Ue made noboru"

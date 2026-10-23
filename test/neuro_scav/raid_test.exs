@@ -10,6 +10,7 @@ defmodule NeuroScav.RaidTest do
   ]
 
   defp best(stat), do: @squad |> Enum.map(&BattleRoom.card/1) |> Enum.max_by(& &1.stats[stat])
+  defp index_of(card), do: Enum.find_index(@squad, &(&1.name == card.name))
 
   test "a new raid walks 10 to 13 different events with the whole squad alive" do
     raid = Raid.new(@squad)
@@ -48,7 +49,8 @@ defmodule NeuroScav.RaidTest do
     raid = Raid.new(@squad, [:office, :pmc])
     raid = Raid.choose(raid, 0, 1, :sj6)
 
-    assert raid.stash == [:sj6]
+    # the finder is the member who made the check
+    assert raid.stash == [%{item: :sj6, owner: best(:strength) |> index_of()}]
     assert %{outcome: :loot, item: :sj6} = raid.last
 
     [fight, _climb] = Raid.options(raid)
@@ -100,7 +102,7 @@ defmodule NeuroScav.RaidTest do
 
     raid = Raid.choose(raid, 0, 100)
     assert %{outcome: :drop, item: :rooster} = raid.last
-    assert raid.stash == [:sj6]
+    assert Enum.map(raid.stash, & &1.item) == [:sj6]
     assert length(Raid.alive(raid)) == 3
   end
 
@@ -170,6 +172,84 @@ defmodule NeuroScav.RaidTest do
       assert %{outcome: :train} = raid.last
       assert actor(raid, 0).rarity == :legendary
       assert actor(raid, 0).stats.strength == before.stats.strength + Raid.stat_step()
+    end
+
+    test "valuable loot turns up more seldom than the rest" do
+      finds = for _ <- 1..3_000, do: Raid.random_item()
+      count = fn item -> Enum.count(finds, &(&1 == item)) end
+
+      assert MapSet.new(finds) == MapSet.new(Raid.loot())
+      assert count.(:ledx) * 2 < count.(:sj6)
+      assert count.(:keycard) * 2 < count.(:bitcoin)
+    end
+
+    test "loot may take a stat as well: a heavy helmet slows its finder down" do
+      raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:office, :pmc])
+      [_fight, climb] = raid |> Raid.choose(0, 1, :sj6) |> Raid.options()
+      [_fight, slowed] = raid |> Raid.choose(0, 1, :altyn) |> Raid.options()
+
+      assert slowed.chance == max(climb.chance - 5, 5)
+    end
+
+    test "loot works for its finder alone" do
+      finder = best(:strength)
+      raid = @squad |> Raid.new([:office, :pmc]) |> Raid.choose(0, 1, :meldonin)
+      [_fight, climb] = Raid.options(raid)
+
+      best_agility =
+        @squad
+        |> Enum.map(&BattleRoom.card/1)
+        |> Enum.map(&(&1.stats.agility + if(&1.name == finder.name, do: 10, else: 0)))
+        |> Enum.max()
+
+      assert climb.chance == (best_agility - 10) |> max(5) |> min(95)
+    end
+
+    test "a fallen finder's loot stops working and works again once they're back" do
+      finder = best(:strength)
+
+      strongest_other =
+        @squad
+        |> Enum.map(&BattleRoom.card/1)
+        |> Enum.reject(&(&1.name == finder.name))
+        |> Enum.max_by(& &1.stats.strength)
+
+      raid = @squad |> Raid.new([:office, :pmc, :pmc, :medic, :pmc]) |> Raid.choose(0, 1, :slick)
+      assert [%{member: %{name: name}} | _] = Raid.options(raid)
+      assert name == finder.name
+
+      # the finder falls: their armor is no use to anyone
+      raid = Raid.choose(raid, 0, 100)
+      refute Raid.active?(raid, hd(raid.stash))
+      [fight, _climb] = Raid.options(raid)
+      assert fight.member.name == strongest_other.name
+      assert fight.chance == strongest_other.stats.strength |> max(5) |> min(95)
+
+      # back on their feet, the armor works again
+      raid = raid |> Raid.choose(0, 1) |> Raid.choose(0, 1)
+      assert Raid.active?(raid, hd(raid.stash))
+      [fight, _climb] = Raid.options(raid)
+      assert fight.member.name == finder.name
+      assert fight.chance == (finder.stats.strength + 15) |> max(5) |> min(95)
+    end
+
+    test "a failed drop takes the last active item, not a fallen finder's" do
+      raid = Raid.new(Enum.take(@squad, 2), [:wounded, :office, :pmc, :toll])
+      # one strong, one lucky: each finds an item of their own
+      raid =
+        update_in(raid.squad, fn [strong, lucky] ->
+          [
+            %{strong | stats: %{strength: 90, agility: 10, luck: 10}},
+            %{lucky | stats: %{strength: 10, agility: 10, luck: 90}}
+          ]
+        end)
+
+      raid = raid |> Raid.choose(0, 1, :rooster) |> Raid.choose(0, 1, :sj6)
+      assert Enum.map(raid.stash, &{&1.item, &1.owner}) == [rooster: 1, sj6: 0]
+
+      raid = raid |> Raid.choose(0, 100) |> Raid.choose(0, 100)
+      assert %{outcome: :drop, item: :rooster} = raid.last
+      assert Enum.map(raid.stash, & &1.item) == [:sj6]
     end
 
     test "promoting events come up much more seldom than the others" do

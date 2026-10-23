@@ -61,6 +61,8 @@ mix ecto.gen.migration name_of_migration  # Create new migration
 ### Debugging
 ```bash
 mix phx.gen.secret    # Generate random secret for SECRET_KEY_BASE
+mix raid.sim          # Simulate raids to tune their balance (dev only; see `mix help raid.sim`)
+mix raid.sim --strategy greedy --events --seed 42  # one strategy, per-event table, reproducible
 ```
 
 ## Architecture Overview

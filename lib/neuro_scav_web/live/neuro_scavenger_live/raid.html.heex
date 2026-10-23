@@ -22,9 +22,16 @@
                   else: gettext("Raid dead")}
               </p>
               <.card_stats card={member} />
+              <span
+                :if={loot_count(@raid, member) > 0}
+                id={"raid-member-loot-#{member.index}"}
+                class="raid-member-loot"
+              >
+                🎒 {loot_count(@raid, member)}
+              </span>
             </div>
           </div>
-          <.stash loot={@raid.stash} />
+          <.stash loot={stash_entries(@raid)} />
         </div>
 
         <div class="raid-route" aria-hidden="true">

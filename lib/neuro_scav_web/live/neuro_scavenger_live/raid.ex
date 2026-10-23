@@ -89,9 +89,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   doesn't jump when the first item turns up) and a compact modal in the middle
   of the screen. It opens and closes on the client (JS commands stay through
   patches); the backdrop is a sibling of the panel, so a click inside the panel
-  keeps it open.
+  keeps it open. Each item shows who found it: loot works for its finder only,
+  so a fallen finder's items are dimmed and the button counts the active ones.
   """
-  attr :loot, :list, required: true
+  attr :loot, :list, required: true, doc: "%{item, owner, alive} each, see stash_entries/1"
 
   def stash(assigns) do
     ~H"""
@@ -103,7 +104,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     >
       <span class="raid-stash-icon" aria-hidden="true">🎒</span>
       <span>{gettext("Stash")}</span>
-      <b>{length(@loot)}</b>
+      <b>{Enum.count(@loot, & &1.alive)}</b>
     </button>
     <div
       id="raid-stash"
@@ -118,8 +119,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
           <button type="button" class="shortcuts-modal-close" phx-click={hide_stash()}>X</button>
         </div>
         <ul :if={@loot != []} class="raid-stash-list">
-          <li :for={item <- @loot}>
+          <li
+            :for={%{item: item, owner: owner, alive: alive} <- @loot}
+            class={not alive && "raid-stash-inactive"}
+          >
             <b>{item_name(item)}</b> {item_bonus(item)}
+            <span class={["raid-stash-owner", not alive && "raid-stash-owner-dead"]}>{owner}</span>
           </li>
         </ul>
         <p :if={@loot == []} class="raid-stash-empty">{gettext("Stash empty")}</p>
@@ -130,6 +135,17 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp hide_stash, do: JS.add_class("hidden", to: "#raid-stash")
 
+  # the stash with the finder's name and whether they're still around (the item works)
+  defp stash_entries(%{stash: stash, squad: squad}) do
+    for %{item: item, owner: index} <- stash do
+      owner = Enum.at(squad, index)
+      %{item: item, owner: owner.name, alive: owner.alive}
+    end
+  end
+
+  # how many items a member found: their loot works for them alone
+  defp loot_count(raid, member), do: Enum.count(raid.stash, &(&1.owner == member.index))
+
   # View helpers
 
   defp event_title(event), do: Locale.get_text("Raid #{event}")
@@ -139,6 +155,10 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp option_label(event, %{stat: stat}), do: Locale.get_text("Raid #{event} #{stat}")
 
   defp stat_label(stat), do: Locale.get_text("Stat #{stat}")
+
+  # some loot takes a little too: "+15", "−5" (a real minus sign)
+  defp signed(value) when value < 0, do: "−#{-value}"
+  defp signed(value), do: "+#{value}"
   defp item_name(item), do: Locale.get_text("Item #{item}")
 
   defp item_bonus(item) do
@@ -147,7 +167,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
         gettext("Item all bonus %{bonus}", bonus: same)
 
       bonus ->
-        Enum.map_join(bonus, ", ", fn {stat, value} -> "+#{value} #{stat_label(stat)}" end)
+        Enum.map_join(bonus, ", ", fn {stat, value} -> "#{signed(value)} #{stat_label(stat)}" end)
     end
   end
 

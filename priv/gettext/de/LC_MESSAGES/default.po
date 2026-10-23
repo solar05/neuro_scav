@@ -928,3 +928,105 @@ msgstr "Der Leuchtturmwärter verspricht einen besonderen Deal für jeden, der i
 
 msgid "Raid lightkeeper agility"
 msgstr "Den Leuchtturm erreichen"
+
+msgid "Item propital"
+msgstr "Propital"
+
+msgid "Item etg"
+msgstr "eTG-change"
+
+msgid "Item slick"
+msgstr "Schutzweste „Slick“"
+
+msgid "Item altyn"
+msgstr "Altyn-Helm"
+
+msgid "Item moonshine"
+msgstr "Selbstgebrannter"
+
+msgid "Item bitcoin"
+msgstr "Physischer Bitcoin"
+
+msgid "Item keycard"
+msgstr "Rote Schlüsselkarte"
+
+msgid "Item nvg"
+msgstr "Nachtsichtgerät"
+
+msgid "Raid rogues"
+msgstr "Rogues an der Kläranlage"
+
+msgid "Raid rogues text"
+msgstr "Auf den Türmen der Kläranlage sitzen Rogues mit Maschinengewehren."
+
+msgid "Raid rogues agility"
+msgstr "Zu den Lagerhallen durchbrechen"
+
+msgid "Raid rogues luck"
+msgstr "Am Ufer entlang zurückziehen"
+
+msgid "Raid bunker"
+msgstr "Bunker ZB-016"
+
+msgid "Raid bunker text"
+msgstr "Die Bunkertür steht einen Spalt offen; drinnen ist es dunkel und verdächtig still."
+
+msgid "Raid bunker luck"
+msgstr "Hinuntersteigen"
+
+msgid "Raid mechanic"
+msgstr "Ein Auftrag von Mechanic"
+
+msgid "Raid mechanic text"
+msgstr "Mechanic bittet, einen USB-Stick aus einem Tresor in der Werkhalle zu holen: „Es soll euer Schaden nicht sein.“"
+
+msgid "Raid mechanic agility"
+msgstr "Den Auftrag annehmen"
+
+msgid "Raid train"
+msgstr "Ausgang per Zug"
+
+msgid "Raid train text"
+msgstr "Der Zug fährt ein. Eine Minute bis zur Abfahrt, alle rennen zu den Waggons."
+
+msgid "Raid train agility"
+msgstr "Aufspringen"
+
+msgid "Raid trunk"
+msgstr "Ein Kofferraum mit Alarmanlage"
+
+msgid "Raid trunk text"
+msgstr "Auf dem Parkplatz ein Auto mit offenem Kofferraum. Wer es anstößt, löst die Alarmanlage aus."
+
+msgid "Raid trunk luck"
+msgstr "Den Kofferraum durchsuchen"
+
+msgid "Raid goons"
+msgstr "Die Goons"
+
+msgid "Raid goons text"
+msgstr "Ein Pfiff aus der Ferne: Knight, Big Pipe und Birdeye ziehen über die Karte."
+
+msgid "Raid goons strength"
+msgstr "Einen Hinterhalt legen"
+
+msgid "Raid goons agility"
+msgstr "Durch den Wald verschwinden"
+
+msgid "Raid flea"
+msgstr "Flohmarkt"
+
+msgid "Raid flea text"
+msgstr "Ein Kontaktmann bietet an, eine Trophäe gegen bessere Ausrüstung zu tauschen. Angeblich ohne Betrug."
+
+msgid "Raid flea luck"
+msgstr "Tauschen"
+
+msgid "Raid tower"
+msgstr "Der Funkturm"
+
+msgid "Raid tower text"
+msgstr "Vom Turm sieht man die ganze Karte. Wer hinaufklettert, wird gesehen."
+
+msgid "Raid tower agility"
+msgstr "Hinaufklettern"

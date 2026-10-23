@@ -75,18 +75,43 @@ defmodule NeuroScavWeb.RaidLiveTest do
   end
 
   test "loot waits in a stash: a button with its count opens a modal with the list" do
-    html = render_component(&Raid.stash/1, loot: [:rooster, :ledx])
+    loot = [
+      %{item: :rooster, owner: "Гена Лена", alive: true},
+      %{item: :ledx, owner: "Дед Мороз", alive: false}
+    ]
+
+    html = render_component(&Raid.stash/1, loot: loot)
     doc = LazyHTML.from_fragment(html)
 
+    # the button counts the loot that works: a fallen finder's doesn't
     button = doc |> LazyHTML.query("#btn-raid-stash") |> LazyHTML.text()
-    assert button =~ "Нычка" and button =~ "2"
+    assert button =~ "Нычка" and button =~ "1"
+    assert doc |> LazyHTML.query(".raid-stash-inactive") |> LazyHTML.text() =~ "ЛЕДХ"
     # hidden until the button opens it
     assert doc |> LazyHTML.query("#raid-stash.hidden") |> Enum.count() == 1
 
     list = doc |> LazyHTML.query(".raid-stash-list li") |> Enum.map(&LazyHTML.text/1)
     assert [rooster, ledx] = list
-    assert rooster =~ "Золотой петух" and rooster =~ "+10 Удача"
-    assert ledx =~ "ЛЕДХ" and ledx =~ "+5 ко всему"
+    assert rooster =~ "Золотой петух" and rooster =~ "+10 Удача" and rooster =~ "Гена Лена"
+    assert ledx =~ "ЛЕДХ" and ledx =~ "+5 ко всему" and ledx =~ "Дед Мороз"
+    # a finder who didn't make it out is struck out
+    assert doc |> LazyHTML.query(".raid-stash-owner-dead") |> LazyHTML.text() =~ "Дед Мороз"
+  end
+
+  test "loot that takes a stat shows it with a minus" do
+    html = render_component(&Raid.stash/1, loot: [%{item: :etg, owner: "Гена Лена", alive: true}])
+    assert html =~ "eTG-change"
+    assert html =~ "+15 Ловкость"
+    assert html =~ "−5 Удача"
+  end
+
+  test "every kind of loot is translated in every language" do
+    for locale <- ~w(ru en de ja), item <- NeuroScav.Raid.loot() do
+      Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
+        msgid = "Item #{item}"
+        assert Gettext.gettext(NeuroScavWeb.Gettext, msgid) != msgid, "#{locale}: #{msgid}"
+      end)
+    end
   end
 
   test "the stash button is there from the start; an empty stash says so", %{conn: conn} do
