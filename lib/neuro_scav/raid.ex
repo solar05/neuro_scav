@@ -104,7 +104,18 @@ defmodule NeuroScav.Raid do
     scav_camp: [{:luck, 5, :loot, :nothing}, {:strength, 10, :loot, :lose}, :safe],
     fence: [{:luck, 15, :loot, :nothing}, :safe],
     scav_patrol: [{:luck, 10, :pass, :wound}, {:strength, 15, :loot, :lose}],
-    lost_scav: [{:agility, 10, :train, :wound}, :safe]
+    lost_scav: [{:agility, 10, :train, :wound}, :safe],
+    # Tarkov as players know it
+    hatchling: [{:strength, 0, :loot, :wound}, {:agility, 10, :pass, :drop}],
+    cheater: [{:luck, 25, :loot, :lose}, {:agility, 10, :pass, :wound}],
+    desync: [{:luck, 10, :pass, :lose}, {:agility, 0, :pass, :wound}],
+    extract_campers: [{:agility, 15, :pass, :lose}, {:luck, 10, :pass, :drop}],
+    prapor_quest: [{:luck, 5, :train, :nothing}, :safe],
+    sleeping_scav: [{:agility, 5, :loot, :wound}, :safe],
+    streets_fps: [{:agility, 15, :pass, :wound}, {:luck, 5, :train, :nothing}],
+    bear_usec: [{:luck, 5, :loot, :nothing}, {:agility, 10, :pass, :lose}],
+    grenade_scav: [{:agility, 0, :loot, :wound}, {:luck, 10, :pass, :wound}],
+    door_key: [{:strength, 10, :loot, :wound}, {:luck, 20, :loot, :nothing}]
   }
 
   # crossroads: no options of their own, see `forks` in new/2
@@ -133,7 +144,8 @@ defmodule NeuroScav.Raid do
     {:scav_camp, :strength} => -2,
     {:scav_patrol, :strength} => -1,
     {:reshala, :strength} => -1,
-    {:reshala_guards, :strength} => -1
+    {:reshala_guards, :strength} => -1,
+    {:sleeping_scav, :agility} => -1
   }
   @karma_limit 3
   @karma_step 5

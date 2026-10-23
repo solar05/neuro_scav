@@ -1218,3 +1218,117 @@ msgstr "Уйти, отмахиваясь"
 
 msgid "Item komar_wings"
 msgstr "Комариные крылья"
+
+msgid "Raid hatchling"
+msgstr "Хэтчлинг"
+
+msgid "Raid hatchling text"
+msgstr "На вас с диким криком несётся голый ЧВК с топором. Терять ему нечего, а вам — всё."
+
+msgid "Raid hatchling strength"
+msgstr "Встретить кулаками"
+
+msgid "Raid hatchling agility"
+msgstr "Убегать от топора"
+
+msgid "Raid cheater"
+msgstr "Читер"
+
+msgid "Raid cheater text"
+msgstr "Дикий летит над крышами и стреляет сквозь три стены. Совершенно честно, конечно."
+
+msgid "Raid cheater luck"
+msgstr "Отправить репорт"
+
+msgid "Raid cheater agility"
+msgstr "Бежать, петляя"
+
+msgid "Raid desync"
+msgstr "Десинк"
+
+msgid "Raid desync text"
+msgstr "Вы спрятались за угол три секунды назад. Сервер узнает об этом через пять."
+
+msgid "Raid desync luck"
+msgstr "Довериться серверу"
+
+msgid "Raid desync agility"
+msgstr "Уйти ещё дальше за угол"
+
+msgid "Raid extract_campers"
+msgstr "Кемперы на выходе"
+
+msgid "Raid extract_campers text"
+msgstr "В кустах у выхода что-то шуршит уже сорок минут. Это точно не куст."
+
+msgid "Raid extract_campers agility"
+msgstr "Рвануть к выходу"
+
+msgid "Raid extract_campers luck"
+msgstr "Бросить рюкзак как приманку"
+
+msgid "Raid prapor_quest"
+msgstr "Задание Прапора"
+
+msgid "Raid prapor_quest text"
+msgstr "Прапор по рации: «Найди мне три чайника. Да, чайника. Вопросов не задавай.»"
+
+msgid "Raid prapor_quest luck"
+msgstr "Искать чайники"
+
+msgid "Raid sleeping_scav"
+msgstr "Спящий дикий"
+
+msgid "Raid sleeping_scav text"
+msgstr "Дикий спит на ящике в обнимку с укоротом и бутылкой «Тархуна». Храпит на всю локацию."
+
+msgid "Raid sleeping_scav agility"
+msgstr "Обшарить карманы"
+
+msgid "Raid streets_fps"
+msgstr "Улицы Таркова"
+
+msgid "Raid streets_fps text"
+msgstr "На Улицах двенадцать кадров в секунду. Отряд движется рывками, как в слайд-шоу."
+
+msgid "Raid streets_fps agility"
+msgstr "Бежать сквозь лаги"
+
+msgid "Raid streets_fps luck"
+msgstr "Обновить драйвера на ходу"
+
+msgid "Raid bear_usec"
+msgstr "BEAR против USEC"
+
+msgid "Raid bear_usec text"
+msgstr "Два ЧВК спорят, чья фракция круче. Пока спорят — не стреляют."
+
+msgid "Raid bear_usec luck"
+msgstr "Поддакнуть обоим"
+
+msgid "Raid bear_usec agility"
+msgstr "Проскочить, пока спорят"
+
+msgid "Raid grenade_scav"
+msgstr "«Граната!»"
+
+msgid "Raid grenade_scav text"
+msgstr "Дикий орёт «Граната!» и что-то бросает. Похоже на банку тушёнки."
+
+msgid "Raid grenade_scav agility"
+msgstr "Поймать банку"
+
+msgid "Raid grenade_scav luck"
+msgstr "На всякий случай залечь"
+
+msgid "Raid door_key"
+msgstr "Запертая дверь"
+
+msgid "Raid door_key text"
+msgstr "Ключ от этой двери стоит как квартира в Москве. Ключа у вас, разумеется, нет."
+
+msgid "Raid door_key strength"
+msgstr "Выбить ногой"
+
+msgid "Raid door_key luck"
+msgstr "Подёргать ручку — вдруг открыто"

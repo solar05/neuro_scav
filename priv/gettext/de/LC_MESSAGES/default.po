@@ -1207,3 +1207,117 @@ msgstr "Wedelnd zurückweichen"
 
 msgid "Item komar_wings"
 msgstr "Mückenflügel"
+
+msgid "Raid hatchling"
+msgstr "Hatchling"
+
+msgid "Raid hatchling text"
+msgstr "Ein nackter PMC mit Beil stürmt schreiend auf euch zu. Er hat nichts zu verlieren, ihr alles."
+
+msgid "Raid hatchling strength"
+msgstr "Mit Fäusten empfangen"
+
+msgid "Raid hatchling agility"
+msgstr "Vor dem Beil fliehen"
+
+msgid "Raid cheater"
+msgstr "Cheater"
+
+msgid "Raid cheater text"
+msgstr "Ein Wildling fliegt über die Dächer und schießt durch drei Wände. Völlig legitim, natürlich."
+
+msgid "Raid cheater luck"
+msgstr "Einen Report schicken"
+
+msgid "Raid cheater agility"
+msgstr "Im Zickzack ausweichen"
+
+msgid "Raid desync"
+msgstr "Desync"
+
+msgid "Raid desync text"
+msgstr "Ihr seid vor drei Sekunden hinter die Ecke gegangen. Der Server erfährt es in fünf."
+
+msgid "Raid desync luck"
+msgstr "Dem Server vertrauen"
+
+msgid "Raid desync agility"
+msgstr "Noch weiter zurückweichen"
+
+msgid "Raid extract_campers"
+msgstr "Camper am Ausgang"
+
+msgid "Raid extract_campers text"
+msgstr "Im Gebüsch am Ausgang raschelt es seit vierzig Minuten. Das ist sicher kein Busch."
+
+msgid "Raid extract_campers agility"
+msgstr "Zum Ausgang sprinten"
+
+msgid "Raid extract_campers luck"
+msgstr "Einen Rucksack als Köder werfen"
+
+msgid "Raid prapor_quest"
+msgstr "Prapors Auftrag"
+
+msgid "Raid prapor_quest text"
+msgstr "Prapor am Funk: „Bring mir drei Teekessel. Ja, Teekessel. Keine Fragen.“"
+
+msgid "Raid prapor_quest luck"
+msgstr "Teekessel suchen"
+
+msgid "Raid sleeping_scav"
+msgstr "Schlafender Wildling"
+
+msgid "Raid sleeping_scav text"
+msgstr "Ein Wildling schläft auf einer Kiste, im Arm ein kurzes AK und eine Flasche Tarhun. Sein Schnarchen hört die ganze Karte."
+
+msgid "Raid sleeping_scav agility"
+msgstr "Seine Taschen durchsuchen"
+
+msgid "Raid streets_fps"
+msgstr "Streets of Tarkov"
+
+msgid "Raid streets_fps text"
+msgstr "Zwölf Bilder pro Sekunde auf Streets. Der Trupp bewegt sich ruckartig wie eine Diashow."
+
+msgid "Raid streets_fps agility"
+msgstr "Durch die Ruckler rennen"
+
+msgid "Raid streets_fps luck"
+msgstr "Unterwegs Treiber aktualisieren"
+
+msgid "Raid bear_usec"
+msgstr "BEAR gegen USEC"
+
+msgid "Raid bear_usec text"
+msgstr "Zwei PMCs streiten, wessen Fraktion cooler ist. Solange sie streiten, schießt keiner."
+
+msgid "Raid bear_usec luck"
+msgstr "Beiden zustimmen"
+
+msgid "Raid bear_usec agility"
+msgstr "Vorbeischlüpfen, solange sie streiten"
+
+msgid "Raid grenade_scav"
+msgstr "„Granate!“"
+
+msgid "Raid grenade_scav text"
+msgstr "Ein Wildling brüllt „Granate!“ und wirft etwas. Sieht aus wie eine Dose Schmorfleisch."
+
+msgid "Raid grenade_scav agility"
+msgstr "Die Dose fangen"
+
+msgid "Raid grenade_scav luck"
+msgstr "Sicherheitshalber hinwerfen"
+
+msgid "Raid door_key"
+msgstr "Verschlossene Tür"
+
+msgid "Raid door_key text"
+msgstr "Der Schlüssel zu dieser Tür kostet so viel wie eine Wohnung in Moskau. Ihr habt ihn natürlich nicht."
+
+msgid "Raid door_key strength"
+msgstr "Eintreten"
+
+msgid "Raid door_key luck"
+msgstr "An der Klinke rütteln – vielleicht ist offen"

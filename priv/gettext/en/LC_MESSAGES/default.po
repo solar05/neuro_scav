@@ -1218,3 +1218,117 @@ msgstr "Back off, swatting"
 
 msgid "Item komar_wings"
 msgstr "Mosquito wings"
+
+msgid "Raid hatchling"
+msgstr "Hatchling"
+
+msgid "Raid hatchling text"
+msgstr "A naked PMC with a hatchet charges at you, screaming. He has nothing to lose; you have everything."
+
+msgid "Raid hatchling strength"
+msgstr "Meet him with fists"
+
+msgid "Raid hatchling agility"
+msgstr "Run from the hatchet"
+
+msgid "Raid cheater"
+msgstr "Cheater"
+
+msgid "Raid cheater text"
+msgstr "A scav flies over the rooftops and shoots through three walls. Totally legit, of course."
+
+msgid "Raid cheater luck"
+msgstr "Send a report"
+
+msgid "Raid cheater agility"
+msgstr "Duck and weave"
+
+msgid "Raid desync"
+msgstr "Desync"
+
+msgid "Raid desync text"
+msgstr "You ducked behind the corner three seconds ago. The server will find out in five."
+
+msgid "Raid desync luck"
+msgstr "Trust the server"
+
+msgid "Raid desync agility"
+msgstr "Back off even further"
+
+msgid "Raid extract_campers"
+msgstr "Extract campers"
+
+msgid "Raid extract_campers text"
+msgstr "Something has been rustling in the bushes by the exit for forty minutes. It's definitely not a bush."
+
+msgid "Raid extract_campers agility"
+msgstr "Sprint for the exit"
+
+msgid "Raid extract_campers luck"
+msgstr "Toss a backpack as bait"
+
+msgid "Raid prapor_quest"
+msgstr "Prapor's task"
+
+msgid "Raid prapor_quest text"
+msgstr "Prapor on the radio: “Find me three teapots. Yes, teapots. Don't ask.”"
+
+msgid "Raid prapor_quest luck"
+msgstr "Look for teapots"
+
+msgid "Raid sleeping_scav"
+msgstr "Sleeping scav"
+
+msgid "Raid sleeping_scav text"
+msgstr "A scav sleeps on a crate, hugging a short AK and a bottle of Tarhun. His snoring fills the whole map."
+
+msgid "Raid sleeping_scav agility"
+msgstr "Go through his pockets"
+
+msgid "Raid streets_fps"
+msgstr "Streets of Tarkov"
+
+msgid "Raid streets_fps text"
+msgstr "Twelve frames per second on Streets. The squad moves in jerks, like a slideshow."
+
+msgid "Raid streets_fps agility"
+msgstr "Run through the lag"
+
+msgid "Raid streets_fps luck"
+msgstr "Update drivers on the go"
+
+msgid "Raid bear_usec"
+msgstr "BEAR vs USEC"
+
+msgid "Raid bear_usec text"
+msgstr "Two PMCs argue about whose faction is cooler. While they argue, nobody shoots."
+
+msgid "Raid bear_usec luck"
+msgstr "Agree with both"
+
+msgid "Raid bear_usec agility"
+msgstr "Slip past while they argue"
+
+msgid "Raid grenade_scav"
+msgstr "“Grenade!”"
+
+msgid "Raid grenade_scav text"
+msgstr "A scav yells “Grenade!” and throws something. Looks like a can of beef stew."
+
+msgid "Raid grenade_scav agility"
+msgstr "Catch the can"
+
+msgid "Raid grenade_scav luck"
+msgstr "Hit the dirt just in case"
+
+msgid "Raid door_key"
+msgstr "Locked door"
+
+msgid "Raid door_key text"
+msgstr "The key to this door costs as much as a Moscow apartment. You don't have it, of course."
+
+msgid "Raid door_key strength"
+msgstr "Kick it in"
+
+msgid "Raid door_key luck"
+msgstr "Try the handle — maybe it's open"

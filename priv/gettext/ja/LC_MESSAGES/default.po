@@ -1207,3 +1207,117 @@ msgstr "Harai nagara nigeru"
 
 msgid "Item komar_wings"
 msgstr "Ka no hane"
+
+msgid "Raid hatchling"
+msgstr "Hacchiringu"
+
+msgid "Raid hatchling text"
+msgstr "Hadaka no PMC ga ono wo motte sakebi nagara tsukkonde kuru. Kare ni ushinau mono wa nai, kimi-tachi ni wa subete aru."
+
+msgid "Raid hatchling strength"
+msgstr "Suede de mukaeutsu"
+
+msgid "Raid hatchling agility"
+msgstr "Ono kara nigeru"
+
+msgid "Raid cheater"
+msgstr "Chiitaa"
+
+msgid "Raid cheater text"
+msgstr "Yabanjin ga yane no ue wo tobi, kabe sanmai goshi ni utte kuru. Mochiron, mattaku seitou da."
+
+msgid "Raid cheater luck"
+msgstr "Tsuuhou suru"
+
+msgid "Raid cheater agility"
+msgstr "Jiguzagu ni nigeru"
+
+msgid "Raid desync"
+msgstr "Disshinku"
+
+msgid "Raid desync text"
+msgstr "San-byou mae ni kado ni kakureta. Saabaa ga sore wo shiru no wa go-byou go da."
+
+msgid "Raid desync luck"
+msgstr "Saabaa wo shinjiru"
+
+msgid "Raid desync agility"
+msgstr "Motto oku e sagaru"
+
+msgid "Raid extract_campers"
+msgstr "Dasshutsu-guchi no kyanpaa"
+
+msgid "Raid extract_campers text"
+msgstr "Deguchi no shigemi ga yonjuppun mo gasagaso shite iru. Zettai ni shigemi ja nai."
+
+msgid "Raid extract_campers agility"
+msgstr "Deguchi made shissou"
+
+msgid "Raid extract_campers luck"
+msgstr "Ryukku wo otori ni nageru"
+
+msgid "Raid prapor_quest"
+msgstr "Purapooru no ninmu"
+
+msgid "Raid prapor_quest text"
+msgstr "Musen de Purapooru: «Yakan wo mittsu motte koi. Sou, yakan da. Shitsumon wa nashi.»"
+
+msgid "Raid prapor_quest luck"
+msgstr "Yakan wo sagasu"
+
+msgid "Raid sleeping_scav"
+msgstr "Nemuru yabanjin"
+
+msgid "Raid sleeping_scav text"
+msgstr "Yabanjin ga hako no ue de, mijikai AK to Taruhun no bin wo daite nete iru. Ibiki ga mappu-juu ni hibiku."
+
+msgid "Raid sleeping_scav agility"
+msgstr "Poketto wo asaru"
+
+msgid "Raid streets_fps"
+msgstr "Sutoriitsu obu Tarukofu"
+
+msgid "Raid streets_fps text"
+msgstr "Sutoriitsu wa juuni efu-pii-esu. Butai wa suraidoshoo no you ni kakukaku ugoku."
+
+msgid "Raid streets_fps agility"
+msgstr "Ragu no naka wo hashiru"
+
+msgid "Raid streets_fps luck"
+msgstr "Hashiri nagara doraibaa koushin"
+
+msgid "Raid bear_usec"
+msgstr "BEAR tai USEC"
+
+msgid "Raid bear_usec text"
+msgstr "Futari no PMC ga dochira no habatsu ga kakkoii ka iiarasotte iru. Arasotte iru aida wa dare mo utanai."
+
+msgid "Raid bear_usec luck"
+msgstr "Ryouhou ni aizuchi"
+
+msgid "Raid bear_usec agility"
+msgstr "Arasotte iru suki ni tooru"
+
+msgid "Raid grenade_scav"
+msgstr "«Guraneedo!»"
+
+msgid "Raid grenade_scav text"
+msgstr "Yabanjin ga «Guraneedo!» to sakebi, nanika wo nageta. Kanzume no niku ni mieru."
+
+msgid "Raid grenade_scav agility"
+msgstr "Kanzume wo toru"
+
+msgid "Raid grenade_scav luck"
+msgstr "Nen no tame fuseru"
+
+msgid "Raid door_key"
+msgstr "Kagi no kakatta doa"
+
+msgid "Raid door_key text"
+msgstr "Kono doa no kagi wa Mosukuwa no manshon nami no nedan. Mochiron, kagi wa nai."
+
+msgid "Raid door_key strength"
+msgstr "Keri yaburu"
+
+msgid "Raid door_key luck"
+msgstr "Totte wo mawasu — aite iru kamo"

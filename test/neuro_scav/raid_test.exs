@@ -395,6 +395,11 @@ defmodule NeuroScav.RaidTest do
       assert raid.karma == -1
     end
 
+    test "going through a sleeping scav's pockets lowers it, caught or not" do
+      assert (@squad |> Raid.new([:sleeping_scav]) |> Raid.choose(0, 100)).karma == -1
+      assert (@squad |> Raid.new([:sleeping_scav]) |> Raid.choose(0, 1, :sj6)).karma == -1
+    end
+
     test "it stays within ±3" do
       raid = %{Raid.new(@squad, [:wounded]) | karma: 3} |> Raid.choose(0, 1, :sj6)
 
