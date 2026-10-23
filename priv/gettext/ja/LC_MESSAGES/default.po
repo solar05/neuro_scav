@@ -1402,3 +1402,144 @@ msgstr "Ue wo norikoeru"
 
 msgid "Raid stall %{name}"
 msgstr "%{name} wa toppa dekinakatta — butai wa sono ba ni todomari, betsu no dekigoto ga okiru."
+
+msgid "Raid daytime morning"
+msgstr "Asa"
+
+msgid "Raid daytime day"
+msgstr "Hiru"
+
+msgid "Raid daytime evening"
+msgstr "Yuugata"
+
+msgid "Raid daytime night"
+msgstr "Yoru"
+
+msgid "Raid weather clear"
+msgstr "Hare"
+
+msgid "Raid weather fog"
+msgstr "Kiri"
+
+msgid "Raid weather rain"
+msgstr "Ame"
+
+msgid "Raid weather wind"
+msgstr "Kyoufuu"
+
+msgid "Raid weather blizzard"
+msgstr "Fubuki"
+
+msgid "Raid weather heat"
+msgstr "Mousho"
+
+msgid "Raid weather storm"
+msgstr "Raiu"
+
+msgid "Raid kind fight"
+msgstr "Tatakau"
+
+msgid "Raid kind search"
+msgstr "Sagasu"
+
+msgid "Raid kind hide"
+msgstr "Kakureru"
+
+msgid "Raid labs keycard"
+msgstr "Kii kaado de akeru"
+
+msgid "Raid door_key keycard"
+msgstr "Kii kaado wo kazasu"
+
+msgid "Raid cultists nvg"
+msgstr "Anshi souchi de surinukeru"
+
+msgid "Raid sniper altyn"
+msgstr "Arutin wo kabutte susumu"
+
+msgid "Raid needs %{item}"
+msgstr "«%{item}» ga hitsuyou"
+
+msgid "Raid check each"
+msgstr "zenin"
+
+msgid "Raid check weakest %{name}"
+msgstr "ichiban yowai: %{name}"
+
+msgid "Raid all passed"
+msgstr "Zenin buji ni tootta."
+
+msgid "Raid heal %{name}"
+msgstr "%{name} wa teate sareta — shukketsu wa tomatta."
+
+msgid "Raid spared %{name} %{item}"
+msgstr "%{name} wa buji: «%{item}» ga tasuketa."
+
+msgid "Raid used %{item}"
+msgstr "Yaku ni tatta: «%{item}»."
+
+msgid "Raid wounds %{names} %{stat} %{value}"
+msgstr "Fushou: %{names}, %{stat} −%{value}."
+
+msgid "Raid bleeding"
+msgstr "shukketsu"
+
+msgid "Item medkit"
+msgstr "Sarewa kyuukyuubako"
+
+msgid "Raid death 1 %{name}"
+msgstr "%{name} wa Tarukofu de mayotta."
+
+msgid "Raid death 2 %{name}"
+msgstr "%{name} wa «atama, me» wo kuratta."
+
+msgid "Raid death 3 %{name}"
+msgstr "%{name} wa disshinku de shinda: saabaa ga sou kimeta."
+
+msgid "Raid death 4 %{name}"
+msgstr "%{name} wa hadaka de kakurega e kaetta. Eien ni."
+
+msgid "Raid death 5 %{name}"
+msgstr "%{name} wa deguchi wo mitsukerarezu, yukue fumei ni natta."
+
+msgid "Raid death 6 %{name}"
+msgstr "%{name} wa «nakatta hazu» no jirai wo funda."
+
+msgid "Raid death 7 %{name}"
+msgstr "%{name} wa mappu no hantaigawa no yabanjin no PM ni utareta."
+
+msgid "Raid death 8 %{name}"
+msgstr "%{name} wa taoreta. Hoken wa 24-jikan go. Tabun."
+
+msgid "Raid death 9 %{name}"
+msgstr "%{name} wa mou hitotsu dake hako wo asaritakatta."
+
+msgid "Raid death 10 %{name}"
+msgstr "%{name} wa hiraketa basho ni deta. Machigai datta."
+
+msgid "Raid death 11 %{name}"
+msgstr "%{name} wa korosareta. Hannin: «fumei»."
+
+msgid "Raid death 12 %{name}"
+msgstr "%{name} wa kado kara nozoita. Dareka ga matte ita."
+
+msgid "Raid death 13 %{name}"
+msgstr "%{name} wa «ashi: 0 HP» wo norikoerarenakatta."
+
+msgid "Raid death 14 %{name}"
+msgstr "%{name} wa setsudan sare, reido wa sono mama tsuzuita."
+
+msgid "Raid death 15 %{name}"
+msgstr "%{name} wa guranedo ranchaa ga soutenzumi ka tashikameta. Soutenzumi datta."
+
+msgid "Raid death 16 %{name}"
+msgstr "%{name} wa oto no hou e itta. Oto no hou ga hayakatta."
+
+msgid "Raid death 17 %{name}"
+msgstr "%{name} wa nodo no kawaki de shinda. Mizu wa itsumo dori wasureta."
+
+msgid "Raid death 18 %{name}"
+msgstr "%{name} wa deguchi no «tomodachi» wo shinjita."
+
+msgid "Raid death 19 %{name}"
+msgstr "%{name} wa tekusuchaa wo surinukete, nidoto modoranakatta."

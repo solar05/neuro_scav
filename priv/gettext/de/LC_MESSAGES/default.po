@@ -1402,3 +1402,144 @@ msgstr "Oben drüberklettern"
 
 msgid "Raid stall %{name}"
 msgstr "%{name} kam nicht durch — der Trupp bleibt stehen, und schon kommt etwas anderes."
+
+msgid "Raid daytime morning"
+msgstr "Morgen"
+
+msgid "Raid daytime day"
+msgstr "Tag"
+
+msgid "Raid daytime evening"
+msgstr "Abend"
+
+msgid "Raid daytime night"
+msgstr "Nacht"
+
+msgid "Raid weather clear"
+msgstr "Klar"
+
+msgid "Raid weather fog"
+msgstr "Nebel"
+
+msgid "Raid weather rain"
+msgstr "Regen"
+
+msgid "Raid weather wind"
+msgstr "Starker Wind"
+
+msgid "Raid weather blizzard"
+msgstr "Schneesturm"
+
+msgid "Raid weather heat"
+msgstr "Hitze"
+
+msgid "Raid weather storm"
+msgstr "Gewitter"
+
+msgid "Raid kind fight"
+msgstr "Kämpfen"
+
+msgid "Raid kind search"
+msgstr "Suchen"
+
+msgid "Raid kind hide"
+msgstr "Verstecken"
+
+msgid "Raid labs keycard"
+msgstr "Mit der Schlüsselkarte öffnen"
+
+msgid "Raid door_key keycard"
+msgstr "Die Schlüsselkarte durchziehen"
+
+msgid "Raid cultists nvg"
+msgstr "Mit Nachtsicht vorbeischleichen"
+
+msgid "Raid sniper altyn"
+msgstr "Im Altyn weitergehen"
+
+msgid "Raid needs %{item}"
+msgstr "Braucht „%{item}“"
+
+msgid "Raid check each"
+msgstr "jeder"
+
+msgid "Raid check weakest %{name}"
+msgstr "Schwächster: %{name}"
+
+msgid "Raid all passed"
+msgstr "Alle sind durchgekommen."
+
+msgid "Raid heal %{name}"
+msgstr "%{name} ist verbunden — die Blutung hat aufgehört."
+
+msgid "Raid spared %{name} %{item}"
+msgstr "%{name} bleibt heil: „%{item}“ hat geholfen."
+
+msgid "Raid used %{item}"
+msgstr "Zum Einsatz kam: „%{item}“."
+
+msgid "Raid wounds %{names} %{stat} %{value}"
+msgstr "Verwundet: %{names}, %{stat} −%{value}."
+
+msgid "Raid bleeding"
+msgstr "blutet"
+
+msgid "Item medkit"
+msgstr "Erste-Hilfe-Kasten „Salewa“"
+
+msgid "Raid death 1 %{name}"
+msgstr "%{name} hat sich in Tarkov verlaufen."
+
+msgid "Raid death 2 %{name}"
+msgstr "%{name} hat ein „Kopf, Augen“ kassiert."
+
+msgid "Raid death 3 %{name}"
+msgstr "%{name} starb am Desync: Der Server hat es so entschieden."
+
+msgid "Raid death 4 %{name}"
+msgstr "%{name} ging nackt zurück ins Versteck. Für immer."
+
+msgid "Raid death 5 %{name}"
+msgstr "%{name} fand den Ausgang nicht und gilt als vermisst."
+
+msgid "Raid death 6 %{name}"
+msgstr "%{name} trat auf eine Mine, die „nicht da war“."
+
+msgid "Raid death 7 %{name}"
+msgstr "%{name} fing eine PM-Kugel von einem Wildling am anderen Ende der Karte."
+
+msgid "Raid death 8 %{name}"
+msgstr "%{name} ist gefallen. Die Versicherung kommt in 24 Stunden. Vielleicht."
+
+msgid "Raid death 9 %{name}"
+msgstr "%{name} wollte nur noch eine Kiste plündern."
+
+msgid "Raid death 10 %{name}"
+msgstr "%{name} trat ins Freie. Keine gute Idee."
+
+msgid "Raid death 11 %{name}"
+msgstr "%{name} wurde getötet. Mörder: „Unbekannt“."
+
+msgid "Raid death 12 %{name}"
+msgstr "%{name} lugte um die Ecke. Dort wartete schon jemand."
+
+msgid "Raid death 13 %{name}"
+msgstr "%{name} überlebte „Beine: 0 HP“ nicht."
+
+msgid "Raid death 14 %{name}"
+msgstr "%{name} flog aus dem Spiel, und der Raid ging ohne ihn weiter."
+
+msgid "Raid death 15 %{name}"
+msgstr "%{name} prüfte, ob der Unterlauf geladen war. Er war es."
+
+msgid "Raid death 16 %{name}"
+msgstr "%{name} ging dem Geräusch nach. Das Geräusch war schneller."
+
+msgid "Raid death 17 %{name}"
+msgstr "%{name} verdurstete. Das Wasser wurde wie immer vergessen."
+
+msgid "Raid death 18 %{name}"
+msgstr "%{name} vertraute einem „Freund“ am Ausgang."
+
+msgid "Raid death 19 %{name}"
+msgstr "%{name} fiel durch die Texturen und kam nie zurück."

@@ -9,11 +9,18 @@ defmodule NeuroScav.RaidTest do
     %{name: "Дед Мороз", rarity: :legendary}
   ]
 
+  # clear weather from a morning on, unless a test says otherwise: the
+  # morning eases a search only, so fights and hiding go as the bare stats
+  @calm %{weather: :clear, daytime: :morning}
+
+  defp new_raid(members, route \\ Raid.route(), forks \\ nil, world \\ @calm),
+    do: Raid.new(members, route, forks, world)
+
   defp best(stat), do: @squad |> Enum.map(&Raid.card/1) |> Enum.max_by(& &1.stats[stat])
   defp index_of(card), do: Enum.find_index(@squad, &(&1.name == card.name))
 
   test "a new raid walks 10 to 13 different events with the whole squad alive" do
-    raid = Raid.new(@squad)
+    raid = new_raid(@squad)
 
     assert Raid.steps() == 10..13
     assert length(raid.route) in Raid.steps()
@@ -23,7 +30,7 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "a check is made by the member best at its stat, with stat minus difficulty as chance" do
-    [fight, climb] = @squad |> Raid.new([:pmc]) |> Raid.options()
+    [fight, climb] = @squad |> new_raid([:pmc]) |> Raid.options()
 
     assert fight.member.name == best(:strength).name
     assert fight.chance == best(:strength).stats.strength |> max(5) |> min(95)
@@ -31,7 +38,7 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "a success passes, a failure loses the member who tried" do
-    raid = Raid.new(@squad, [:pmc, :reshala])
+    raid = new_raid(@squad, [:pmc, :reshala])
     member = best(:strength).name
 
     passed = Raid.choose(raid, 0, 1)
@@ -46,7 +53,7 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "loot goes to the stash and adds to later checks" do
-    raid = Raid.new(@squad, [:office, :pmc])
+    raid = new_raid(@squad, [:office, :pmc])
     raid = Raid.choose(raid, 0, 1, :sj6)
 
     # the finder is the member who made the check
@@ -58,7 +65,7 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "a failed search finds nothing and loses nobody; a safe option risks nothing" do
-    raid = Raid.new(@squad, [:office, :bait])
+    raid = new_raid(@squad, [:office, :bait])
 
     raid = Raid.choose(raid, 0, 100)
     assert %{outcome: :nothing} = raid.last
@@ -72,7 +79,7 @@ defmodule NeuroScav.RaidTest do
 
   test "the raid is over once nobody is left; members with one name are lost one by one" do
     gnomes = List.duplicate(%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}, 2)
-    raid = Raid.new(gnomes, [:pmc, :reshala, :sniper])
+    raid = new_raid(gnomes, [:pmc, :reshala, :sniper])
 
     raid = Raid.choose(raid, 0, 100)
     assert length(Raid.alive(raid)) == 1
@@ -86,18 +93,18 @@ defmodule NeuroScav.RaidTest do
 
   test "chances stay within 5..95" do
     [%{chance: chance} | _] =
-      [%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}] |> Raid.new([:bait]) |> Raid.options()
+      [%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}] |> new_raid([:bait]) |> Raid.options()
 
     assert chance == 95
   end
 
   test "options tell what a success brings and a failure costs" do
     assert [%{reward: :loot, risk: :nothing}, %{stat: nil, reward: nil, risk: nil}] =
-             @squad |> Raid.new([:office]) |> Raid.options()
+             @squad |> new_raid([:office]) |> Raid.options()
   end
 
   test "a failed drop costs the last item of the stash, not a member" do
-    raid = @squad |> Raid.new([:office, :office, :toll]) |> Raid.choose(0, 1, :sj6)
+    raid = @squad |> new_raid([:office, :office, :toll]) |> Raid.choose(0, 1, :sj6)
     raid = Raid.choose(raid, 0, 1, :rooster)
 
     raid = Raid.choose(raid, 0, 100)
@@ -107,13 +114,13 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "a failed drop with an empty stash costs nothing" do
-    raid = @squad |> Raid.new([:toll]) |> Raid.choose(0, 100)
+    raid = @squad |> new_raid([:toll]) |> Raid.choose(0, 100)
     assert %{outcome: :drop, item: nil} = raid.last
     assert raid.stash == []
   end
 
   test "a revive brings the first fallen member back, with nobody fallen it's a pass" do
-    raid = @squad |> Raid.new([:pmc, :medic, :medic]) |> Raid.choose(0, 100)
+    raid = @squad |> new_raid([:pmc, :medic, :medic]) |> Raid.choose(0, 100)
     [fallen] = Enum.reject(raid.squad, & &1.alive)
 
     raid = Raid.choose(raid, 0, 1)
@@ -141,7 +148,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a training success raises the checked stat of the member who did it" do
-      raid = Raid.new(@squad, [:obdolbos])
+      raid = new_raid(@squad, [:obdolbos])
       [%{member: member}, _safe] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 1)
@@ -150,7 +157,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a wound lowers the stat, down to 1 at most, and the member stays" do
-      raid = Raid.new(@squad, [:obdolbos, :obdolbos])
+      raid = new_raid(@squad, [:obdolbos, :obdolbos])
       [%{member: member}, _safe] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 100)
@@ -164,7 +171,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a promotion lifts the rarity one step and the stats by the bonus difference" do
-      raid = Raid.new([%{name: "Гена Лена", rarity: :epic}], [:veteran])
+      raid = new_raid([%{name: "Гена Лена", rarity: :epic}], [:veteran])
       [%{member: before}, _safe] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 1)
@@ -177,7 +184,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "the gnome is off the scale: a promotion trains it, it stays the gnome" do
-      raid = Raid.new([%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}], [:veteran])
+      raid = new_raid([%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}], [:veteran])
       [%{member: before}, _safe] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 1)
@@ -187,7 +194,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a legendary has nowhere to go: a promotion trains instead" do
-      raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:veteran])
+      raid = new_raid([%{name: "Дед Мороз", rarity: :legendary}], [:veteran])
       [%{member: before}, _safe] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 1)
@@ -206,7 +213,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "loot may take a stat as well: a heavy helmet slows its finder down" do
-      raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:office, :pmc])
+      raid = new_raid([%{name: "Дед Мороз", rarity: :legendary}], [:office, :pmc])
       [_fight, climb] = raid |> Raid.choose(0, 1, :sj6) |> Raid.options()
       [_fight, slowed] = raid |> Raid.choose(0, 1, :altyn) |> Raid.options()
 
@@ -215,7 +222,7 @@ defmodule NeuroScav.RaidTest do
 
     test "loot bonuses add up for their finder, nothing for the others or the fallen" do
       finder = index_of(best(:strength))
-      raid = @squad |> Raid.new([:office, :office, :pmc]) |> Raid.choose(0, 1, :sj6)
+      raid = @squad |> new_raid([:office, :office, :pmc]) |> Raid.choose(0, 1, :sj6)
       raid = Raid.choose(raid, 0, 1, :altyn)
 
       [owner | others] = Enum.sort_by(raid.squad, &(&1.index != finder))
@@ -228,7 +235,7 @@ defmodule NeuroScav.RaidTest do
 
     test "loot works for its finder alone" do
       finder = best(:strength)
-      raid = @squad |> Raid.new([:office, :pmc]) |> Raid.choose(0, 1, :meldonin)
+      raid = @squad |> new_raid([:office, :pmc]) |> Raid.choose(0, 1, :meldonin)
       [_fight, climb] = Raid.options(raid)
 
       best_agility =
@@ -249,7 +256,7 @@ defmodule NeuroScav.RaidTest do
         |> Enum.reject(&(&1.name == finder.name))
         |> Enum.max_by(& &1.stats.strength)
 
-      raid = @squad |> Raid.new([:office, :pmc, :pmc, :medic, :pmc]) |> Raid.choose(0, 1, :slick)
+      raid = @squad |> new_raid([:office, :pmc, :pmc, :medic, :pmc]) |> Raid.choose(0, 1, :slick)
       assert [%{member: %{name: name}} | _] = Raid.options(raid)
       assert name == finder.name
 
@@ -260,16 +267,17 @@ defmodule NeuroScav.RaidTest do
       assert fight.member.name == strongest_other.name
       assert fight.chance == strongest_other.stats.strength |> max(5) |> min(95)
 
-      # back on their feet, the armor works again
+      # back on their feet, the armor works again (by now the morning is a day: fights go easier)
       raid = raid |> Raid.choose(0, 1) |> Raid.choose(0, 1)
       assert Raid.active?(raid, hd(raid.stash))
       [fight, _climb] = Raid.options(raid)
       assert fight.member.name == finder.name
-      assert fight.chance == (finder.stats.strength + 15) |> max(5) |> min(95)
+      day = Map.get(Raid.world(raid).daytime_kinds, :fight, 0)
+      assert fight.chance == (finder.stats.strength + 15 + day) |> max(5) |> min(95)
     end
 
     test "a failed drop takes the last active item, not a fallen finder's" do
-      raid = Raid.new(Enum.take(@squad, 2), [:trunk, :office, :pmc, :toll])
+      raid = new_raid(Enum.take(@squad, 2), [:trunk, :office, :pmc, :toll])
       # one strong, one lucky: each finds an item of their own
       raid =
         update_in(raid.squad, fn [strong, lucky] ->
@@ -301,31 +309,31 @@ defmodule NeuroScav.RaidTest do
     @chain_events [:reshala_guards, :ambush, :debtor, :drop_hunters, :pmc_killer]
 
     test "an outcome may bring another event a few events later" do
-      raid = @squad |> Raid.new([:reshala, :pmc, :office, :medic]) |> Raid.choose(0, 1, :sj6)
+      raid = @squad |> new_raid([:reshala, :pmc, :office, :medic]) |> Raid.choose(0, 1, :sj6)
 
       assert %{outcome: :loot, follow_up: :reshala_guards} = raid.last
       assert raid.route == [:reshala, :pmc, :reshala_guards, :office, :medic]
     end
 
     test "other outcomes of the same event bring nothing" do
-      raid = @squad |> Raid.new([:reshala, :pmc, :office]) |> Raid.choose(1, 1)
+      raid = @squad |> new_raid([:reshala, :pmc, :office]) |> Raid.choose(1, 1)
 
       assert %{outcome: :pass, follow_up: nil} = raid.last
       assert raid.route == [:reshala, :pmc, :office]
     end
 
     test "a chain's event comes before the last one at the latest; the last starts none" do
-      raid = @squad |> Raid.new([:bait, :pmc]) |> Raid.choose(1, 1)
+      raid = @squad |> new_raid([:bait, :pmc]) |> Raid.choose(1, 1)
       assert raid.route == [:bait, :ambush, :pmc]
 
-      raid = @squad |> Raid.new([:pmc, :bait]) |> Raid.choose(0, 1) |> Raid.choose(1, 1)
+      raid = @squad |> new_raid([:pmc, :bait]) |> Raid.choose(0, 1) |> Raid.choose(1, 1)
       assert Raid.over?(raid)
       assert %{outcome: :safe, follow_up: nil} = raid.last
       assert raid.route == [:pmc, :bait]
     end
 
     test "beating a boss brings its trophy and a promotion, there is no way around one" do
-      raid = Raid.new([%{name: "Гена Лена", rarity: :epic}], [:kaban, :pmc])
+      raid = new_raid([%{name: "Гена Лена", rarity: :epic}], [:kaban, :pmc])
 
       assert Enum.all?(Raid.options(raid), & &1.stat)
 
@@ -337,7 +345,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a legendary beating a boss trains instead, the trophy is theirs all the same" do
-      raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:priest])
+      raid = new_raid([%{name: "Дед Мороз", rarity: :legendary}], [:priest])
       [%{member: before}, _escape] = Raid.options(raid)
 
       raid = Raid.choose(raid, 0, 1)
@@ -346,7 +354,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "Komar's wings are legendary: +40 luck" do
-      raid = @squad |> Raid.new([:komar]) |> Raid.choose(0, 1)
+      raid = @squad |> new_raid([:komar]) |> Raid.choose(0, 1)
 
       assert Raid.boss?(:komar)
       assert %{outcome: :trophy, item: :komar_wings} = raid.last
@@ -356,14 +364,14 @@ defmodule NeuroScav.RaidTest do
 
     test "every gnome is after the loot: a failure there may cost an item" do
       for gnome <- [:gnome_thief, :gnome_trader, :gnome_ambush, :gnome_pmc] do
-        risks = @squad |> Raid.new([gnome]) |> Raid.options() |> Enum.map(& &1.risk)
+        risks = @squad |> new_raid([gnome]) |> Raid.options() |> Enum.map(& &1.risk)
         assert :drop in risks, "#{gnome}"
       end
     end
 
     test "the gnome thief steals the last item on a failure, whichever way the squad tries" do
       for index <- [0, 1] do
-        raid = @squad |> Raid.new([:trunk, :gnome_thief, :pmc]) |> Raid.choose(0, 1, :rooster)
+        raid = @squad |> new_raid([:trunk, :gnome_thief, :pmc]) |> Raid.choose(0, 1, :rooster)
         assert Enum.all?(Raid.options(raid), & &1.stat)
 
         raid = Raid.choose(raid, index, 100)
@@ -371,7 +379,7 @@ defmodule NeuroScav.RaidTest do
         assert raid.stash == []
       end
 
-      raid = @squad |> Raid.new([:gnome_thief]) |> Raid.choose(0, 1, :nvg)
+      raid = @squad |> new_raid([:gnome_thief]) |> Raid.choose(0, 1, :nvg)
       assert %{outcome: :loot, item: :nvg} = raid.last
     end
 
@@ -397,10 +405,10 @@ defmodule NeuroScav.RaidTest do
   describe "karma" do
     defp luck_chance(route, karma),
       do:
-        %{Raid.new(@squad, route) | karma: karma} |> Raid.options() |> hd() |> Map.fetch!(:chance)
+        %{new_raid(@squad, route) | karma: karma} |> Raid.options() |> hd() |> Map.fetch!(:chance)
 
     test "helping scavs raises it whatever the roll, robbing them lowers it" do
-      raid = Raid.new(@squad, [:wounded, :scav_camp, :pmc])
+      raid = new_raid(@squad, [:wounded, :scav_camp, :pmc])
       assert raid.karma == 0
 
       raid = Raid.choose(raid, 0, 100)
@@ -413,12 +421,12 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "going through a sleeping scav's pockets lowers it, caught or not" do
-      assert (@squad |> Raid.new([:sleeping_scav]) |> Raid.choose(0, 100)).karma == -1
-      assert (@squad |> Raid.new([:sleeping_scav]) |> Raid.choose(0, 1, :sj6)).karma == -1
+      assert (@squad |> new_raid([:sleeping_scav]) |> Raid.choose(0, 100)).karma == -1
+      assert (@squad |> new_raid([:sleeping_scav]) |> Raid.choose(0, 1, :sj6)).karma == -1
     end
 
     test "it stays within ±3" do
-      raid = %{Raid.new(@squad, [:wounded]) | karma: 3} |> Raid.choose(0, 1, :sj6)
+      raid = %{new_raid(@squad, [:wounded]) | karma: 3} |> Raid.choose(0, 1, :sj6)
 
       assert raid.karma == 3
       assert raid.last.karma == 0
@@ -437,20 +445,20 @@ defmodule NeuroScav.RaidTest do
 
   describe "crossroads" do
     test "a path that isn't there changes nothing" do
-      raid = Raid.new(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+      raid = new_raid(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
 
       assert Raid.choose(raid, 2, 1) == raid
     end
 
     test "its paths may be pinned when the raid starts" do
-      raid = Raid.new(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+      raid = new_raid(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
 
       assert Enum.map(Raid.options(raid), & &1.path) == [:office, :bait]
       assert raid |> Raid.choose(1, 100) |> Raid.event() == :bait
     end
 
     test "it offers two paths off the route; the one taken comes next" do
-      raid = Raid.new(@squad, [:fork_road, :pmc, :office])
+      raid = new_raid(@squad, [:fork_road, :pmc, :office])
       %{fork_road: [first, second] = paths} = raid.forks
 
       assert first != second
@@ -468,11 +476,11 @@ defmodule NeuroScav.RaidTest do
 
     test "two crossroads never offer the same path, the last one still leads somewhere" do
       for _ <- 1..50 do
-        raid = Raid.new(@squad, [:radio, :fork_tunnel])
+        raid = new_raid(@squad, [:radio, :fork_tunnel])
         assert raid.forks.radio -- raid.forks.fork_tunnel == raid.forks.radio
       end
 
-      raid = Raid.new(@squad, [:radio])
+      raid = new_raid(@squad, [:radio])
       [path, _other] = raid.forks.radio
 
       raid = Raid.choose(raid, 0, 100)
@@ -482,15 +490,15 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "last always has the same keys, whatever happened" do
-    keys = Enum.sort(~w(event outcome member index item stat path retreat follow_up karma)a)
+    keys = Enum.sort(~w(event outcome member index item stat path retreat follow_up karma used)a)
 
     lasts = [
-      (@squad |> Raid.new([:office]) |> Raid.choose(1, 1)).last,
-      (@squad |> Raid.new([:office]) |> Raid.choose(0, 1, :sj6)).last,
-      (@squad |> Raid.new([:fork_road, :pmc]) |> Raid.choose(0, 1)).last,
-      (@squad |> Raid.new([:kaban]) |> Raid.choose(0, 1)).last,
+      (@squad |> new_raid([:office]) |> Raid.choose(1, 1)).last,
+      (@squad |> new_raid([:office]) |> Raid.choose(0, 1, :sj6)).last,
+      (@squad |> new_raid([:fork_road, :pmc]) |> Raid.choose(0, 1)).last,
+      (@squad |> new_raid([:kaban]) |> Raid.choose(0, 1)).last,
       (@squad
-       |> Raid.new([:trunk, :gnome_thief])
+       |> new_raid([:trunk, :gnome_thief])
        |> Raid.choose(0, 1, :sj6)
        |> Raid.choose(1, 100)).last
     ]
@@ -503,7 +511,7 @@ defmodule NeuroScav.RaidTest do
 
     test "after two in a row the retreats are locked until the squad takes a risk" do
       assert Raid.retreat_limit() == 2
-      raid = Raid.new(@squad, [:office, :office, :axeman, :office])
+      raid = new_raid(@squad, [:office, :office, :axeman, :office])
 
       # the safe option twice
       raid = raid |> Raid.choose(1, 1) |> Raid.choose(1, 1)
@@ -521,13 +529,13 @@ defmodule NeuroScav.RaidTest do
 
     test "an event with nothing but retreats stays open" do
       raid =
-        @squad |> Raid.new([:office, :office, :toll]) |> Raid.choose(1, 1) |> Raid.choose(1, 1)
+        @squad |> new_raid([:office, :office, :toll]) |> Raid.choose(1, 1) |> Raid.choose(1, 1)
 
       assert locks(raid) == [false, false]
     end
 
     test "a crossroads path counts neither way" do
-      raid = @squad |> Raid.new([:office, :fork_road, :pmc]) |> Raid.choose(1, 1)
+      raid = @squad |> new_raid([:office, :fork_road, :pmc]) |> Raid.choose(1, 1)
       raid = Raid.choose(raid, 0, 1)
 
       assert %{outcome: :path} = raid.last
@@ -537,7 +545,7 @@ defmodule NeuroScav.RaidTest do
 
   describe "stalls" do
     test "a stall keeps the squad where it is, before a spare event" do
-      raid = %{Raid.new(@squad, [:desync, :pmc]) | spares: [:office, :bait]}
+      raid = %{new_raid(@squad, [:desync, :pmc]) | spares: [:office, :bait]}
 
       # further round the corner fails: the server puts the squad back
       raid = Raid.choose(raid, 1, 100)
@@ -550,7 +558,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "with no spares left the squad meets the same event again" do
-      raid = %{Raid.new(@squad, [:desync, :pmc]) | spares: []} |> Raid.choose(1, 100)
+      raid = %{new_raid(@squad, [:desync, :pmc]) | spares: []} |> Raid.choose(1, 100)
 
       assert raid.step == 0 and raid.turn == 1
       assert Raid.event(raid) == :desync
@@ -558,14 +566,14 @@ defmodule NeuroScav.RaidTest do
 
     test "spares are off the route and the crossroads paths, and don't stall themselves" do
       for _ <- 1..50 do
-        raid = Raid.new(@squad, [:fork_road, :pmc, :desync])
+        raid = new_raid(@squad, [:fork_road, :pmc, :desync])
         taken = raid.route ++ raid.forks.fork_road
 
         assert length(raid.spares) == 5
 
         for spare <- raid.spares do
           refute spare in taken
-          refute Enum.any?(@squad |> Raid.new([spare]) |> Raid.options(), &(&1.risk == :stall))
+          refute Enum.any?(@squad |> new_raid([spare]) |> Raid.options(), &(&1.risk == :stall))
         end
       end
     end

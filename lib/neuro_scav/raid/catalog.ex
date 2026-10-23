@@ -1,9 +1,10 @@
 defmodule NeuroScav.Raid.Catalog do
   @moduledoc """
-  What raids are made of: every event and every piece of loot, checked as the
-  catalog compiles. `NeuroScav.Raid` plays them and takes the catalog at
-  compile time (`compiled/0`). A new event is an entry here plus its texts in
-  `priv/gettext` (title, text and one label per option checking a stat).
+  What raids are made of: every event, every piece of loot, the weather and
+  the times of day, checked as the catalog compiles. `NeuroScav.Raid` plays
+  them and takes the catalog at compile time (`compiled/0`). A new event is an
+  entry here plus its texts in `priv/gettext` (title, text and one label per
+  option checking a stat or needing an item).
   """
 
   # An event: its options, or a map with `options` and what else it is:
@@ -12,24 +13,36 @@ defmodule NeuroScav.Raid.Catalog do
   # - `trophy`: a boss, the loot beating it brings
   # - `chain`: %{outcome => {the event it brings, how many events later}}
   # - `karma`: %{stat => how the scavs take the option checking it}
+  # - `modes`: %{stat => who makes that check}: `:weakest` (the one worst at
+  #   it, a stealthy one: the loudest gives the squad away) or `:each` (every
+  #   alive member, one roll for all: the ones it beats bear the failure)
   # - `scav: true`: a scav event, karma eases its luck checks (talks with scavs)
   # - `gnome: true`: a gnome, after the squad's loot
   # - `crossroads: true`: no options of its own but paths, see `NeuroScav.Raid.new/3`
   #
-  # option: {stat, difficulty, on success, on failure} or :safe. An option is
-  # told apart by its stat (labels, karma, `last.stat`): an event checks a stat once.
+  # option: {stat, difficulty, on success, on failure}, :safe, or a key
+  # {:key, item, on success}: no check, the success sure if an alive member
+  # has the item (it stays theirs), locked if nobody does. An option is told
+  # apart by its stat (labels, karma, `last.stat`): an event checks a stat once.
   @events %{
     pmc: [{:strength, 0, :pass, :lose}, {:agility, 10, :pass, :lose}],
     reshala: %{
       options: [{:strength, 15, :loot, :lose}, {:agility, 5, :pass, :lose}],
+      modes: %{agility: :weakest},
       karma: %{strength: -1},
       chain: %{loot: {:reshala_guards, 2}}
     },
-    sniper: [{:agility, 0, :pass, :lose}, {:luck, -10, :pass, :lose}],
-    mines: [{:agility, 0, :pass, :lose}, {:luck, 10, :pass, :lose}],
+    sniper: [{:agility, 0, :pass, :lose}, {:luck, -10, :pass, :lose}, {:key, :altyn, :pass}],
+    mines: %{
+      options: [{:agility, 0, :pass, :wound}, {:luck, 10, :pass, :lose}],
+      modes: %{agility: :each}
+    },
     office: [{:strength, 10, :loot, :nothing}, :safe],
     bait: %{options: [{:agility, 15, :loot, :lose}, :safe], chain: %{safe: {:ambush, 2}}},
-    killa: [{:strength, 15, :loot, :lose}, {:luck, 5, :pass, :lose}],
+    killa: %{
+      options: [{:strength, 15, :loot, :lose}, {:luck, 5, :pass, :lose}],
+      modes: %{luck: :weakest}
+    },
     wounded: %{
       options: [{:luck, 0, :loot, :nothing}, :safe],
       scav: true,
@@ -38,7 +51,10 @@ defmodule NeuroScav.Raid.Catalog do
     },
     tagilla: [{:strength, 20, :loot, :lose}, {:agility, 5, :pass, :lose}],
     shturman: [{:agility, 10, :loot, :lose}, {:luck, 0, :pass, :lose}],
-    cultists: [{:agility, 5, :pass, :lose}, {:luck, 10, :pass, :lose}],
+    cultists: %{
+      options: [{:agility, 5, :pass, :lose}, {:luck, 10, :pass, :lose}, {:key, :nvg, :pass}],
+      modes: %{luck: :weakest}
+    },
     raiders: [{:strength, 20, :loot, :lose}, {:agility, 10, :pass, :lose}],
     toll: %{options: [{:luck, 0, :pass, :drop}, :safe], scav: true},
     airdrop: %{
@@ -56,9 +72,17 @@ defmodule NeuroScav.Raid.Catalog do
     kollontay: [{:luck, 5, :pass, :drop}, {:strength, 15, :loot, :lose}],
     zryachiy: [{:agility, 15, :pass, :lose}, :safe],
     vex: [{:luck, 0, :pass, :drop}, :safe],
-    tripwire: [{:agility, -5, :pass, :lose}, {:luck, 10, :loot, :lose}],
+    tripwire: %{
+      options: [{:agility, -5, :pass, :wound}, {:luck, 10, :loot, :lose}],
+      modes: %{agility: :each}
+    },
     dead_pmc: %{options: [{:luck, 5, :loot, :lose}, :safe], chain: %{loot: {:pmc_killer, 2}}},
-    labs: [{:strength, 25, :loot, :lose}, {:agility, 20, :loot, :lose}, :safe],
+    labs: [
+      {:strength, 25, :loot, :lose},
+      {:agility, 20, :loot, :lose},
+      {:key, :keycard, :loot},
+      :safe
+    ],
     obdolbos: [{:luck, 0, :train, :wound}, :safe],
     skirmish: [{:strength, 5, :train, :wound}, {:agility, 0, :pass, :lose}],
     stairs: [{:agility, 10, :train, :wound}, :safe],
@@ -70,7 +94,10 @@ defmodule NeuroScav.Raid.Catalog do
     mechanic: [{:agility, 10, :loot, :lose}, :safe],
     train: [{:agility, 5, :pass, :stall}, :safe],
     trunk: [{:luck, 0, :loot, :wound}, :safe],
-    goons: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
+    goons: %{
+      options: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
+      modes: %{agility: :weakest}
+    },
     flea: %{options: [{:luck, 0, :loot, :drop}, :safe], scav: true},
     tower: [{:agility, 5, :train, :lose}, :safe],
     # chains: only ever brought by another event
@@ -129,7 +156,11 @@ defmodule NeuroScav.Raid.Catalog do
     streets_fps: [{:agility, 15, :pass, :stall}, {:luck, 5, :train, :nothing}],
     bear_usec: [{:luck, 5, :loot, :nothing}, {:agility, 10, :pass, :lose}],
     grenade_scav: [{:agility, 0, :loot, :lose}, {:luck, 10, :pass, :wound}],
-    door_key: [{:strength, 10, :loot, :wound}, {:luck, 20, :loot, :nothing}],
+    door_key: [
+      {:strength, 10, :loot, :wound},
+      {:luck, 20, :loot, :nothing},
+      {:key, :keycard, :loot}
+    ],
     # a stall: clearing the way may take so long that something else turns up
     roadblock: [{:strength, 10, :pass, :stall}, {:agility, 5, :pass, :wound}],
     jaeger_quest: %{options: [{:agility, 25, :promote, :wound}, :safe], weight: 0.3},
@@ -171,6 +202,8 @@ defmodule NeuroScav.Raid.Catalog do
     bitcoin: %{luck: 5},
     keycard: %{luck: 15},
     nvg: %{agility: 5, luck: 5},
+    # consumables, see @consumables
+    medkit: %{},
     # trophies, see @trophies
     pkm: %{strength: 20},
     ghillie: %{agility: 15, luck: 5},
@@ -180,6 +213,33 @@ defmodule NeuroScav.Raid.Catalog do
 
   # how often a kind of loot turns up, 1 unless listed: the valuables are rare
   @loot_weights %{ledx: 0.3, keycard: 0.3, slick: 0.5}
+
+  # consumables: loot the squad shares and spends by itself, once, on what it
+  # spares a member from: a medkit turns a death into a wound, propital takes
+  # a wound away (till then it's loot like any other)
+  @consumables %{medkit: :lose, propital: :wound}
+
+  # the weather, one for a raid, drawn by weight: mostly clear, now and then
+  # something that adds a little to some checks, more often takes
+  @weathers %{
+    clear: %{weight: 6, stats: %{}},
+    fog: %{weight: 1, stats: %{strength: -10, agility: 5}},
+    rain: %{weight: 1, stats: %{agility: -5, luck: -5}},
+    wind: %{weight: 1, stats: %{strength: -5}},
+    blizzard: %{weight: 1, stats: %{agility: -10}},
+    heat: %{weight: 1, stats: %{strength: -5, agility: -5}},
+    storm: %{weight: 1, stats: %{luck: -10}}
+  }
+
+  # the times of day in turn, round and round, and what each adds to a kind
+  # of check: a fight (strength), a search (a check for loot) or hiding (an
+  # escape or a stealthy check, see `modes`)
+  @daytimes [
+    morning: %{search: 5},
+    day: %{fight: 5, search: 5, hide: -5},
+    evening: %{hide: 5},
+    night: %{hide: 10, fight: -5, search: -5}
+  ]
 
   # every event as a map; a crossroads has no options
   @specs Map.new(@events, fn
@@ -191,8 +251,9 @@ defmodule NeuroScav.Raid.Catalog do
   # raid (a chain to an unknown event stops it for good, an unknown trophy
   # crashes it) or never (an unknown key, a chain on an outcome that doesn't
   # come, karma for an unchecked stat: all just ignored; an unknown outcome
-  # would be a plain pass).
-  @spec_keys [:options, :weight, :trophy, :chain, :karma, :scav, :gnome, :crossroads]
+  # would be a plain pass; a check made by `:each` of the squad needs a pass
+  # to bring and a wound to cost).
+  @spec_keys [:options, :weight, :trophy, :chain, :karma, :modes, :scav, :gnome, :crossroads]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
   @failures [:lose, :wound, :drop, :nothing, :stall]
 
@@ -200,22 +261,37 @@ defmodule NeuroScav.Raid.Catalog do
     checks =
       for {stat, _difficulty, success, failure} <- spec.options, do: {stat, success, failure}
 
+    keys = for {:key, item, success} <- spec.options, do: {item, success}
     stats = for {stat, _success, _failure} <- checks, do: stat
     safe = if :safe in spec.options, do: [:safe], else: []
 
     outcomes =
-      safe ++ Enum.flat_map(checks, fn {_stat, success, failure} -> [success, failure] end)
+      safe ++
+        Enum.flat_map(checks, fn {_stat, success, failure} -> [success, failure] end) ++
+        for({_item, success} <- keys, do: success)
 
     chain = Map.get(spec, :chain, %{})
+    modes = Map.get(spec, :modes, %{})
     unknown = Map.keys(spec) -- @spec_keys
 
     problems =
       Enum.filter(
         [
           unknown != [] && "unknown keys #{inspect(unknown)}",
+          length(checks) + length(keys) + length(safe) != length(spec.options) &&
+            "an option of no known shape",
           Enum.any?(checks, fn {_stat, success, failure} ->
             success not in @successes or failure not in @failures
           end) && "an unknown outcome",
+          Enum.any?(keys, fn {item, success} ->
+            not Map.has_key?(@loot, item) or success not in @successes
+          end) && "a key of unknown loot or outcome",
+          Map.keys(modes) -- stats != [] && "a mode for a stat no option checks",
+          Enum.any?(modes, fn {_stat, mode} -> mode not in [:weakest, :each] end) &&
+            "an unknown mode",
+          Enum.any?(checks, fn {stat, success, failure} ->
+            modes[stat] == :each and (success != :pass or failure != :wound)
+          end) && "a check by each that doesn't pass or wound",
           stats != Enum.uniq(stats) && "two options check the same stat",
           Map.keys(chain) -- outcomes != [] && "a chain on an outcome its options don't have",
           Enum.any?(chain, fn {_outcome, {follow_up, _delay}} ->
@@ -259,14 +335,25 @@ defmodule NeuroScav.Raid.Catalog do
                not Enum.any?(@specs[event].options, &match?({_, _, _, :stall}, &1)),
                do: event
 
+  # {event, stat} => who makes that check, :best unless given
+  @modes for {event, %{modes: modes}} <- @specs,
+             {stat, mode} <- modes,
+             into: %{},
+             do: {{event, stat}, mode}
+
   @doc """
   The catalog as `NeuroScav.Raid` takes it at compile time: the events as
-  maps (`specs`), what each kind of them is, and the loot.
+  maps (`specs`), what each kind of them is, the loot, the weather and the
+  times of day.
   """
   @spec compiled() :: map()
   def compiled do
     %{
       specs: @specs,
+      modes: @modes,
+      consumables: @consumables,
+      weathers: @weathers,
+      daytimes: @daytimes,
       crossroads: @crossroads,
       bosses: @bosses,
       trophies: @trophies,

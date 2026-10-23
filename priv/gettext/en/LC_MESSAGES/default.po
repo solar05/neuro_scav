@@ -1413,3 +1413,144 @@ msgstr "Climb over the top"
 
 msgid "Raid stall %{name}"
 msgstr "%{name} didn't get through — the squad stays put, and something else turns up."
+
+msgid "Raid daytime morning"
+msgstr "Morning"
+
+msgid "Raid daytime day"
+msgstr "Day"
+
+msgid "Raid daytime evening"
+msgstr "Evening"
+
+msgid "Raid daytime night"
+msgstr "Night"
+
+msgid "Raid weather clear"
+msgstr "Clear"
+
+msgid "Raid weather fog"
+msgstr "Fog"
+
+msgid "Raid weather rain"
+msgstr "Rain"
+
+msgid "Raid weather wind"
+msgstr "Strong wind"
+
+msgid "Raid weather blizzard"
+msgstr "Blizzard"
+
+msgid "Raid weather heat"
+msgstr "Heat"
+
+msgid "Raid weather storm"
+msgstr "Thunderstorm"
+
+msgid "Raid kind fight"
+msgstr "Fighting"
+
+msgid "Raid kind search"
+msgstr "Searching"
+
+msgid "Raid kind hide"
+msgstr "Hiding"
+
+msgid "Raid labs keycard"
+msgstr "Open with the keycard"
+
+msgid "Raid door_key keycard"
+msgstr "Swipe the keycard"
+
+msgid "Raid cultists nvg"
+msgstr "Slip past in night vision"
+
+msgid "Raid sniper altyn"
+msgstr "Walk on in the Altyn"
+
+msgid "Raid needs %{item}"
+msgstr "Needs «%{item}»"
+
+msgid "Raid check each"
+msgstr "everyone"
+
+msgid "Raid check weakest %{name}"
+msgstr "weakest: %{name}"
+
+msgid "Raid all passed"
+msgstr "Everyone made it through."
+
+msgid "Raid heal %{name}"
+msgstr "%{name} is patched up — no more bleeding."
+
+msgid "Raid spared %{name} %{item}"
+msgstr "%{name} is fine: «%{item}» saved the day."
+
+msgid "Raid used %{item}"
+msgstr "Put to use: «%{item}»."
+
+msgid "Raid wounds %{names} %{stat} %{value}"
+msgstr "Wounded, %{names}: %{stat} −%{value}."
+
+msgid "Raid bleeding"
+msgstr "bleeding"
+
+msgid "Item medkit"
+msgstr "Salewa first aid kit"
+
+msgid "Raid death 1 %{name}"
+msgstr "%{name} got lost in Tarkov."
+
+msgid "Raid death 2 %{name}"
+msgstr "%{name} caught a «Head, Eyes»."
+
+msgid "Raid death 3 %{name}"
+msgstr "%{name} died to desync: the server said so."
+
+msgid "Raid death 4 %{name}"
+msgstr "%{name} went back to the hideout naked. For good."
+
+msgid "Raid death 5 %{name}"
+msgstr "%{name} never found the exit and went MIA."
+
+msgid "Raid death 6 %{name}"
+msgstr "%{name} stepped on a mine that «wasn't there»."
+
+msgid "Raid death 7 %{name}"
+msgstr "%{name} took a PM bullet from a scav across the map."
+
+msgid "Raid death 8 %{name}"
+msgstr "%{name} fell. Insurance in 24 hours. Maybe."
+
+msgid "Raid death 9 %{name}"
+msgstr "%{name} just wanted to loot one more box."
+
+msgid "Raid death 10 %{name}"
+msgstr "%{name} stepped into the open. Bad idea."
+
+msgid "Raid death 11 %{name}"
+msgstr "%{name} was killed. Killer: «Unknown»."
+
+msgid "Raid death 12 %{name}"
+msgstr "%{name} peeked the corner. Someone was waiting."
+
+msgid "Raid death 13 %{name}"
+msgstr "%{name} didn't survive «legs: 0 HP»."
+
+msgid "Raid death 14 %{name}"
+msgstr "%{name} disconnected, and the raid went on without them."
+
+msgid "Raid death 15 %{name}"
+msgstr "%{name} checked if the underbarrel was loaded. It was."
+
+msgid "Raid death 16 %{name}"
+msgstr "%{name} went toward the noise. The noise was quicker."
+
+msgid "Raid death 17 %{name}"
+msgstr "%{name} died of thirst. The water was forgotten, as always."
+
+msgid "Raid death 18 %{name}"
+msgstr "%{name} trusted a «friend» at the exit."
+
+msgid "Raid death 19 %{name}"
+msgstr "%{name} fell through the textures and never came back."

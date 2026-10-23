@@ -2685,6 +2685,20 @@ kbd {
     color: #e53935;
 }
 
+/* the time of day and the weather, what they add to checks under them */
+.raid-world {
+    margin: 2px 0 0;
+    text-align: center;
+    color: #c8c8c8;
+    font-size: 15px;
+}
+
+.raid-world-effects {
+    display: block;
+    color: #a0a0a0;
+    font-size: 13px;
+}
+
 .raid-squad {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2977,6 +2991,19 @@ kbd {
     background: rgba(33, 37, 41, 0.9);
     color: #ffd060;
     font-size: 12px;
+}
+
+/* wounds add up: from the second one a member bleeds */
+.raid-member-wounds {
+    display: block;
+    margin-top: 4px;
+    color: #e57373;
+    font-size: 12px;
+}
+
+.raid-member-bleeding {
+    color: #e53935;
+    font-weight: bold;
 }
 
 /* who found it, on its own line under the item */

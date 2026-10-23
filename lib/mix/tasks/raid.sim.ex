@@ -124,18 +124,18 @@ defmodule Mix.Tasks.Raid.Sim do
   defp open(options),
     do: options |> Enum.with_index() |> Enum.reject(fn {option, _index} -> option.locked end)
 
-  # a safe option or a crossroads path brings and costs nothing
-  defp worth(%{stat: nil}), do: 0
+  # a safe option or a crossroads path (no chance) brings and costs nothing; a key is a sure chance
+  defp worth(%{chance: nil}), do: 0
 
   defp worth(%{chance: chance, reward: reward, risk: risk}),
     do: chance * Map.get(@gains, reward, 0) - (100 - chance) * Map.get(@costs, risk, 0)
 
-  # the best chance among the checks there are to take; a crossroads has no
+  # the best chance among the checks and keys there are to take; a crossroads has no
   # check: its first path then
   defp best(options) do
     options
     |> open()
-    |> Enum.reject(fn {option, _index} -> is_nil(option.stat) end)
+    |> Enum.reject(fn {option, _index} -> is_nil(option.chance) end)
     |> Enum.max_by(fn {option, _index} -> option.chance end, fn -> {nil, 0} end)
     |> elem(1)
   end

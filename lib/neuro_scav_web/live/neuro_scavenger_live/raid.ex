@@ -8,6 +8,18 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   # what an option may bring and cost, shown on its button (legend under the options)
   @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
   @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸", stall: "🔁"}
+  # the ways a death is told: "Raid lost %{name}" and "Raid death n %{name}" for n in 1..19
+  @deaths 20
+  @daytime_icons %{morning: "🌅", day: "☀️", evening: "🌇", night: "🌙"}
+  @weather_icons %{
+    clear: "🌤",
+    fog: "🌫",
+    rain: "🌧",
+    wind: "💨",
+    blizzard: "🌨",
+    heat: "🔥",
+    storm: "⛈"
+  }
   # the runs a page keeps of those it started: the last few, for the back and
   # forward buttons; the older ones are forgotten, so no page fills the store
   @kept_runs 3
@@ -257,8 +269,45 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp event_text(event), do: Locale.get_text("Raid #{event} text")
 
   defp option_label(_event, %{path: path}) when path != nil, do: "→ " <> event_title(path)
+
+  defp option_label(event, %{key: key}) when key != nil,
+    do: Locale.get_text("Raid #{event} #{key}")
+
   defp option_label(_event, %{stat: nil}), do: gettext("Raid pass by")
   defp option_label(event, %{stat: stat}), do: Locale.get_text("Raid #{event} #{stat}")
+
+  # who makes the check: the best one (by name), the weakest, or every one
+  defp performer(%{mode: :each}), do: gettext("Raid check each")
+
+  defp performer(%{mode: :weakest, member: member}),
+    do: gettext("Raid check weakest %{name}", name: member.name)
+
+  defp performer(%{member: member}), do: member.name
+
+  # why an option can't be taken: the item a key needs, or enough of running
+  defp locked_text(%{key: key}) when key != nil,
+    do: gettext("Raid needs %{item}", item: item_name(key))
+
+  defp locked_text(_retreat), do: gettext("Raid retreat locked")
+
+  # the time of day and the weather, and what they add to the checks now
+  defp world_text(raid) do
+    %{daytime: daytime, weather: weather} = Raid.world(raid)
+
+    "#{@daytime_icons[daytime]} #{Locale.get_text("Raid daytime #{daytime}")} · " <>
+      "#{@weather_icons[weather]} #{Locale.get_text("Raid weather #{weather}")}"
+  end
+
+  defp world_effects(raid) do
+    world = Raid.world(raid)
+
+    kinds =
+      for {kind, value} <- world.daytime_kinds,
+          do: "#{Locale.get_text("Raid kind #{kind}")} #{signed(value)}"
+
+    stats = for {stat, value} <- world.weather_stats, do: "#{stat_label(stat)} #{signed(value)}"
+    Enum.join(kinds ++ stats, ", ")
+  end
 
   defp stat_label(stat), do: Locale.get_text("Stat #{stat}")
 
@@ -280,10 +329,32 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   # what happened at the last event
   defp outcome_text(%{outcome: :safe}), do: gettext("Raid passed")
 
+  # a check by each nobody failed
+  defp outcome_text(%{outcome: :pass, member: nil}), do: gettext("Raid all passed")
+
   defp outcome_text(%{outcome: :pass, member: name}),
     do: gettext("Raid success %{name}", name: name)
 
-  defp outcome_text(%{outcome: :lose, member: name}), do: gettext("Raid lost %{name}", name: name)
+  defp outcome_text(%{outcome: :wounds, member: names, stat: stat}),
+    do:
+      gettext("Raid wounds %{names} %{stat} %{value}",
+        names: names,
+        stat: stat_label(stat),
+        value: Raid.stat_step()
+      )
+
+  defp outcome_text(%{outcome: :heal, member: name}), do: gettext("Raid heal %{name}", name: name)
+
+  defp outcome_text(%{outcome: :spared, member: name, used: item}),
+    do: gettext("Raid spared %{name} %{item}", name: name, item: item_name(item))
+
+  # a death is told one of @deaths ways, by who and where: the same at every render
+  defp outcome_text(%{outcome: :lose, member: name} = last) do
+    case :erlang.phash2({name, last.event, last.stat}, @deaths) do
+      0 -> gettext("Raid lost %{name}", name: name)
+      n -> Locale.get_text("Raid death #{n} %{name}", name: name)
+    end
+  end
 
   defp outcome_text(%{outcome: :nothing, member: name}),
     do: gettext("Raid nothing %{name}", name: name)
@@ -339,16 +410,23 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp karma_note(%{karma: change}) when change < 0, do: gettext("Raid karma down")
   defp karma_note(_last), do: nil
 
+  # the key or the consumable the step used (a spared member's tells it already)
+  defp used_note(%{used: item, outcome: outcome}) when item != nil and outcome != :spared,
+    do: gettext("Raid used %{item}", item: item_name(item))
+
+  defp used_note(_last), do: nil
+
   defp karma_text(0), do: gettext("Raid karma %{value}", value: 0)
   defp karma_text(karma), do: gettext("Raid karma %{value}", value: signed(karma))
 
-  defp outcome_class(%{outcome: outcome}) when outcome in [:pass, :loot, :revive, :train],
-    do: "raid-outcome-good"
+  defp outcome_class(%{outcome: outcome})
+       when outcome in [:pass, :loot, :revive, :train, :heal, :spared],
+       do: "raid-outcome-good"
 
   defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
     do: "raid-outcome-rare"
 
-  defp outcome_class(%{outcome: outcome}) when outcome in [:lose, :drop, :wound, :stall],
+  defp outcome_class(%{outcome: outcome}) when outcome in [:lose, :drop, :wound, :wounds, :stall],
     do: "raid-outcome-bad"
 
   defp outcome_class(_last), do: nil
@@ -378,8 +456,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp member_change(%{last: %{index: index, outcome: outcome}}, %{index: index}) do
     case outcome do
       promoted when promoted in [:promote, :trophy] -> "raid-member-promoted"
-      up when up in [:train, :revive, :loot] -> "raid-member-up"
-      :wound -> "raid-member-down"
+      up when up in [:train, :revive, :loot, :heal, :spared] -> "raid-member-up"
+      down when down in [:wound, :wounds] -> "raid-member-down"
       :lose -> "raid-member-killed"
       _other -> nil
     end

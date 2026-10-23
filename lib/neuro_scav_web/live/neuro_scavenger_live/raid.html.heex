@@ -30,6 +30,13 @@
               >
                 🎒 {loot_count(@raid, member)}
               </span>
+              <span
+                :if={member.alive and member.wounds > 0}
+                id={"raid-member-wounds-#{member.index}"}
+                class={["raid-member-wounds", Raid.bleeding?(member) && "raid-member-bleeding"]}
+              >
+                🩸 {member.wounds}{if Raid.bleeding?(member), do: " · " <> gettext("Raid bleeding")}
+              </span>
             </div>
           </div>
           <.stash loot={stash_entries(@raid)} />
@@ -51,6 +58,12 @@
         >
           {karma_text(@raid.karma)}
         </p>
+        <p id="raid-world" class="raid-world">
+          {world_text(@raid)}
+          <small :if={world_effects(@raid) != ""} class="raid-world-effects">
+            {world_effects(@raid)}
+          </small>
+        </p>
 
         <%!-- a new turn is a new element (a stall too), so the outcome plays its entrance again --%>
         <p
@@ -64,6 +77,9 @@
           </span>
           <span :if={karma_note(@raid.last)} class="raid-follow-up">
             {karma_note(@raid.last)}
+          </span>
+          <span :if={used_note(@raid.last)} class="raid-follow-up">
+            {used_note(@raid.last)}
           </span>
         </p>
 
@@ -91,13 +107,20 @@
                 disabled={option.locked}
               >
                 <span>{option_label(event, option)}</span>
-                <small :if={option.locked}>{gettext("Raid retreat locked")}</small>
+                <small :if={option.locked}>{locked_text(option)}</small>
                 <small :if={option.stat && not option.locked}>
-                  {stat_label(option.stat)} · {option.member.name} · {option.chance}%
+                  {stat_label(option.stat)} · {performer(option)} · {option.chance}%
+                  <span class="raid-option-icons">{option_icons(option)}</span>
+                </small>
+                <small :if={option.key && not option.locked}>
+                  🔑 {item_name(option.key)} · {option.member.name}
                   <span class="raid-option-icons">{option_icons(option)}</span>
                 </small>
                 <small :if={option.path}>{event_text(option.path)}</small>
-                <small :if={is_nil(option.stat) and is_nil(option.path) and not option.locked}>
+                <small :if={
+                  is_nil(option.stat) and is_nil(option.path) and is_nil(option.key) and
+                    not option.locked
+                }>
                   {gettext("Raid safe")}
                   <span class="raid-option-icons">{option_icons(option)}</span>
                 </small>

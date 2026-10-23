@@ -1413,3 +1413,144 @@ msgstr "Перелезть поверху"
 
 msgid "Raid stall %{name}"
 msgstr "%{name} не прошёл — отряд остался на месте, а тут уже другое."
+
+msgid "Raid daytime morning"
+msgstr "Утро"
+
+msgid "Raid daytime day"
+msgstr "День"
+
+msgid "Raid daytime evening"
+msgstr "Вечер"
+
+msgid "Raid daytime night"
+msgstr "Ночь"
+
+msgid "Raid weather clear"
+msgstr "Ясно"
+
+msgid "Raid weather fog"
+msgstr "Туман"
+
+msgid "Raid weather rain"
+msgstr "Дождь"
+
+msgid "Raid weather wind"
+msgstr "Сильный ветер"
+
+msgid "Raid weather blizzard"
+msgstr "Метель"
+
+msgid "Raid weather heat"
+msgstr "Жара"
+
+msgid "Raid weather storm"
+msgstr "Гроза"
+
+msgid "Raid kind fight"
+msgstr "Драться"
+
+msgid "Raid kind search"
+msgstr "Искать"
+
+msgid "Raid kind hide"
+msgstr "Прятаться"
+
+msgid "Raid labs keycard"
+msgstr "Открыть ключ-картой"
+
+msgid "Raid door_key keycard"
+msgstr "Приложить ключ-карту"
+
+msgid "Raid cultists nvg"
+msgstr "Обойти в ПНВ"
+
+msgid "Raid sniper altyn"
+msgstr "Идти дальше в «Алтыне»"
+
+msgid "Raid needs %{item}"
+msgstr "Нужно: «%{item}»"
+
+msgid "Raid check each"
+msgstr "каждый"
+
+msgid "Raid check weakest %{name}"
+msgstr "слабейший: %{name}"
+
+msgid "Raid all passed"
+msgstr "Прошли все до одного."
+
+msgid "Raid heal %{name}"
+msgstr "%{name} перевязан — кровь больше не течёт."
+
+msgid "Raid spared %{name} %{item}"
+msgstr "%{name} уцелел: выручил «%{item}»."
+
+msgid "Raid used %{item}"
+msgstr "Пригодилось: «%{item}»."
+
+msgid "Raid wounds %{names} %{stat} %{value}"
+msgstr "Ранены %{names}: %{stat} −%{value}."
+
+msgid "Raid bleeding"
+msgstr "кровотечение"
+
+msgid "Item medkit"
+msgstr "Аптечка «Салева»"
+
+msgid "Raid death 1 %{name}"
+msgstr "%{name} потерялся в Таркове."
+
+msgid "Raid death 2 %{name}"
+msgstr "%{name} поймал «голова, глаза»."
+
+msgid "Raid death 3 %{name}"
+msgstr "%{name} погиб от десинка: сервер так решил."
+
+msgid "Raid death 4 %{name}"
+msgstr "%{name} отправился в убежище налегке. Навсегда."
+
+msgid "Raid death 5 %{name}"
+msgstr "%{name} не нашёл выход и стал MIA."
+
+msgid "Raid death 6 %{name}"
+msgstr "%{name} наступил на мину, которой «там не было»."
+
+msgid "Raid death 7 %{name}"
+msgstr "%{name} словил пулю дикого с ПМ с другого конца карты."
+
+msgid "Raid death 8 %{name}"
+msgstr "%{name} пал. Страховка придёт через 24 часа. Может быть."
+
+msgid "Raid death 9 %{name}"
+msgstr "%{name} хотел облутать ещё одну коробку."
+
+msgid "Raid death 10 %{name}"
+msgstr "%{name} вышел на открытое место. Зря."
+
+msgid "Raid death 11 %{name}"
+msgstr "%{name} убит. Убийца: «Неизвестен»."
+
+msgid "Raid death 12 %{name}"
+msgstr "%{name} выглянул из-за угла. Там уже ждали."
+
+msgid "Raid death 13 %{name}"
+msgstr "%{name} не пережил «ноги: 0 HP»."
+
+msgid "Raid death 14 %{name}"
+msgstr "%{name} вылетел из игры, а рейд закончился без него."
+
+msgid "Raid death 15 %{name}"
+msgstr "%{name} проверил, заряжен ли подствольник. Был заряжен."
+
+msgid "Raid death 16 %{name}"
+msgstr "%{name} пошёл на звук. Звук оказался быстрее."
+
+msgid "Raid death 17 %{name}"
+msgstr "%{name} умер от жажды. Воду, как всегда, забыли."
+
+msgid "Raid death 18 %{name}"
+msgstr "%{name} поверил «другу» у выхода."
+
+msgid "Raid death 19 %{name}"
+msgstr "%{name} провалился в текстуры и не вернулся."
