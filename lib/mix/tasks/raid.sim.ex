@@ -35,7 +35,7 @@ defmodule Mix.Tasks.Raid.Sim do
   @strategies ~w(cautious careful greedy random)
   # how the careful strategy weighs what a check may bring and cost
   @gains %{loot: 1, train: 1, revive: 2, promote: 2, trophy: 3}
-  @costs %{lose: 3, wound: 1, drop: 1}
+  @costs %{lose: 3, wound: 1, drop: 1, stall: 1}
   @switches [
     runs: :integer,
     strategy: :string,
@@ -45,7 +45,7 @@ defmodule Mix.Tasks.Raid.Sim do
     events: :boolean
   ]
   # outcomes a raid may or may not meet, shown as the share of raids with one
-  @outcomes [:loot, :train, :wound, :promote, :trophy, :revive, :drop]
+  @outcomes [:loot, :train, :wound, :promote, :trophy, :revive, :drop, :stall]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
   @squad_size 5
 
@@ -98,7 +98,7 @@ defmodule Mix.Tasks.Raid.Sim do
     else
       next = Raid.choose(raid, pick(strategy, Raid.options(raid)), :rand.uniform(100))
 
-      if next.step == raid.step,
+      if next.turn == raid.turn,
         do: Mix.raise("#{strategy} took an option that can't be taken at #{Raid.event(raid)}")
 
       play(next, strategy, [next.last | log])

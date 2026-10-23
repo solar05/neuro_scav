@@ -52,10 +52,10 @@
           {karma_text(@raid.karma)}
         </p>
 
-        <%!-- a new step is a new element, so the outcome plays its entrance again --%>
+        <%!-- a new turn is a new element (a stall too), so the outcome plays its entrance again --%>
         <p
           :if={@raid.last}
-          id={"raid-outcome-#{@raid.step}"}
+          id={"raid-outcome-#{@raid.turn}"}
           class={["raid-outcome", outcome_class(@raid.last)]}
         >
           {outcome_text(@raid.last)}
@@ -69,7 +69,7 @@
 
         <%= if event = Raid.event(@raid) do %>
           <div
-            id={"raid-event-#{@raid.step}"}
+            id={"raid-event-#{@raid.turn}"}
             class={["wheel-panel raid-event", Raid.boss?(event) && "raid-event-boss"]}
           >
             <div class="wheel-panel-header">
@@ -86,7 +86,7 @@
                 class="btn btn-old-blended blended w-100 raid-option"
                 phx-click="choose"
                 phx-value-index={index}
-                phx-value-step={@raid.step}
+                phx-value-turn={@raid.turn}
                 phx-throttle="500"
                 disabled={option.locked}
               >

@@ -834,7 +834,7 @@ msgid "Raid labs agility"
 msgstr "Zu den Tresoren rennen"
 
 msgid "Raid legend %{value}"
-msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 🏆 Boss-Trophäe, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}"
+msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 🏆 Boss-Trophäe, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}, 🔁 der Trupp bleibt stehen, etwas anderes kommt"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} wird besser: %{stat} +%{value}!"
@@ -1387,3 +1387,18 @@ msgstr "Raid verlassen"
 
 msgid "Raid leave confirm"
 msgstr "Den Raid aufgeben? Trupp und Beute kommen nicht zurück."
+
+msgid "Raid roadblock"
+msgstr "Straßensperre"
+
+msgid "Raid roadblock text"
+msgstr "Rostige Autos und Betonblöcke türmen sich quer über die Straße."
+
+msgid "Raid roadblock strength"
+msgstr "Den Weg freiräumen"
+
+msgid "Raid roadblock agility"
+msgstr "Oben drüberklettern"
+
+msgid "Raid stall %{name}"
+msgstr "%{name} kam nicht durch — der Trupp bleibt stehen, und schon kommt etwas anderes."

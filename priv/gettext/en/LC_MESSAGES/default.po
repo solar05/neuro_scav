@@ -845,7 +845,7 @@ msgid "Raid labs agility"
 msgstr "Run for the safes"
 
 msgid "Raid legend %{value}"
-msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 🏆 boss trophy, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}"
+msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 🏆 boss trophy, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}, 🔁 the squad stays put and meets something else"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} got better: %{stat} +%{value}!"
@@ -1398,3 +1398,18 @@ msgstr "Leave the raid"
 
 msgid "Raid leave confirm"
 msgstr "Leave the raid? The squad and its loot won't come back."
+
+msgid "Raid roadblock"
+msgstr "Roadblock"
+
+msgid "Raid roadblock text"
+msgstr "Rusty cars and concrete blocks are piled across the road."
+
+msgid "Raid roadblock strength"
+msgstr "Clear the way"
+
+msgid "Raid roadblock agility"
+msgstr "Climb over the top"
+
+msgid "Raid stall %{name}"
+msgstr "%{name} didn't get through — the squad stays put, and something else turns up."

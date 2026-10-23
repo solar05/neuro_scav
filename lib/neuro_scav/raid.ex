@@ -20,7 +20,14 @@ defmodule NeuroScav.Raid do
     own loot, `trophy/1`, and a promotion, a training at the top)
   - failure: `:lose` (the member doesn't make it out), `:wound` (the checked
     stat drops by `stat_step/0`, to 1 at least), `:drop` (the last active
-    item of the stash is gone) or `:nothing`
+    item of the stash is gone), `:nothing` or `:stall` (the squad doesn't get
+    by and stays where it is, before another event: see below)
+
+  A stall doesn't move the squad on (`step` stays, `turn` counts every
+  choice): where it stands it now meets a spare event instead, one of the
+  `spares` drawn when the raid starts (events off the route and the
+  crossroads paths that can't stall themselves). With none left it meets the
+  same event again.
 
   Routes pick events by weight: the promoting ones are rare. A route may get
   a boss (`boss?/1`), in the middle or at the end; beating one brings a trophy.
@@ -46,8 +53,8 @@ defmodule NeuroScav.Raid do
   The events and the loot are in `NeuroScav.Raid.Catalog`.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
-  route, the crossroads paths, the roll (1..100) and the loot found may all
-  be given, so a raid is fully predictable in tests.
+  route, the crossroads paths, the spares, the roll (1..100) and the loot
+  found may all be given, so a raid is fully predictable in tests.
   """
 
   alias NeuroScav.BattleRoom
@@ -100,6 +107,9 @@ defmodule NeuroScav.Raid do
   @chains @catalog.chains
   # what a random route or a crossroads path is drawn from
   @common @catalog.common
+  # what a stall may bring, see new/3
+  @detours @catalog.detours
+  @spares 5
   @loot @catalog.loot
   @loot_weights @catalog.loot_weights
 
@@ -216,11 +226,17 @@ defmodule NeuroScav.Raid do
         member |> card() |> Map.merge(%{index: index, alive: true})
       end)
 
+    forks = forks || draw_forks(route)
+    taken = route ++ Enum.concat(Map.values(forks))
+
     %{
       squad: squad,
       route: route,
-      forks: forks || draw_forks(route),
+      forks: forks,
+      # the events a stall brings, in turn
+      spares: draw(@detours -- taken, @weights, @spares),
       step: 0,
+      turn: 0,
       stash: [],
       karma: 0,
       retreats: 0,
@@ -455,6 +471,17 @@ defmodule NeuroScav.Raid do
     |> step(%{last | item: trophy})
   end
 
+  # the squad stays where it is, and meets a spare event there (step/2 doesn't move it on)
+  defp settle(raid, :stall, _member, _item, last) do
+    case raid.spares do
+      [spare | spares] ->
+        step(%{raid | route: List.replace_at(raid.route, raid.step, spare), spares: spares}, last)
+
+      [] ->
+        step(raid, last)
+    end
+  end
+
   defp settle(raid, _pass_or_nothing, _member, _item, last), do: step(raid, last)
 
   defp set_alive(raid, index, alive), do: update_member(raid, index, &%{&1 | alive: alive})
@@ -507,7 +534,9 @@ defmodule NeuroScav.Raid do
     %{
       raid
       | route: route,
-        step: raid.step + 1,
+        # a stall keeps the squad where it is
+        step: if(last.outcome == :stall, do: raid.step, else: raid.step + 1),
+        turn: raid.turn + 1,
         karma: karma,
         retreats: retreats(raid.retreats, last.retreat),
         last: %{last | follow_up: follow_up, karma: karma - raid.karma}

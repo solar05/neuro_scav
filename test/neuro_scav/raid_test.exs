@@ -534,4 +534,40 @@ defmodule NeuroScav.RaidTest do
       assert raid.retreats == 1
     end
   end
+
+  describe "stalls" do
+    test "a stall keeps the squad where it is, before a spare event" do
+      raid = %{Raid.new(@squad, [:desync, :pmc]) | spares: [:office, :bait]}
+
+      # further round the corner fails: the server puts the squad back
+      raid = Raid.choose(raid, 1, 100)
+
+      assert %{event: :desync, outcome: :stall} = raid.last
+      assert raid.step == 0 and raid.turn == 1
+      assert raid.route == [:office, :pmc]
+      assert raid.spares == [:bait]
+      assert Raid.event(raid) == :office
+    end
+
+    test "with no spares left the squad meets the same event again" do
+      raid = %{Raid.new(@squad, [:desync, :pmc]) | spares: []} |> Raid.choose(1, 100)
+
+      assert raid.step == 0 and raid.turn == 1
+      assert Raid.event(raid) == :desync
+    end
+
+    test "spares are off the route and the crossroads paths, and don't stall themselves" do
+      for _ <- 1..50 do
+        raid = Raid.new(@squad, [:fork_road, :pmc, :desync])
+        taken = raid.route ++ raid.forks.fork_road
+
+        assert length(raid.spares) == 5
+
+        for spare <- raid.spares do
+          refute spare in taken
+          refute Enum.any?(@squad |> Raid.new([spare]) |> Raid.options(), &(&1.risk == :stall))
+        end
+      end
+    end
+  end
 end

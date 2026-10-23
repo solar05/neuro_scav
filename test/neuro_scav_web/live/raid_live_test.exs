@@ -68,7 +68,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert has_element?(lv, "#raid-outcome-1")
 
     # a click made at the first event arrives once the squad has moved on
-    render_click(lv, "choose", %{"index" => "0", "step" => "0"})
+    render_click(lv, "choose", %{"index" => "0", "turn" => "0"})
     refute has_element?(lv, "#raid-outcome-2")
   end
 
@@ -165,7 +165,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     {:ok, lv, _html} = live(conn, ~p"/raid")
 
     render_click(lv, "again")
-    render_click(lv, "choose", %{"index" => "0", "step" => "0"})
+    render_click(lv, "choose", %{"index" => "0", "turn" => "0"})
     render_click(lv, "nope", %{})
 
     refute has_element?(lv, "#raid")
@@ -352,7 +352,11 @@ defmodule NeuroScavWeb.RaidLiveTest do
       }
 
       {lv, _raid} =
-        raid_page(conn, [:pmc, :office], &%{&1 | step: 1, last: Map.merge(last, changes)})
+        raid_page(
+          conn,
+          [:pmc, :office],
+          &%{&1 | step: 1, turn: 1, last: Map.merge(last, changes)}
+        )
 
       lv |> element("#raid-outcome-1") |> render()
     end
@@ -373,6 +377,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
             {%{outcome: :wound},
              ru("Raid wound %{name} %{stat} %{value}", name: name, stat: strength, value: 10)},
             {%{outcome: :promote}, ru("Raid promote %{name}", name: name)},
+            {%{outcome: :stall}, ru("Raid stall %{name}", name: name)},
             {%{outcome: :drop}, ru("Raid drop nothing %{name}", name: name)},
             {%{outcome: :drop, item: :sj6},
              ru("Raid drop %{name} %{item}", name: name, item: sj6)},
@@ -406,6 +411,22 @@ defmodule NeuroScavWeb.RaidLiveTest do
       assert verdict.([:pmc], wiped) =~ ru("Raid failed")
     end
 
+    test "a stall keeps the encounter's number, the event is another one", %{conn: conn} do
+      {lv, _raid} =
+        raid_page(conn, [:desync, :pmc], fn raid ->
+          %{raid | spares: [:office]} |> NeuroScav.Raid.choose(1, 100)
+        end)
+
+      assert lv |> element("#raid-outcome-1") |> render() =~ "не прошёл"
+      header = lv |> element("#raid-event-1 .wheel-panel-header") |> render()
+      assert header =~ ru("Raid office")
+      assert header =~ "Встреча 1 из 2"
+
+      # a click made before the stall, at the same encounter, meant the event that's gone
+      render_click(lv, "choose", %{"index" => "0", "turn" => "0"})
+      refute has_element?(lv, "#raid-outcome-2")
+    end
+
     test "a boss stands out in red", %{conn: conn} do
       {lv, _raid} = raid_page(conn, [:kaban, :pmc])
 
@@ -425,7 +446,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
       assert render(lv) =~ "подряд можно не больше 2"
 
       # a locked retreat sent anyway changes nothing
-      render_click(lv, "choose", %{"index" => "1", "step" => "2"})
+      render_click(lv, "choose", %{"index" => "1", "turn" => "2"})
       refute has_element?(lv, "#raid-outcome-3")
     end
 

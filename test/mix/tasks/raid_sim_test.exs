@@ -20,6 +20,16 @@ defmodule Mix.Tasks.Raid.SimTest do
     end
   end
 
+  test "every strategy gets through stalls: the squad stays, yet the raid goes on" do
+    route = [:desync, :streets_fps, :train, :roadblock]
+
+    for strategy <- ~w(cautious careful greedy random),
+        {raid, log} <- Sim.simulate(strategy, 30, @names, route) do
+      assert Raid.over?(raid)
+      assert length(log) >= Enum.count(log, &(&1.outcome == :stall))
+    end
+  end
+
   test "every strategy goes through a crossroads, taking a path" do
     for strategy <- ~w(cautious greedy random),
         {_raid, [crossroads | _rest]} <- Sim.simulate(strategy, 10, @names, [:fork_road, :pmc]),

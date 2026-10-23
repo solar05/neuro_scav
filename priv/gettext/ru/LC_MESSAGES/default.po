@@ -845,7 +845,7 @@ msgid "Raid labs agility"
 msgstr "Пробежать до сейфов"
 
 msgid "Raid legend %{value}"
-msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 🏆 — трофей босса, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}"
+msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 🏆 — трофей босса, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}, 🔁 — останетесь на месте, и придёт другое событие"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} набил руку: %{stat} +%{value}!"
@@ -1398,3 +1398,18 @@ msgstr "Покинуть рейд"
 
 msgid "Raid leave confirm"
 msgstr "Бросить рейд? Отряд и лут не вернутся."
+
+msgid "Raid roadblock"
+msgstr "Завал"
+
+msgid "Raid roadblock text"
+msgstr "Дорогу перегородил завал из ржавых машин и бетонных блоков."
+
+msgid "Raid roadblock strength"
+msgstr "Растащить завал"
+
+msgid "Raid roadblock agility"
+msgstr "Перелезть поверху"
+
+msgid "Raid stall %{name}"
+msgstr "%{name} не прошёл — отряд остался на месте, а тут уже другое."

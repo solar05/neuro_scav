@@ -68,7 +68,7 @@ defmodule NeuroScav.Raid.Catalog do
     rogues: [{:agility, 20, :loot, :lose}, {:luck, 10, :pass, :drop}],
     bunker: [{:luck, 5, :loot, :lose}, :safe],
     mechanic: [{:agility, 10, :loot, :lose}, :safe],
-    train: [{:agility, 5, :pass, :lose}, :safe],
+    train: [{:agility, 5, :pass, :stall}, :safe],
     trunk: [{:luck, 0, :loot, :wound}, :safe],
     goons: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
     flea: %{options: [{:luck, 0, :loot, :drop}, :safe], scav: true},
@@ -82,22 +82,24 @@ defmodule NeuroScav.Raid.Catalog do
     debtor: %{options: [{:luck, -15, :revive, :nothing}, :safe], scav: true},
     drop_hunters: [{:agility, 15, :pass, :drop}, {:strength, 20, :loot, :lose}],
     pmc_killer: [{:strength, 15, :loot, :lose}, {:luck, 10, :pass, :drop}],
-    # bosses: no way around, only a fight for the trophy or a costly escape
+    # bosses: no way around, only a fight for the trophy or a costly escape. A
+    # fight is no harder than a plain check: by the time a boss comes the squad
+    # is worn, and a loss is a death, so it's won about 4 times in 10 (mix raid.sim)
     kaban: %{
-      options: [{:strength, 30, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:strength, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
       trophy: :pkm
     },
     partisan: %{
-      options: [{:agility, 30, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:agility, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
       trophy: :ghillie
     },
     priest: %{
-      options: [{:luck, 30, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:luck, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
       trophy: :amulet
     },
-    # the toughest: its trophy is legendary
+    # the toughest, won about 1 time in 4: its trophy is legendary
     komar: %{
-      options: [{:agility, 35, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:agility, 5, :trophy, :lose}, {:luck, 15, :pass, :wound}],
       trophy: :komar_wings
     },
     # crossroads
@@ -120,14 +122,16 @@ defmodule NeuroScav.Raid.Catalog do
     # Tarkov as players know it
     axeman: [{:strength, 5, :loot, :lose}, {:agility, 10, :pass, :wound}],
     cheater: [{:luck, 25, :loot, :lose}, {:agility, 15, :pass, :lose}],
-    desync: [{:luck, 10, :pass, :lose}, {:agility, 0, :pass, :wound}],
+    desync: [{:luck, 10, :pass, :lose}, {:agility, 0, :pass, :stall}],
     extract_campers: [{:agility, 15, :pass, :lose}, {:luck, 10, :pass, :drop}],
     prapor_quest: [{:luck, 5, :train, :nothing}, :safe],
     sleeping_scav: %{options: [{:agility, 5, :loot, :wound}, :safe], karma: %{agility: -1}},
-    streets_fps: [{:agility, 15, :pass, :wound}, {:luck, 5, :train, :nothing}],
+    streets_fps: [{:agility, 15, :pass, :stall}, {:luck, 5, :train, :nothing}],
     bear_usec: [{:luck, 5, :loot, :nothing}, {:agility, 10, :pass, :lose}],
     grenade_scav: [{:agility, 0, :loot, :lose}, {:luck, 10, :pass, :wound}],
     door_key: [{:strength, 10, :loot, :wound}, {:luck, 20, :loot, :nothing}],
+    # a stall: clearing the way may take so long that something else turns up
+    roadblock: [{:strength, 10, :pass, :stall}, {:agility, 5, :pass, :wound}],
     jaeger_quest: %{options: [{:agility, 25, :promote, :wound}, :safe], weight: 0.3},
     bitcoin_farm: %{
       options: [{:strength, 15, :loot, :lose}, {:luck, 10, :loot, :wound}],
@@ -186,8 +190,11 @@ defmodule NeuroScav.Raid.Catalog do
   # The catalog is checked as it compiles: a slip in it would show only in a
   # raid (a chain to an unknown event stops it for good, an unknown trophy
   # crashes it) or never (an unknown key, a chain on an outcome that doesn't
-  # come, karma for an unchecked stat: all just ignored).
+  # come, karma for an unchecked stat: all just ignored; an unknown outcome
+  # would be a plain pass).
   @spec_keys [:options, :weight, :trophy, :chain, :karma, :scav, :gnome, :crossroads]
+  @successes [:pass, :loot, :revive, :train, :promote, :trophy]
+  @failures [:lose, :wound, :drop, :nothing, :stall]
 
   for {event, spec} <- @specs do
     checks =
@@ -206,6 +213,9 @@ defmodule NeuroScav.Raid.Catalog do
       Enum.filter(
         [
           unknown != [] && "unknown keys #{inspect(unknown)}",
+          Enum.any?(checks, fn {_stat, success, failure} ->
+            success not in @successes or failure not in @failures
+          end) && "an unknown outcome",
           stats != Enum.uniq(stats) && "two options check the same stat",
           Map.keys(chain) -- outcomes != [] && "a chain on an outcome its options don't have",
           Enum.any?(chain, fn {_outcome, {follow_up, _delay}} ->
@@ -244,6 +254,10 @@ defmodule NeuroScav.Raid.Catalog do
   @follow_ups for {_trigger, {event, _delay}} <- @chains, do: event
   # what a random route or a crossroads path is drawn from
   @common Map.keys(@specs) -- (@bosses ++ @follow_ups ++ @crossroads)
+  # what a stall may bring: a common event that can't stall in its turn
+  @detours for event <- @common,
+               not Enum.any?(@specs[event].options, &match?({_, _, _, :stall}, &1)),
+               do: event
 
   @doc """
   The catalog as `NeuroScav.Raid` takes it at compile time: the events as
@@ -263,6 +277,7 @@ defmodule NeuroScav.Raid.Catalog do
       chains: @chains,
       follow_ups: @follow_ups,
       common: @common,
+      detours: @detours,
       loot: @loot,
       loot_weights: @loot_weights
     }

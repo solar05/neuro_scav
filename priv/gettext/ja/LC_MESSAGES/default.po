@@ -834,7 +834,7 @@ msgid "Raid labs agility"
 msgstr "Kinko made hashiru"
 
 msgid "Raid legend %{value}"
-msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 🏆 bosu torofii, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}"
+msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 🏆 bosu torofii, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}, 🔁 sono ba ni todomari, betsu no dekigoto"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} ga kitaerareta: %{stat} +%{value}!"
@@ -1387,3 +1387,18 @@ msgstr "Reido wo nukeru"
 
 msgid "Raid leave confirm"
 msgstr "Reido wo suteru? Butai mo ruuto mo modoranai."
+
+msgid "Raid roadblock"
+msgstr "Shougaibutsu"
+
+msgid "Raid roadblock text"
+msgstr "Sabita kuruma to konkuriito burokku ga michi wo fusaide iru."
+
+msgid "Raid roadblock strength"
+msgstr "Michi wo akeru"
+
+msgid "Raid roadblock agility"
+msgstr "Ue wo norikoeru"
+
+msgid "Raid stall %{name}"
+msgstr "%{name} wa toppa dekinakatta — butai wa sono ba ni todomari, betsu no dekigoto ga okiru."

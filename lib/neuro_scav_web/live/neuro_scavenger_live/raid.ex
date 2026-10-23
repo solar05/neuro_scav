@@ -7,7 +7,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   @max_name_length 40
   # what an option may bring and cost, shown on its button (legend under the options)
   @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
-  @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸"}
+  @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸", stall: "🔁"}
   # the runs a page keeps of those it started: the last few, for the back and
   # forward buttons; the older ones are forgotten, so no page fills the store
   @kept_runs 3
@@ -170,15 +170,16 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
      |> push_patch(to: ~p"/raid")}
   end
 
-  # the click names the step it was made at: a late or a double one meant an
-  # event that's gone, and must not choose for the next one
+  # the click names the turn it was made at: a late or a double one meant an
+  # event that's gone (a stall's too, at the same step), and must not choose
+  # for the next one
   def handle_event(
         "choose",
-        %{"index" => index, "step" => step},
-        %{assigns: %{raid: %{step: current} = raid, members: members}} = socket
+        %{"index" => index, "turn" => turn},
+        %{assigns: %{raid: %{turn: current} = raid, members: members}} = socket
       ) do
     with {index, ""} <- Integer.parse(index),
-         {^current, ""} <- Integer.parse(step) do
+         {^current, ""} <- Integer.parse(turn) do
       {:noreply, assign_raid(socket, members, Raid.choose(raid, index, :rand.uniform(100)))}
     else
       _invalid_or_stale -> {:noreply, socket}
@@ -306,6 +307,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
         value: Raid.stat_step()
       )
 
+  defp outcome_text(%{outcome: :stall, member: name}),
+    do: gettext("Raid stall %{name}", name: name)
+
   defp outcome_text(%{outcome: :promote, member: name}),
     do: gettext("Raid promote %{name}", name: name)
 
@@ -344,7 +348,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
     do: "raid-outcome-rare"
 
-  defp outcome_class(%{outcome: outcome}) when outcome in [:lose, :drop, :wound],
+  defp outcome_class(%{outcome: outcome}) when outcome in [:lose, :drop, :wound, :stall],
     do: "raid-outcome-bad"
 
   defp outcome_class(_last), do: nil
