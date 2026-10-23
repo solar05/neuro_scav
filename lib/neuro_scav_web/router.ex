@@ -35,8 +35,6 @@ defmodule NeuroScavWeb.Router do
     live "/statistics", NeuroScavengerLive.Statistics, :statistics
     live "/glossary", NeuroScavengerLive.Glossary, :glossary
     live "/wheel", NeuroScavengerLive.Wheel, :wheel
-    live "/check_name", NeuroScavengerLive.CheckName, :check_name
-    live "/collection", NeuroScavengerLive.Collection, :collection
     live "/battle", NeuroScavengerLive.Battle, :battle
     live "/battle/:id", NeuroScavengerLive.Battle, :battle
     live "/quiz", NeuroScavengerLive.Quiz, :quiz
@@ -60,7 +58,6 @@ defmodule NeuroScavWeb.Router do
     post "/generate_single", ScavengersController, :generate_single
     post "/generate_team", ScavengersController, :generate_team
     get "/stats", ScavengersController, :stats
-    get "/check_name", ScavengersController, :check_name
 
     # CORS preflight: CORSPlug halts before the action, this only catches stray OPTIONS
     options "/*path", HealthController, :options

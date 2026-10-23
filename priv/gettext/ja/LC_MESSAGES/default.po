@@ -221,41 +221,8 @@ msgstr "Kakuritsu"
 msgid "Team lock hint"
 msgstr "Namae wo tappu shite kotei"
 
-msgid "Check name"
-msgstr "Shiraberu"
-
-msgid "Check name placeholder"
-msgstr "Namae wo shiraberu: Namae Myouji"
-
-msgid "Check name hint"
-msgstr "Namae to myouji, mataha namae dake de myouji wo sagasu"
-
-msgid "Name check"
-msgstr "Chekku"
-
-msgid "Check name title"
-msgstr "Anata wa donna yabanjin?"
-
-msgid "Last names for %{name}"
-msgstr "%{name} no myouji"
-
-msgid "No suggestions"
-msgstr "Mitsukarimasen deshita"
-
 msgid "Someone found legendary %{name}"
 msgstr "Dareka ga densetsu wo hiita: %{name}"
-
-msgid "Collection"
-msgstr "Zukan"
-
-msgid "Collection title"
-msgstr "Densetsu no yabanjin"
-
-msgid "Collection hint"
-msgstr "Tantai to Chiimu de densetsu wo hikou — koko ni hyouji saremasu"
-
-msgid "Added to collection"
-msgstr "Zukan ni tsuika!"
 
 msgid "Battle"
 msgstr "Batoru"
@@ -409,9 +376,6 @@ msgstr "Chiimu setto"
 
 msgid "Sets note %{bonus}"
 msgstr "3 × 3 batoru to dorafuto de wa, setto hitotsu goto ni chiimu no zen suteeta ga +%{bonus}."
-
-msgid "Battle card"
-msgstr "Batoru kaado"
 
 msgid "Quiz"
 msgstr "Kuizu"

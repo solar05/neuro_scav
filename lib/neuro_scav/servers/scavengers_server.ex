@@ -370,38 +370,6 @@ defmodule NeuroScav.ScavengersServer do
   end
 
   @doc """
-  Full names that `first_name` gets above common rarity, best rarity first.
-
-  Pairs `first_name` with every last name of `locale` and adds the locale's
-  legendary names that start with it. Each group holds at most `limit` random picks.
-  """
-  @spec suggest_last_names(String.t(), String.t(), module(), pos_integer()) ::
-          [{atom(), [String.t()]}]
-  def suggest_last_names(first_name, locale, names \\ NeuroScav.Scavengers.Names, limit \\ 6) do
-    state = load_names(names)
-    {head, rest} = String.split_at(first_name, 1)
-    first_name = String.upcase(head) <> rest
-    downcased = String.downcase(first_name)
-
-    legendary =
-      state
-      |> Map.fetch!("legendary_names_#{locale}")
-      |> Enum.filter(&(&1 |> String.split() |> hd() |> String.downcase() == downcased))
-
-    groups =
-      state
-      |> Map.fetch!("last_names_#{locale}")
-      |> Enum.map(&"#{first_name} #{&1}")
-      |> Enum.group_by(&rarity(state, &1, locale))
-      |> Map.update(:legendary, legendary, &Enum.uniq(&1 ++ legendary))
-
-    for rarity <- [:legendary, :epic, :rare, :uncommon],
-        found = Map.get(groups, rarity, []),
-        found != [],
-        do: {rarity, Enum.take_random(found, limit)}
-  end
-
-  @doc """
   A random name of `locale` with `rarity` (any but the gnome), without counting
   it in statistics. Rule rarities are found by drawing random pairs, so an epic
   takes about a thousand cheap draws.

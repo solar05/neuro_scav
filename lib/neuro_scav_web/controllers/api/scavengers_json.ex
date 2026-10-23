@@ -7,10 +7,6 @@ defmodule NeuroScavWeb.Api.ScavengersJSON do
     %{scavenger: render_one(scavenger)}
   end
 
-  def render("card.json", %{card: card}) do
-    %{scavenger: card |> render_one() |> Map.put(:stats, card.stats)}
-  end
-
   def render("stats.json", %{stats: stats}) do
     %{
       legendary: Map.get(stats, :legendary, 0),

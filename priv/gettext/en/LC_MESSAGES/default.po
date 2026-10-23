@@ -232,41 +232,8 @@ msgstr "Chance"
 msgid "Team lock hint"
 msgstr "Tap a name to lock it"
 
-msgid "Check name"
-msgstr "Check"
-
-msgid "Check name placeholder"
-msgstr "Check your name: First Last"
-
-msgid "Check name hint"
-msgstr "Enter a first and last name, or just a first name to find last names"
-
-msgid "Name check"
-msgstr "Check"
-
-msgid "Check name title"
-msgstr "What scavenger are you?"
-
-msgid "Last names for %{name}"
-msgstr "Last names for “%{name}”"
-
-msgid "No suggestions"
-msgstr "Nothing found"
-
 msgid "Someone found legendary %{name}"
 msgstr "Someone just rolled a legendary: %{name}"
-
-msgid "Collection"
-msgstr "Collection"
-
-msgid "Collection title"
-msgstr "Legendary scavengers"
-
-msgid "Collection hint"
-msgstr "Roll legendaries in Single and Team — they will show up here"
-
-msgid "Added to collection"
-msgstr "New legendary in your collection!"
 
 msgid "Battle"
 msgstr "Battle"
@@ -420,9 +387,6 @@ msgstr "Team sets"
 
 msgid "Sets note %{bonus}"
 msgstr "In 3 × 3 battles and drafts every set a team collects adds +%{bonus} to all its stats."
-
-msgid "Battle card"
-msgstr "Battle card"
 
 msgid "Quiz"
 msgstr "Quiz"

@@ -88,28 +88,6 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
-  describe "suggest_last_names/4" do
-    test "capitalizes the first name and puts legendary names first" do
-      assert Server.suggest_last_names("кеша", "ru", FixtureNames) == [
-               legendary: ["Кеша Пивосос"]
-             ]
-    end
-
-    test "leaves out common pairs" do
-      assert Server.suggest_last_names("Victor", "en", FixtureNames) == []
-    end
-
-    test "every suggestion has the rarity of its group" do
-      groups = Server.suggest_last_names("Гена", "ru")
-      assert groups != []
-
-      for {rarity, names} <- groups do
-        assert length(names) in 1..6
-        for name <- names, do: assert(Server.check_name(name).rarity == rarity)
-      end
-    end
-  end
-
   describe "random_name/3" do
     test "gives a name of the asked rarity" do
       for locale <- ~w(ru en de ja), rarity <- [:legendary, :epic, :rare, :uncommon, :common] do

@@ -245,7 +245,6 @@ PubSub.subscribe(:single_scavenger, %{"user_id" => user_id})
 - `GET /api/generate_single?lang=en` - Generate single scavenger
 - `GET /api/generate_team?lang=en` - Generate team of 5 scavengers
 - `GET /api/stats` - Get aggregated statistics
-- `GET /api/check_name?name=First Last` - Rarity and battle card stats of a name
 
 ## When Modifying This Codebase
 
