@@ -545,7 +545,7 @@ msgid "Raid survived %{alive} %{total}"
 msgstr "Вышли %{alive} из %{total}."
 
 msgid "Raid failed"
-msgstr "Из рейда не вышел никто."
+msgstr "Никто не выжил."
 
 msgid "Raid again"
 msgstr "Ещё раз этим отрядом"

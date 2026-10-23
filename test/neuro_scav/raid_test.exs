@@ -191,6 +191,19 @@ defmodule NeuroScav.RaidTest do
       assert slowed.chance == max(climb.chance - 5, 5)
     end
 
+    test "loot bonuses add up for their finder, nothing for the others or the fallen" do
+      finder = index_of(best(:strength))
+      raid = @squad |> Raid.new([:office, :office, :pmc]) |> Raid.choose(0, 1, :sj6)
+      raid = Raid.choose(raid, 0, 1, :altyn)
+
+      [owner | others] = Enum.sort_by(raid.squad, &(&1.index != finder))
+      assert Raid.loot_bonuses(raid, owner) == %{strength: 20, agility: -5}
+      assert Enum.all?(others, &(Raid.loot_bonuses(raid, &1) == %{}))
+
+      raid = Raid.choose(raid, 0, 100)
+      assert Raid.loot_bonuses(raid, Enum.at(raid.squad, finder)) == %{}
+    end
+
     test "loot works for its finder alone" do
       finder = best(:strength)
       raid = @squad |> Raid.new([:office, :pmc]) |> Raid.choose(0, 1, :meldonin)

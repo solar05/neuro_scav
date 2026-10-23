@@ -459,10 +459,12 @@ defmodule NeuroScavWeb.CoreComponents do
   @doc """
   `onclick` of a link button with the link in `data-url` (absolute or from the
   site root): the system share sheet on touch devices, a copy elsewhere.
-  Inline, because the share pages don't load app.js.
+  Inline, because the share pages don't load app.js. An inline handler sees
+  `document`'s properties before globals, so a bare `URL` is the string
+  `document.URL`: the constructor has to be `window.URL`.
   """
   def share_js do
-    "var btn=this, url=new URL(btn.dataset.url, location.href).href;" <>
+    "var btn=this, url=new window.URL(btn.dataset.url, location.href).href;" <>
       " if (navigator.share && matchMedia('(pointer: coarse)').matches) { navigator.share({url: url}).catch(function(){}); return; }" <>
       " navigator.clipboard.writeText(url).then(function(){var orig=btn.textContent; btn.textContent='✓'; setTimeout(function(){btn.textContent=orig;},1500);});"
   end
@@ -472,12 +474,14 @@ defmodule NeuroScavWeb.CoreComponents do
 
   Stats in `won` are highlighted; `first_round` numbers the rows for the
   battle reveal animation; `hidden` shows "?" instead of the values (the
-  values never reach the page).
+  values never reach the page); `bonus` (`%{stat => n}`, e.g. raid loot) is
+  added to the values and shown beside them.
   """
   attr :card, :map, required: true
   attr :won, :list, default: []
   attr :first_round, :integer, default: 0
   attr :hidden, :boolean, default: false
+  attr :bonus, :map, default: %{}
 
   def card_stats(assigns) do
     ~H"""
@@ -490,13 +494,25 @@ defmodule NeuroScavWeb.CoreComponents do
       >
         <span>{NeuroScav.Locale.get_text("Stat #{stat}")}</span>
         <span class="battle-stat-bar">
-          <span :if={not @hidden} style={"width: #{@card.stats[stat]}%"}></span>
+          <span :if={not @hidden} style={"width: #{@card.stats[stat] + Map.get(@bonus, stat, 0)}%"}></span>
         </span>
-        <b>{if @hidden, do: "?", else: @card.stats[stat]}</b>
+        <span class="battle-stat-value">
+          <small :if={not @hidden and Map.get(@bonus, stat, 0) != 0} class={bonus_class(@bonus[stat])}>
+            {signed(@bonus[stat])}
+          </small>
+          <b>{if @hidden, do: "?", else: @card.stats[stat] + Map.get(@bonus, stat, 0)}</b>
+        </span>
       </li>
     </ul>
     """
   end
+
+  defp bonus_class(bonus) when bonus > 0, do: "stat-bonus stat-bonus-up"
+  defp bonus_class(_bonus), do: "stat-bonus stat-bonus-down"
+
+  # "+10", "−5" (a real minus sign)
+  defp signed(value) when value < 0, do: "−#{-value}"
+  defp signed(value), do: "+#{value}"
 
   defp share_path(%{path: path}) when is_binary(path), do: path
 

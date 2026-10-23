@@ -246,7 +246,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp member_change(%{last: %{index: index, outcome: outcome}}, %{index: index}) do
     case outcome do
       :promote -> "raid-member-promoted"
-      up when up in [:train, :revive] -> "raid-member-up"
+      up when up in [:train, :revive, :loot] -> "raid-member-up"
       :wound -> "raid-member-down"
       :lose -> "raid-member-killed"
       _other -> nil

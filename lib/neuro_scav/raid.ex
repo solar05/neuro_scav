@@ -195,11 +195,19 @@ defmodule NeuroScav.Raid do
   end
 
   # a member's stat with the bonuses of the loot they found
-  defp with_loot(raid, member, stat) do
-    for %{item: item, owner: owner} <- raid.stash,
-        owner == member.index,
-        reduce: member.stats[stat] do
-      value -> value + Map.get(@loot[item], stat, 0)
+  defp with_loot(raid, member, stat),
+    do: member.stats[stat] + Map.get(loot_bonuses(raid, member), stat, 0)
+
+  @doc """
+  What a member's loot adds to each stat, `%{stat => bonus}` (a bonus may be
+  negative). Empty for a fallen member: their loot doesn't work.
+  """
+  @spec loot_bonuses(map(), map()) :: %{atom() => integer()}
+  def loot_bonuses(_raid, %{alive: false}), do: %{}
+
+  def loot_bonuses(raid, member) do
+    for %{item: item, owner: owner} <- raid.stash, owner == member.index, reduce: %{} do
+      bonuses -> Map.merge(bonuses, @loot[item], fn _stat, a, b -> a + b end)
     end
   end
 

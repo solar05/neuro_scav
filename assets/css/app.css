@@ -887,6 +887,12 @@ body {
     animation-fill-mode: forwards;
 }
 
+/* no gnome popup during a raid: it distracts from the choices. By the page's
+   content, not the root layout, which doesn't re-render on live navigation */
+body:has(.raid-page) .gnome-footer {
+    display: none;
+}
+
 .gnome-container {
     display: flex;
     align-items: center;
@@ -2151,7 +2157,12 @@ kbd {
 .battle-stat b {
     color: #fff;
     font-weight: normal;
+}
+
+/* the value, with a raid loot bonus beside it when there is one */
+.battle-stat-value {
     text-align: right;
+    white-space: nowrap;
 }
 
 .battle-stat-bar {
@@ -2743,9 +2754,22 @@ kbd {
 }
 
 /* ── Raid ── */
+/* the raid spans the page like the navbar: the same side paddings as
+   .container-nav (2rem / 1.5rem, 0.5rem on phones), so its edges line up with
+   the page menu on the left and the language switch on the right */
+.raid-page {
+    padding-left: 2rem;
+    padding-right: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .raid-page {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+    }
+}
+
 .raid {
-    max-width: 900px;
-    margin: 0 auto;
     font-family: "Bender";
 }
 
@@ -2805,8 +2829,9 @@ kbd {
     text-align: center;
 }
 
+/* the value may carry a loot bonus beside it ("55 +10") */
 .raid-member .battle-stat {
-    grid-template-columns: 1fr 2em;
+    grid-template-columns: 1fr auto;
     margin-bottom: 0;
     padding: 1px 4px;
     font-size: 13px;
@@ -2814,6 +2839,22 @@ kbd {
 
 .raid-member .battle-stat-bar {
     display: none;
+}
+
+/* a loot bonus beside a stat value: what the stat would be without it is value − bonus */
+/* the bonus sits left of the value: "+10 55", in the value's size
+   (inherit: <small> is shrunk by bootstrap otherwise) */
+.stat-bonus {
+    margin-right: 3px;
+    font-size: inherit;
+}
+
+.stat-bonus-up {
+    color: #4caf50;
+}
+
+.stat-bonus-down {
+    color: #ff5252;
 }
 
 /* a member who didn't make it out stays in the row: the name and stats fade,

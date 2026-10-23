@@ -1,4 +1,5 @@
-<div class="container pt-2">
+<%!-- .raid-page keeps the gnome popup away while this page is open, see app.css --%>
+<div class="container pt-2 raid-page">
   <h2 class="text-center blended-reg-bg scav-container">{gettext("Raid")}</h2>
 
   <%= cond do %>
@@ -21,7 +22,7 @@
                   do: Locale.get_text("Stats #{member.rarity}"),
                   else: gettext("Raid dead")}
               </p>
-              <.card_stats card={member} />
+              <.card_stats card={member} bonus={Raid.loot_bonuses(@raid, member)} />
               <span
                 :if={loot_count(@raid, member) > 0}
                 id={"raid-member-loot-#{member.index}"}

@@ -31,6 +31,8 @@ defmodule NeuroScavWeb.RaidLiveTest do
   test "recruits a squad of five and walks it through the encounters", %{conn: conn} do
     {:ok, lv, html} = live(conn, ~p"/raid")
     assert html =~ "Набрать отряд"
+    # the marker that hides the gnome popup on this page (app.css)
+    assert has_element?(lv, ".raid-page")
 
     lv |> element("#btn-raid-recruit") |> render_click()
     assert members(lv) == 5
@@ -43,7 +45,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     lv = finish(lv)
     html = render(lv)
 
-    assert html =~ "Чистый выход" or html =~ "Вышли" or html =~ "не вышел никто"
+    assert html =~ "Чистый выход" or html =~ "Вышли" or html =~ "Никто не выжил"
 
     lv |> element("#btn-raid-again") |> render_click()
     assert has_element?(lv, "#raid-event-0")
@@ -139,5 +141,29 @@ defmodule NeuroScavWeb.RaidLiveTest do
               assert(Gettext.gettext(NeuroScavWeb.Gettext, msgid) != msgid, "#{locale}: #{msgid}")
       end)
     end
+  end
+
+  test "a member's card shows the stats with their loot and the bonus beside" do
+    card = NeuroScav.BattleRoom.card(%{name: "Гена Лена", rarity: :epic})
+
+    html =
+      render_component(&NeuroScavWeb.CoreComponents.card_stats/1,
+        card: card,
+        bonus: %{strength: 10, agility: -5}
+      )
+
+    strength = html |> LazyHTML.from_fragment() |> LazyHTML.query(~s([data-stat="strength"]))
+    assert LazyHTML.text(strength) =~ "#{card.stats.strength + 10}"
+    assert strength |> LazyHTML.query(".stat-bonus-up") |> LazyHTML.text() =~ "+10"
+
+    agility = html |> LazyHTML.from_fragment() |> LazyHTML.query(~s([data-stat="agility"]))
+    assert LazyHTML.text(agility) =~ "#{card.stats.agility - 5}"
+    assert agility |> LazyHTML.query(".stat-bonus-down") |> LazyHTML.text() =~ "−5"
+
+    # no bonus, no marker
+    assert html
+           |> LazyHTML.from_fragment()
+           |> LazyHTML.query(~s([data-stat="luck"] .stat-bonus))
+           |> Enum.count() == 0
   end
 end

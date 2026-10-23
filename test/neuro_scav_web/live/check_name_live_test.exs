@@ -21,6 +21,8 @@ defmodule NeuroScavWeb.CheckNameLiveTest do
     # touch devices get the system share sheet, the rest a copy
     assert html =~ "navigator.share"
     assert html =~ "navigator.clipboard.writeText"
+    # in an inline handler a bare URL is document.URL, a string: it must be window.URL
+    refute NeuroScavWeb.CoreComponents.share_js() =~ ~r/new URL\(/
 
     card = NeuroScav.BattleRoom.card(%{name: "Алиса Аврора", rarity: :rare})
     stats = lv |> element("#check-name-card") |> render()
