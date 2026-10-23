@@ -13,7 +13,8 @@
   r = @rarity
   gnome_h = ~w(#ff6b6b #ffaa33 #44ee88 #44aaff #ff44bb)
   gnome_v = ~w(#ffe044 #44ee88 #bb55ff) %>
-  <div class="share-page">
+  <div class={["share-page share-map-page", @location_class]}>
+    <p class="share-region">{gettext("Share region")}</p>
     <div class="share-card-wrap" style={"--rc: #{border_color}; --rc-glow: #{glow_color}"}>
       <span class="cb cb-tl"></span>
       <span class="cb cb-tr"></span>
@@ -50,11 +51,7 @@
         <% end %>
       <% end %>
       <div class={"share-card border-#{r}#{if r in ["epic", "legendary", "gnome", "neuro"], do: " has-inner-glow", else: ""}"}>
-        <div class={"share-card-art theme-#{@theme}"}>
-          <div class="share-card-art-inner">
-            <div class="share-art-lines"></div>
-          </div>
-        </div>
+        <div class={"share-card-art share-art-#{@art}"}></div>
         <div class="share-card-body">
           <p class={"share-card-name #{r}-name"}>
             {@name}
@@ -81,16 +78,14 @@
     </div>
   </div>
 <% else %>
-  <div class="share-page">
+  <div class="share-page share-map-page">
     <div class="share-card-wrap" style="--rc: #888888; --rc-glow: rgba(136,136,136,0.1)">
       <span class="cb cb-tl"></span>
       <span class="cb cb-tr"></span>
       <span class="cb cb-bl"></span>
       <span class="cb cb-br"></span>
       <div class="share-card">
-        <div class="share-card-art theme-void">
-          <div class="share-card-art-inner"></div>
-        </div>
+        <div class="share-card-art share-art-default"></div>
         <div class="share-card-body">
           <p class="share-card-name common-name">invalid link</p>
         </div>

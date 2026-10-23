@@ -4,27 +4,8 @@ defmodule NeuroScavWeb.ShareController do
   alias NeuroScav.Raid.Report
   alias NeuroScavWeb.RaidComponents
 
-  @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
-
   @canvas %{w: 1200, h: 630}
   @card %{cx: 450, cy: 75, cw: 300, ch: 480, art_h: 215}
-
-  # Theme SVG inner content loaded at compile time (outer <svg> tags stripped)
-  @theme_svgs Map.new(@card_themes, fn theme ->
-                content =
-                  Path.join([
-                    to_string(:code.priv_dir(:neuro_scav)),
-                    "static",
-                    "images",
-                    "share",
-                    "#{theme}.svg"
-                  ])
-                  |> File.read!()
-                  |> String.replace(~r/\A\s*<svg[^>]*>/, "")
-                  |> String.replace(~r/<\/svg>\s*\z/, "")
-
-                {theme, content}
-              end)
 
   # Fonts embedded as base64 at compile time so the SVG is self-contained
   @font_normal Path.join([
@@ -59,17 +40,50 @@ defmodule NeuroScavWeb.ShareController do
   @rarity_rank ~w(gnome legendary epic neuro rare uncommon common)
   @max_team_members NeuroScav.ScavengersServer.max_team_members()
   @team_card %{cx: 320, cy: 75, cw: 560, ch: 480, art_h: 110}
-  @raid_card %{cx: 220, cy: 45, cw: 760, ch: 540, art_h: 100}
+  @raid_card %{cx: 220, cy: 45, cw: 760, ch: 540, art_h: 150}
+
+  # A share card's art (priv/static/images/share), inner content read at
+  # compile time (outer <svg> tags stripped): a scene of each location for the
+  # card's strip (640×200, "default" for a raid of no location), the region's
+  # tactical map behind the card. A raid shows where it went; a scavenger, a
+  # team where they were spotted, by their names' hash.
+  @share_images Path.join([to_string(:code.priv_dir(:neuro_scav)), "static", "images", "share"])
+  @location_art Map.new(Path.wildcard(Path.join(@share_images, "locations/*.svg")), fn path ->
+                  content =
+                    path
+                    |> File.read!()
+                    |> String.replace(~r/\A\s*<svg[^>]*>/, "")
+                    |> String.replace(~r/<\/svg>\s*\z/, "")
+
+                  {Path.basename(path, ".svg"), content}
+                end)
+  @region_map Path.join(@share_images, "map.svg")
+              |> File.read!()
+              |> String.replace(~r/\A\s*<svg[^>]*>/, "")
+              |> String.replace(~r/<\/svg>\s*\z/, "")
+  @locations NeuroScav.Raid.locations()
+  # a location's colour washing over the map, as over the raid's own map card
+  @location_tints %{
+    customs: "#c29a54",
+    woods: "#4c8c4a",
+    shoreline: "#3884a0",
+    interchange: "#965abe",
+    reserve: "#82823c",
+    lighthouse: "#5a78aa",
+    streets: "#aa503c",
+    factory: "#a06e3c",
+    labs: "#78c8d2"
+  }
 
   def show(conn, %{"token" => token}) do
     case decode_token(token) do
       {:ok, name, rarity} ->
         conn
         |> put_share_layout()
+        |> merge_assigns(location_assigns(pick_location(name)))
         |> render(:show,
           name: name,
           rarity: rarity,
-          theme: pick_theme(name),
           token: token,
           title: "#{name} — #{rarity}",
           description: "A #{rarity} scavenger from scavgen",
@@ -80,7 +94,7 @@ defmodule NeuroScavWeb.ShareController do
         conn
         |> put_status(:bad_request)
         |> put_share_layout()
-        |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+        |> render(:show, name: nil, rarity: nil, token: token)
     end
   end
 
@@ -91,10 +105,10 @@ defmodule NeuroScavWeb.ShareController do
 
         conn
         |> put_share_layout()
+        |> merge_assigns(location_assigns(pick_location(Enum.map_join(members, & &1.name))))
         |> render(:team,
           members: Enum.map(members, &Map.put(&1, :color, rarity_color(&1.rarity))),
           border_color: rarity_color(best),
-          theme: pick_theme(Enum.map_join(members, & &1.name)),
           token: token,
           title: "Scavenger team — #{best}",
           description: Enum.map_join(members, ", ", & &1.name),
@@ -105,7 +119,7 @@ defmodule NeuroScavWeb.ShareController do
         conn
         |> put_status(:bad_request)
         |> put_share_layout()
-        |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+        |> render(:show, name: nil, rarity: nil, token: token)
     end
   end
 
@@ -119,6 +133,7 @@ defmodule NeuroScavWeb.ShareController do
 
         conn
         |> put_share_layout()
+        |> merge_assigns(location_assigns(report.location))
         |> render(:raid,
           location: report.location && RaidComponents.location_title(report.location),
           verdict: raid_verdict(report),
@@ -126,7 +141,6 @@ defmodule NeuroScavWeb.ShareController do
           members: Enum.map(report.members, &raid_member/1),
           loot: RaidComponents.loot_text(report.loot),
           border_color: raid_color(report),
-          theme: pick_theme(Enum.map_join(report.members, & &1.name)),
           token: token,
           title: title,
           description: description,
@@ -137,7 +151,7 @@ defmodule NeuroScavWeb.ShareController do
         conn
         |> put_status(:bad_request)
         |> put_share_layout()
-        |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+        |> render(:show, name: nil, rarity: nil, token: token)
     end
   end
 
@@ -147,7 +161,7 @@ defmodule NeuroScavWeb.ShareController do
         send_png(conn, "raid:" <> token, fn -> raid_og_svg(report) end)
 
       :error ->
-        send_png(conn, "raid:?", fn -> build_og_svg("???", "common", "void") end)
+        send_png(conn, "raid:?", fn -> build_og_svg("???", "common", nil) end)
     end
   end
 
@@ -206,13 +220,17 @@ defmodule NeuroScavWeb.ShareController do
   end
 
   def og_image(conn, %{"token" => token}) do
-    {name, rarity, theme} =
+    {name, rarity, location} =
       case decode_token(token) do
-        {:ok, name, rarity} -> {name, rarity, pick_theme(name)}
-        :error -> {"???", "common", "void"}
+        {:ok, name, rarity} -> {name, rarity, pick_location(name)}
+        :error -> {"???", "common", nil}
       end
 
-    send_png(conn, token, fn -> build_og_svg(name, rarity, theme) end)
+    send_png(conn, token, fn ->
+      Gettext.with_locale(NeuroScavWeb.Gettext, "en", fn ->
+        build_og_svg(name, rarity, location)
+      end)
+    end)
   end
 
   def team_og_image(conn, %{"token" => token}) do
@@ -222,8 +240,13 @@ defmodule NeuroScavWeb.ShareController do
         :error -> [%{name: "???", rarity: "common"}]
       end
 
-    theme = pick_theme(Enum.map_join(members, & &1.name))
-    send_png(conn, "team:" <> token, fn -> build_team_og_svg(members, theme) end)
+    location = pick_location(Enum.map_join(members, & &1.name))
+
+    send_png(conn, "team:" <> token, fn ->
+      Gettext.with_locale(NeuroScavWeb.Gettext, "en", fn ->
+        build_team_og_svg(members, location)
+      end)
+    end)
   end
 
   defp put_share_layout(conn) do
@@ -267,19 +290,58 @@ defmodule NeuroScavWeb.ShareController do
     end
   end
 
-  defp pick_theme(name) do
-    Enum.at(@card_themes, :erlang.phash2(name, length(@card_themes)))
+  defp pick_location(name) do
+    Enum.at(@locations, :erlang.phash2(name, length(@locations)))
+  end
+
+  # a share page's location: the scene on its card's strip, the colour over
+  # the map behind it
+  defp location_assigns(location) do
+    [
+      art: to_string(location || :default),
+      location_class: location && "raid-location-#{location}"
+    ]
+  end
+
+  # the region's tactical map under a share card, washed in its location's
+  # colour and darker at the edges; the region's name over the card's corner
+  defp region_backdrop(location, %{cx: cx, cy: cy}) do
+    """
+      <defs>
+        <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+          <stop offset="0" stop-color="#000000" stop-opacity="0.1"/>
+          <stop offset="1" stop-color="#000000" stop-opacity="0.8"/>
+        </radialGradient>
+      </defs>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#0d110b"/>
+      <svg width="#{@canvas.w}" height="#{@canvas.h}" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+        #{@region_map}
+      </svg>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#{Map.get(@location_tints, location, "#000000")}" opacity="0.12"/>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="url(#vignette)"/>
+      <text x="#{cx}" y="#{cy - 14}" font-family="Bender, Arial, sans-serif" font-size="15" font-weight="bold" letter-spacing="3" fill="#9aab68">#{gettext("Share region") |> String.upcase() |> xml_escape()}</text>
+    """
+  end
+
+  # a share card's strip: its location's scene, the ground kept
+  defp location_strip(location, %{cx: cx, cy: cy, cw: cw, art_h: art_h}) do
+    """
+      <g clip-path="url(#card-clip)">
+        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 640 200" preserveAspectRatio="xMidYMax slice">
+          #{Map.fetch!(@location_art, to_string(location || :default))}
+        </svg>
+      </g>
+    """
   end
 
   # canvas 1200×630, card 300×480 centered → cx=450, cy=75, mid_x=600
-  defp build_og_svg(name, rarity, theme) do
+  defp build_og_svg(name, rarity, location) do
     {border_color, text_color} = Map.get(@rarity_colors, rarity, {"#888888", "#aaaaaa"})
-    theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
 
     badge_label = rarity |> String.upcase() |> xml_escape()
     lines = name |> String.split(" ", parts: 3) |> Enum.map(&xml_escape/1)
 
-    %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @card
+    %{cx: cx, cy: cy, cw: cw, ch: ch} = @card
 
     %{
       font_size: font_size,
@@ -312,14 +374,10 @@ defmodule NeuroScavWeb.ShareController do
         </clipPath>
         #{name_grad_def}
       </defs>
-      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
+      #{region_backdrop(location, @card)}
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
-      <g clip-path="url(#card-clip)">
-        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-          #{theme_inner}
-        </svg>
-      </g>
+      #{location_strip(location, @card)}
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{border_color}" stroke-width="4"/>
       #{decorations}
       <line x1="#{cx}" y1="#{name_box_y - 7}" x2="#{cx + cw}" y2="#{name_box_y - 7}" stroke="#{border_color}" stroke-width="1" opacity="0.5"/>
@@ -344,12 +402,11 @@ defmodule NeuroScavWeb.ShareController do
     """
   end
 
-  # canvas 1200×630, team card 560×480 centered: theme art strip, then one row per member
-  defp build_team_og_svg(members, theme) do
+  # canvas 1200×630, team card 560×480 centered: the location's strip, then one row per member
+  defp build_team_og_svg(members, location) do
     %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @team_card
     best = best_rarity(members)
     border_color = rarity_color(best)
-    theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
 
     rows =
       members
@@ -373,14 +430,10 @@ defmodule NeuroScavWeb.ShareController do
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
         </clipPath>
       </defs>
-      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
+      #{region_backdrop(location, @team_card)}
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{border_color}" opacity="0.15"/>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
-      <g clip-path="url(#card-clip)">
-        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-          #{theme_inner}
-        </svg>
-      </g>
+      #{location_strip(location, @team_card)}
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{border_color}" stroke-width="4"/>
       #{rarity_decorations(best, border_color, @team_card)}
       <line x1="#{cx}" y1="#{cy + art_h}" x2="#{cx + cw}" y2="#{cy + art_h}" stroke="#{border_color}" stroke-width="1" opacity="0.5"/>
@@ -398,8 +451,6 @@ defmodule NeuroScavWeb.ShareController do
   defp build_raid_og_svg(report) do
     %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @raid_card
     color = raid_color(report)
-    theme = pick_theme(Enum.map_join(report.members, & &1.name))
-    theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
     mid_x = cx + div(cw, 2)
     loot = RaidComponents.loot_text(report.loot)
     loot = if String.length(loot) > 70, do: String.slice(loot, 0, 69) <> "…", else: loot
@@ -409,13 +460,13 @@ defmodule NeuroScavWeb.ShareController do
       |> Enum.with_index()
       |> Enum.map_join("\n", fn {member, i} ->
         %{name: name, status: status, color: row_color} = raid_member(member)
-        y = cy + art_h + 160 + i * 42
+        y = cy + art_h + 134 + i * 38
         name_color = if member.alive, do: "#ffffff", else: "#8a8a8a"
 
         """
-          <rect x="#{cx + 40}" y="#{y}" width="#{cw - 80}" height="34" rx="10" fill="#16161e" stroke="#{row_color}" stroke-width="2"/>
-          <text x="#{cx + 58}" y="#{y + 24}" font-family="Bender, Arial, sans-serif" font-size="21" font-weight="bold" fill="#{name_color}">#{name |> String.slice(0, 30) |> xml_escape()}</text>
-          <text x="#{cx + cw - 58}" y="#{y + 23}" font-family="Bender, Arial, sans-serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#{row_color}" text-anchor="end">#{status |> String.upcase() |> xml_escape()}</text>
+          <rect x="#{cx + 40}" y="#{y}" width="#{cw - 80}" height="31" rx="10" fill="#16161e" stroke="#{row_color}" stroke-width="2"/>
+          <text x="#{cx + 58}" y="#{y + 22}" font-family="Bender, Arial, sans-serif" font-size="20" font-weight="bold" fill="#{name_color}">#{name |> String.slice(0, 30) |> xml_escape()}</text>
+          <text x="#{cx + cw - 58}" y="#{y + 21}" font-family="Bender, Arial, sans-serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#{row_color}" text-anchor="end">#{status |> String.upcase() |> xml_escape()}</text>
         """
       end)
 
@@ -425,7 +476,7 @@ defmodule NeuroScavWeb.ShareController do
           ""
 
         text ->
-          ~s(<text x="#{mid_x}" y="#{cy + art_h + 128}" font-family="Bender, Arial, sans-serif" font-size="22" fill="#4caf50" text-anchor="middle">#{xml_escape(text)}</text>)
+          ~s(<text x="#{mid_x}" y="#{cy + art_h + 110}" font-family="Bender, Arial, sans-serif" font-size="22" fill="#4caf50" text-anchor="middle">#{xml_escape(text)}</text>)
       end
 
     """
@@ -436,18 +487,14 @@ defmodule NeuroScavWeb.ShareController do
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
         </clipPath>
       </defs>
-      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
+      #{region_backdrop(report.location, @raid_card)}
       <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{color}" opacity="0.15"/>
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
-      <g clip-path="url(#card-clip)">
-        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
-          #{theme_inner}
-        </svg>
-      </g>
+      #{location_strip(report.location, @raid_card)}
       <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{color}" stroke-width="4"/>
       <line x1="#{cx}" y1="#{cy + art_h}" x2="#{cx + cw}" y2="#{cy + art_h}" stroke="#{color}" stroke-width="1" opacity="0.5"/>
-      <text x="#{mid_x}" y="#{cy + art_h + 50}" font-family="Bender, Arial, sans-serif" font-size="34" font-weight="bold" letter-spacing="2" fill="#d49300" text-anchor="middle">#{report |> raid_title() |> String.upcase() |> xml_escape()}</text>
-      <text x="#{mid_x}" y="#{cy + art_h + 92}" font-family="Bender, Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle">#{report |> raid_verdict() |> xml_escape()}</text>
+      <text x="#{mid_x}" y="#{cy + art_h + 42}" font-family="Bender, Arial, sans-serif" font-size="32" font-weight="bold" letter-spacing="2" fill="#d49300" text-anchor="middle">#{report |> raid_title() |> String.upcase() |> xml_escape()}</text>
+      <text x="#{mid_x}" y="#{cy + art_h + 80}" font-family="Bender, Arial, sans-serif" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">#{report |> raid_verdict() |> xml_escape()}</text>
       #{exit_line}
       #{rows}
       <text x="#{mid_x}" y="#{cy + ch - 28}" font-family="Bender, Arial, sans-serif" font-size="19" fill="#c8c8c8" text-anchor="middle">#{xml_escape(loot)}</text>

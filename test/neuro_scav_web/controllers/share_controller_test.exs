@@ -3,14 +3,14 @@ defmodule NeuroScavWeb.ShareControllerTest do
 
   alias NeuroScav.Raid.Report
 
-  @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
+  @locations NeuroScav.Raid.locations()
 
   defp token_for(name, rarity) do
     Base.url_encode64("#{name}|#{rarity}", padding: false)
   end
 
-  defp expected_theme(name) do
-    Enum.at(@card_themes, :erlang.phash2(name, length(@card_themes)))
+  defp expected_location(name) do
+    Enum.at(@locations, :erlang.phash2(name, length(@locations)))
   end
 
   describe "show/2 with a valid token" do
@@ -46,32 +46,37 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert html_response(conn, 200) =~ "rare-name"
     end
 
-    test "applies a card art theme class derived from the name hash", %{conn: conn} do
+    test "lies on the region's map, the card showing a location by the name's hash", %{
+      conn: conn
+    } do
       name = "Alice Adams"
-      conn = get(conn, ~p"/share/#{token_for(name, "rare")}")
-      assert html_response(conn, 200) =~ "theme-#{expected_theme(name)}"
+      html = conn |> get(~p"/share/#{token_for(name, "rare")}") |> html_response(200)
+      location = expected_location(name)
+
+      assert html =~ "share-map-page raid-location-#{location}"
+      assert html =~ "share-art-#{location}" and html =~ "Норвинская область"
     end
 
-    test "theme is deterministic — same name always gives the same theme", %{conn: conn} do
+    test "location is deterministic — same name always gives the same one", %{conn: conn} do
       name = "Иван Петров"
       token = token_for(name, "legendary")
       html1 = conn |> get(~p"/share/#{token}") |> html_response(200)
       html2 = Phoenix.ConnTest.build_conn() |> get(~p"/share/#{token}") |> html_response(200)
-      assert html1 =~ "theme-#{expected_theme(name)}"
-      assert html2 =~ "theme-#{expected_theme(name)}"
+      assert html1 =~ "share-art-#{expected_location(name)}"
+      assert html2 =~ "share-art-#{expected_location(name)}"
     end
 
-    test "different names produce different themes across the pool", %{conn: conn} do
+    test "different names produce different locations across the pool", %{conn: conn} do
       names = ~w(Alice Bob Charlie Diana Eve Frank Grace Henry Iris Jake Karl)
 
-      themes =
+      locations =
         Enum.map(names, fn name ->
           conn = get(conn, ~p"/share/#{token_for(name, "common")}")
           html = html_response(conn, 200)
-          Enum.find(@card_themes, fn t -> html =~ "theme-#{t}" end)
+          Enum.find(@locations, fn location -> html =~ "share-art-#{location}" end)
         end)
 
-      assert Enum.uniq(themes) |> length() > 1
+      assert Enum.uniq(locations) |> length() > 1
     end
 
     test "renders the copy link button", %{conn: conn} do
@@ -363,6 +368,14 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert html =~ "/share/team/#{token}/image"
     end
 
+    test "lies on the region's map, the card showing a location by the names' hash", %{conn: conn} do
+      html = conn |> get(~p"/share/team/#{team_token(@team)}") |> html_response(200)
+      location = expected_location(Enum.map_join(@team, &elem(&1, 0)))
+
+      assert html =~ "share-map-page raid-location-#{location}"
+      assert html =~ "share-art-#{location}" and html =~ "Норвинская область"
+    end
+
     test "rejects broken tokens", %{conn: conn} do
       for token <- [
             "not base64!",
@@ -403,6 +416,23 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert html =~ "Alice Adams" and html =~ "Bob Brown" and html =~ "погиб"
       assert html =~ "share-raid-lost"
       assert html =~ ~s(href="/raid")
+    end
+
+    test "lies on the region's map, the card showing its location", %{conn: conn} do
+      html = conn |> get(~p"/share/raid/#{raid_token()}") |> html_response(200)
+
+      assert html =~ "share-map-page raid-location-customs"
+      assert html =~ "share-art-customs" and html =~ "Норвинская область"
+
+      # a raid of no location: the region's own scene, and still an image
+      token = Report.encode(%{@raid_report | location: nil})
+      assert conn |> get(~p"/share/raid/#{token}") |> html_response(200) =~ "share-art-default"
+
+      assert conn
+             |> recycle()
+             |> get(~p"/share/raid/#{token}/image")
+             |> response(200)
+             |> valid_png?()
     end
 
     test "its preview is in the language the raid was told in", %{conn: conn} do

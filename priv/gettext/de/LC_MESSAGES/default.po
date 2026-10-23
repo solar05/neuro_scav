@@ -1999,3 +1999,6 @@ msgstr "Nichts herausgebracht"
 
 msgid "Raid result kia"
 msgstr "gefallen"
+
+msgid "Share region"
+msgstr "Oblast Norwinsk · Tarkow"
