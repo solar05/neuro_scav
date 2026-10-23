@@ -38,4 +38,13 @@
     </.link>
   </p>
   <.share_button :if={@team != []} team={@team} />
+  <p :if={@team != []} class="lead mt-2">
+    <.link
+      id="btn-team-raid"
+      navigate={NeuroScavWeb.NeuroScavengerLive.Raid.path(@team)}
+      class="btn btn-old-blended btn-lg blended d-flex justify-content-center w-100"
+    >
+      {gettext("Go raid")}
+    </.link>
+  </p>
 </div>

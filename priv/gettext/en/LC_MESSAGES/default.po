@@ -489,3 +489,453 @@ msgstr "Lucky…"
 
 msgid "Phrase wow"
 msgstr "Wow!"
+
+msgid "Anomaly"
+msgstr "Battle conditions"
+
+msgid "Anomaly rules"
+msgstr "Every battle gets random conditions that bend the rules."
+
+msgid "Raid"
+msgstr "Raid"
+
+msgid "Go raid"
+msgstr "Go on a raid"
+
+msgid "Raid intro %{steps}"
+msgstr "A squad of five scavs goes into a raid: %{steps} encounters, in each you pick an action and whoever is best at its stat tries it. You may lose fighters and fill the stash with loot."
+
+msgid "Recruit squad"
+msgstr "Recruit a squad"
+
+msgid "Raid team hint"
+msgstr "Or build a team on the Team page and send it from there"
+
+msgid "Raid step %{n} %{total}"
+msgstr "Encounter %{n} of %{total}"
+
+msgid "Raid success %{name}"
+msgstr "%{name} made it!"
+
+msgid "Raid lost %{name}"
+msgstr "%{name} didn't make it out…"
+
+msgid "Raid nothing %{name}"
+msgstr "%{name} found nothing."
+
+msgid "Raid passed"
+msgstr "The squad walked on by."
+
+msgid "Raid pass by"
+msgstr "Walk on by"
+
+msgid "Raid safe"
+msgstr "no risk"
+
+msgid "Raid dead"
+msgstr "KIA"
+
+msgid "Raid over"
+msgstr "Raid over"
+
+msgid "Raid clean"
+msgstr "Clean extract: everyone made it out!"
+
+msgid "Raid survived %{alive} %{total}"
+msgstr "%{alive} of %{total} made it out."
+
+msgid "Raid failed"
+msgstr "Nobody made it out of the raid."
+
+msgid "Raid again"
+msgstr "Again with this squad"
+
+msgid "Raid new squad"
+msgstr "New squad"
+
+msgid "Stash"
+msgstr "Stash"
+
+msgid "Anomaly rng"
+msgstr "Tarkov RNG"
+
+msgid "Anomaly rng rule"
+msgstr "A luck round is worth 2 points."
+
+msgid "Anomaly naked"
+msgstr "Naked run"
+
+msgid "Anomaly naked rule"
+msgstr "Nothing to lose: in every round the lower stat wins. The gnome still beats everyone."
+
+msgid "Anomaly night"
+msgstr "Night raid"
+
+msgid "Anomaly night rule"
+msgstr "Pitch dark: stats stay hidden until the reveal — judge by name and rarity."
+
+msgid "Anomaly wipe"
+msgstr "Wipe"
+
+msgid "Anomaly wipe rule"
+msgstr "Everyone starts from scratch: rarity bonuses don't work, only the name matters."
+
+msgid "Anomaly uninsured"
+msgstr "No insurance"
+
+msgid "Anomaly uninsured rule"
+msgstr "No second chance: no redraws, and a draft table has no spare cards."
+
+msgid "Item sj6"
+msgstr "SJ6 stimulant"
+
+msgid "Item meldonin"
+msgstr "Meldonin"
+
+msgid "Item rooster"
+msgstr "Golden rooster"
+
+msgid "Item ledx"
+msgstr "LEDX"
+
+msgid "Item all bonus %{bonus}"
+msgstr "+%{bonus} to all"
+
+msgid "Raid loot %{item}"
+msgstr "Into the stash: «%{item}»!"
+
+msgid "Raid pmc"
+msgstr "PMCs on Customs"
+
+msgid "Raid pmc text"
+msgstr "Footsteps behind the dorms: a PMC squad is heading straight at you."
+
+msgid "Raid pmc strength"
+msgstr "Meet them with fire"
+
+msgid "Raid pmc agility"
+msgstr "Slip away through the garages"
+
+msgid "Raid reshala"
+msgstr "Reshala and his guards"
+
+msgid "Raid reshala text"
+msgstr "Reshala lounges at the gas station, guards in tracksuits all around."
+
+msgid "Raid reshala strength"
+msgstr "Storm it"
+
+msgid "Raid reshala agility"
+msgstr "Sneak past"
+
+msgid "Raid sniper"
+msgstr "A sniper on the roof"
+
+msgid "Raid sniper text"
+msgstr "A sniper fires from the roof — dust kicks up a step away."
+
+msgid "Raid sniper agility"
+msgstr "Dash from cover to cover"
+
+msgid "Raid sniper luck"
+msgstr "Freeze and hope"
+
+msgid "Raid mines"
+msgstr "A minefield"
+
+msgid "Raid mines text"
+msgstr "A sign on the fence says “Mines”. Nobody on Interchange writes that for fun."
+
+msgid "Raid mines agility"
+msgstr "Step in the old tracks"
+
+msgid "Raid mines luck"
+msgstr "Run straight across"
+
+msgid "Raid office"
+msgstr "A safe in the office"
+
+msgid "Raid office text"
+msgstr "There's a safe in the office. No key, but there's a crowbar."
+
+msgid "Raid office strength"
+msgstr "Pry it open"
+
+msgid "Raid bait"
+msgstr "Suspicious loot"
+
+msgid "Raid bait text"
+msgstr "Expensive loot lies in the middle of an open field. Looks a lot like bait."
+
+msgid "Raid bait agility"
+msgstr "Grab it"
+
+msgid "Raid killa"
+msgstr "Killa in ULTRA"
+
+msgid "Raid killa text"
+msgstr "Killa's yellow helmet flashes between the shops."
+
+msgid "Raid killa strength"
+msgstr "Take the fight"
+
+msgid "Raid killa luck"
+msgstr "Hide in a shop"
+
+msgid "Raid wounded"
+msgstr "A wounded scav"
+
+msgid "Raid wounded text"
+msgstr "A scav groans by the fire: “Brother, got a medkit?”"
+
+msgid "Raid wounded luck"
+msgstr "Share a medkit"
+
+msgid "Raid drop %{name} %{item}"
+msgstr "%{name} got away but dropped «%{item}»."
+
+msgid "Raid drop nothing %{name}"
+msgstr "%{name} barely got away — good thing the stash was empty."
+
+msgid "Raid revive %{name}"
+msgstr "%{name} is back in the fight!"
+
+msgid "Raid tagilla"
+msgstr "Tagilla on Factory"
+
+msgid "Raid tagilla text"
+msgstr "From the dark of the workshop comes the scrape of a sledgehammer on metal."
+
+msgid "Raid tagilla strength"
+msgstr "Face him point-blank"
+
+msgid "Raid tagilla agility"
+msgstr "Slip out through gate 3"
+
+msgid "Raid shturman"
+msgstr "Shturman at the sawmill"
+
+msgid "Raid shturman text"
+msgstr "An SVD works methodically from the sawmill — Shturman guards his stash."
+
+msgid "Raid shturman agility"
+msgstr "Flank him"
+
+msgid "Raid shturman luck"
+msgstr "Wait behind the logs"
+
+msgid "Raid cultists"
+msgstr "Cultists at dusk"
+
+msgid "Raid cultists text"
+msgstr "Hooded figures move silently between the trees. Better not upset them."
+
+msgid "Raid cultists agility"
+msgstr "Run without looking back"
+
+msgid "Raid cultists luck"
+msgstr "Hide in the bushes"
+
+msgid "Raid raiders"
+msgstr "Raiders on Reserve"
+
+msgid "Raid raiders text"
+msgstr "A siren wails: raiders in full armor come out of the bunker."
+
+msgid "Raid raiders strength"
+msgstr "Hold the line"
+
+msgid "Raid raiders agility"
+msgstr "Fall back through the barracks"
+
+msgid "Raid toll"
+msgstr "Paid extract"
+
+msgid "Raid toll text"
+msgstr "A bored scav at the exit holds a sign: “Passage — 7000 ₽”."
+
+msgid "Raid toll luck"
+msgstr "Haggle"
+
+msgid "Raid airdrop"
+msgstr "Airdrop"
+
+msgid "Raid airdrop text"
+msgstr "An airdrop floats down on a parachute. Everyone on the map saw it."
+
+msgid "Raid airdrop agility"
+msgstr "Get there first"
+
+msgid "Raid medic"
+msgstr "A scav medic"
+
+msgid "Raid medic text"
+msgstr "A scav with a bag of meds hides in the basement: “I'll patch one of yours up — if we make a deal.”"
+
+msgid "Raid medic luck"
+msgstr "Strike a deal"
+
+msgid "Raid bridge"
+msgstr "Ambush on the bridge"
+
+msgid "Raid bridge text"
+msgstr "An abandoned truck in the middle of the bridge — a perfect spot for an ambush."
+
+msgid "Raid bridge agility"
+msgstr "Run through under fire"
+
+msgid "Raid bridge luck"
+msgstr "Crawl along the railing"
+
+msgid "Stash empty"
+msgstr "Empty"
+
+msgid "Raid sanitar"
+msgstr "Sanitar on Shoreline"
+
+msgid "Raid sanitar text"
+msgstr "Sanitar and his men run the resort — along with a stock of meds."
+
+msgid "Raid sanitar strength"
+msgstr "Storm the resort"
+
+msgid "Raid sanitar luck"
+msgstr "Trade for meds"
+
+msgid "Raid sanitar agility"
+msgstr "Go around by the beach"
+
+msgid "Raid glukhar"
+msgstr "Glukhar at the barracks"
+
+msgid "Raid glukhar text"
+msgstr "Glukhar at the barracks, his guards, and a machine gun on the roof."
+
+msgid "Raid glukhar strength"
+msgstr "Go in hard"
+
+msgid "Raid glukhar agility"
+msgstr "Crawl along the fence"
+
+msgid "Raid kollontay"
+msgstr "Kollontay on Streets"
+
+msgid "Raid kollontay text"
+msgstr "Major Kollontay blocks the street with his baton: “Papers, please!”"
+
+msgid "Raid kollontay luck"
+msgstr "Show some “papers”"
+
+msgid "Raid kollontay strength"
+msgstr "Fight back"
+
+msgid "Raid zryachiy"
+msgstr "Zryachiy at the lighthouse"
+
+msgid "Raid zryachiy text"
+msgstr "Zryachiy's scope glints from the lighthouse. He doesn't like visitors."
+
+msgid "Raid zryachiy agility"
+msgstr "Dash along the cliffs"
+
+msgid "Raid vex"
+msgstr "Car extract"
+
+msgid "Raid vex text"
+msgstr "A car waits by the road. The driver eyes your backpacks: “The ride isn't free.”"
+
+msgid "Raid vex luck"
+msgstr "Talk the price down"
+
+msgid "Raid tripwire"
+msgstr "A tripwire"
+
+msgid "Raid tripwire text"
+msgstr "A thin wire glints across the doorway."
+
+msgid "Raid tripwire agility"
+msgstr "Step over carefully"
+
+msgid "Raid tripwire luck"
+msgstr "Disarm it and take the grenade"
+
+msgid "Raid dead_pmc"
+msgstr "A dead PMC"
+
+msgid "Raid dead_pmc text"
+msgstr "A PMC lies under the stairs with a full backpack. Whoever killed him may be close."
+
+msgid "Raid dead_pmc luck"
+msgstr "Search the body"
+
+msgid "Raid labs"
+msgstr "The Lab"
+
+msgid "Raid labs text"
+msgstr "A red keycard opens the Lab. Inside: raiders and the best loot in Tarkov."
+
+msgid "Raid labs strength"
+msgstr "Clear the Lab"
+
+msgid "Raid labs agility"
+msgstr "Run for the safes"
+
+msgid "Raid legend %{value}"
+msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}"
+
+msgid "Raid train %{name} %{stat} %{value}"
+msgstr "%{name} got better: %{stat} +%{value}!"
+
+msgid "Raid wound %{name} %{stat} %{value}"
+msgstr "%{name} is hurt: %{stat} −%{value}."
+
+msgid "Raid promote %{name}"
+msgstr "%{name} levels up — rarity goes up!"
+
+msgid "Raid obdolbos"
+msgstr "An Obdolbos syringe"
+
+msgid "Raid obdolbos text"
+msgstr "There's an Obdolbos in the medkit. The effect is down to luck."
+
+msgid "Raid obdolbos luck"
+msgstr "Inject it"
+
+msgid "Raid skirmish"
+msgstr "A firefight with scavs"
+
+msgid "Raid skirmish text"
+msgstr "Local scavs fire in every direction — they don't recognize their own."
+
+msgid "Raid skirmish strength"
+msgstr "Return fire"
+
+msgid "Raid skirmish agility"
+msgstr "Fall back around the corner"
+
+msgid "Raid stairs"
+msgstr "Rotten stairs"
+
+msgid "Raid stairs text"
+msgstr "The stairwell has rotted through — a three-meter drop."
+
+msgid "Raid stairs agility"
+msgstr "Jump the gap"
+
+msgid "Raid veteran"
+msgstr "A Tarkov veteran"
+
+msgid "Raid veteran text"
+msgstr "A grey-haired scav by the fire: “I'll teach you a trick or two — if you can take it.”"
+
+msgid "Raid veteran strength"
+msgstr "Take the trial"
+
+msgid "Raid lightkeeper"
+msgstr "The Lightkeeper"
+
+msgid "Raid lightkeeper text"
+msgstr "The Lightkeeper promises a special deal to whoever reaches him alive."
+
+msgid "Raid lightkeeper agility"
+msgstr "Make it to the lighthouse"

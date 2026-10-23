@@ -240,7 +240,8 @@ defmodule NeuroScavWeb.CoreComponents do
       {"/check_name", gettext("Name check")},
       {"/collection", gettext("Collection")},
       {"/battle", gettext("Battle")},
-      {"/quiz", gettext("Quiz")}
+      {"/quiz", gettext("Quiz")},
+      {"/raid", gettext("Raid")}
     ]
 
     {current_path, current_label} =
@@ -304,7 +305,8 @@ defmodule NeuroScavWeb.CoreComponents do
       :check_name,
       :collection,
       :battle,
-      :quiz
+      :quiz,
+      :raid
     ]
   end
 
@@ -318,7 +320,8 @@ defmodule NeuroScavWeb.CoreComponents do
       "/check_name",
       "/collection",
       "/battle",
-      "/quiz"
+      "/quiz",
+      "/raid"
     ]
   end
 
@@ -468,11 +471,13 @@ defmodule NeuroScavWeb.CoreComponents do
   Renders the stat rows of a battle card (`NeuroScav.BattleRoom.card/1`).
 
   Stats in `won` are highlighted; `first_round` numbers the rows for the
-  battle reveal animation.
+  battle reveal animation; `hidden` shows "?" instead of the values (the
+  values never reach the page).
   """
   attr :card, :map, required: true
   attr :won, :list, default: []
   attr :first_round, :integer, default: 0
+  attr :hidden, :boolean, default: false
 
   def card_stats(assigns) do
     ~H"""
@@ -481,12 +486,13 @@ defmodule NeuroScavWeb.CoreComponents do
         :for={{stat, i} <- Enum.with_index(NeuroScav.BattleRoom.stats())}
         class={["battle-stat", stat in @won && "battle-stat-win"]}
         style={"--round: #{@first_round + i}"}
+        data-stat={stat}
       >
         <span>{NeuroScav.Locale.get_text("Stat #{stat}")}</span>
         <span class="battle-stat-bar">
-          <span style={"width: #{@card.stats[stat]}%"}></span>
+          <span :if={not @hidden} style={"width: #{@card.stats[stat]}%"}></span>
         </span>
-        <b>{@card.stats[stat]}</b>
+        <b>{if @hidden, do: "?", else: @card.stats[stat]}</b>
       </li>
     </ul>
     """

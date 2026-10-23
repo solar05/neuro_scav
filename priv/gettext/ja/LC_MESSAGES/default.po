@@ -478,3 +478,453 @@ msgstr "Rakkii…"
 
 msgid "Phrase wow"
 msgstr "Sugoi!"
+
+msgid "Anomaly"
+msgstr "Batoru jouken"
+
+msgid "Anomaly rules"
+msgstr "Batoru goto ni randamu na jouken ga ruuru wo kaeru."
+
+msgid "Raid"
+msgstr "Tansaku"
+
+msgid "Go raid"
+msgstr "Tansaku e"
+
+msgid "Raid intro %{steps}"
+msgstr "Go-nin no yabanjin ga reido e: %{steps} kai no deai. Koudou wo erabu to, sono suteeta ga ichiban takai nakama ga chousen suru. Nakama wo ushinau koto mo, kakushi-dana wo ruuto de umeru koto mo aru."
+
+msgid "Recruit squad"
+msgstr "Butai wo atsumeru"
+
+msgid "Raid team hint"
+msgstr "Mata wa Chiimu peeji de chiimu wo tsukutte, soko kara okurou"
+
+msgid "Raid step %{n} %{total}"
+msgstr "%{total} no uchi %{n} banme"
+
+msgid "Raid success %{name}"
+msgstr "%{name} wa seikou!"
+
+msgid "Raid lost %{name}"
+msgstr "%{name} wa dasshutsu dekinakatta…"
+
+msgid "Raid nothing %{name}"
+msgstr "%{name} wa nani mo mitsukenakatta."
+
+msgid "Raid passed"
+msgstr "Butai wa sono mama susunda."
+
+msgid "Raid pass by"
+msgstr "Toorisugiru"
+
+msgid "Raid safe"
+msgstr "risuku nashi"
+
+msgid "Raid dead"
+msgstr "Senshi"
+
+msgid "Raid over"
+msgstr "Tansaku shuuryou"
+
+msgid "Raid clean"
+msgstr "Kanpeki na dasshutsu: zenin buji!"
+
+msgid "Raid survived %{alive} %{total}"
+msgstr "%{total} nin-chuu %{alive} nin ga dasshutsu."
+
+msgid "Raid failed"
+msgstr "Daremo reido kara dasshutsu dekinakatta."
+
+msgid "Raid again"
+msgstr "Kono butai de mou ichido"
+
+msgid "Raid new squad"
+msgstr "Atarashii butai"
+
+msgid "Stash"
+msgstr "Kakushi-dana"
+
+msgid "Anomaly rng"
+msgstr "Tarukofu ranmu"
+
+msgid "Anomaly rng rule"
+msgstr "Un no raundo wa 2 pointo."
+
+msgid "Anomaly naked"
+msgstr "Hadaka run"
+
+msgid "Anomaly naked rule"
+msgstr "Ushinau mono wa nai: kaku raundo de chiisai suteeta ga katsu. Noomu wa sore demo saikyou."
+
+msgid "Anomaly night"
+msgstr "Naito reido"
+
+msgid "Anomaly night rule"
+msgstr "Makkura: suteeta wa saigo made kakusareru — namae to rea-do de erabou."
+
+msgid "Anomaly wipe"
+msgstr "Waipu"
+
+msgid "Anomaly wipe rule"
+msgstr "Zenin zero kara: rea-do boonasu nashi, namae dake ga kagi."
+
+msgid "Anomaly uninsured"
+msgstr "Hoken nashi"
+
+msgid "Anomaly uninsured rule"
+msgstr "Ni-do me wa nai: hikinaoshi nashi. Dorafuto no ba ni yobun na kaado mo nai."
+
+msgid "Item sj6"
+msgstr "SJ6 shigekizai"
+
+msgid "Item meldonin"
+msgstr "Merudonin"
+
+msgid "Item rooster"
+msgstr "Ougon no ondori"
+
+msgid "Item ledx"
+msgstr "LEDX"
+
+msgid "Item all bonus %{bonus}"
+msgstr "Subete ni +%{bonus}"
+
+msgid "Raid loot %{item}"
+msgstr "Kakushi-dana e: «%{item}»!"
+
+msgid "Raid pmc"
+msgstr "Kasutamuzu no PMC"
+
+msgid "Raid pmc text"
+msgstr "Ryou no ura kara ashioto: PMC no butai ga massugu mukatte kuru."
+
+msgid "Raid pmc strength"
+msgstr "Hi de mukaeuchi"
+
+msgid "Raid pmc agility"
+msgstr "Gareeji kara nukeru"
+
+msgid "Raid reshala"
+msgstr "Reshara to goei"
+
+msgid "Raid reshala text"
+msgstr "Gasorin sutando ni Reshara, mawari ni jaaji no goei."
+
+msgid "Raid reshala strength"
+msgstr "Totsugeki"
+
+msgid "Raid reshala agility"
+msgstr "Shizuka ni tooru"
+
+msgid "Raid sniper"
+msgstr "Yane no sogekihei"
+
+msgid "Raid sniper text"
+msgstr "Yane kara sogeki — ippo saki de suna ga mau."
+
+msgid "Raid sniper agility"
+msgstr "Monokage kara monokage e"
+
+msgid "Raid sniper luck"
+msgstr "Ugokazu ni inoru"
+
+msgid "Raid mines"
+msgstr "Jirai-gen"
+
+msgid "Raid mines text"
+msgstr "Fensu ni «Jirai» no kanban. Intaachenji de wa joudan ja nai."
+
+msgid "Raid mines agility"
+msgstr "Ashiato wo tadoru"
+
+msgid "Raid mines luck"
+msgstr "Massugu kakenukeru"
+
+msgid "Raid office"
+msgstr "Jimusho no kinko"
+
+msgid "Raid office text"
+msgstr "Jimusho ni kinko. Kagi wa nai ga, baaru wa aru."
+
+msgid "Raid office strength"
+msgstr "Baaru de kojiakeru"
+
+msgid "Raid bait"
+msgstr "Ayashii ruuto"
+
+msgid "Raid bait text"
+msgstr "Hiraketa nohara no mannaka ni koukyuu ruuto. Wana ni mieru."
+
+msgid "Raid bait agility"
+msgstr "Toru"
+
+msgid "Raid killa"
+msgstr "ULTRA no Kira"
+
+msgid "Raid killa text"
+msgstr "Mise no aida ni Kira no kiiroi herumetto."
+
+msgid "Raid killa strength"
+msgstr "Tatakau"
+
+msgid "Raid killa luck"
+msgstr "Mise ni kakureru"
+
+msgid "Raid wounded"
+msgstr "Fushou shita yabanjin"
+
+msgid "Raid wounded text"
+msgstr "Takibi no soba de yabanjin ga umeku: «Kyoudai, kusuri aru ka?»"
+
+msgid "Raid wounded luck"
+msgstr "Kusuri wo wakeru"
+
+msgid "Raid drop %{name} %{item}"
+msgstr "%{name} wa nigeta ga, «%{item}» wo otoshita."
+
+msgid "Raid drop nothing %{name}"
+msgstr "%{name} wa girigiri nigeta — kakushi-dana ga kara de yokatta."
+
+msgid "Raid revive %{name}"
+msgstr "%{name} ga fukki shita!"
+
+msgid "Raid tagilla"
+msgstr "Koujou no Tagira"
+
+msgid "Raid tagilla text"
+msgstr "Kurai koujou kara, hanmaa ga kinzoku wo kosuru oto."
+
+msgid "Raid tagilla strength"
+msgstr "Shikin kyori de mukaeutsu"
+
+msgid "Raid tagilla agility"
+msgstr "Daisan geeto kara nukeru"
+
+msgid "Raid shturman"
+msgstr "Seizaisho no Shutoruman"
+
+msgid "Raid shturman text"
+msgstr "Seizaisho kara SVD ga tantan to utsu — Shutoruman ga kakushi-dana wo mamotte iru."
+
+msgid "Raid shturman agility"
+msgstr "Sokumen kara mawaru"
+
+msgid "Raid shturman luck"
+msgstr "Maruta no kage de matsu"
+
+msgid "Raid cultists"
+msgstr "Tasogare no kyoudan-in"
+
+msgid "Raid cultists text"
+msgstr "Ki no aida wo fuudo no kage ga oto mo naku ugoku. Okorasenai hou ga ii."
+
+msgid "Raid cultists agility"
+msgstr "Furikaerazu ni hashiru"
+
+msgid "Raid cultists luck"
+msgstr "Shigemi ni kakureru"
+
+msgid "Raid raiders"
+msgstr "Rizaabu no reidaa"
+
+msgid "Raid raiders text"
+msgstr "Sairen ga naru: kanzen soubi no reidaa ga bunkaa kara deru."
+
+msgid "Raid raiders strength"
+msgstr "Bougyo wo kataku suru"
+
+msgid "Raid raiders agility"
+msgstr "Heisha wo tootte taikyaku"
+
+msgid "Raid toll"
+msgstr "Yuuryou dasshutsu-guchi"
+
+msgid "Raid toll text"
+msgstr "Deguchi de taikutsu na yabanjin ga «Tsuukou 7000 ₽» no fuda wo motsu."
+
+msgid "Raid toll luck"
+msgstr "Negiru"
+
+msgid "Raid airdrop"
+msgstr "Eaa doroppu"
+
+msgid "Raid airdrop text"
+msgstr "Rakkasan de eaa doroppu ga oriru. Mappu no zenin ga mite ita."
+
+msgid "Raid airdrop agility"
+msgstr "Ichiban ni kakeyoru"
+
+msgid "Raid medic"
+msgstr "Eisei-hei no yabanjin"
+
+msgid "Raid medic text"
+msgstr "Chikashitsu ni kusuri wo motta yabanjin: «Hanashi ga tsukeba, hitori naoshite yaru.»"
+
+msgid "Raid medic luck"
+msgstr "Torihiki suru"
+
+msgid "Raid bridge"
+msgstr "Hashi no machibuse"
+
+msgid "Raid bridge text"
+msgstr "Hashi no mannaka ni sutesareta torakku — machibuse ni pittari."
+
+msgid "Raid bridge agility"
+msgstr "Hi no naka wo kakenukeru"
+
+msgid "Raid bridge luck"
+msgstr "Rankan zoi ni hau"
+
+msgid "Stash empty"
+msgstr "Kara"
+
+msgid "Raid sanitar"
+msgstr "Shoarain no Sanitaa"
+
+msgid "Raid sanitar text"
+msgstr "Ryouyoujo wa Sanitaa to sono nakama no mono — kusuri mo takusan aru."
+
+msgid "Raid sanitar strength"
+msgstr "Ryouyoujo ni totsugeki"
+
+msgid "Raid sanitar luck"
+msgstr "Kusuri to koukan suru"
+
+msgid "Raid sanitar agility"
+msgstr "Hamabe wo mawaru"
+
+msgid "Raid glukhar"
+msgstr "Heisha no Glukharu"
+
+msgid "Raid glukhar text"
+msgstr "Heisha ni Glukharu to goei, yane ni wa kikanjuu."
+
+msgid "Raid glukhar strength"
+msgstr "Kyoukou toppa"
+
+msgid "Raid glukhar agility"
+msgstr "Fensu zoi ni hau"
+
+msgid "Raid kollontay"
+msgstr "Machi no Korontai"
+
+msgid "Raid kollontay text"
+msgstr "Korontai shousa ga keibou de michi wo fusagu: «Shoumeisho wo!»"
+
+msgid "Raid kollontay luck"
+msgstr "«Shoumeisho» wo miseru"
+
+msgid "Raid kollontay strength"
+msgstr "Hangeki suru"
+
+msgid "Raid zryachiy"
+msgstr "Toudai no Zuryachii"
+
+msgid "Raid zryachiy text"
+msgstr "Toudai kara Zuryachii no sukoopu ga hikaru. Kyaku wa kirai da."
+
+msgid "Raid zryachiy agility"
+msgstr "Gake zoi ni kakenukeru"
+
+msgid "Raid vex"
+msgstr "Kuruma de dasshutsu"
+
+msgid "Raid vex text"
+msgstr "Michibata ni kuruma. Untenshu ga ryukku wo miru: «Tada ja nosenai.»"
+
+msgid "Raid vex luck"
+msgstr "Nedan wo sageru"
+
+msgid "Raid tripwire"
+msgstr "Torippu waiyaa"
+
+msgid "Raid tripwire text"
+msgstr "Doa no tokoro ni hosoi waiyaa ga hikaru."
+
+msgid "Raid tripwire agility"
+msgstr "Shinchou ni matagu"
+
+msgid "Raid tripwire luck"
+msgstr "Kaijo shite guraneedo wo morau"
+
+msgid "Raid dead_pmc"
+msgstr "PMC no itai"
+
+msgid "Raid dead_pmc text"
+msgstr "Kaidan no shita ni ryukku manpai no PMC. Koroshita yatsu ga chikaku ni iru kamo."
+
+msgid "Raid dead_pmc luck"
+msgstr "Asaru"
+
+msgid "Raid labs"
+msgstr "Raboratorii"
+
+msgid "Raid labs text"
+msgstr "Akai kaado de raboratorii ga hiraku. Naka ni wa reidaa to Tarukofu saikou no ruuto."
+
+msgid "Raid labs strength"
+msgstr "Rabo wo seiatsu"
+
+msgid "Raid labs agility"
+msgstr "Kinko made hashiru"
+
+msgid "Raid legend %{value}"
+msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}"
+
+msgid "Raid train %{name} %{stat} %{value}"
+msgstr "%{name} ga kitaerareta: %{stat} +%{value}!"
+
+msgid "Raid wound %{name} %{stat} %{value}"
+msgstr "%{name} wa fushou: %{stat} −%{value}."
+
+msgid "Raid promote %{name}"
+msgstr "%{name} ga shouka — rea-do appu!"
+
+msgid "Raid obdolbos"
+msgstr "Obudorubosu no chuushaki"
+
+msgid "Raid obdolbos text"
+msgstr "Kyuukyuubako ni Obudorubosu. Kouka wa un shidai."
+
+msgid "Raid obdolbos luck"
+msgstr "Utsu"
+
+msgid "Raid skirmish"
+msgstr "Yabanjin to no uchiai"
+
+msgid "Raid skirmish text"
+msgstr "Jimoto no yabanjin ga happou ni uchimakuru — nakama mo wakaranai."
+
+msgid "Raid skirmish strength"
+msgstr "Hangeki shageki"
+
+msgid "Raid skirmish agility"
+msgstr "Kado no ura e sagaru"
+
+msgid "Raid stairs"
+msgstr "Kusatta kaidan"
+
+msgid "Raid stairs text"
+msgstr "Kaidan ga kusatte iru — shita made san meetoru."
+
+msgid "Raid stairs agility"
+msgstr "Sukima wo tobikoeru"
+
+msgid "Raid veteran"
+msgstr "Tarukofu no beteran"
+
+msgid "Raid veteran text"
+msgstr "Takibi no soba ni shiraga no yabanjin: «Taerareru nara, waza wo oshiete yaru.»"
+
+msgid "Raid veteran strength"
+msgstr "Shiren wo ukeru"
+
+msgid "Raid lightkeeper"
+msgstr "Toudai mori"
+
+msgid "Raid lightkeeper text"
+msgstr "Toudai mori wa ikite tadoritsuita mono ni tokubetsu na torihiki wo yakusoku suru."
+
+msgid "Raid lightkeeper agility"
+msgstr "Toudai made tadoritsuku"

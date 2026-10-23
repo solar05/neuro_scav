@@ -214,16 +214,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
       seat
       | cards: Enum.zip_with(battle.cards[player], won, &Map.put(&1, :won, &2)),
         sets: battle.sets[player],
-        score_steps: score_steps(result.rounds, player),
+        score_steps: score_steps(result.rounds, player, battle.anomaly),
         outcome: outcome(result, player)
     }
   end
 
-  # a ready card is final, as BattleRoom.draw/3 enforces; a draft has no draws
+  # a ready card is final, as BattleRoom.draw/3 enforces; a draft has no draws,
+  # no insurance, no redraws
   defp can_draw?(%{mode: :draft}, _seat), do: false
 
   defp can_draw?(battle, %{player: player, own?: own?}) do
-    own? and (not Map.has_key?(battle.cards, player) or player not in battle.redrawn) and
+    drawn? = Map.has_key?(battle.cards, player)
+
+    own? and (not drawn? or (player not in battle.redrawn and battle.anomaly != :uninsured)) and
       player not in battle.ready
   end
 
@@ -318,6 +321,15 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   defp mode_rules(:draft), do: gettext("Draft rules")
   defp mode_rules(:duel), do: nil
 
+  # the pool and the cards before the reveal, in a night raid
+  defp in_the_dark?(%{anomaly: :night, result: nil}), do: true
+  defp in_the_dark?(_battle), do: false
+
+  @anomaly_icons %{rng: "🎲", naked: "🩲", night: "🌙", wipe: "🧹", uninsured: "💀"}
+  defp anomaly_icon(anomaly), do: @anomaly_icons[anomaly]
+  defp anomaly_name(anomaly), do: Locale.get_text("Anomaly #{anomaly}")
+  defp anomaly_rule(anomaly), do: Locale.get_text("Anomaly #{anomaly} rule")
+
   defp outcome(%{winner: :draw}, _player), do: :draw
   defp outcome(%{winner: player}, player), do: :won
   defp outcome(_result, _player), do: :lost
@@ -342,11 +354,24 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     "--rounds: #{rounds}; --step: #{min(600, div(3_600, rounds))}ms"
   end
 
-  # the score as it grows during the reveal: {score, round it is reached in}
-  defp score_steps(rounds, player) do
-    winners = for slot <- rounds, stat <- BattleRoom.stats(), do: slot[stat]
-    won_in = for {^player, round} <- Enum.with_index(winners), do: round
-    [{0, 0} | Enum.with_index(won_in, fn round, won -> {won + 1, round} end)]
+  # the score as it grows during the reveal: {score, round it is reached in};
+  # a round may bring more than a point (BattleRoom.points/2)
+  defp score_steps(rounds, player, anomaly) do
+    wins = for slot <- rounds, stat <- BattleRoom.stats(), do: {slot[stat], stat}
+
+    {steps, _score} =
+      wins
+      |> Enum.with_index()
+      |> Enum.flat_map_reduce(0, fn
+        {{^player, stat}, round}, score ->
+          score = score + BattleRoom.points(anomaly, stat)
+          {[{score, round}], score}
+
+        _lost, score ->
+          {[], score}
+      end)
+
+    [{0, 0} | steps]
   end
 
   # battles won in this room in seat order, e.g. "2 : 1"

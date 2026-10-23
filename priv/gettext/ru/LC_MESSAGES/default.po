@@ -489,3 +489,453 @@ msgstr "Повезло…"
 
 msgid "Phrase wow"
 msgstr "Ого!"
+
+msgid "Anomaly"
+msgstr "Условия боя"
+
+msgid "Anomaly rules"
+msgstr "В каждом бою — случайные условия, они меняют правила."
+
+msgid "Raid"
+msgstr "Вылазка"
+
+msgid "Go raid"
+msgstr "В вылазку"
+
+msgid "Raid intro %{steps}"
+msgstr "Отряд из пяти дичков идёт в рейд: %{steps} встреч, в каждой выбираешь действие, а лучший в нужном стате пробует его выполнить. Можно потерять бойцов и набить нычку лутом."
+
+msgid "Recruit squad"
+msgstr "Набрать отряд"
+
+msgid "Raid team hint"
+msgstr "Или собери команду на странице «Команда» и отправь её в вылазку оттуда"
+
+msgid "Raid step %{n} %{total}"
+msgstr "Встреча %{n} из %{total}"
+
+msgid "Raid success %{name}"
+msgstr "%{name} справился!"
+
+msgid "Raid lost %{name}"
+msgstr "%{name} не вышел из рейда…"
+
+msgid "Raid nothing %{name}"
+msgstr "%{name} ничего не нашёл."
+
+msgid "Raid passed"
+msgstr "Отряд прошёл мимо."
+
+msgid "Raid pass by"
+msgstr "Пройти мимо"
+
+msgid "Raid safe"
+msgstr "без риска"
+
+msgid "Raid dead"
+msgstr "Убит"
+
+msgid "Raid over"
+msgstr "Конец вылазки"
+
+msgid "Raid clean"
+msgstr "Чистый выход: вышли все!"
+
+msgid "Raid survived %{alive} %{total}"
+msgstr "Вышли %{alive} из %{total}."
+
+msgid "Raid failed"
+msgstr "Из рейда не вышел никто."
+
+msgid "Raid again"
+msgstr "Ещё раз этим отрядом"
+
+msgid "Raid new squad"
+msgstr "Новый отряд"
+
+msgid "Stash"
+msgstr "Нычка"
+
+msgid "Anomaly rng"
+msgstr "Тарковский рандом"
+
+msgid "Anomaly rng rule"
+msgstr "Раунд удачи стоит 2 очка."
+
+msgid "Anomaly naked"
+msgstr "Голый забег"
+
+msgid "Anomaly naked rule"
+msgstr "Терять нечего: в каждом раунде побеждает меньший стат. Гном всё равно бьёт всех."
+
+msgid "Anomaly night"
+msgstr "Ночной рейд"
+
+msgid "Anomaly night rule"
+msgstr "Темно, хоть глаз выколи: статы скрыты до вскрытия — выбирай по имени и редкости."
+
+msgid "Anomaly wipe"
+msgstr "Вайп"
+
+msgid "Anomaly wipe rule"
+msgstr "Все начинают с нуля: бонусы редкости не действуют, решает только имя."
+
+msgid "Anomaly uninsured"
+msgstr "Без страховки"
+
+msgid "Anomaly uninsured rule"
+msgstr "Второго шанса нет: перетянуть нельзя, а в драфте на столе нет лишних карт."
+
+msgid "Item sj6"
+msgstr "Стимулятор SJ6"
+
+msgid "Item meldonin"
+msgstr "Мельдоний"
+
+msgid "Item rooster"
+msgstr "Золотой петух"
+
+msgid "Item ledx"
+msgstr "ЛЕДХ"
+
+msgid "Item all bonus %{bonus}"
+msgstr "+%{bonus} ко всему"
+
+msgid "Raid loot %{item}"
+msgstr "В нычку: «%{item}»!"
+
+msgid "Raid pmc"
+msgstr "ЧВК на Таможне"
+
+msgid "Raid pmc text"
+msgstr "Из-за общаги доносится топот: группа ЧВК идёт прямо на вас."
+
+msgid "Raid pmc strength"
+msgstr "Встретить огнём"
+
+msgid "Raid pmc agility"
+msgstr "Уйти через гаражи"
+
+msgid "Raid reshala"
+msgstr "Решала со свитой"
+
+msgid "Raid reshala text"
+msgstr "На заправке развалился Решала, вокруг охрана в спортивках."
+
+msgid "Raid reshala strength"
+msgstr "Штурмовать"
+
+msgid "Raid reshala agility"
+msgstr "Проскочить тихо"
+
+msgid "Raid sniper"
+msgstr "Снайпер на крыше"
+
+msgid "Raid sniper text"
+msgstr "С крыши бьёт снайпер — пыль поднимается в шаге от вас."
+
+msgid "Raid sniper agility"
+msgstr "Перебежками"
+
+msgid "Raid sniper luck"
+msgstr "Замереть и надеяться"
+
+msgid "Raid mines"
+msgstr "Минное поле"
+
+msgid "Raid mines text"
+msgstr "У забора табличка «Мины». На Развязке так просто не пишут."
+
+msgid "Raid mines agility"
+msgstr "Аккуратно по следам"
+
+msgid "Raid mines luck"
+msgstr "Рвануть напрямик"
+
+msgid "Raid office"
+msgstr "Сейф в кабинете"
+
+msgid "Raid office text"
+msgstr "В кабинете стоит сейф. Ключа нет, зато есть лом."
+
+msgid "Raid office strength"
+msgstr "Вскрыть ломом"
+
+msgid "Raid bait"
+msgstr "Подозрительный лут"
+
+msgid "Raid bait text"
+msgstr "Посреди открытого поля лежит дорогой лут. Слишком похоже на приманку."
+
+msgid "Raid bait agility"
+msgstr "Забрать"
+
+msgid "Raid killa"
+msgstr "Килла в «Ультре»"
+
+msgid "Raid killa text"
+msgstr "Между павильонами мелькает жёлтый шлем Киллы."
+
+msgid "Raid killa strength"
+msgstr "Принять бой"
+
+msgid "Raid killa luck"
+msgstr "Спрятаться в магазине"
+
+msgid "Raid wounded"
+msgstr "Раненый дикий"
+
+msgid "Raid wounded text"
+msgstr "У костра стонет дикий: «Братишка, хилки не будет?»"
+
+msgid "Raid wounded luck"
+msgstr "Поделиться аптечкой"
+
+msgid "Raid drop %{name} %{item}"
+msgstr "%{name} ушёл, но бросил «%{item}»."
+
+msgid "Raid drop nothing %{name}"
+msgstr "%{name} еле ушёл — хорошо, что нычка была пуста."
+
+msgid "Raid revive %{name}"
+msgstr "%{name} снова в строю!"
+
+msgid "Raid tagilla"
+msgstr "Тагилла на Заводе"
+
+msgid "Raid tagilla text"
+msgstr "Из темноты цеха доносится скрежет кувалды по металлу."
+
+msgid "Raid tagilla strength"
+msgstr "Встретить в упор"
+
+msgid "Raid tagilla agility"
+msgstr "Выскочить через третьи ворота"
+
+msgid "Raid shturman"
+msgstr "Штурман у лесопилки"
+
+msgid "Raid shturman text"
+msgstr "С лесопилки методично работает СВД — Штурман сторожит свой тайник."
+
+msgid "Raid shturman agility"
+msgstr "Зайти с фланга"
+
+msgid "Raid shturman luck"
+msgstr "Переждать за брёвнами"
+
+msgid "Raid cultists"
+msgstr "Культисты в сумерках"
+
+msgid "Raid cultists text"
+msgstr "Между деревьями бесшумно движутся фигуры в балахонах. Лучше бы их не злить."
+
+msgid "Raid cultists agility"
+msgstr "Бежать не оглядываясь"
+
+msgid "Raid cultists luck"
+msgstr "Затаиться в кустах"
+
+msgid "Raid raiders"
+msgstr "Рейдеры на Резерве"
+
+msgid "Raid raiders text"
+msgstr "Воет сирена: из бункера выходят рейдеры в полной броне."
+
+msgid "Raid raiders strength"
+msgstr "Держать оборону"
+
+msgid "Raid raiders agility"
+msgstr "Отходить через казармы"
+
+msgid "Raid toll"
+msgstr "Платный выход"
+
+msgid "Raid toll text"
+msgstr "У выхода скучает дикий с табличкой «Проход — 7000 ₽»."
+
+msgid "Raid toll luck"
+msgstr "Поторговаться"
+
+msgid "Raid airdrop"
+msgstr "Аирдроп"
+
+msgid "Raid airdrop text"
+msgstr "С неба на парашюте опускается аирдроп. Его видели все на карте."
+
+msgid "Raid airdrop agility"
+msgstr "Добежать первым"
+
+msgid "Raid medic"
+msgstr "Дикий-медик"
+
+msgid "Raid medic text"
+msgstr "В подвале прячется дикий с сумкой хилок: «Подлатаю вашего, если договоримся»."
+
+msgid "Raid medic luck"
+msgstr "Договориться"
+
+msgid "Raid bridge"
+msgstr "Засада на мосту"
+
+msgid "Raid bridge text"
+msgstr "Посреди моста брошенный грузовик — идеальное место для засады."
+
+msgid "Raid bridge agility"
+msgstr "Проскочить под огнём"
+
+msgid "Raid bridge luck"
+msgstr "Ползком вдоль перил"
+
+msgid "Stash empty"
+msgstr "Пусто"
+
+msgid "Raid sanitar"
+msgstr "Санитар на Берегу"
+
+msgid "Raid sanitar text"
+msgstr "В санатории хозяйничает Санитар со своими людьми — и с запасом медикаментов."
+
+msgid "Raid sanitar strength"
+msgstr "Штурмовать санаторий"
+
+msgid "Raid sanitar luck"
+msgstr "Выменять медикаменты"
+
+msgid "Raid sanitar agility"
+msgstr "Обойти по пляжу"
+
+msgid "Raid glukhar"
+msgstr "Глухарь у казарм"
+
+msgid "Raid glukhar text"
+msgstr "У казарм — Глухарь, его охрана и пулемёт на крыше."
+
+msgid "Raid glukhar strength"
+msgstr "Пойти на штурм"
+
+msgid "Raid glukhar agility"
+msgstr "Проползти вдоль забора"
+
+msgid "Raid kollontay"
+msgstr "Коллонтай на улицах"
+
+msgid "Raid kollontay text"
+msgstr "Майор Коллонтай с дубинкой перегородил улицу: «Документики!»"
+
+msgid "Raid kollontay luck"
+msgstr "Предъявить «документы»"
+
+msgid "Raid kollontay strength"
+msgstr "Дать отпор"
+
+msgid "Raid zryachiy"
+msgstr "Зрячий на маяке"
+
+msgid "Raid zryachiy text"
+msgstr "С маяка блестит прицел Зрячего. Гостей он не любит."
+
+msgid "Raid zryachiy agility"
+msgstr "Проскочить вдоль скал"
+
+msgid "Raid vex"
+msgstr "Выезд на машине"
+
+msgid "Raid vex text"
+msgstr "У дороги ждёт машина. Водитель косится на ваши рюкзаки: «За выезд платят»."
+
+msgid "Raid vex luck"
+msgstr "Сбить цену"
+
+msgid "Raid tripwire"
+msgstr "Растяжка"
+
+msgid "Raid tripwire text"
+msgstr "В дверном проёме блеснула тонкая проволока."
+
+msgid "Raid tripwire agility"
+msgstr "Аккуратно перешагнуть"
+
+msgid "Raid tripwire luck"
+msgstr "Снять и забрать гранату"
+
+msgid "Raid dead_pmc"
+msgstr "Труп ЧВК"
+
+msgid "Raid dead_pmc text"
+msgstr "Под лестницей лежит ЧВК с полным рюкзаком. Тот, кто его убил, может быть рядом."
+
+msgid "Raid dead_pmc luck"
+msgstr "Обыскать"
+
+msgid "Raid labs"
+msgstr "Лаборатория"
+
+msgid "Raid labs text"
+msgstr "Красная ключ-карта открывает Лабораторию. Внутри — рейдеры и лучший лут в Таркове."
+
+msgid "Raid labs strength"
+msgstr "Зачистить лабу"
+
+msgid "Raid labs agility"
+msgstr "Пробежать до сейфов"
+
+msgid "Raid legend %{value}"
+msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}"
+
+msgid "Raid train %{name} %{stat} %{value}"
+msgstr "%{name} набил руку: %{stat} +%{value}!"
+
+msgid "Raid wound %{name} %{stat} %{value}"
+msgstr "%{name} ранен: %{stat} −%{value}."
+
+msgid "Raid promote %{name}"
+msgstr "%{name} заматерел — редкость выше!"
+
+msgid "Raid obdolbos"
+msgstr "Шприц «Обдолбос»"
+
+msgid "Raid obdolbos text"
+msgstr "В аптечке нашёлся «Обдолбос». Эффект — как повезёт."
+
+msgid "Raid obdolbos luck"
+msgstr "Вколоть"
+
+msgid "Raid skirmish"
+msgstr "Перестрелка с дикими"
+
+msgid "Raid skirmish text"
+msgstr "Местные дикие палят во все стороны — своих не узнают."
+
+msgid "Raid skirmish strength"
+msgstr "Ответить огнём"
+
+msgid "Raid skirmish agility"
+msgstr "Отступить за угол"
+
+msgid "Raid stairs"
+msgstr "Гнилая лестница"
+
+msgid "Raid stairs text"
+msgstr "Лестница в подъезде прогнила, пролёт вниз — метра три."
+
+msgid "Raid stairs agility"
+msgstr "Перепрыгнуть пролёт"
+
+msgid "Raid veteran"
+msgstr "Ветеран Таркова"
+
+msgid "Raid veteran text"
+msgstr "У костра сидит седой дикий: «Покажу пару приёмов — если выдержишь»."
+
+msgid "Raid veteran strength"
+msgstr "Пройти испытание"
+
+msgid "Raid lightkeeper"
+msgstr "Смотритель маяка"
+
+msgid "Raid lightkeeper text"
+msgstr "Смотритель маяка обещает особую сделку тому, кто дойдёт до него живым."
+
+msgid "Raid lightkeeper agility"
+msgstr "Дойти до маяка"

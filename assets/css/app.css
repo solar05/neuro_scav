@@ -2550,6 +2550,489 @@ kbd {
     }
 }
 
+/* ── Battle conditions (Tarkov style): #battle gets .anomaly-<name>, which sets the accent --a ── */
+.anomaly-rng { --a: #ffc107; }
+.anomaly-naked { --a: #ff8a80; }
+.anomaly-night { --a: #7986cb; }
+.anomaly-wipe { --a: #e0e0e0; }
+.anomaly-uninsured { --a: #e53935; }
+
+.anomaly-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 12px;
+    padding: 10px 16px;
+    border: 2px solid var(--a);
+    border-radius: 14px;
+    background: #212529;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--a) 28%, #212529), #212529 75%);
+    box-shadow: 0 0 18px -4px var(--a);
+    font-family: "Bender";
+    animation:
+        anomaly-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.3) backwards,
+        anomaly-glow 3s ease-in-out 0.6s infinite;
+}
+
+@keyframes anomaly-in {
+    from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+}
+
+@keyframes anomaly-glow {
+    50% { box-shadow: 0 0 30px 0 var(--a); }
+}
+
+.anomaly-icon {
+    flex-shrink: 0;
+    font-size: 34px;
+    line-height: 1;
+    filter: drop-shadow(0 0 8px var(--a));
+}
+
+.anomaly-name {
+    margin: 0;
+    color: var(--a);
+    font-size: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.anomaly-rule {
+    margin: 0;
+    color: #d0d0d0;
+    font-size: 16px;
+}
+
+/* the seats take the condition's color; the effect lives behind the arena */
+#battle[class*="anomaly-"] .battle-seat {
+    border-color: var(--a);
+}
+
+#battle[class*="anomaly-"] .battle-arena {
+    position: relative;
+    isolation: isolate;
+}
+
+#battle[class*="anomaly-"] .battle-arena::before {
+    content: "";
+    position: absolute;
+    inset: -12px;
+    z-index: -1;
+    border-radius: 24px;
+    pointer-events: none;
+}
+
+/* Tarkov RNG: an amber glow, the dice keeps rolling, luck rows marked ×2 */
+.anomaly-rng .battle-arena::before {
+    background: radial-gradient(ellipse at 50% 0%, rgba(255, 193, 7, 0.38), transparent 65%);
+    animation: rng-glow 3s ease-in-out infinite;
+}
+
+@keyframes rng-glow {
+    0%, 60%, 100% { opacity: 0.55; }
+    70% { opacity: 1; }
+    80% { opacity: 0.7; }
+}
+
+.anomaly-rng .anomaly-icon {
+    animation: rng-roll 2.4s ease-in-out infinite;
+}
+
+@keyframes rng-roll {
+    0%, 70%, 100% { transform: rotate(0); }
+    80% { transform: rotate(-20deg) scale(1.1); }
+    90% { transform: rotate(200deg) scale(1.1); }
+}
+
+.anomaly-rng .battle-stat[data-stat="luck"] {
+    color: #ffc107;
+}
+
+.anomaly-rng .battle-stat[data-stat="luck"] > span:first-child::after {
+    content: " ×2";
+    font-size: 80%;
+}
+
+/* naked run: nothing to lose, bars fill from the other side — less is more */
+.anomaly-naked .battle-arena::before {
+    background: radial-gradient(ellipse at 50% 50%, rgba(255, 138, 128, 0.32), transparent 72%);
+    animation: naked-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes naked-pulse {
+    50% { opacity: 0.45; transform: scale(1.015); }
+}
+
+.anomaly-naked .battle-stat-bar {
+    transform: scaleX(-1);
+}
+
+/* night raid: the arena goes dark, a flashlight beam sweeps it, cards come to
+   light on the reveal */
+.anomaly-night .battle-arena::before {
+    background:
+        radial-gradient(circle at var(--beam, 20%) 40%, rgba(255, 244, 214, 0.22), transparent 28%),
+        rgba(5, 8, 25, 0.75);
+    animation: night-beam 7s ease-in-out infinite alternate;
+}
+
+@property --beam {
+    syntax: "<percentage>";
+    inherits: false;
+    initial-value: 20%;
+}
+
+@keyframes night-beam {
+    to { --beam: 80%; }
+}
+
+.anomaly-night .battle-card,
+.anomaly-night .draft-card {
+    filter: brightness(0.55) saturate(0.6);
+    transition: filter 0.8s;
+}
+
+.anomaly-night.battle-over .battle-card {
+    filter: none;
+}
+
+/* wipe: a white sweep runs over the arena again and again, rarities are reset */
+.anomaly-wipe .battle-arena::before {
+    background: linear-gradient(100deg, transparent 40%, rgba(224, 224, 224, 0.35) 50%, transparent 60%);
+    background-size: 250% 100%;
+    animation: wipe-sweep 3.5s ease-in-out infinite;
+}
+
+@keyframes wipe-sweep {
+    from { background-position: 120% 0; }
+    to { background-position: -20% 0; }
+}
+
+.anomaly-wipe .battle-card-rarity {
+    opacity: 0.6;
+    text-decoration: line-through;
+    text-decoration-color: #e0e0e0;
+}
+
+/* uninsured: a red alarm pulses from below, the skull beats */
+.anomaly-uninsured .battle-arena::before {
+    background: radial-gradient(ellipse at 50% 110%, rgba(229, 57, 53, 0.5), rgba(120, 0, 0, 0.15) 45%, transparent 72%);
+    animation: uninsured-alarm 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes uninsured-alarm {
+    to { opacity: 0.55; }
+}
+
+.anomaly-uninsured .anomaly-icon {
+    animation: uninsured-beat 1.6s ease-in-out infinite;
+}
+
+@keyframes uninsured-beat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.15); }
+    30% { transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .anomaly-banner,
+    .anomaly-icon,
+    #battle[class*="anomaly-"] .battle-arena::before {
+        animation: none;
+    }
+}
+
+/* ── Raid ── */
+.raid {
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: "Bender";
+}
+
+.raid-route {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 14px 0 0;
+}
+
+.raid-dot {
+    width: 14px;
+    height: 14px;
+    border: 2px solid #d49300;
+    border-radius: 50%;
+    background: #212529;
+}
+
+.raid-dot-done {
+    background: #d49300;
+}
+
+.raid-dot-now {
+    animation: borderPulseGold 1.6s ease-in-out infinite;
+    background: #ffd060;
+}
+
+.raid-squad {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .raid-squad {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.raid-member {
+    position: relative;
+    padding: 8px;
+    border-radius: 12px;
+    background: rgba(33, 37, 41, 0.85);
+    transition: background-color 0.6s, box-shadow 0.6s;
+}
+
+.raid-member .battle-card-name {
+    padding: 4px 6px;
+    font-size: 15px;
+}
+
+.raid-member .battle-card-rarity {
+    margin: 4px 0 6px;
+    font-size: 13px;
+    text-align: center;
+}
+
+.raid-member .battle-stat {
+    grid-template-columns: 1fr 2em;
+    margin-bottom: 0;
+    padding: 1px 4px;
+    font-size: 13px;
+}
+
+.raid-member .battle-stat-bar {
+    display: none;
+}
+
+/* a member who didn't make it out stays in the row: the name and stats fade,
+   the card itself turns red with a skull over it, so it reads at a glance;
+   an inset shadow, not a border, so the card keeps its size */
+.raid-member-lost {
+    background: rgba(70, 12, 12, 0.9);
+    box-shadow: inset 0 0 0 2px #e53935;
+}
+
+.raid-member-lost .battle-card-name,
+.raid-member-lost .battle-stats {
+    opacity: 0.3;
+    filter: grayscale(1);
+}
+
+.raid-member-lost .battle-card-rarity {
+    color: #ff5252;
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.raid-member-lost::after {
+    content: "💀";
+    position: absolute;
+    top: 58%;
+    left: 50%;
+    font-size: 36px;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 0 8px #e53935);
+    pointer-events: none;
+}
+
+/* the moment it happens: a red flash and a jolt */
+.raid-member-killed {
+    animation: raid-member-killed 0.7s ease;
+}
+
+@keyframes raid-member-killed {
+    0% { box-shadow: inset 0 0 0 2px #e53935, 0 0 24px 6px rgba(229, 57, 53, 0.9); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-2px); }
+    80% { transform: translateX(0); }
+}
+
+.raid-outcome {
+    margin: 14px 0 0;
+    padding: 8px 14px;
+    border-left: 4px solid #a5a5a5;
+    border-radius: 8px;
+    background: rgba(33, 37, 41, 0.85);
+    color: #fff;
+    font-size: 18px;
+    animation: anomaly-in 0.5s ease backwards;
+}
+
+.raid-outcome-good {
+    border-left-color: #4caf50;
+}
+
+.raid-outcome-bad {
+    border-left-color: #e53935;
+}
+
+/* a promotion is rare: it gets the gold */
+.raid-outcome-rare {
+    border-left-color: #ffd060;
+    background: linear-gradient(90deg, rgba(212, 147, 0, 0.35), rgba(33, 37, 41, 0.85) 70%);
+    color: #ffd060;
+}
+
+/* the member the last event changed flashes once */
+.raid-member-up {
+    animation: raid-member-flash 1.2s ease;
+    --flash: rgba(76, 175, 80, 0.9);
+}
+
+.raid-member-down {
+    animation: raid-member-flash 1.2s ease;
+    --flash: rgba(229, 57, 53, 0.9);
+}
+
+.raid-member-promoted {
+    animation: raid-member-promoted 1.6s ease;
+    box-shadow: 0 0 0 2px #ffd060;
+}
+
+@keyframes raid-member-flash {
+    30% { box-shadow: 0 0 16px 2px var(--flash); }
+}
+
+@keyframes raid-member-promoted {
+    30% { box-shadow: 0 0 24px 6px #ffd060; transform: scale(1.06); }
+}
+
+.raid-event {
+    margin-top: 14px;
+    animation: anomaly-in 0.5s ease backwards;
+}
+
+.raid-event-body {
+    padding: 14px;
+}
+
+.raid-event-text {
+    margin: 0 0 14px;
+    color: #d0d0d0;
+    font-size: 19px;
+}
+
+/* smaller than the shared .btn-old-blended (120%): a raid shows several at once */
+.raid-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 8px;
+    padding: 5px 10px;
+    font-size: 16px;
+    line-height: 1.25;
+}
+
+.raid-option small {
+    font-size: 80%;
+    opacity: 0.8;
+}
+
+/* the squad and, beside it, a narrow stash button */
+.raid-squad-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.raid-squad-row .raid-squad {
+    flex: 1;
+    min-width: 0;
+}
+
+.raid-stash-btn {
+    display: flex;
+    flex: 0 0 76px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-radius: 12px;
+    font-size: 14px !important;
+}
+
+.raid-stash-icon {
+    font-size: 26px;
+    line-height: 1;
+}
+
+.raid-stash-btn b {
+    font-size: 20px;
+}
+
+/* the backdrop sits behind the panel, so only a click beside the panel closes it */
+.raid-stash-backdrop {
+    position: absolute;
+    inset: 0;
+}
+
+/* a compact panel in the middle of the screen */
+.raid-stash {
+    position: relative;
+    width: min(280px, 85vw);
+}
+
+.raid-stash-empty {
+    margin: 0;
+    padding: 14px;
+    color: #a5a5a5;
+    font: 16px "Bender";
+    text-align: center;
+}
+
+.raid-stash-list {
+    margin: 0;
+    padding: 10px 14px 12px;
+    list-style: none;
+    color: #a5a5a5;
+    font: 16px "Bender";
+}
+
+.raid-stash-list li + li {
+    margin-top: 6px;
+}
+
+.raid-stash-list b {
+    color: #ffd060;
+    font-weight: normal;
+}
+
+.raid-legend {
+    margin: 12px 0 0;
+    color: #a5a5a5;
+    font-size: 14px;
+    text-align: center;
+}
+
+.raid-team-link {
+    color: #d49300;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .raid-dot-now,
+    .raid-outcome,
+    .raid-event,
+    .raid-member-killed {
+        animation: none;
+    }
+}
+
 /* ── Quiz ── */
 .quiz-options {
     display: flex;

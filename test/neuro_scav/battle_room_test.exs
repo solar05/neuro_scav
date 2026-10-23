@@ -5,7 +5,8 @@ defmodule NeuroScav.BattleRoomTest do
 
   setup do
     start_supervised!({NeuroScav.ScavengersServer, %{module_name: NeuroScav.Scavengers.Names}})
-    {:ok, id} = BattleRoom.create("a")
+    # no anomaly: these tests spell out the plain rules
+    {:ok, id} = BattleRoom.create("a", anomalies: [])
     [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
     on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
     NeuroScav.PubSub.subscribe_battle(id)
@@ -122,7 +123,7 @@ defmodule NeuroScav.BattleRoomTest do
   end
 
   defp start_room(opts) do
-    {:ok, id} = BattleRoom.create("a", opts)
+    {:ok, id} = BattleRoom.create("a", Keyword.put_new(opts, :anomalies, []))
     [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
     on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
     {id, pid}
@@ -250,7 +251,11 @@ defmodule NeuroScav.BattleRoomTest do
     # a quiet bot keeps chat messages out of the states the tests compare
     setup do
       {:ok, id} =
-        BattleRoom.create_with_bot("a", "ru", think_ms: 60_000..60_000, chat_chance: 0.0)
+        BattleRoom.create_with_bot("a", "ru",
+          think_ms: 60_000..60_000,
+          chat_chance: 0.0,
+          anomalies: []
+        )
 
       [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
       on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
@@ -317,7 +322,13 @@ defmodule NeuroScav.BattleRoomTest do
     end
 
     test "picks the strongest card on its draft turns" do
-      {:ok, id} = BattleRoom.create_with_bot("a", "ru", mode: :draft, think_ms: 60_000..60_000)
+      {:ok, id} =
+        BattleRoom.create_with_bot("a", "ru",
+          mode: :draft,
+          think_ms: 60_000..60_000,
+          anomalies: []
+        )
+
       [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
       on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
       bot = BattleRoom.bot()
@@ -503,6 +514,81 @@ defmodule NeuroScav.BattleRoomTest do
       %{chat: chat, deadline: ^deadline} = :sys.get_state(pid)
       assert length(chat) == 50
       assert hd(chat).text == "2"
+    end
+  end
+
+  describe "anomalies" do
+    defp card(name, rarity, stats),
+      do: %{name: name, rarity: rarity, stats: Map.new(Enum.zip(BattleRoom.stats(), stats))}
+
+    test "every battle gets one, never the same twice in a row" do
+      {id, _pid} = start_room(anomalies: BattleRoom.anomalies())
+      {:ok, _battle} = BattleRoom.join(id, "b")
+
+      anomalies =
+        for _ <- 1..6 do
+          for player <- ~w(a b) do
+            {:ok, _battle} = BattleRoom.draw(id, player, "ru")
+            {:ok, _battle} = BattleRoom.ready(id, player)
+          end
+
+          {:ok, %{anomaly: anomaly}} = BattleRoom.rematch(id, "a")
+          {:ok, _battle} = BattleRoom.rematch(id, "b")
+          anomaly
+        end
+
+      assert Enum.all?(anomalies, &(&1 in BattleRoom.anomalies()))
+      assert anomalies |> Enum.chunk_every(2, 1, :discard) |> Enum.all?(fn [x, y] -> x != y end)
+    end
+
+    test "Tarkov RNG: a luck round is worth 2 points" do
+      a = card("A", :common, [50, 50, 10])
+      b = card("B", :common, [10, 10, 50])
+
+      assert %{score: %{"a" => 2, "b" => 1}, winner: "a"} = BattleRoom.compare("a", [a], "b", [b])
+
+      assert %{score: %{"a" => 2, "b" => 2}, winner: :draw} =
+               BattleRoom.compare("a", [a], "b", [b], :rng)
+    end
+
+    test "naked run: the lower stat wins, but the gnome still beats everyone" do
+      low = card("Low", :common, [10, 10, 10])
+      high = card("High", :legendary, [90, 90, 90])
+      gnome = BattleRoom.card(%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome})
+
+      assert %{winner: "low"} = BattleRoom.compare("low", [low], "high", [high], :naked)
+      assert %{winner: "gnome"} = BattleRoom.compare("gnome", [gnome], "low", [low], :naked)
+    end
+
+    test "wipe: rarity bonuses don't count" do
+      # 40 + 25 legendary bonus against 50 of a common card
+      legendary = card("L", :legendary, [65, 65, 65])
+      common = card("C", :common, [50, 50, 50])
+
+      assert %{winner: "l"} = BattleRoom.compare("l", [legendary], "c", [common])
+      assert %{winner: "c"} = BattleRoom.compare("l", [legendary], "c", [common], :wipe)
+    end
+
+    test "no insurance: no redraws, no spare cards on a draft table" do
+      {id, _pid} = start_room(anomalies: [:uninsured])
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+      assert BattleRoom.draw(id, "a", "ru") == {:error, :not_allowed}
+
+      {draft, _pid} = start_room(mode: :draft, anomalies: [:uninsured])
+      assert {:ok, %{draft: %{pool: pool}}} = BattleRoom.join(draft, "a")
+      assert length(pool) == 2 * BattleRoom.team_size()
+    end
+
+    test "night raid: a move made for a player goes by rarity, not by hidden stats" do
+      {id, pid} = start_room(mode: :draft, anomalies: [:night], turn_ms: 60_000)
+      {:ok, battle} = BattleRoom.join(id, "b")
+      rank = %{common: 0, uncommon: 1, rare: 2, epic: 3, legendary: 4, gnome: 5}
+      best = Enum.max_by(battle.draft.pool, &rank[&1.rarity])
+
+      send(pid, {:turn_timeout, battle.deadline})
+      assert [%{rarity: rarity}] = :sys.get_state(pid).cards["a"]
+      assert rarity == best.rarity
     end
   end
 

@@ -26,6 +26,20 @@ defmodule NeuroScav.BattleRoom do
   (`ScavengersServer.team_sets/1`), added to its cards as soon as the team is
   complete.
 
+  ## Battle conditions (`anomaly`)
+
+  Every battle (and every rematch) gets a random battle condition, Tarkov
+  style, that bends the rules, see `anomalies/0`:
+
+  - `:rng` (Tarkov RNG) - a luck round is worth 2 points
+  - `:naked` (naked run) - the lower stat wins a round
+  - `:night` (night raid) - stats stay hidden until the reveal (the page hides
+    them; the bot and the turn timer judge by rarity only)
+  - `:wipe` - rarity bonuses don't count
+  - `:uninsured` - no redraws, and a draft table has no spare cards
+
+  Whatever the anomaly, the gnome wins every round against any other card.
+
   A rematch starts once both players ask for it (the bot always agrees). It
   keeps the players and the mode, swaps who picks first in a draft and counts
   the battles each player won in `wins` (draws count for nobody).
@@ -88,7 +102,7 @@ defmodule NeuroScav.BattleRoom do
   # mean card without a rarity bonus: 3 stats × 38 (mean of 1..75)
   @average_total 114
   @team_size 3
-  @pool_size 2 * @team_size + 2
+  @anomalies [:rng, :naked, :night, :wipe, :uninsured]
   @turn_ms :timer.seconds(30)
   @phrases [:hi, :gl, :gg, :again, :lucky, :wow]
   @max_text 200
@@ -105,6 +119,10 @@ defmodule NeuroScav.BattleRoom do
   @spec team_size() :: pos_integer()
   def team_size, do: @team_size
 
+  @doc "Bonus a rarity adds to every stat of a card (the gnome is a joker, see `card/1`)."
+  @spec rarity_bonus(atom()) :: non_neg_integer()
+  def rarity_bonus(rarity), do: Map.get(@rarity_bonus, rarity, 0)
+
   @doc "Bonus to every stat of a team for each set it collects."
   @spec set_bonus() :: pos_integer()
   def set_bonus, do: @set_bonus
@@ -112,6 +130,15 @@ defmodule NeuroScav.BattleRoom do
   @doc "Seconds a player has for a move."
   @spec turn_seconds() :: pos_integer()
   def turn_seconds, do: div(@turn_ms, 1_000)
+
+  @doc "Battle conditions (`anomaly`) a battle can get."
+  @spec anomalies() :: [atom()]
+  def anomalies, do: @anomalies
+
+  @doc "Points a won round of `stat` brings under `anomaly`."
+  @spec points(atom() | nil, atom()) :: pos_integer()
+  def points(:rng, :luck), do: 2
+  def points(_anomaly, _stat), do: 1
 
   @doc "Chat phrases, in button order."
   @spec phrases() :: [atom()]
@@ -127,7 +154,8 @@ defmodule NeuroScav.BattleRoom do
   `open: true` marks it as waiting for any opponent instead of an invited one,
   `mode:` is `:duel` (default), `:team` or `:draft`, `locale:` the language
   of the draft cards and of the cards drawn for a player whose time ran out,
-  `turn_ms:` the time for a move (tests pass a long one and send the timeout).
+  `turn_ms:` the time for a move (tests pass a long one and send the timeout),
+  `anomalies:` the ones to pick from for each battle (`[]` for none).
   """
   @spec create(String.t(), keyword()) :: {:ok, String.t()}
   def create(owner_id, opts \\ []), do: start_room(owner_id, nil, opts)
@@ -159,7 +187,8 @@ defmodule NeuroScav.BattleRoom do
       open: Keyword.get(opts, :open, false),
       mode: if(opts[:mode] in @modes, do: opts[:mode], else: :duel),
       locale: Keyword.get(opts, :locale, "ru"),
-      turn_ms: Keyword.get(opts, :turn_ms, @turn_ms)
+      turn_ms: Keyword.get(opts, :turn_ms, @turn_ms),
+      anomalies: Keyword.get(opts, :anomalies, @anomalies)
     }
 
     room = {__MODULE__, {id, owner_id, bot, settings}}
@@ -238,18 +267,21 @@ defmodule NeuroScav.BattleRoom do
   def turn(_state), do: nil
 
   @doc """
-  Compares the cards of players `a` and `b` slot by slot: every stat of every
-  pair is a round, `rounds` holds a `%{stat => winner}` map per slot.
+  Compares the cards of players `a` and `b` slot by slot under `anomaly`:
+  every stat of every pair is a round, `rounds` holds a `%{stat => winner}`
+  map per slot, `score` the points (`points/2`) each player won.
   """
-  @spec compare(term(), [map()], term(), [map()]) :: map()
-  def compare(a, cards_a, b, cards_b) do
+  @spec compare(term(), [map()], term(), [map()], atom() | nil) :: map()
+  def compare(a, cards_a, b, cards_b, anomaly \\ nil) do
     rounds =
       Enum.zip_with(cards_a, cards_b, fn card_a, card_b ->
-        Map.new(@stats, &{&1, round_winner(a, card_a.stats[&1], b, card_b.stats[&1])})
+        Map.new(@stats, &{&1, round_winner({a, card_a}, {b, card_b}, &1, anomaly)})
       end)
 
-    winners = Enum.flat_map(rounds, &Map.values/1)
-    score = Map.new([a, b], fn player -> {player, Enum.count(winners, &(&1 == player))} end)
+    score =
+      Map.new([a, b], fn player ->
+        {player, Enum.sum(for slot <- rounds, {stat, ^player} <- slot, do: points(anomaly, stat))}
+      end)
 
     winner =
       cond do
@@ -277,13 +309,13 @@ defmodule NeuroScav.BattleRoom do
   end
 
   @impl true
-  def init({id, owner_id, bot, %{open: open, mode: mode, locale: locale, turn_ms: turn_ms}}) do
+  def init({id, owner_id, bot, %{mode: mode, locale: locale} = settings}) do
     state =
       %{
         id: id,
         players: if(bot, do: [owner_id, @bot], else: [owner_id]),
         bot: bot,
-        open: open,
+        open: settings.open,
         mode: mode,
         size: if(mode == :duel, do: 1, else: @team_size),
         cards: %{},
@@ -295,13 +327,16 @@ defmodule NeuroScav.BattleRoom do
         wins: %{},
         draft: if(mode == :draft, do: %{first: 0, pool: []}),
         locale: locale,
-        turn_ms: turn_ms,
+        turn_ms: settings.turn_ms,
+        anomalies: settings.anomalies,
+        anomaly: nil,
         deadline: nil,
         online: %{},
         away: MapSet.new(),
         chat: [],
         said: %{}
       }
+      |> next_anomaly()
       |> deal()
       |> arm_timer()
 
@@ -409,7 +444,7 @@ defmodule NeuroScav.BattleRoom do
       not Map.has_key?(state.cards, user_id) ->
         {:ok, put_cards(state, user_id, locale)}
 
-      user_id in state.redrawn or user_id in state.ready ->
+      user_id in state.redrawn or user_id in state.ready or state.anomaly == :uninsured ->
         {:error, :not_allowed}
 
       true ->
@@ -462,6 +497,7 @@ defmodule NeuroScav.BattleRoom do
             result: nil
         }
         |> next_draft()
+        |> next_anomaly()
         |> deal()
 
       state = arm_timer(state)
@@ -477,8 +513,21 @@ defmodule NeuroScav.BattleRoom do
   defp next_draft(%{draft: nil} = state), do: state
   defp next_draft(state), do: update_in(state.draft.first, &(1 - &1))
 
+  # a fresh anomaly each battle, never the same one twice in a row
+  defp next_anomaly(%{anomalies: []} = state), do: state
+
+  defp next_anomaly(%{anomalies: anomalies, anomaly: last} = state) do
+    choices = if anomalies == [last], do: anomalies, else: List.delete(anomalies, last)
+    %{state | anomaly: Enum.random(choices)}
+  end
+
+  # spare cards on the table, none without insurance
   defp deal(%{draft: %{}, locale: locale} = state) do
-    pool = for _ <- 1..@pool_size, do: card(ScavengersServer.generate_uncounted(locale))
+    spare = if state.anomaly == :uninsured, do: 0, else: 2
+
+    pool =
+      for _ <- 1..(2 * @team_size + spare), do: card(ScavengersServer.generate_uncounted(locale))
+
     put_in(state.draft.pool, pool)
   end
 
@@ -499,10 +548,12 @@ defmodule NeuroScav.BattleRoom do
 
   # The bot's moves, also made for a player whose time ran out: in a draft it
   # takes the strongest card on the table, otherwise it draws, then redraws
-  # below-average cards and fights with the rest.
+  # below-average cards and fights with the rest. At night it sees only rarities.
   defp auto_turn(%{mode: :draft} = state, player, _locale) do
     if turn(state) == player do
-      {_card, index} = state.draft.pool |> Enum.with_index() |> Enum.max_by(&total([elem(&1, 0)]))
+      {_card, index} =
+        state.draft.pool |> Enum.with_index() |> Enum.max_by(&worth(state, [elem(&1, 0)]))
+
       {:ok, state} = take_pick(state, player, index)
       state
     else
@@ -521,7 +572,7 @@ defmodule NeuroScav.BattleRoom do
         {:ok, state} = take_draw(state, player, locale)
         auto_turn(state, player, locale)
 
-      player not in state.redrawn and total(cards) < @average_total * state.size ->
+      player not in state.redrawn and state.anomaly != :uninsured and weak?(state, cards) ->
         {:ok, state} = take_draw(state, player, locale)
         state
 
@@ -602,6 +653,15 @@ defmodule NeuroScav.BattleRoom do
 
   defp total(cards), do: cards |> Enum.flat_map(&Map.values(&1.stats)) |> Enum.sum()
 
+  # what a mover can see of the cards: at night, only their rarity
+  defp worth(%{anomaly: :night}, cards),
+    do: cards |> Enum.map(&Map.get(@rarity_bonus, &1.rarity, @joker_stat)) |> Enum.sum()
+
+  defp worth(_state, cards), do: total(cards)
+
+  defp weak?(%{anomaly: :night} = state, cards), do: worth(state, cards) == 0
+  defp weak?(state, cards), do: total(cards) < @average_total * state.size
+
   defp put_cards(state, player, locale),
     do: put_team(state, player, for(_ <- 1..state.size, do: draw_card(player, locale)))
 
@@ -623,7 +683,7 @@ defmodule NeuroScav.BattleRoom do
 
   defp resolve(%{players: [a, b], result: nil} = state) do
     if MapSet.subset?(MapSet.new([a, b]), state.ready) do
-      result = compare(a, state.cards[a], b, state.cards[b])
+      result = compare(a, state.cards[a], b, state.cards[b], state.anomaly)
       bot_say(state, bot_comment(result.winner))
       %{state | result: result, wins: count_win(state.wins, result.winner)}
     else
@@ -636,9 +696,30 @@ defmodule NeuroScav.BattleRoom do
   defp count_win(wins, :draw), do: wins
   defp count_win(wins, winner), do: Map.update(wins, winner, 1, &(&1 + 1))
 
-  defp round_winner(a, value_a, _b, value_b) when value_a > value_b, do: a
-  defp round_winner(_a, value_a, b, value_b) when value_b > value_a, do: b
-  defp round_winner(_a, _value_a, _b, _value_b), do: :draw
+  # the gnome takes every round from any other card, whatever the anomaly
+  defp round_winner({a, %{rarity: :gnome}}, {_b, %{rarity: rarity}}, _stat, _anomaly)
+       when rarity != :gnome,
+       do: a
+
+  defp round_winner({_a, %{rarity: rarity}}, {b, %{rarity: :gnome}}, _stat, _anomaly)
+       when rarity != :gnome,
+       do: b
+
+  defp round_winner({a, card_a}, {b, card_b}, stat, anomaly) do
+    value_a = value(card_a, stat, anomaly)
+    value_b = value(card_b, stat, anomaly)
+    # a naked run turns the round around: the lower stat wins
+    {value_a, value_b} = if anomaly == :naked, do: {value_b, value_a}, else: {value_a, value_b}
+
+    cond do
+      value_a > value_b -> a
+      value_b > value_a -> b
+      true -> :draw
+    end
+  end
+
+  defp value(card, stat, :wipe), do: card.stats[stat] - Map.get(@rarity_bonus, card.rarity, 0)
+  defp value(card, stat, _anomaly), do: card.stats[stat]
 
   defp update(state) do
     PubSub.broadcast_battle(state.id, {:battle_updated, state})

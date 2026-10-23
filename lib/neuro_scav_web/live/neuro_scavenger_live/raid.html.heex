@@ -1,0 +1,119 @@
+<div class="container pt-2">
+  <h2 class="text-center blended-reg-bg scav-container">{gettext("Raid")}</h2>
+
+  <%= cond do %>
+    <% @raid -> %>
+      <div id="raid" class="raid">
+        <div class="raid-squad-row">
+          <div id="raid-squad" class="raid-squad">
+            <div
+              :for={member <- @raid.squad}
+              id={"raid-member-#{member.index}"}
+              class={[
+                "raid-member",
+                not member.alive && "raid-member-lost",
+                member_change(@raid, member)
+              ]}
+            >
+              <div class={"battle-card-name #{member.rarity}-name"}>{member.name}</div>
+              <p class="battle-card-rarity">
+                {if member.alive,
+                  do: Locale.get_text("Stats #{member.rarity}"),
+                  else: gettext("Raid dead")}
+              </p>
+              <.card_stats card={member} />
+            </div>
+          </div>
+          <.stash loot={@raid.stash} />
+        </div>
+
+        <div class="raid-route" aria-hidden="true">
+          <span
+            :for={index <- 0..(length(@raid.route) - 1)}
+            class={["raid-dot", route_dot(@raid, index)]}
+          ></span>
+        </div>
+
+        <%!-- a new step is a new element, so the outcome plays its entrance again --%>
+        <p
+          :if={@raid.last}
+          id={"raid-outcome-#{@raid.step}"}
+          class={["raid-outcome", outcome_class(@raid.last)]}
+        >
+          {outcome_text(@raid.last)}
+        </p>
+
+        <%= if event = Raid.event(@raid) do %>
+          <div id={"raid-event-#{@raid.step}"} class="wheel-panel raid-event">
+            <div class="wheel-panel-header">
+              <span>{event_title(event)}</span>
+              <span class="wheel-panel-count">
+                {gettext("Raid step %{n} %{total}", n: @raid.step + 1, total: length(@raid.route))}
+              </span>
+            </div>
+            <div class="raid-event-body">
+              <p class="raid-event-text">{event_text(event)}</p>
+              <button
+                :for={{option, index} <- Enum.with_index(Raid.options(@raid))}
+                id={"raid-option-#{index}"}
+                class="btn btn-old-blended blended w-100 raid-option"
+                phx-click="choose"
+                phx-value-index={index}
+                phx-throttle="500"
+              >
+                <span>{option_label(event, option)}</span>
+                <small :if={option.stat}>
+                  {stat_label(option.stat)} · {option.member.name} · {option.chance}%
+                  <span class="raid-option-icons">{option_icons(option)}</span>
+                </small>
+                <small :if={is_nil(option.stat)}>{gettext("Raid safe")}</small>
+              </button>
+              <p class="raid-legend">
+                {gettext("Raid legend %{value}", value: Raid.stat_step())}
+              </p>
+            </div>
+          </div>
+        <% else %>
+          <div id="raid-end" class="wheel-panel raid-event">
+            <div class="wheel-panel-header"><span>{gettext("Raid over")}</span></div>
+            <div class="raid-event-body">
+              <p class="battle-result">{verdict(@raid)}</p>
+              <button
+                id="btn-raid-again"
+                class="btn btn-old-blended blended w-100"
+                phx-click="again"
+              >
+                {gettext("Raid again")}
+              </button>
+              <button
+                id="btn-raid-recruit"
+                class="btn blend-old-font btn-lg w-100 mt-3"
+                phx-click="recruit"
+              >
+                {gettext("Raid new squad")}
+              </button>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% @members -> %>
+      <%!-- the dead render of a squad link: the raid starts once connected --%>
+    <% true -> %>
+      <div class="battle-lobby">
+        <p class="battle-note">{gettext("Raid intro %{steps}", steps: steps_text())}</p>
+        <button
+          id="btn-raid-recruit"
+          class="btn btn-old-blended btn-lg blended w-100"
+          phx-click="recruit"
+          phx-throttle="1000"
+        >
+          {gettext("Recruit squad")}
+        </button>
+        <p class="battle-note mt-3">
+          <.link navigate={~p"/team_scavengers"} class="raid-team-link">
+            {gettext("Raid team hint")}
+          </.link>
+        </p>
+      </div>
+  <% end %>
+</div>

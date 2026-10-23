@@ -334,6 +334,8 @@ document.addEventListener('keydown', (e) => {
     window.location.href = '/battle';
   } else if (e.key === '9') {
     window.location.href = '/quiz';
+  } else if (e.key === '0') {
+    window.location.href = '/raid';
   } else if (e.key === '?') {
     window.toggleShortcutsModal();
   } else if (e.key === 'Escape') {

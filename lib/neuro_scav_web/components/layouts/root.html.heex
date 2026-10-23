@@ -38,7 +38,7 @@
   </head>
   <body
     style="background-color: black;"
-    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel, :check_name, :collection, :battle, :quiz], do: "scav-old-back", else: "scav-back"}"}
+    class={"#{if @live_action in [:single_scavenger, :team_scavengers, :statistics, :glossary, :wheel, :check_name, :collection, :battle, :quiz, :raid], do: "scav-old-back", else: "scav-back"}"}
   >
     <div class="background-container">
       <div class="container container-nav">
@@ -144,6 +144,10 @@
               <tr>
                 <td><kbd>9</kbd></td>
                 <td>{gettext("Quiz")}</td>
+              </tr>
+              <tr>
+                <td><kbd>0</kbd></td>
+                <td>{gettext("Raid")}</td>
               </tr>
               <tr>
                 <td><kbd>?</kbd></td>

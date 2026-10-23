@@ -18,6 +18,7 @@
       </button>
     </div>
     <p :if={mode_rules(@mode)} class="battle-note">{mode_rules(@mode)}</p>
+    <p class="battle-note">{gettext("Anomaly rules")}</p>
     <p class="battle-note">
       {gettext("Turn timer rules %{seconds}", seconds: NeuroScav.BattleRoom.turn_seconds())}
     </p>
@@ -57,7 +58,21 @@
   <%!-- every part keeps its size through the battle, so nothing jumps:
        the result and the note share one cell, unknown cards are placeholders,
        the action row has one height and ends with the rematch button --%>
-  <div :if={@battle} id="battle" style={reveal_style(@battle)}>
+  <div
+    :if={@battle}
+    id="battle"
+    class={[@battle.anomaly && "anomaly-#{@battle.anomaly}", @battle.result && "battle-over"]}
+    style={reveal_style(@battle)}
+  >
+    <%!-- a new anomaly is a new element, so the banner plays its entrance again --%>
+    <div :if={@battle.anomaly} id={"battle-anomaly-#{@battle.anomaly}"} class="anomaly-banner">
+      <span class="anomaly-icon" aria-hidden="true">{anomaly_icon(@battle.anomaly)}</span>
+      <div>
+        <p class="anomaly-name">{gettext("Anomaly")}: {anomaly_name(@battle.anomaly)}</p>
+        <p class="anomaly-rule">{anomaly_rule(@battle.anomaly)}</p>
+      </div>
+    </div>
+
     <div class="battle-status">
       <p class={[
         "battle-result",
@@ -106,7 +121,7 @@
       >
         <div class={"battle-card-name #{card.rarity}-name"}>{card.name}</div>
         <p class={"battle-card-rarity #{card.rarity}"}>{rarity_text(card.rarity)}</p>
-        <.card_stats card={card} />
+        <.card_stats card={card} hidden={in_the_dark?(@battle)} />
       </button>
     </div>
 
@@ -160,6 +175,7 @@
                 card={card}
                 won={card.won}
                 first_round={slot * length(NeuroScav.BattleRoom.stats())}
+                hidden={in_the_dark?(@battle)}
               />
             <% else %>
               <%!-- no id or hook: the real card replaces it and plays its reveal --%>

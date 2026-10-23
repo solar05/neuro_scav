@@ -478,3 +478,453 @@ msgstr "Glück gehabt…"
 
 msgid "Phrase wow"
 msgstr "Wow!"
+
+msgid "Anomaly"
+msgstr "Kampfbedingungen"
+
+msgid "Anomaly rules"
+msgstr "Jeder Kampf bekommt zufällige Bedingungen, die die Regeln verändern."
+
+msgid "Raid"
+msgstr "Streifzug"
+
+msgid "Go raid"
+msgstr "Auf Streifzug"
+
+msgid "Raid intro %{steps}"
+msgstr "Ein Trupp aus fünf Wildlingen geht in einen Raid: %{steps} Begegnungen, in jeder wählst du eine Aktion, und der Beste im passenden Wert versucht sie. Du kannst Kämpfer verlieren und das Versteck mit Beute füllen."
+
+msgid "Recruit squad"
+msgstr "Trupp anwerben"
+
+msgid "Raid team hint"
+msgstr "Oder stell auf der Team-Seite ein Team zusammen und schick es von dort los"
+
+msgid "Raid step %{n} %{total}"
+msgstr "Begegnung %{n} von %{total}"
+
+msgid "Raid success %{name}"
+msgstr "%{name} hat es geschafft!"
+
+msgid "Raid lost %{name}"
+msgstr "%{name} hat es nicht raus geschafft…"
+
+msgid "Raid nothing %{name}"
+msgstr "%{name} hat nichts gefunden."
+
+msgid "Raid passed"
+msgstr "Der Trupp zog weiter."
+
+msgid "Raid pass by"
+msgstr "Weiterziehen"
+
+msgid "Raid safe"
+msgstr "ohne Risiko"
+
+msgid "Raid dead"
+msgstr "Gefallen"
+
+msgid "Raid over"
+msgstr "Streifzug vorbei"
+
+msgid "Raid clean"
+msgstr "Sauberer Extract: alle sind raus!"
+
+msgid "Raid survived %{alive} %{total}"
+msgstr "%{alive} von %{total} sind raus."
+
+msgid "Raid failed"
+msgstr "Niemand hat es aus dem Raid geschafft."
+
+msgid "Raid again"
+msgstr "Nochmal mit diesem Trupp"
+
+msgid "Raid new squad"
+msgstr "Neuer Trupp"
+
+msgid "Stash"
+msgstr "Versteck"
+
+msgid "Anomaly rng"
+msgstr "Tarkov-Zufall"
+
+msgid "Anomaly rng rule"
+msgstr "Eine Glücksrunde zählt 2 Punkte."
+
+msgid "Anomaly naked"
+msgstr "Nacktlauf"
+
+msgid "Anomaly naked rule"
+msgstr "Nichts zu verlieren: in jeder Runde gewinnt der kleinere Wert. Der Gnom schlägt trotzdem alle."
+
+msgid "Anomaly night"
+msgstr "Nacht-Raid"
+
+msgid "Anomaly night rule"
+msgstr "Stockdunkel: Werte bleiben bis zur Aufdeckung verborgen — entscheide nach Name und Seltenheit."
+
+msgid "Anomaly wipe"
+msgstr "Wipe"
+
+msgid "Anomaly wipe rule"
+msgstr "Alle fangen bei null an: Seltenheitsboni wirken nicht, nur der Name zählt."
+
+msgid "Anomaly uninsured"
+msgstr "Ohne Versicherung"
+
+msgid "Anomaly uninsured rule"
+msgstr "Keine zweite Chance: kein Neuziehen, und im Draft liegen keine übrigen Karten."
+
+msgid "Item sj6"
+msgstr "SJ6-Stimulans"
+
+msgid "Item meldonin"
+msgstr "Meldonin"
+
+msgid "Item rooster"
+msgstr "Goldener Hahn"
+
+msgid "Item ledx"
+msgstr "LEDX"
+
+msgid "Item all bonus %{bonus}"
+msgstr "+%{bonus} auf alles"
+
+msgid "Raid loot %{item}"
+msgstr "Ins Versteck: „%{item}“!"
+
+msgid "Raid pmc"
+msgstr "PMCs auf Customs"
+
+msgid "Raid pmc text"
+msgstr "Schritte hinter den Wohnheimen: ein PMC-Trupp kommt direkt auf euch zu."
+
+msgid "Raid pmc strength"
+msgstr "Mit Feuer empfangen"
+
+msgid "Raid pmc agility"
+msgstr "Durch die Garagen verschwinden"
+
+msgid "Raid reshala"
+msgstr "Reshala mit Leibwache"
+
+msgid "Raid reshala text"
+msgstr "Reshala lümmelt an der Tankstelle, ringsum Wachen in Trainingsanzügen."
+
+msgid "Raid reshala strength"
+msgstr "Stürmen"
+
+msgid "Raid reshala agility"
+msgstr "Leise vorbeischleichen"
+
+msgid "Raid sniper"
+msgstr "Ein Scharfschütze auf dem Dach"
+
+msgid "Raid sniper text"
+msgstr "Vom Dach feuert ein Scharfschütze — einen Schritt neben euch spritzt Staub auf."
+
+msgid "Raid sniper agility"
+msgstr "Von Deckung zu Deckung sprinten"
+
+msgid "Raid sniper luck"
+msgstr "Erstarren und hoffen"
+
+msgid "Raid mines"
+msgstr "Ein Minenfeld"
+
+msgid "Raid mines text"
+msgstr "Am Zaun ein Schild „Minen“. Auf Interchange schreibt das keiner zum Spaß."
+
+msgid "Raid mines agility"
+msgstr "Vorsichtig in alten Spuren"
+
+msgid "Raid mines luck"
+msgstr "Geradewegs durchrennen"
+
+msgid "Raid office"
+msgstr "Ein Tresor im Büro"
+
+msgid "Raid office text"
+msgstr "Im Büro steht ein Tresor. Kein Schlüssel, aber ein Brecheisen."
+
+msgid "Raid office strength"
+msgstr "Aufhebeln"
+
+msgid "Raid bait"
+msgstr "Verdächtige Beute"
+
+msgid "Raid bait text"
+msgstr "Mitten auf offenem Feld liegt teure Beute. Sieht sehr nach Köder aus."
+
+msgid "Raid bait agility"
+msgstr "Schnappen"
+
+msgid "Raid killa"
+msgstr "Killa im ULTRA"
+
+msgid "Raid killa text"
+msgstr "Zwischen den Läden blitzt Killas gelber Helm auf."
+
+msgid "Raid killa strength"
+msgstr "Den Kampf annehmen"
+
+msgid "Raid killa luck"
+msgstr "Sich in einem Laden verstecken"
+
+msgid "Raid wounded"
+msgstr "Ein verwundeter Wildling"
+
+msgid "Raid wounded text"
+msgstr "Am Feuer stöhnt ein Wildling: „Bruder, hast du ein Medkit?“"
+
+msgid "Raid wounded luck"
+msgstr "Ein Medkit teilen"
+
+msgid "Raid drop %{name} %{item}"
+msgstr "%{name} ist entkommen, hat aber „%{item}“ fallen lassen."
+
+msgid "Raid drop nothing %{name}"
+msgstr "%{name} ist knapp entkommen — gut, dass das Versteck leer war."
+
+msgid "Raid revive %{name}"
+msgstr "%{name} ist wieder dabei!"
+
+msgid "Raid tagilla"
+msgstr "Tagilla in der Fabrik"
+
+msgid "Raid tagilla text"
+msgstr "Aus der dunklen Werkhalle kommt das Kratzen eines Vorschlaghammers auf Metall."
+
+msgid "Raid tagilla strength"
+msgstr "Ihn aus nächster Nähe stellen"
+
+msgid "Raid tagilla agility"
+msgstr "Durch Tor 3 entwischen"
+
+msgid "Raid shturman"
+msgstr "Shturman am Sägewerk"
+
+msgid "Raid shturman text"
+msgstr "Vom Sägewerk feuert methodisch eine SWD — Shturman bewacht sein Versteck."
+
+msgid "Raid shturman agility"
+msgstr "Von der Flanke kommen"
+
+msgid "Raid shturman luck"
+msgstr "Hinter den Stämmen abwarten"
+
+msgid "Raid cultists"
+msgstr "Kultisten in der Dämmerung"
+
+msgid "Raid cultists text"
+msgstr "Gestalten in Kutten bewegen sich lautlos zwischen den Bäumen. Besser nicht reizen."
+
+msgid "Raid cultists agility"
+msgstr "Rennen, ohne zurückzublicken"
+
+msgid "Raid cultists luck"
+msgstr "Sich im Gebüsch verstecken"
+
+msgid "Raid raiders"
+msgstr "Raider auf Reserve"
+
+msgid "Raid raiders text"
+msgstr "Eine Sirene heult: Raider in voller Rüstung kommen aus dem Bunker."
+
+msgid "Raid raiders strength"
+msgstr "Die Stellung halten"
+
+msgid "Raid raiders agility"
+msgstr "Über die Kasernen zurückziehen"
+
+msgid "Raid toll"
+msgstr "Kostenpflichtiger Ausgang"
+
+msgid "Raid toll text"
+msgstr "Am Ausgang langweilt sich ein Wildling mit Schild: „Durchgang — 7000 ₽“."
+
+msgid "Raid toll luck"
+msgstr "Feilschen"
+
+msgid "Raid airdrop"
+msgstr "Airdrop"
+
+msgid "Raid airdrop text"
+msgstr "Ein Airdrop schwebt am Fallschirm herab. Alle auf der Karte haben ihn gesehen."
+
+msgid "Raid airdrop agility"
+msgstr "Als Erster hinrennen"
+
+msgid "Raid medic"
+msgstr "Ein Wildling-Sanitäter"
+
+msgid "Raid medic text"
+msgstr "Im Keller versteckt sich ein Wildling mit einer Tasche voller Medikamente: „Ich flicke einen von euch zusammen — wenn wir uns einig werden.“"
+
+msgid "Raid medic luck"
+msgstr "Sich einigen"
+
+msgid "Raid bridge"
+msgstr "Hinterhalt auf der Brücke"
+
+msgid "Raid bridge text"
+msgstr "Ein verlassener Laster mitten auf der Brücke — perfekt für einen Hinterhalt."
+
+msgid "Raid bridge agility"
+msgstr "Unter Beschuss durchrennen"
+
+msgid "Raid bridge luck"
+msgstr "Am Geländer entlangkriechen"
+
+msgid "Stash empty"
+msgstr "Leer"
+
+msgid "Raid sanitar"
+msgstr "Sanitar an der Küste"
+
+msgid "Raid sanitar text"
+msgstr "Sanitar und seine Leute beherrschen das Sanatorium — samt Medikamentenvorrat."
+
+msgid "Raid sanitar strength"
+msgstr "Das Sanatorium stürmen"
+
+msgid "Raid sanitar luck"
+msgstr "Medikamente eintauschen"
+
+msgid "Raid sanitar agility"
+msgstr "Am Strand vorbeigehen"
+
+msgid "Raid glukhar"
+msgstr "Glukhar an den Kasernen"
+
+msgid "Raid glukhar text"
+msgstr "An den Kasernen: Glukhar, seine Wachen und ein MG auf dem Dach."
+
+msgid "Raid glukhar strength"
+msgstr "Zum Sturm ansetzen"
+
+msgid "Raid glukhar agility"
+msgstr "Am Zaun entlangkriechen"
+
+msgid "Raid kollontay"
+msgstr "Kollontay auf den Straßen"
+
+msgid "Raid kollontay text"
+msgstr "Major Kollontay versperrt mit dem Schlagstock die Straße: „Papiere!“"
+
+msgid "Raid kollontay luck"
+msgstr "„Papiere“ vorzeigen"
+
+msgid "Raid kollontay strength"
+msgstr "Sich wehren"
+
+msgid "Raid zryachiy"
+msgstr "Zryachiy am Leuchtturm"
+
+msgid "Raid zryachiy text"
+msgstr "Vom Leuchtturm blitzt Zryachiys Zielfernrohr. Besuch mag er nicht."
+
+msgid "Raid zryachiy agility"
+msgstr "An den Felsen entlangsprinten"
+
+msgid "Raid vex"
+msgstr "Ausfahrt mit dem Auto"
+
+msgid "Raid vex text"
+msgstr "Am Straßenrand wartet ein Auto. Der Fahrer mustert eure Rucksäcke: „Die Fahrt ist nicht umsonst.“"
+
+msgid "Raid vex luck"
+msgstr "Den Preis drücken"
+
+msgid "Raid tripwire"
+msgstr "Ein Stolperdraht"
+
+msgid "Raid tripwire text"
+msgstr "Im Türrahmen blitzt ein dünner Draht auf."
+
+msgid "Raid tripwire agility"
+msgstr "Vorsichtig darübersteigen"
+
+msgid "Raid tripwire luck"
+msgstr "Entschärfen und die Granate mitnehmen"
+
+msgid "Raid dead_pmc"
+msgstr "Ein toter PMC"
+
+msgid "Raid dead_pmc text"
+msgstr "Unter der Treppe liegt ein PMC mit vollem Rucksack. Wer ihn getötet hat, ist vielleicht noch in der Nähe."
+
+msgid "Raid dead_pmc luck"
+msgstr "Durchsuchen"
+
+msgid "Raid labs"
+msgstr "Das Labor"
+
+msgid "Raid labs text"
+msgstr "Eine rote Schlüsselkarte öffnet das Labor. Drinnen: Raider und die beste Beute in Tarkov."
+
+msgid "Raid labs strength"
+msgstr "Das Labor säubern"
+
+msgid "Raid labs agility"
+msgstr "Zu den Tresoren rennen"
+
+msgid "Raid legend %{value}"
+msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}"
+
+msgid "Raid train %{name} %{stat} %{value}"
+msgstr "%{name} wird besser: %{stat} +%{value}!"
+
+msgid "Raid wound %{name} %{stat} %{value}"
+msgstr "%{name} ist verletzt: %{stat} −%{value}."
+
+msgid "Raid promote %{name}"
+msgstr "%{name} steigt auf — die Seltenheit steigt!"
+
+msgid "Raid obdolbos"
+msgstr "Eine Obdolbos-Spritze"
+
+msgid "Raid obdolbos text"
+msgstr "Im Medkit liegt ein Obdolbos. Die Wirkung ist Glückssache."
+
+msgid "Raid obdolbos luck"
+msgstr "Spritzen"
+
+msgid "Raid skirmish"
+msgstr "Ein Feuergefecht mit Wildlingen"
+
+msgid "Raid skirmish text"
+msgstr "Die örtlichen Wildlinge ballern in alle Richtungen — sie erkennen ihre eigenen nicht."
+
+msgid "Raid skirmish strength"
+msgstr "Das Feuer erwidern"
+
+msgid "Raid skirmish agility"
+msgstr "Hinter die Ecke zurückweichen"
+
+msgid "Raid stairs"
+msgstr "Morsche Treppe"
+
+msgid "Raid stairs text"
+msgstr "Das Treppenhaus ist morsch — drei Meter Fall."
+
+msgid "Raid stairs agility"
+msgstr "Über die Lücke springen"
+
+msgid "Raid veteran"
+msgstr "Ein Tarkov-Veteran"
+
+msgid "Raid veteran text"
+msgstr "Ein grauhaariger Wildling am Feuer: „Ich zeig dir ein paar Kniffe — wenn du es aushältst.“"
+
+msgid "Raid veteran strength"
+msgstr "Die Prüfung bestehen"
+
+msgid "Raid lightkeeper"
+msgstr "Der Leuchtturmwärter"
+
+msgid "Raid lightkeeper text"
+msgstr "Der Leuchtturmwärter verspricht einen besonderen Deal für jeden, der ihn lebend erreicht."
+
+msgid "Raid lightkeeper agility"
+msgstr "Den Leuchtturm erreichen"
