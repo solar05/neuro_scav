@@ -433,3 +433,48 @@ msgstr "Seikai: %{total} mon-chuu %{right} mon"
 
 msgid "Next"
 msgstr "Tsugi e"
+
+msgid "Turn timer rules %{seconds}"
+msgstr "Hitotsu no te ni %{seconds} byou. Sugiru to jidou de te ga utareru."
+
+msgid "Time to move"
+msgstr "Te no jikan"
+
+msgid "Left the battle"
+msgstr "Batoru kara deta"
+
+msgid "To lobby"
+msgstr "Robii e"
+
+msgid "Chat"
+msgstr "Chatto"
+
+msgid "Mute"
+msgstr "Myuuto"
+
+msgid "Unmute"
+msgstr "Myuuto kaijo"
+
+msgid "Chat placeholder"
+msgstr "Messeeji…"
+
+msgid "Send"
+msgstr "Soushin"
+
+msgid "Phrase hi"
+msgstr "Konnichiwa!"
+
+msgid "Phrase gl"
+msgstr "Ganbatte!"
+
+msgid "Phrase gg"
+msgstr "GG"
+
+msgid "Phrase again"
+msgstr "Mou ikkai?"
+
+msgid "Phrase lucky"
+msgstr "Rakkii…"
+
+msgid "Phrase wow"
+msgstr "Sugoi!"

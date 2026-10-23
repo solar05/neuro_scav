@@ -444,3 +444,48 @@ msgstr "Guessed: %{right} of %{total}"
 
 msgid "Next"
 msgstr "Next"
+
+msgid "Turn timer rules %{seconds}"
+msgstr "You have %{seconds} seconds per move, then the move is made for you."
+
+msgid "Time to move"
+msgstr "Time to move"
+
+msgid "Left the battle"
+msgstr "Left the battle"
+
+msgid "To lobby"
+msgstr "To lobby"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Mute"
+msgstr "Mute"
+
+msgid "Unmute"
+msgstr "Unmute"
+
+msgid "Chat placeholder"
+msgstr "Message…"
+
+msgid "Send"
+msgstr "Send"
+
+msgid "Phrase hi"
+msgstr "Hi!"
+
+msgid "Phrase gl"
+msgstr "Good luck!"
+
+msgid "Phrase gg"
+msgstr "GG"
+
+msgid "Phrase again"
+msgstr "One more?"
+
+msgid "Phrase lucky"
+msgstr "Lucky…"
+
+msgid "Phrase wow"
+msgstr "Wow!"

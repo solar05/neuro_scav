@@ -246,9 +246,12 @@ defmodule NeuroScav.BattleRoomTest do
   defp higher(_a, _b), do: :draw
 
   describe "bot" do
-    # a long think time keeps the bot waiting until the test sends :bot_turn itself
+    # a long think time keeps the bot waiting until the test sends :bot_turn itself;
+    # a quiet bot keeps chat messages out of the states the tests compare
     setup do
-      {:ok, id} = BattleRoom.create_with_bot("a", "ru", think_ms: 60_000..60_000)
+      {:ok, id} =
+        BattleRoom.create_with_bot("a", "ru", think_ms: 60_000..60_000, chat_chance: 0.0)
+
       [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
       on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
       NeuroScav.PubSub.subscribe_battle(id)
@@ -328,10 +331,178 @@ defmodule NeuroScav.BattleRoomTest do
       assert cards[bot] == [best]
     end
 
+    test "chats: greets, answers phrases, comments the result, wishes luck on a rematch" do
+      {:ok, id} =
+        BattleRoom.create_with_bot("a", "ru",
+          think_ms: 60_000..60_000,
+          chat_chance: 1.0,
+          chat_ms: 0..0
+        )
+
+      [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
+      on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
+      NeuroScav.PubSub.subscribe_battle(id)
+      bot = BattleRoom.bot()
+
+      assert_receive {:battle_updated, %{chat: [%{from: ^bot, phrase: :hi}]}}
+
+      {:ok, _battle} = BattleRoom.say(id, "a", {:phrase, :gl})
+      assert_receive {:battle_updated, %{chat: [_hi, _gl, %{from: ^bot, phrase: :gl}]}}
+
+      {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+      {:ok, _battle} = BattleRoom.ready(id, "a")
+      send(pid, :bot_turn)
+
+      assert_receive {:battle_updated,
+                      %{
+                        chat: [_, _, _, %{from: ^bot, phrase: comment}],
+                        result: %{winner: winner}
+                      }}
+
+      expected =
+        case winner do
+          ^bot -> [:gg, :again]
+          :draw -> [:wow]
+          _player -> [:lucky, :gg]
+        end
+
+      assert comment in expected
+
+      {:ok, _battle} = BattleRoom.rematch(id, "a")
+      assert_receive {:battle_updated, %{chat: [_, _, _, _, %{from: ^bot, phrase: :gl}]}}
+    end
+
+    test "a quiet bot never chats", %{bot_room: id} do
+      bot = BattleRoom.bot()
+      {:ok, _battle} = BattleRoom.say(id, "a", {:phrase, :hi})
+      refute_receive {:battle_updated, %{chat: [_hi, %{from: ^bot}]}}, 100
+    end
+
     test "a stray turn message changes nothing", %{bot_room: id, bot_pid: pid} do
       bot_turn(pid)
       {:ok, before} = BattleRoom.join(id, "a")
       assert bot_turn(pid) == before
+    end
+  end
+
+  describe "turn timer" do
+    setup do
+      {id, pid} = start_room(turn_ms: 60_000)
+      %{timer_id: id, timer_pid: pid}
+    end
+
+    test "runs only while the battle waits for a move", %{timer_id: id} do
+      assert {:ok, %{deadline: nil}} = BattleRoom.join(id, "a")
+      assert {:ok, %{deadline: deadline}} = BattleRoom.join(id, "b")
+      assert is_integer(deadline)
+
+      for player <- ~w(a b) do
+        {:ok, _battle} = BattleRoom.draw(id, player, "ru")
+        {:ok, _battle} = BattleRoom.ready(id, player)
+      end
+
+      assert {:ok, %{deadline: nil, result: %{}}} = BattleRoom.join(id, "a")
+    end
+
+    test "when the time runs out the moves are made for whoever still has to", %{
+      timer_id: id,
+      timer_pid: pid
+    } do
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+      {:ok, %{deadline: deadline}} = BattleRoom.ready(id, "a")
+
+      send(pid, {:turn_timeout, deadline})
+      battle = :sys.get_state(pid)
+
+      assert [_card] = battle.cards["b"]
+      assert "b" in battle.ready
+      assert battle.result != nil
+    end
+
+    test "a timeout of an earlier move changes nothing", %{timer_id: id, timer_pid: pid} do
+      {:ok, battle} = BattleRoom.join(id, "b")
+      send(pid, {:turn_timeout, battle.deadline - 1})
+      assert :sys.get_state(pid) == battle
+    end
+
+    test "in a draft the player on turn takes the strongest card" do
+      {id, pid} = start_room(mode: :draft, turn_ms: 60_000)
+      {:ok, battle} = BattleRoom.join(id, "b")
+      best = Enum.max_by(battle.draft.pool, &(&1.stats |> Map.values() |> Enum.sum()))
+
+      send(pid, {:turn_timeout, battle.deadline})
+      assert :sys.get_state(pid).cards["a"] == [best]
+    end
+  end
+
+  describe "presence" do
+    # a battle page that opens and closes again
+    defp visit(id, user_id) do
+      fn -> BattleRoom.join(id, user_id, monitor: true) end |> Task.async() |> Task.await()
+    end
+
+    defp await_away(user_id) do
+      receive do
+        {:battle_updated, %{away: away}} ->
+          if user_id in away, do: away, else: await_away(user_id)
+      after
+        1_000 -> flunk("#{user_id} never went away")
+      end
+    end
+
+    test "a player whose battle page closed is away until they come back", %{id: id} do
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      visit(id, "b")
+      await_away("b")
+
+      {:ok, %{away: away}} = BattleRoom.join(id, "b", monitor: true)
+      refute "b" in away
+    end
+
+    test "spectators and players who never opened the page are not away", %{id: id, pid: pid} do
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      visit(id, "c")
+      assert MapSet.size(:sys.get_state(pid).away) == 0
+    end
+  end
+
+  describe "chat" do
+    setup %{id: id} do
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      :ok
+    end
+
+    test "players send phrases and trimmed texts, spectators can't", %{id: id} do
+      assert {:ok, %{chat: [%{from: "a", phrase: :gg, text: nil}]}} =
+               BattleRoom.say(id, "a", {:phrase, :gg})
+
+      long = String.duplicate("x", 300)
+      {:ok, %{chat: [_gg, message]}} = BattleRoom.say(id, "b", {:text, "  #{long} "})
+      assert message.text == String.slice(long, 0, 200)
+
+      assert BattleRoom.say(id, "c", {:phrase, :gg}) == {:error, :not_allowed}
+    end
+
+    test "rejects empty texts, unknown phrases and a second message within a second", %{id: id} do
+      assert BattleRoom.say(id, "a", {:text, "   "}) == {:error, :not_allowed}
+      assert BattleRoom.say(id, "a", {:phrase, :nope}) == {:error, :not_allowed}
+      assert {:ok, _battle} = BattleRoom.say(id, "a", {:text, "hi"})
+      assert BattleRoom.say(id, "a", {:text, "again"}) == {:error, :not_allowed}
+    end
+
+    test "keeps the last 50 messages and doesn't touch the clock", %{id: id, pid: pid} do
+      %{deadline: deadline} = :sys.get_state(pid)
+
+      for n <- 1..51 do
+        # skip the one-second gap between messages
+        :sys.replace_state(pid, &%{&1 | said: %{}})
+        {:ok, _battle} = BattleRoom.say(id, "a", {:text, "#{n}"})
+      end
+
+      %{chat: chat, deadline: ^deadline} = :sys.get_state(pid)
+      assert length(chat) == 50
+      assert hd(chat).text == "2"
     end
   end
 

@@ -18,6 +18,9 @@
       </button>
     </div>
     <p :if={mode_rules(@mode)} class="battle-note">{mode_rules(@mode)}</p>
+    <p class="battle-note">
+      {gettext("Turn timer rules %{seconds}", seconds: NeuroScav.BattleRoom.turn_seconds())}
+    </p>
     <button
       id="btn-battle-find"
       class="btn btn-old-blended btn-lg blended w-100"
@@ -81,6 +84,15 @@
       </div>
     </div>
 
+    <%!-- the time left for a move; the track stays, so nothing jumps when it stops --%>
+    <div class="battle-timer" title={gettext("Time to move")}>
+      <span
+        :if={@battle.deadline}
+        id={"battle-timer-#{@battle.deadline}"}
+        style={timer_style(@battle)}
+      ></span>
+    </div>
+
     <%!-- the draft table: open cards, a click takes one on your turn --%>
     <div :if={@battle.draft && is_nil(@battle.result)} id="draft-pool" class="draft-pool">
       <button
@@ -113,6 +125,13 @@
       >
         <div class="wheel-panel-header">
           <span>{seat.label}</span>
+          <span
+            :if={msg = seat.player && bubble(@battle, seat.player, @user_id, @muted)}
+            id={"battle-bubble-#{msg.id}"}
+            class="battle-bubble"
+          >
+            {chat_text(msg)}
+          </span>
           <span :if={seat.score_steps} class="wheel-panel-count battle-score">
             <span :for={{score, round} <- seat.score_steps} style={"--round: #{round}"}>
               {score}
@@ -165,24 +184,46 @@
           <div class="battle-actions">
             <%= cond do %>
               <% @battle.result -> %>
-                <button
-                  :if={seat.own? and seat.player not in @battle.rematch}
-                  id="btn-battle-rematch"
-                  class="btn btn-old-blended blended battle-reveal-end"
-                  phx-click="rematch"
-                  phx-throttle="1000"
-                >
-                  {if rematch_offered?(@battle, @user_id),
-                    do: gettext("Accept rematch"),
-                    else: gettext("Rematch")}
-                </button>
-                <p
-                  :if={seat.player in @battle.rematch}
-                  id={"battle-rematch-#{seat.index}"}
-                  class="battle-wait"
-                >
-                  {if seat.own?, do: gettext("Rematch asked"), else: gettext("Wants rematch")}
-                </p>
+                <%= case result_action(@battle, seat, @user_id) do %>
+                  <% :rematch -> %>
+                    <button
+                      id="btn-battle-rematch"
+                      class="btn btn-old-blended blended battle-reveal-end"
+                      phx-click="rematch"
+                      phx-throttle="1000"
+                    >
+                      {if rematch_offered?(@battle, @user_id),
+                        do: gettext("Accept rematch"),
+                        else: gettext("Rematch")}
+                    </button>
+                  <% :alone -> %>
+                    <button
+                      id="btn-battle-bot-again"
+                      class="btn btn-old-blended blended battle-reveal-end"
+                      phx-click="create_bot"
+                      phx-throttle="1000"
+                    >
+                      {gettext("Play with bot")}
+                    </button>
+                    <.link
+                      id="btn-battle-lobby"
+                      navigate={~p"/battle"}
+                      class="btn blend-old-font battle-reveal-end"
+                    >
+                      {gettext("To lobby")}
+                    </.link>
+                  <% :asked -> %>
+                    <p id={"battle-rematch-#{seat.index}"} class="battle-wait">
+                      {gettext("Rematch asked")}
+                    </p>
+                  <% :wants -> %>
+                    <p id={"battle-rematch-#{seat.index}"} class="battle-wait">
+                      {gettext("Wants rematch")}
+                    </p>
+                  <% :away -> %>
+                    <p class="battle-wait">{gettext("Left the battle")}</p>
+                  <% nil -> %>
+                <% end %>
               <% seat.own? -> %>
                 <button
                   :if={seat.can_draw?}
@@ -216,6 +257,63 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <%!-- the log and the text box are for big screens (CSS hides them on touch
+         devices), phrases work everywhere and every message also pops up as a
+         bubble over its seat; spectators only read --%>
+    <div
+      :if={length(@battle.players) == 2}
+      id="battle-chat"
+      class={["wheel-panel battle-chat", not player?(@battle, @user_id) && "battle-chat-readonly"]}
+    >
+      <div class="wheel-panel-header">
+        <span>{gettext("Chat")}</span>
+        <button
+          :if={player?(@battle, @user_id)}
+          id="btn-chat-mute"
+          type="button"
+          class="battle-chat-mute"
+          phx-click="mute"
+        >
+          {if @muted, do: gettext("Unmute"), else: gettext("Mute")}
+        </button>
+      </div>
+      <%!-- column-reverse keeps the newest message in view without any JS --%>
+      <ol id="battle-chat-log" class="battle-chat-log">
+        <li :for={msg <- Enum.reverse(chat(@battle, @user_id, @muted))} id={"chat-#{msg.id}"}>
+          <b>{seat_label(@battle, msg.from, @user_id)}:</b> {chat_text(msg)}
+        </li>
+      </ol>
+      <div :if={player?(@battle, @user_id)} class="battle-chat-phrases">
+        <button
+          :for={phrase <- NeuroScav.BattleRoom.phrases()}
+          id={"chat-phrase-#{phrase}"}
+          type="button"
+          class="suggest-chip"
+          phx-click="say_phrase"
+          phx-value-phrase={phrase}
+          phx-throttle="1000"
+        >
+          {phrase_text(phrase)}
+        </button>
+      </div>
+      <%!-- the reset waits a tick: LiveView reads the text on the same submit --%>
+      <form
+        :if={player?(@battle, @user_id)}
+        id="battle-chat-form"
+        class="battle-chat-form"
+        phx-submit="say"
+        onsubmit="setTimeout(() => this.reset())"
+      >
+        <input
+          name="text"
+          maxlength="200"
+          autocomplete="off"
+          placeholder={gettext("Chat placeholder")}
+        />
+        <button class="btn btn-old-blended blended">{gettext("Send")}</button>
+      </form>
     </div>
   </div>
 </div>

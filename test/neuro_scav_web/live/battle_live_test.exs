@@ -286,4 +286,110 @@ defmodule NeuroScavWeb.BattleLiveTest do
   end
 
   defp text(html), do: html |> LazyHTML.from_fragment() |> LazyHTML.text() |> String.trim()
+
+  test "a bar shows the time left while the battle waits for a move" do
+    {:ok, id} = BattleRoom.create("a")
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    refute has_element?(a, ".battle-timer > span")
+
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+    assert render(a) =~ "--left: "
+    assert has_element?(a, ".battle-timer > span")
+
+    for view <- [a, b] do
+      view |> element("#btn-battle-draw") |> render_click()
+      view |> element("#btn-battle-ready") |> render_click()
+    end
+
+    refute has_element?(a, ".battle-timer > span")
+  end
+
+  test "players chat with texts and phrases, spectators only read" do
+    {:ok, id} = BattleRoom.create("a")
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+    {:ok, c, _html} = live(conn_for("c"), ~p"/battle/#{id}")
+
+    a |> form("#battle-chat-form", %{text: "го в бой"}) |> render_submit()
+    b |> element("#chat-phrase-gl") |> render_click()
+
+    for view <- [a, b, c] do
+      log = view |> element("#battle-chat-log") |> render()
+      assert log =~ "го в бой"
+      assert log =~ "Удачи!"
+    end
+
+    # the message also pops up over its seat
+    assert b |> element(".battle-bubble", "го в бой") |> has_element?()
+
+    refute has_element?(c, "#battle-chat-form")
+    refute has_element?(c, "#chat-phrase-gl")
+    assert has_element?(c, "#battle-chat.battle-chat-readonly")
+  end
+
+  test "muting hides the other player's messages from this page only" do
+    {:ok, id} = BattleRoom.create("a")
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+
+    a |> form("#battle-chat-form", %{text: "спам"}) |> render_submit()
+    b |> element("#btn-chat-mute") |> render_click()
+
+    refute render(b) =~ "спам"
+    assert a |> element("#battle-chat-log") |> render() =~ "спам"
+
+    b |> element("#btn-chat-mute") |> render_click()
+    assert b |> element("#battle-chat-log") |> render() =~ "спам"
+  end
+
+  test "an opponent who closed the page is shown as gone, then the bot is offered" do
+    {:ok, id} = BattleRoom.create("a")
+    pid = stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    # b's battle page opens and closes again
+    fn -> BattleRoom.join(id, "b", monitor: true) end |> Task.async() |> Task.await()
+    _ = :sys.get_state(pid)
+
+    assert render(a) =~ "Вышел из боя"
+
+    a |> element("#btn-battle-draw") |> render_click()
+    a |> element("#btn-battle-ready") |> render_click()
+    send(pid, {:turn_timeout, :sys.get_state(pid).deadline})
+    _ = :sys.get_state(pid)
+
+    refute has_element?(a, "#btn-battle-rematch")
+    assert has_element?(a, "#btn-battle-lobby")
+
+    assert {:error, {:live_redirect, %{to: "/battle/" <> bot_room}}} =
+             a |> element("#btn-battle-bot-again") |> render_click()
+
+    stop_room_on_exit(bot_room)
+    assert {:ok, %{players: ["a", "bot"]}} = BattleRoom.join(bot_room, "a")
+  end
+
+  test "the bot's messages show in the chat in the viewer's language" do
+    {:ok, id} =
+      BattleRoom.create_with_bot("a", "ru",
+        think_ms: 60_000..60_000,
+        chat_chance: 1.0,
+        chat_ms: 0..0
+      )
+
+    stop_room_on_exit(id)
+    NeuroScav.PubSub.subscribe_battle(id)
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    assert_receive {:battle_updated, %{chat: [%{from: "bot"}]}}
+
+    log = a |> element("#battle-chat-log") |> render()
+    assert log =~ "Бот:"
+    assert log =~ "Привет!"
+    assert a |> element(".battle-bubble", "Привет!") |> has_element?()
+  end
 end

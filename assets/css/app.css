@@ -2109,10 +2109,6 @@ kbd {
     }
 }
 
-.battle-seat-lost {
-    opacity: 0.55;
-}
-
 .battle-seat-body {
     padding: 14px;
     font-family: "Bender";
@@ -2257,15 +2253,30 @@ kbd {
     from { opacity: 0; visibility: hidden; }
 }
 
-/* two classes: outranks .wheel-panel below, so its pulse is listed again */
-.battle-seat.battle-seat-lost {
-    animation:
-        borderPulseGold 2.5s ease-in-out infinite,
-        battle-seat-lost 0.4s ease calc(var(--rounds) * var(--step)) backwards;
+/* a lost seat fades its cards, not the whole panel: opacity on the panel
+   would dim the rematch button too, and a child can't undo it */
+.battle-seat-lost .wheel-panel-header > :not(.battle-bubble),
+.battle-seat-lost .battle-card,
+.battle-seat-lost .battle-sets {
+    opacity: 0.55;
+    animation: battle-seat-lost 0.4s ease calc(var(--rounds) * var(--step)) backwards;
 }
 
 @keyframes battle-seat-lost {
     from { opacity: 1; }
+}
+
+/* the loser's way back in (rematch, or a bot when the opponent left) pulses
+   once the outcome shows; the reveal delay is listed again, the glow replaces it */
+.battle-seat-lost .battle-actions .btn-old-blended {
+    animation:
+        battle-reveal-end 0.4s ease calc(var(--rounds) * var(--step)) backwards,
+        battle-rematch-glow 1.4s ease-in-out calc(var(--rounds) * var(--step)) infinite;
+}
+
+@keyframes battle-rematch-glow {
+    0%, 100% { box-shadow: 0 0 6px 1px rgba(255, 208, 96, 0.5); transform: scale(1); }
+    50% { box-shadow: 0 0 18px 4px rgba(255, 208, 96, 0.95); transform: scale(1.03); }
 }
 
 .battle-wait {
@@ -2406,6 +2417,137 @@ kbd {
 .check-name-card .battle-stats {
     padding: 14px;
     font-family: "Bender";
+}
+
+/* ── Battle clock, bubbles and chat ── */
+.battle-timer {
+    height: 4px;
+    margin: 0 0 12px;
+    border-radius: 2px;
+    background: #212529;
+    overflow: hidden;
+}
+
+/* the room sets --from (share of the time left) and --left (the time left) */
+.battle-timer > span {
+    display: block;
+    height: 100%;
+    background: #d49300;
+    animation: battle-timer var(--left) linear forwards;
+}
+
+@keyframes battle-timer {
+    from { width: var(--from); }
+    to { width: 0; background: #e53935; }
+}
+
+.battle-seat {
+    position: relative;
+}
+
+/* under the header: .wheel-panel clips anything sticking out of it */
+.battle-bubble {
+    position: absolute;
+    top: 46px;
+    right: 12px;
+    z-index: 2;
+    max-width: 70%;
+    padding: 4px 10px;
+    border: 2px solid #d49300;
+    border-radius: 12px;
+    background: #212529;
+    color: #fff;
+    font: 16px "Bender";
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    animation: battle-bubble 5s ease forwards;
+}
+
+@keyframes battle-bubble {
+    0% { opacity: 0; transform: translateY(4px); }
+    8%, 80% { opacity: 1; transform: none; }
+    100% { opacity: 0; visibility: hidden; }
+}
+
+.battle-chat {
+    margin-top: 16px;
+}
+
+/* sits on the gold header */
+.battle-chat-mute {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #212529;
+    font: inherit;
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+.battle-chat-mute:hover {
+    opacity: 1;
+}
+
+.battle-chat-log {
+    display: flex;
+    flex-direction: column-reverse;
+    height: 160px;
+    margin: 0;
+    padding: 10px 14px;
+    overflow-y: auto;
+    list-style: none;
+    color: #a5a5a5;
+    font: 16px "Bender";
+    word-break: break-word;
+}
+
+.battle-chat-log b {
+    color: #ffd060;
+    font-weight: normal;
+}
+
+.battle-chat-phrases {
+    --c: #d49300;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 0 14px 10px;
+}
+
+.battle-chat-form {
+    display: flex;
+    gap: 10px;
+    padding: 0 14px 14px;
+}
+
+.battle-chat-form input {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 12px;
+    border: 2px solid #3a3a46;
+    border-radius: 10px;
+    background: #212529;
+    color: #fff;
+    font: 18px "Bender";
+}
+
+.battle-chat-form input:focus {
+    outline: none;
+    border-color: #d49300;
+}
+
+/* touch devices get phrases and bubbles only, no typing */
+@media (pointer: coarse) {
+    .battle-chat-log,
+    .battle-chat-form,
+    .battle-chat-readonly {
+        display: none;
+    }
+
+    .battle-chat-phrases {
+        padding-top: 10px;
+    }
 }
 
 /* ── Quiz ── */

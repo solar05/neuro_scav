@@ -433,3 +433,48 @@ msgstr "Erraten: %{right} von %{total}"
 
 msgid "Next"
 msgstr "Weiter"
+
+msgid "Turn timer rules %{seconds}"
+msgstr "Für jeden Zug hast du %{seconds} Sekunden, danach wird für dich gezogen."
+
+msgid "Time to move"
+msgstr "Zeit für den Zug"
+
+msgid "Left the battle"
+msgstr "Hat den Kampf verlassen"
+
+msgid "To lobby"
+msgstr "Zur Lobby"
+
+msgid "Chat"
+msgstr "Chat"
+
+msgid "Mute"
+msgstr "Stummschalten"
+
+msgid "Unmute"
+msgstr "Ton an"
+
+msgid "Chat placeholder"
+msgstr "Nachricht…"
+
+msgid "Send"
+msgstr "Senden"
+
+msgid "Phrase hi"
+msgstr "Hallo!"
+
+msgid "Phrase gl"
+msgstr "Viel Glück!"
+
+msgid "Phrase gg"
+msgstr "GG"
+
+msgid "Phrase again"
+msgstr "Noch eine Runde?"
+
+msgid "Phrase lucky"
+msgstr "Glück gehabt…"
+
+msgid "Phrase wow"
+msgstr "Wow!"

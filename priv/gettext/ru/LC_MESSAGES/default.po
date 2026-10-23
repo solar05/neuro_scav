@@ -444,3 +444,48 @@ msgstr "Угадано: %{right} из %{total}"
 
 msgid "Next"
 msgstr "Дальше"
+
+msgid "Turn timer rules %{seconds}"
+msgstr "На каждый ход — %{seconds} секунд, потом ход сделают за тебя."
+
+msgid "Time to move"
+msgstr "Время на ход"
+
+msgid "Left the battle"
+msgstr "Вышел из боя"
+
+msgid "To lobby"
+msgstr "В лобби"
+
+msgid "Chat"
+msgstr "Чат"
+
+msgid "Mute"
+msgstr "Заглушить"
+
+msgid "Unmute"
+msgstr "Включить звук"
+
+msgid "Chat placeholder"
+msgstr "Сообщение…"
+
+msgid "Send"
+msgstr "Отправить"
+
+msgid "Phrase hi"
+msgstr "Привет!"
+
+msgid "Phrase gl"
+msgstr "Удачи!"
+
+msgid "Phrase gg"
+msgstr "GG"
+
+msgid "Phrase again"
+msgstr "Ещё разок?"
+
+msgid "Phrase lucky"
+msgstr "Повезло…"
+
+msgid "Phrase wow"
+msgstr "Ого!"

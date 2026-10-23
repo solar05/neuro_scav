@@ -7,6 +7,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   @bot BattleRoom.bot()
   @modes %{"duel" => :duel, "team" => :team, "draft" => :draft}
+  @phrases Map.new(BattleRoom.phrases(), &{Atom.to_string(&1), &1})
+  # a chat message shows as a bubble over its seat for this long
+  @bubble_ms 5_000
   # open rooms whose owner is waiting on the page, keyed by room id
   @queue "battle_queue"
 
@@ -24,7 +27,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
         battle: nil,
         closed: false,
         queued: false,
-        mode: :duel
+        mode: :duel,
+        muted: false
       )
 
     {:ok, join(socket)}
@@ -35,8 +39,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     if connected?(socket) do
       PubSub.subscribe_battle(id)
 
-      case BattleRoom.join(id, socket.assigns.user_id) do
-        {:ok, battle} -> socket |> assign(:battle, battle) |> queue()
+      case BattleRoom.join(id, socket.assigns.user_id, monitor: true) do
+        # the mode lets "play with bot" start the same kind of battle
+        {:ok, battle} -> socket |> assign(battle: battle, mode: battle.mode) |> queue()
         {:error, :not_found} -> assign(socket, :closed, true)
       end
     else
@@ -93,6 +98,22 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   def handle_event("rematch", _params, %{assigns: assigns} = socket),
     do: act(socket, BattleRoom.rematch(assigns.room_id, assigns.user_id))
+
+  def handle_event("say", %{"text" => text}, %{assigns: assigns} = socket),
+    do: act(socket, BattleRoom.say(assigns.room_id, assigns.user_id, {:text, text}))
+
+  def handle_event("say_phrase", %{"phrase" => phrase}, %{assigns: assigns} = socket) do
+    case Map.fetch(@phrases, phrase) do
+      {:ok, phrase} ->
+        act(socket, BattleRoom.say(assigns.room_id, assigns.user_id, {:phrase, phrase}))
+
+      :error ->
+        {:noreply, socket}
+    end
+  end
+
+  # per page: muting hides the other player's messages from this viewer only
+  def handle_event("mute", _params, socket), do: {:noreply, update(socket, :muted, &(not &1))}
 
   # another searcher may have taken the seat first, then the room just shows the battle
   defp seated?({:ok, battle}, user_id), do: player?(battle, user_id)
@@ -225,11 +246,56 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   # what the other seat is up to, shown in its action row
   defp seat_status(_battle, %{player: nil}), do: gettext("Waiting for opponent")
 
-  defp seat_status(%{mode: :draft} = battle, %{player: player}),
+  defp seat_status(%{away: away} = battle, %{player: player} = seat) do
+    if player in away, do: gettext("Left the battle"), else: move_status(battle, seat)
+  end
+
+  defp move_status(%{mode: :draft} = battle, %{player: player}),
     do: if(BattleRoom.turn(battle) == player, do: gettext("Picking card"), else: "\u00a0")
 
-  defp seat_status(_battle, %{ready?: true}), do: gettext("Card ready")
-  defp seat_status(_battle, _seat), do: gettext("Drawing card")
+  defp move_status(_battle, %{ready?: true}), do: gettext("Card ready")
+  defp move_status(_battle, _seat), do: gettext("Drawing card")
+
+  # what a seat's action row offers once the battle is over
+  defp result_action(battle, %{own?: true}, user_id) do
+    cond do
+      Enum.any?(battle.away, &(&1 != user_id)) -> :alone
+      user_id in battle.rematch -> :asked
+      true -> :rematch
+    end
+  end
+
+  defp result_action(battle, %{player: player}, _user_id) do
+    cond do
+      player in battle.away -> :away
+      player in battle.rematch -> :wants
+      true -> nil
+    end
+  end
+
+  # the clock bar shrinks from the time left to zero; a new deadline is a new element
+  defp timer_style(%{deadline: deadline, turn_ms: turn_ms}) do
+    left = max(deadline - System.system_time(:millisecond), 0)
+    "--left: #{left}ms; --from: #{Float.round(left * 100 / turn_ms, 1)}%"
+  end
+
+  defp chat(battle, user_id, muted),
+    do: Enum.reject(battle.chat, &(muted and &1.from != user_id))
+
+  # the seat's message from the last few seconds, for the bubble over it
+  defp bubble(battle, player, user_id, muted) do
+    since = System.system_time(:millisecond) - @bubble_ms
+
+    battle
+    |> chat(user_id, muted)
+    |> Enum.filter(&(&1.from == player and &1.at > since))
+    |> List.last()
+  end
+
+  defp chat_text(%{phrase: nil, text: text}), do: text
+  defp chat_text(%{phrase: phrase}), do: phrase_text(phrase)
+
+  defp phrase_text(phrase), do: Locale.get_text("Phrase #{phrase}")
 
   defp draft_note(battle, user_id) do
     if BattleRoom.turn(battle) == user_id,
