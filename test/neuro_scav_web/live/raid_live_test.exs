@@ -95,6 +95,36 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert again |> element("#raid-squad") |> render() == squad
   end
 
+  test "back and forward go between runs; a new raid forgets the page's old one",
+       %{conn: conn} do
+    conn = init_test_session(conn, %{"user_id" => "raid-#{System.unique_integer()}"})
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+    lv |> element("#btn-raid-recruit") |> render_click()
+    first = assert_patch(lv)
+
+    finish(lv)
+    lv |> element("#btn-raid-again") |> render_click()
+    second = assert_patch(lv)
+    raid = lv |> element("#raid") |> render()
+
+    # the first run is forgotten: back to it is the lobby, forward is the raid again
+    render_patch(lv, first)
+    refute has_element?(lv, "#raid")
+    render_patch(lv, second)
+    assert lv |> element("#raid") |> render() == raid
+  end
+
+  test "a raid under way isn't dropped for a new one", %{conn: conn} do
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+    lv |> element("#btn-raid-recruit") |> render_click()
+    assert_patch(lv)
+    raid = lv |> element("#raid") |> render()
+
+    render_click(lv, "again")
+    render_click(lv, "recruit")
+    assert lv |> element("#raid") |> render() == raid
+  end
+
   test "a squad may leave its raid: the page is back at the lobby, the run is gone",
        %{conn: conn} do
     conn = init_test_session(conn, %{"user_id" => "raid-#{System.unique_integer()}"})

@@ -426,6 +426,13 @@ defmodule NeuroScav.RaidTest do
   end
 
   describe "crossroads" do
+    test "its paths may be pinned when the raid starts" do
+      raid = Raid.new(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+
+      assert Enum.map(Raid.options(raid), & &1.path) == [:office, :bait]
+      assert raid |> Raid.choose(1, 100) |> Raid.event() == :bait
+    end
+
     test "it offers two paths off the route; the one taken comes next" do
       raid = Raid.new(@squad, [:fork_road, :pmc, :office])
       %{fork_road: [first, second] = paths} = raid.forks
