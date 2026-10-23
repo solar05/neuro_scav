@@ -118,7 +118,7 @@ defmodule NeuroScavWeb.BattleLiveTest do
   end
 
   test "a team battle shows three cards a side after the reveal" do
-    {:ok, id} = BattleRoom.create("a", mode: :team)
+    {:ok, id} = BattleRoom.create("a", mode: :team, anomalies: [])
     stop_room_on_exit(id)
 
     {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
@@ -391,5 +391,40 @@ defmodule NeuroScavWeb.BattleLiveTest do
     assert log =~ "Бот:"
     assert log =~ "Привет!"
     assert a |> element(".battle-bubble", "Привет!") |> has_element?()
+  end
+
+  test "the battle shows its condition; in a night raid stats are hidden until the reveal" do
+    {:ok, id} = BattleRoom.create("a", anomalies: [:night])
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+
+    assert has_element?(a, "#battle.anomaly-night")
+    assert a |> element("#battle-anomaly-night") |> render() =~ "Ночной рейд"
+
+    a |> element("#btn-battle-draw") |> render_click()
+    assert a |> element("#battle-card-0-0") |> has_element?()
+    stats = a |> element(".battle-arena") |> render()
+    refute stats =~ ~r/<b>\d+<\/b>/
+
+    a |> element("#btn-battle-ready") |> render_click()
+    b |> element("#btn-battle-draw") |> render_click()
+    b |> element("#btn-battle-ready") |> render_click()
+
+    assert has_element?(a, "#battle.battle-over")
+    assert a |> element(".battle-arena") |> render() =~ ~r/<b>\d+<\/b>/
+  end
+
+  test "without insurance there is no redraw button" do
+    {:ok, id} = BattleRoom.create("a", anomalies: [:uninsured])
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, _b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+
+    a |> element("#btn-battle-draw") |> render_click()
+    refute has_element?(a, "#btn-battle-draw")
+    assert has_element?(a, "#btn-battle-ready")
   end
 end
