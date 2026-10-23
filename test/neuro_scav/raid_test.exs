@@ -330,7 +330,7 @@ defmodule NeuroScav.RaidTest do
     test "a chain's event catches up at the last node at the latest; the last starts none" do
       raid = @squad |> new_raid([:bait, :pmc]) |> Raid.choose(1, 1)
       assert Raid.event(raid) == :ambush
-      assert raid |> Raid.choose(0, 1) |> Raid.event() == :pmc
+      assert raid |> Raid.choose(1, 1, :sj6) |> Raid.event() == :pmc
 
       raid = @squad |> new_raid([:pmc, :bait]) |> Raid.choose(0, 1) |> Raid.choose(1, 1)
       assert Raid.over?(raid)
@@ -529,6 +529,30 @@ defmodule NeuroScav.RaidTest do
       assert Raid.at(raid) == {2, 0} and Raid.next_nodes(raid) == []
     end
 
+    test "what the squad has seen it remembers in the dark, by kind" do
+      route = [:office, :pmc, :trunk, :bait, :exit_car]
+
+      # seen in the morning, still known at night nine turns on
+      raid = new_raid(@squad, route)
+      assert Raid.dark?(%{raid | turn: 9})
+      assert Raid.sight(%{raid | turn: 9}, {3, 0}) == :remembered
+
+      # a raid starting at night learns it once the morning shows it
+      night = new_raid(@squad, route, %{weather: :clear, daytime: :night})
+      assert Raid.sight(night, {3, 0}) == :hidden
+
+      raid = Raid.choose(%{night | turn: 2}, 1, 1)
+      refute Raid.dark?(raid)
+      assert Raid.sight(%{raid | turn: 12}, {3, 0}) == :remembered
+    end
+
+    test "what the squad can still get to: forward from where it stands" do
+      assert @squad |> new_raid(@fork) |> Raid.reachable() == MapSet.new(Map.keys(@fork.nodes))
+
+      raid = @squad |> new_raid(@fork) |> Raid.choose(1, 1) |> Raid.move({1, 1})
+      assert Raid.reachable(raid) == MapSet.new([{1, 1}, {2, 0}])
+    end
+
     test "the squad sees where it's been, where it may go next and the exits; the rest by kind" do
       route = [:office, :pmc, :trunk, :kaban, :exit_car]
       ids = for layer <- 0..4, do: {layer, 0}
@@ -549,6 +573,35 @@ defmodule NeuroScav.RaidTest do
       assert Enum.map(route, &Raid.kind/1) == [:loot, :fight, :loot, :boss, :exit]
       assert Raid.kind(:abandoned_store) == :search and Raid.kind(:toll) == :scav
       assert Raid.kind(:veteran) == :rare and Raid.kind(:gnome_thief) == :gnome
+    end
+  end
+
+  describe "locations" do
+    @locations NeuroScav.Raid.Catalog.compiled().locations
+
+    test "a random map is a location: its exits and its bosses" do
+      for location <- Raid.locations(), _ <- 1..30 do
+        map = Raid.random_map(location)
+        %{exits: exits, bosses: bosses} = @locations[location]
+        assert map.location == location
+
+        for event <- Map.values(map.nodes) do
+          if Raid.exit?(event), do: assert(event in exits)
+          if Raid.boss?(event), do: assert(event in bosses)
+        end
+      end
+
+      assert Raid.location(new_raid(@squad, Raid.random_map(:woods))) == :woods
+      assert Raid.location(new_raid(@squad, [:pmc])) == nil
+    end
+
+    test "a location's own events turn up there more often" do
+      share = fn location, event ->
+        Enum.count(1..400, fn _ -> event in Map.values(Raid.random_map(location).nodes) end)
+      end
+
+      assert share.(:customs, :reshala) * 2 > share.(:woods, :reshala) * 3
+      assert share.(:woods, :shturman) * 2 > share.(:customs, :shturman) * 3
     end
   end
 
@@ -614,13 +667,13 @@ defmodule NeuroScav.RaidTest do
   describe "retreats" do
     defp locks(raid), do: raid |> Raid.options() |> Enum.map(& &1.locked)
 
-    test "after two in a row the retreats are locked until the squad takes a risk" do
-      assert Raid.retreat_limit() == 2
-      raid = new_raid(@squad, [:office, :office, :axeman, :office])
+    test "after a retreat the retreats are locked until the squad takes a risk" do
+      assert Raid.retreat_limit() == 1
+      raid = new_raid(@squad, [:office, :axeman, :office])
 
-      # the safe option twice
-      raid = raid |> Raid.choose(1, 1) |> Raid.choose(1, 1)
-      assert raid.retreats == 2
+      # the safe option
+      raid = Raid.choose(raid, 1, 1)
+      assert raid.retreats == 1
 
       # fists or running from the hatchet: running is a retreat, and it's locked
       assert Enum.map(Raid.options(raid), & &1.retreat) == [false, true]
@@ -633,8 +686,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "an event with nothing but retreats stays open" do
-      raid =
-        @squad |> new_raid([:office, :office, :toll]) |> Raid.choose(1, 1) |> Raid.choose(1, 1)
+      raid = @squad |> new_raid([:office, :toll]) |> Raid.choose(1, 1)
 
       assert locks(raid) == [false, false]
     end

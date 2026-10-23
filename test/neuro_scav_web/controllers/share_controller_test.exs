@@ -1,6 +1,8 @@
 defmodule NeuroScavWeb.ShareControllerTest do
   use NeuroScavWeb.ConnCase
 
+  alias NeuroScav.Raid.Report
+
   @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
 
   defp token_for(name, rarity) do
@@ -376,6 +378,50 @@ defmodule NeuroScavWeb.ShareControllerTest do
       conn = get(conn, ~p"/share/team/#{team_token(@team)}/image")
       assert valid_png?(response(conn, 200))
       assert ["image/png" <> _] = get_resp_header(conn, "content-type")
+    end
+  end
+
+  describe "raid/2 and raid_og_image/2" do
+    @raid_report %{
+      location: :customs,
+      exit: :exit_train,
+      members: [
+        %{name: "Alice Adams", rarity: :rare, alive: true},
+        %{name: "Bob Brown", rarity: :common, alive: false}
+      ],
+      loot: [:sj6],
+      lang: "en"
+    }
+
+    defp raid_token, do: Report.encode(@raid_report)
+
+    test "tells where and how the raid went, who made it, the loot", %{conn: conn} do
+      html = conn |> get(~p"/share/raid/#{raid_token()}") |> html_response(200)
+
+      # the page in the visitor's language (Russian by default)
+      assert html =~ "Таможня" and html =~ "Вышли 1 из 2" and html =~ "Выход: Поезд"
+      assert html =~ "Alice Adams" and html =~ "Bob Brown" and html =~ "погиб"
+      assert html =~ "share-raid-lost"
+      assert html =~ ~s(href="/raid")
+    end
+
+    test "its preview is in the language the raid was told in", %{conn: conn} do
+      html = conn |> get(~p"/share/raid/#{raid_token()}") |> html_response(200)
+
+      assert html =~ ~s(<meta property="og:title" content="Raid: Customs")
+      assert html =~ "/share/raid/#{raid_token()}/image"
+    end
+
+    test "a token that isn't a raid's is a bad request", %{conn: conn} do
+      assert conn |> get(~p"/share/raid/not-a-raid") |> html_response(400)
+    end
+
+    test "its image is a PNG, for any token", %{conn: conn} do
+      conn = get(conn, ~p"/share/raid/#{raid_token()}/image")
+      assert valid_png?(response(conn, 200))
+      assert ["image/png" <> _] = get_resp_header(conn, "content-type")
+
+      assert conn |> recycle() |> get(~p"/share/raid/not-a-raid/image") |> response(200)
     end
   end
 end

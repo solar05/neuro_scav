@@ -1,6 +1,9 @@
 defmodule NeuroScavWeb.ShareController do
   use NeuroScavWeb, :controller
 
+  alias NeuroScav.Raid.Report
+  alias NeuroScavWeb.RaidComponents
+
   @card_themes ~w(void lava swamp arctic storm rust toxic blood abyss nebula)
 
   @canvas %{w: 1200, h: 630}
@@ -56,6 +59,7 @@ defmodule NeuroScavWeb.ShareController do
   @rarity_rank ~w(gnome legendary epic neuro rare uncommon common)
   @max_team_members NeuroScav.ScavengersServer.max_team_members()
   @team_card %{cx: 320, cy: 75, cw: 560, ch: 480, art_h: 110}
+  @raid_card %{cx: 220, cy: 45, cw: 760, ch: 540, art_h: 100}
 
   def show(conn, %{"token" => token}) do
     case decode_token(token) do
@@ -102,6 +106,102 @@ defmodule NeuroScavWeb.ShareController do
         |> put_status(:bad_request)
         |> put_share_layout()
         |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+    end
+  end
+
+  # A finished raid (NeuroScav.Raid.Report): the page in the visitor's
+  # language, its preview (title, description, image) in the one it was told in.
+  def raid(conn, %{"token" => token}) do
+    case Report.decode(token) do
+      {:ok, report} ->
+        {title, description} =
+          Gettext.with_locale(NeuroScavWeb.Gettext, report.lang, fn -> raid_meta(report) end)
+
+        conn
+        |> put_share_layout()
+        |> render(:raid,
+          location: report.location && RaidComponents.location_title(report.location),
+          verdict: raid_verdict(report),
+          exit: report.exit && RaidComponents.event_title(report.exit),
+          members: Enum.map(report.members, &raid_member/1),
+          loot: RaidComponents.loot_text(report.loot),
+          border_color: raid_color(report),
+          theme: pick_theme(Enum.map_join(report.members, & &1.name)),
+          token: token,
+          title: title,
+          description: description,
+          share_path: ~p"/share/raid/#{token}"
+        )
+
+      :error ->
+        conn
+        |> put_status(:bad_request)
+        |> put_share_layout()
+        |> render(:show, name: nil, rarity: nil, theme: "void", token: token)
+    end
+  end
+
+  def raid_og_image(conn, %{"token" => token}) do
+    case Report.decode(token) do
+      {:ok, report} ->
+        send_png(conn, "raid:" <> token, fn -> raid_og_svg(report) end)
+
+      :error ->
+        send_png(conn, "raid:?", fn -> build_og_svg("???", "common", "void") end)
+    end
+  end
+
+  # the image in the language the raid was told in
+  defp raid_og_svg(report),
+    do:
+      Gettext.with_locale(NeuroScavWeb.Gettext, report.lang, fn -> build_raid_og_svg(report) end)
+
+  defp raid_title(%{location: nil}), do: gettext("Raid")
+
+  defp raid_title(report),
+    do:
+      gettext("Raid share title %{location}",
+        location: RaidComponents.location_title(report.location)
+      )
+
+  defp raid_verdict(report),
+    do:
+      RaidComponents.verdict_text(Enum.count(report.members, & &1.alive), length(report.members))
+
+  defp raid_exit(%{exit: nil}), do: nil
+
+  defp raid_exit(report),
+    do: gettext("Raid exited %{exit}", exit: RaidComponents.event_title(report.exit))
+
+  defp raid_meta(report) do
+    description =
+      [raid_verdict(report), raid_exit(report), RaidComponents.loot_text(report.loot)]
+      |> Enum.filter(& &1)
+      |> Enum.join(" · ")
+
+    {raid_title(report), description}
+  end
+
+  # a member as the page shows them: how they came out, in their rarity's colour or the dead's red
+  defp raid_member(member) do
+    %{
+      name: member.name,
+      alive: member.alive,
+      status:
+        if(member.alive,
+          do: RaidComponents.rarity_name(member.rarity),
+          else: gettext("Raid result kia")
+        ),
+      color: if(member.alive, do: rarity_color(to_string(member.rarity)), else: "#e53935")
+    }
+  end
+
+  # all out green, nobody red, the rest gold
+  defp raid_color(report) do
+    case Enum.count(report.members, & &1.alive) do
+      0 -> "#e53935"
+      alive when alive == length(report.members) -> "#4caf50"
+      _some -> "#d49300"
     end
   end
 
@@ -289,6 +389,72 @@ defmodule NeuroScavWeb.ShareController do
             font-family="Bender, 'Courier New', monospace"
             font-size="16" font-weight="bold" letter-spacing="2"
             fill="#{border_color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
+    </svg>
+    """
+  end
+
+  # canvas 1200×630, a card 760×540: the art strip, where and how the raid
+  # went, a row per member, the loot carried out
+  defp build_raid_og_svg(report) do
+    %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @raid_card
+    color = raid_color(report)
+    theme = pick_theme(Enum.map_join(report.members, & &1.name))
+    theme_inner = Map.get(@theme_svgs, theme, @theme_svgs["void"])
+    mid_x = cx + div(cw, 2)
+    loot = RaidComponents.loot_text(report.loot)
+    loot = if String.length(loot) > 70, do: String.slice(loot, 0, 69) <> "…", else: loot
+
+    rows =
+      report.members
+      |> Enum.with_index()
+      |> Enum.map_join("\n", fn {member, i} ->
+        %{name: name, status: status, color: row_color} = raid_member(member)
+        y = cy + art_h + 160 + i * 42
+        name_color = if member.alive, do: "#ffffff", else: "#8a8a8a"
+
+        """
+          <rect x="#{cx + 40}" y="#{y}" width="#{cw - 80}" height="34" rx="10" fill="#16161e" stroke="#{row_color}" stroke-width="2"/>
+          <text x="#{cx + 58}" y="#{y + 24}" font-family="Bender, Arial, sans-serif" font-size="21" font-weight="bold" fill="#{name_color}">#{name |> String.slice(0, 30) |> xml_escape()}</text>
+          <text x="#{cx + cw - 58}" y="#{y + 23}" font-family="Bender, Arial, sans-serif" font-size="15" font-weight="bold" letter-spacing="2" fill="#{row_color}" text-anchor="end">#{status |> String.upcase() |> xml_escape()}</text>
+        """
+      end)
+
+    exit_line =
+      case raid_exit(report) do
+        nil ->
+          ""
+
+        text ->
+          ~s(<text x="#{mid_x}" y="#{cy + art_h + 128}" font-family="Bender, Arial, sans-serif" font-size="22" fill="#4caf50" text-anchor="middle">#{xml_escape(text)}</text>)
+      end
+
+    """
+    <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
+      #{font_style_defs()}
+      <defs>
+        <clipPath id="card-clip">
+          <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
+        </clipPath>
+      </defs>
+      <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#000000"/>
+      <rect x="#{cx + 6}" y="#{cy + 6}" width="#{cw}" height="#{ch}" rx="20" fill="#{color}" opacity="0.15"/>
+      <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="#0d0d12"/>
+      <g clip-path="url(#card-clip)">
+        <svg x="#{cx}" y="#{cy}" width="#{cw}" height="#{art_h}" viewBox="0 0 320 160" preserveAspectRatio="xMidYMid slice">
+          #{theme_inner}
+        </svg>
+      </g>
+      <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20" fill="none" stroke="#{color}" stroke-width="4"/>
+      <line x1="#{cx}" y1="#{cy + art_h}" x2="#{cx + cw}" y2="#{cy + art_h}" stroke="#{color}" stroke-width="1" opacity="0.5"/>
+      <text x="#{mid_x}" y="#{cy + art_h + 50}" font-family="Bender, Arial, sans-serif" font-size="34" font-weight="bold" letter-spacing="2" fill="#d49300" text-anchor="middle">#{report |> raid_title() |> String.upcase() |> xml_escape()}</text>
+      <text x="#{mid_x}" y="#{cy + art_h + 92}" font-family="Bender, Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle">#{report |> raid_verdict() |> xml_escape()}</text>
+      #{exit_line}
+      #{rows}
+      <text x="#{mid_x}" y="#{cy + ch - 28}" font-family="Bender, Arial, sans-serif" font-size="19" fill="#c8c8c8" text-anchor="middle">#{xml_escape(loot)}</text>
+      <text x="#{cx + cw - 14}" y="#{cy + ch - 8}"
+            font-family="Bender, 'Courier New', monospace"
+            font-size="14" font-weight="bold" letter-spacing="2"
+            fill="#{color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
     </svg>
     """
   end

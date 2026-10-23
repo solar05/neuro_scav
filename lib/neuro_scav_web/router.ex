@@ -42,6 +42,7 @@ defmodule NeuroScavWeb.Router do
 
     get "/share/:token", ShareController, :show
     get "/share/team/:token", ShareController, :team
+    get "/share/raid/:token", ShareController, :raid
   end
 
   scope "/", NeuroScavWeb do
@@ -49,6 +50,7 @@ defmodule NeuroScavWeb.Router do
 
     get "/share/:token/image", ShareController, :og_image
     get "/share/team/:token/image", ShareController, :team_og_image
+    get "/share/raid/:token/image", ShareController, :raid_og_image
   end
 
   scope "/api", NeuroScavWeb.Api do

@@ -1772,7 +1772,7 @@ msgid "Raid map"
 msgstr "Map"
 
 msgid "Raid map about"
-msgstr "Neighbouring points show in full, distant ones by their icon only, and at night or in fog not at all. Bosses and extracts always show."
+msgstr "Neighbouring points show in full, distant ones by their icon. At night or in fog distant ones show only if scouted before, and paler. Bosses and extracts always show. The faintest branches are out of the squad's reach."
 
 msgid "Raid way start"
 msgstr "Where do we go in?"
@@ -1896,3 +1896,117 @@ msgstr "The scavs are friends: they lead the squad out, no questions asked."
 
 msgid "Raid node deadly"
 msgstr "red ring: a fighter may be lost"
+
+msgid "Raid map night"
+msgstr "🌙 Night: distant points show only if scouted before"
+
+msgid "Raid map fog"
+msgstr "🌫 Fog: distant points show only if scouted before"
+
+msgid "Raid chase %{event} %{n}"
+msgstr "👣 On your trail: %{event} — catches up at point %{n} ahead"
+
+msgid "Raid location customs"
+msgstr "Customs"
+
+msgid "Raid location woods"
+msgstr "Woods"
+
+msgid "Raid location shoreline"
+msgstr "Shoreline"
+
+msgid "Raid location interchange"
+msgstr "Interchange"
+
+msgid "Raid location reserve"
+msgstr "Reserve"
+
+msgid "Raid location lighthouse"
+msgstr "Lighthouse"
+
+msgid "Raid location streets"
+msgstr "Streets of Tarkov"
+
+msgid "Raid exit_fence"
+msgstr "Hole in the fence"
+
+msgid "Raid exit_fence text"
+msgstr "The hole in the fence fits exactly one scav. Two is a squeeze."
+
+msgid "Raid exit_fence agility"
+msgstr "Squeeze through"
+
+msgid "Raid exit_fence strength"
+msgstr "Widen the hole"
+
+msgid "Raid exit_cliff"
+msgstr "Cliff descent"
+
+msgid "Raid exit_cliff text"
+msgstr "An old rope hangs off the cliff. Freedom is below — if the rope holds."
+
+msgid "Raid exit_cliff agility"
+msgstr "Climb down the rope"
+
+msgid "Raid exit_cliff luck"
+msgstr "Look for a path"
+
+msgid "Raid exit_tunnel"
+msgstr "The tunnel"
+
+msgid "Raid exit_tunnel text"
+msgstr "A dark tunnel leads past the perimeter. Something drips and rustles inside."
+
+msgid "Raid exit_tunnel luck"
+msgstr "Walk in the dark"
+
+msgid "Raid exit_tunnel strength"
+msgstr "Clear the rubble"
+
+msgid "Raid your move"
+msgstr "Your move."
+
+msgid "Raid rarity common"
+msgstr "Common"
+
+msgid "Raid rarity uncommon"
+msgstr "Uncommon"
+
+msgid "Raid rarity rare"
+msgstr "Rare"
+
+msgid "Raid rarity epic"
+msgstr "Epic"
+
+msgid "Raid rarity legendary"
+msgstr "Legendary"
+
+msgid "Raid rarity gnome"
+msgstr "Secret"
+
+msgid "Raid location factory"
+msgstr "Factory"
+
+msgid "Raid location labs"
+msgstr "The Lab"
+
+msgid "Raid share"
+msgstr "Share the result"
+
+msgid "Raid share copy"
+msgstr "Copy link"
+
+msgid "Raid share try"
+msgstr "Go on a raid"
+
+msgid "Raid share title %{location}"
+msgstr "Raid: %{location}"
+
+msgid "Raid result loot %{items}"
+msgstr "Carried out: %{items}"
+
+msgid "Raid result no loot"
+msgstr "Carried nothing out"
+
+msgid "Raid result kia"
+msgstr "KIA"
