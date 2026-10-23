@@ -3,6 +3,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   use NeuroScavWeb.GnomeCapture
 
   alias NeuroScav.{Locale, Raid, RaidStore, ScavengersServer}
+  alias NeuroScav.Raid.Chart
 
   @max_name_length 40
   # what an option may bring and cost, each icon telling its meaning on hover,
@@ -33,6 +34,24 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   }
   # a member's trait on their card, telling what it is on hover (and in the legend)
   @trait_icons %{greedy: "🤑", coward: "🐔", chatty: "🗣", lucky: "🍀", psycho: "🤪"}
+  # a node's kind of event on the map, in the legend's order; :hidden is a node not seen
+  @kind_icons [
+    boss: "☠️",
+    exit: "🚪",
+    fight: "⚔️",
+    loot: "💰",
+    search: "📦",
+    scav: "🧢",
+    gnome: "🍄",
+    rare: "⭐",
+    hazard: "⚠️",
+    hidden: "❓"
+  ]
+  # the map's units between layers and between columns; a phone shows only
+  # @near_layers layers around the squad
+  @layer_gap 56
+  @column_gap 40
+  @near_layers 6
   # the runs a page keeps of those it started: the last few, for the back and
   # forward buttons; the older ones are forgotten, so no page fills the store
   @kept_runs 3
@@ -212,6 +231,22 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     end
   end
 
+  # the node names its layer and column, "3-1"; one the squad can't go to changes nothing
+  def handle_event(
+        "move",
+        %{"node" => node},
+        %{assigns: %{raid: %{} = raid, members: members}} = socket
+      ) do
+    with [layer, column] <- String.split(node, "-"),
+         {layer, ""} <- Integer.parse(layer),
+         {column, ""} <- Integer.parse(column),
+         moved when moved != raid <- Raid.move(raid, {layer, column}) do
+      {:noreply, assign_raid(socket, members, moved)}
+    else
+      _invalid_or_stale -> {:noreply, socket}
+    end
+  end
+
   def handle_event(_event, _params, socket), do: {:noreply, socket}
 
   @doc """
@@ -267,7 +302,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp hide_stash, do: JS.add_class("hidden", to: "#raid-stash")
 
   @doc """
-  What the icons on the options and the traits mean: a compact modal like the stash's, opened
+  What the icons on the options, the traits and the map mean: a compact modal like the stash's, opened
   by the small button in the event's header (`#btn-raid-legend`), so the
   legend takes no room on the page. It sits outside the event's panel, which
   clips what it holds.
@@ -297,12 +332,173 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
             <span class="raid-legend-icon">{trait_icon(trait)}</span> {trait_tip(trait)}
           </li>
         </ul>
+        <p class="raid-legend-title">{gettext("Raid map")}</p>
+        <ul id="raid-legend-map" class="raid-stash-list">
+          <li :for={kind <- kinds()}>
+            <span class="raid-legend-icon">{kind_icon(kind)}</span> {kind_name(kind)}
+          </li>
+          <li><span class="raid-legend-icon">⭕</span> {gettext("Raid node deadly")}</li>
+          <li>{gettext("Raid map about")}</li>
+        </ul>
       </div>
     </div>
     """
   end
 
   defp hide_legend, do: JS.add_class("hidden", to: "#raid-legend")
+
+  attr :raid, :map, required: true
+
+  # the legend's button and how far across the map the squad is, in a panel's header
+  defp panel_meta(assigns) do
+    ~H"""
+    <span class="raid-event-meta">
+      <button
+        id="btn-raid-legend"
+        type="button"
+        class="raid-legend-btn"
+        title={gettext("Raid legend")}
+        aria-label={gettext("Raid legend")}
+        phx-click={JS.remove_class("hidden", to: "#raid-legend")}
+      >
+        ?
+      </button>
+      <span class="wheel-panel-count">
+        {gettext("Raid step %{n} %{total}",
+          n: Raid.layer(@raid) + 1,
+          total: Chart.layers(@raid.map)
+        )}
+      </span>
+    </span>
+    """
+  end
+
+  attr :raid, :map, required: true
+  attr :id, :string, required: true
+  attr :layers, Range, required: true, doc: "the layers shown"
+  attr :class, :string, default: nil
+
+  # The map as far as the squad can tell (Raid.sight/2): layers left to right,
+  # the columns the map has top to bottom; the way taken in gold, the nodes it
+  # may go to next take it there on a click.
+  defp raid_map(assigns) do
+    %{raid: raid, layers: layers} = assigns
+    next = Raid.next_nodes(raid)
+    {top, bottom} = raid.map.nodes |> Map.keys() |> Enum.map(&elem(&1, 1)) |> Enum.min_max()
+    origin = {layers.first, top}
+
+    nodes =
+      for {{layer, _column} = id, event} <- Enum.sort(raid.map.nodes),
+          layer in layers,
+          do: map_node(raid, id, event, origin, id in next)
+
+    links =
+      for {{layer, _column} = from, nexts} <- raid.map.links,
+          layer in layers,
+          to <- nexts,
+          elem(to, 0) in layers,
+          do: {spot(from, origin), spot(to, origin), from in raid.path and to in raid.path}
+
+    assigns =
+      assign(assigns,
+        nodes: nodes,
+        links: links,
+        width: Range.size(layers) * @layer_gap,
+        height: (bottom - top + 1) * @column_gap
+      )
+
+    ~H"""
+    <svg
+      id={@id}
+      class={["raid-map", @class]}
+      viewBox={"0 0 #{@width} #{@height}"}
+      role="img"
+      aria-label={gettext("Raid map")}
+    >
+      <line
+        :for={{{x1, y1}, {x2, y2}, taken} <- @links}
+        x1={x1}
+        y1={y1}
+        x2={x2}
+        y2={y2}
+        class={["raid-link", taken && "raid-link-taken"]}
+      />
+      <g
+        :for={node <- @nodes}
+        class={["raid-node" | node.classes]}
+        data-node={node.key}
+        phx-click={node.next && "move"}
+        phx-value-node={node.next && node.key}
+      >
+        <title>{node.title}</title>
+        <circle cx={node.x} cy={node.y} r="16" />
+        <text x={node.x} y={node.y}>{node.icon}</text>
+      </g>
+    </svg>
+    """
+  end
+
+  defp map_node(raid, id, event, origin, next) do
+    sight = Raid.sight(raid, id)
+    {x, y} = spot(id, origin)
+
+    %{
+      key: node_key(id),
+      x: x,
+      y: y,
+      icon: node_icon(sight, event),
+      title: node_title(sight, event),
+      next: next,
+      classes: [
+        id == Raid.at(raid) && "raid-node-at",
+        id in raid.path && "raid-node-done",
+        next && "raid-node-next",
+        Raid.boss?(event) && "raid-node-boss",
+        sight == :hidden && "raid-node-hidden",
+        (sight != :hidden and Raid.deadly?(event)) && "raid-node-deadly"
+      ]
+    }
+  end
+
+  # where a node is drawn: the first layer shown at the left, the map's top column on top
+  defp spot({layer, column}, {first, top}),
+    do:
+      {(layer - first) * @layer_gap + div(@layer_gap, 2),
+       (column - top) * @column_gap + div(@column_gap, 2)}
+
+  defp node_key({layer, column}), do: "#{layer}-#{column}"
+
+  defp node_icon(:hidden, _event), do: kind_icon(:hidden)
+  defp node_icon(_sight, event), do: kind_icon(Raid.kind(event))
+
+  # a node's name, and that a member may be lost there when it shows
+  defp node_title(:hidden, _event), do: kind_name(:hidden)
+
+  defp node_title(sight, event) do
+    name = if sight == :event, do: event_title(event), else: kind_name(Raid.kind(event))
+    if Raid.deadly?(event), do: name <> " · " <> icon_meaning(:lose), else: name
+  end
+
+  defp kinds, do: Keyword.keys(@kind_icons)
+  defp kind_icon(kind), do: Keyword.fetch!(@kind_icons, kind)
+  defp kind_name(kind), do: Locale.get_text("Raid node #{kind}")
+
+  # the whole map; on a phone a few layers round the squad, from the one it left
+  defp all_layers(raid), do: 0..(Chart.layers(raid.map) - 1)
+
+  defp near_layers(raid) do
+    last = Chart.layers(raid.map) - 1
+    first = (Raid.layer(raid) - 1) |> min(last - @near_layers + 1) |> max(0)
+    first..min(first + @near_layers - 1, last)
+  end
+
+  # the exit the squad got out through, nil when it didn't
+  defp exit_text(raid) do
+    event = Raid.at(raid) && raid.map.nodes[Raid.at(raid)]
+
+    if (Raid.alive(raid) != [] and event) && Raid.exit?(event),
+      do: gettext("Raid exited %{exit}", exit: event_title(event))
+  end
 
   attr :option, :map, required: true
 
@@ -355,10 +551,13 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp event_title(event), do: Locale.get_text("Raid #{event}")
   defp event_text(event), do: Locale.get_text("Raid #{event} text")
 
-  defp option_label(_event, %{path: path}) when path != nil, do: "→ " <> event_title(path)
-
   defp option_label(event, %{key: key}) when key != nil,
     do: Locale.get_text("Raid #{event} #{key}")
+
+  defp option_label(event, %{pay: true}), do: Locale.get_text("Raid #{event} pay")
+
+  defp option_label(event, %{trust: level}) when level != nil,
+    do: Locale.get_text("Raid #{event} karma")
 
   defp option_label(_event, %{search: 0}), do: gettext("Raid search")
 
@@ -381,7 +580,18 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp locked_text(%{key: key}) when key != nil,
     do: gettext("Raid needs %{item}", item: item_name(key))
 
+  defp locked_text(%{pay: true}), do: gettext("Raid needs payment")
+
+  defp locked_text(%{trust: level}) when level != nil,
+    do: gettext("Raid needs karma %{value}", value: level)
+
   defp locked_text(_retreat), do: gettext("Raid retreat locked")
+
+  # an option with no check, item or condition: safe, or leaving a search
+  defp plain?(option),
+    do:
+      option.stat == nil and option.key == nil and option.search == nil and not option.pay and
+        option.trust == nil and not option.locked
 
   # the time of day and the weather in a line, with the checks they ease and harden now
   defp world_text(raid) do
@@ -481,6 +691,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp outcome_text(%{outcome: :left}), do: gettext("Raid left")
 
+  defp outcome_text(%{outcome: :paid, member: name, item: item}),
+    do: gettext("Raid paid %{name} %{item}", name: name, item: item_name(item))
+
+  defp outcome_text(%{outcome: :trusted}), do: gettext("Raid trusted")
+
   defp outcome_text(%{outcome: :stall, member: name}),
     do: gettext("Raid stall %{name}", name: name)
 
@@ -505,9 +720,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp outcome_text(%{outcome: :trophy, member: name, item: item}),
     do: gettext("Raid trophy %{name} %{item}", name: name, item: item_name(item))
 
-  defp outcome_text(%{outcome: :path, path: path}),
-    do: gettext("Raid path %{event}", event: event_title(path))
-
   # what a member did on their own
   defp quirk_note(%{quirk: {quirk, name}}),
     do: Locale.get_text("Raid quirk #{quirk} %{name}", name: name)
@@ -529,7 +741,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp karma_text(karma), do: gettext("Raid karma %{value}", value: signed(karma))
 
   defp outcome_class(%{outcome: outcome})
-       when outcome in [:pass, :loot, :found, :revive, :train, :heal, :spared],
+       when outcome in [:pass, :loot, :found, :revive, :train, :heal, :spared, :trusted],
        do: "raid-outcome-good"
 
   defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
@@ -571,13 +783,4 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   end
 
   defp member_change(_raid, _member), do: nil
-
-  # route dots: done, current, ahead
-  defp route_dot(raid, index) do
-    cond do
-      index < raid.step -> "raid-dot-done"
-      index == raid.step and not Raid.over?(raid) -> "raid-dot-now"
-      true -> nil
-    end
-  end
 end

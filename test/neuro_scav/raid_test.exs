@@ -2,6 +2,7 @@ defmodule NeuroScav.RaidTest do
   use ExUnit.Case, async: true
 
   alias NeuroScav.{BattleRoom, Raid}
+  alias NeuroScav.Raid.Chart
 
   @squad [
     %{name: "Алиса Аврора", rarity: :common},
@@ -13,18 +14,17 @@ defmodule NeuroScav.RaidTest do
   # morning eases a search only, so fights and hiding go as the bare stats
   @calm %{weather: :clear, daytime: :morning}
 
-  defp new_raid(members, route \\ Raid.route(), forks \\ nil, world \\ @calm),
-    do: Raid.new(members, route, forks, world)
+  defp new_raid(members, map \\ Raid.random_map(), world \\ @calm),
+    do: Raid.new(members, map, world)
 
   defp best(stat), do: @squad |> Enum.map(&Raid.card/1) |> Enum.max_by(& &1.stats[stat])
   defp index_of(card), do: Enum.find_index(@squad, &(&1.name == card.name))
 
-  test "a new raid walks 10 to 13 different events with the whole squad alive" do
+  test "a new raid crosses a map 10 to 13 layers long with the whole squad alive" do
     raid = new_raid(@squad)
 
     assert Raid.steps() == 10..13
-    assert length(raid.route) in Raid.steps()
-    assert raid.route == Enum.uniq(raid.route)
+    assert Chart.layers(raid.map) in Raid.steps()
     assert Enum.all?(raid.squad, & &1.alive)
     refute Raid.over?(raid)
   end
@@ -296,40 +296,45 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "promoting events come up much more seldom than the others" do
-      routes = for _ <- 1..2_000, do: Raid.route()
-      share = fn event -> Enum.count(routes, &(event in &1)) end
+      maps = for _ <- 1..2_000, do: Map.values(Raid.random_map().nodes)
+      share = fn event -> Enum.count(maps, &(event in &1)) end
 
       assert share.(:veteran) * 3 < share.(:pmc)
       assert share.(:lightkeeper) * 3 < share.(:pmc)
-      assert Enum.all?(routes, &(length(&1) in Raid.steps() and &1 == Enum.uniq(&1)))
     end
   end
 
   describe "chains and bosses" do
     @chain_events [:reshala_guards, :ambush, :debtor, :drop_hunters, :pmc_killer]
 
-    test "an outcome may bring another event a few events later" do
+    test "an outcome may bring another event, catching up a few nodes later" do
       raid = @squad |> new_raid([:reshala, :pmc, :office, :medic]) |> Raid.choose(0, 1, :sj6)
 
       assert %{outcome: :loot, follow_up: :reshala_guards} = raid.last
-      assert raid.route == [:reshala, :pmc, :reshala_guards, :office, :medic]
+      assert Raid.event(raid) == :pmc
+
+      # two nodes later it comes first, the node's own event after it
+      raid = Raid.choose(raid, 1, 1)
+      assert Raid.event(raid) == :reshala_guards and Raid.at(raid) == {2, 0}
+      raid = Raid.choose(raid, 1, 1)
+      assert Raid.event(raid) == :office and Raid.at(raid) == {2, 0}
     end
 
     test "other outcomes of the same event bring nothing" do
       raid = @squad |> new_raid([:reshala, :pmc, :office]) |> Raid.choose(1, 1)
 
       assert %{outcome: :pass, follow_up: nil} = raid.last
-      assert raid.route == [:reshala, :pmc, :office]
+      assert raid.pursuers == []
     end
 
-    test "a chain's event comes before the last one at the latest; the last starts none" do
+    test "a chain's event catches up at the last node at the latest; the last starts none" do
       raid = @squad |> new_raid([:bait, :pmc]) |> Raid.choose(1, 1)
-      assert raid.route == [:bait, :ambush, :pmc]
+      assert Raid.event(raid) == :ambush
+      assert raid |> Raid.choose(0, 1) |> Raid.event() == :pmc
 
       raid = @squad |> new_raid([:pmc, :bait]) |> Raid.choose(0, 1) |> Raid.choose(1, 1)
       assert Raid.over?(raid)
       assert %{outcome: :safe, follow_up: nil} = raid.last
-      assert raid.route == [:pmc, :bait]
     end
 
     test "beating a boss brings its trophy and a promotion, there is no way around one" do
@@ -383,22 +388,22 @@ defmodule NeuroScav.RaidTest do
       assert %{outcome: :loot, item: :nvg} = raid.last
     end
 
-    test "random routes hold no chain events and now and then a boss, in the middle or at the end" do
-      routes = for _ <- 1..2_000, do: Raid.route()
+    test "random maps hold no chain events and now and then a boss, mid-way or before the exits" do
+      maps = for _ <- 1..2_000, do: Raid.random_map()
 
       bosses =
-        for route <- routes,
-            {event, at} <- Enum.with_index(route),
+        for map <- maps,
+            {{layer, _column}, event} <- map.nodes,
             Raid.boss?(event),
-            do: {route, at}
+            do: {Chart.layers(map), layer}
 
-      # @boss_chance 0.4: 800 expected
-      assert length(bosses) in 650..950
+      # @boss_chance 0.8: 1600 expected
+      assert length(bosses) in 1450..1750
+      for {layers, layer} <- bosses, do: assert(layer in [div(layers, 2), layers - 2])
 
-      for {route, at} <- bosses,
-          do: assert(at in [div(length(route), 2), length(route) - 1])
-
-      refute Enum.any?(routes, fn route -> Enum.any?(route, &(&1 in @chain_events)) end)
+      refute Enum.any?(maps, fn map ->
+               Enum.any?(Map.values(map.nodes), &(&1 in @chain_events))
+             end)
     end
   end
 
@@ -443,60 +448,156 @@ defmodule NeuroScav.RaidTest do
     end
   end
 
-  describe "crossroads" do
-    test "a path that isn't there changes nothing" do
-      raid = new_raid(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+  describe "the map" do
+    # an office, two ways on from it, both to the car
+    @fork %{
+      nodes: %{{0, 0} => :office, {1, 0} => :pmc, {1, 1} => :bait, {2, 0} => :exit_car},
+      links: %{{0, 0} => [{1, 0}, {1, 1}], {1, 0} => [{2, 0}], {1, 1} => [{2, 0}], {2, 0} => []}
+    }
 
-      assert Raid.choose(raid, 2, 1) == raid
-    end
+    test "random maps: layers of different events linked forward without crossing, exits last" do
+      for _ <- 1..200 do
+        map = Raid.random_map()
+        layers = Chart.layers(map)
+        events = Map.values(map.nodes)
 
-    test "its paths may be pinned when the raid starts" do
-      raid = new_raid(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+        assert layers in Raid.steps()
+        assert events == Enum.uniq(events)
 
-      assert Enum.map(Raid.options(raid), & &1.path) == [:office, :bait]
-      assert raid |> Raid.choose(1, 100) |> Raid.event() == :bait
-    end
+        for {{layer, _column} = id, event} <- map.nodes do
+          assert Raid.exit?(event) == (layer == layers - 1)
+          assert map.links[id] != [] or layer == layers - 1
+          assert Enum.all?(map.links[id], &(elem(&1, 0) == layer + 1))
+        end
 
-    test "it offers two paths off the route; the one taken comes next" do
-      raid = new_raid(@squad, [:fork_road, :pmc, :office])
-      %{fork_road: [first, second] = paths} = raid.forks
+        # every node past the first layer is reached from one before
+        reached = map.links |> Map.values() |> Enum.concat() |> MapSet.new()
+        assert Enum.all?(Map.keys(map.nodes), &(elem(&1, 0) == 0 or &1 in reached))
 
-      assert first != second
+        # two links from one layer keep their order in the next
+        links =
+          for {{layer, from}, nexts} <- map.links, {_next, to} <- nexts, do: {layer, from, to}
 
-      for path <- paths,
-          do: refute(path in raid.route or Raid.boss?(path) or Raid.crossroads?(path))
-
-      assert Enum.map(Raid.options(raid), &{&1.stat, &1.path}) == [{nil, first}, {nil, second}]
-
-      raid = Raid.choose(raid, 1, 100)
-      assert %{outcome: :path, path: ^second} = raid.last
-      assert raid.route == [:fork_road, second, :pmc, :office]
-      assert Raid.event(raid) == second
-    end
-
-    test "two crossroads never offer the same path, the last one still leads somewhere" do
-      for _ <- 1..50 do
-        raid = new_raid(@squad, [:radio, :fork_tunnel])
-        assert raid.forks.radio -- raid.forks.fork_tunnel == raid.forks.radio
+        for {layer, a, b} <- links, {^layer, c, d} <- links, a < c, do: assert(b <= d)
       end
+    end
 
-      raid = new_raid(@squad, [:radio])
-      [path, _other] = raid.forks.radio
+    test "with one node to start the squad is there at once, with more it picks one" do
+      raid = new_raid(@squad, [:pmc, :office])
+      assert Raid.at(raid) == {0, 0} and Raid.event(raid) == :pmc
+      assert Raid.next_nodes(raid) == []
 
-      raid = Raid.choose(raid, 0, 100)
+      starts = %{
+        nodes: %{{0, 0} => :office, {0, 2} => :pmc, {1, 1} => :bait},
+        links: %{{0, 0} => [{1, 1}], {0, 2} => [{1, 1}], {1, 1} => []}
+      }
+
+      raid = new_raid(@squad, starts)
+      assert Raid.at(raid) == nil and Raid.event(raid) == nil
       refute Raid.over?(raid)
-      assert Raid.event(raid) == path
+      assert Raid.next_nodes(raid) == [{0, 0}, {0, 2}]
+      assert Raid.options(raid) == []
+
+      # a node it can't go to changes nothing, nor does moving while facing an event
+      assert Raid.move(raid, {1, 1}) == raid
+      raid = Raid.move(raid, {0, 2})
+      assert Raid.event(raid) == :pmc
+      assert Raid.move(raid, {1, 1}) == raid
+
+      # one way on: the squad goes by itself
+      raid = Raid.choose(raid, 0, 1)
+      assert Raid.at(raid) == {1, 1} and Raid.event(raid) == :bait
+    end
+
+    test "where the way forks the squad picks; through an exit the raid is over" do
+      raid = @squad |> new_raid(@fork) |> Raid.choose(1, 1)
+
+      assert Raid.event(raid) == nil
+      refute Raid.over?(raid)
+      assert Raid.next_nodes(raid) == [{1, 0}, {1, 1}]
+
+      # a move is no choice: the turn and the retreats stay as they were
+      raid = Raid.move(raid, {1, 1})
+      assert Raid.event(raid) == :bait
+      assert raid.turn == 1 and raid.retreats == 1
+
+      raid = Raid.choose(raid, 0, 1, :sj6)
+      assert Raid.event(raid) == :exit_car
+
+      raid = Raid.choose(raid, 1, 1)
+      assert Raid.over?(raid) and Raid.event(raid) == nil
+      assert Raid.at(raid) == {2, 0} and Raid.next_nodes(raid) == []
+    end
+
+    test "the squad sees where it's been, where it may go next and the exits; the rest by kind" do
+      route = [:office, :pmc, :trunk, :kaban, :exit_car]
+      ids = for layer <- 0..4, do: {layer, 0}
+      sights = fn world -> Enum.map(ids, &Raid.sight(new_raid(@squad, route, world), &1)) end
+
+      assert sights.(@calm) == [:event, :event, :kind, :kind, :event]
+      # at night or in the fog the rest is hidden, a boss aside
+      assert sights.(%{weather: :clear, daytime: :night}) == [
+               :event,
+               :event,
+               :hidden,
+               :kind,
+               :event
+             ]
+
+      assert sights.(%{weather: :fog, daytime: :day}) == [:event, :event, :hidden, :kind, :event]
+
+      assert Enum.map(route, &Raid.kind/1) == [:loot, :fight, :loot, :boss, :exit]
+      assert Raid.kind(:abandoned_store) == :search and Raid.kind(:toll) == :scav
+      assert Raid.kind(:veteran) == :rare and Raid.kind(:gnome_thief) == :gnome
     end
   end
 
+  describe "exits" do
+    test "the car takes the stash's last active item for sure; with nothing to pay it's locked" do
+      raid = new_raid(@squad, [:exit_car])
+      assert [%{pay: true, price: nil, locked: true}, _haggle, _walk] = Raid.options(raid)
+      assert Raid.choose(raid, 0, 1) == raid
+
+      raid = %{raid | stash: [%{item: :sj6, owner: 0}, %{item: :rooster, owner: 1}]}
+
+      assert [%{pay: true, price: :rooster, chance: 100, locked: false} = pay | _] =
+               Raid.options(raid)
+
+      assert pay.member.index == 1
+
+      raid = Raid.choose(raid, 0, 100)
+      assert %{outcome: :paid, item: :rooster, index: 1} = raid.last
+      assert Enum.map(raid.stash, & &1.item) == [:sj6]
+      assert Raid.over?(raid)
+    end
+
+    test "the co-op exit lets the squad out with the scavs, if they like it" do
+      raid = new_raid(@squad, [:exit_coop])
+      assert [%{trust: 1, chance: nil, locked: true} | _] = Raid.options(raid)
+      assert Raid.choose(raid, 0, 1) == raid
+
+      raid = Raid.choose(%{raid | karma: 1}, 0, 100)
+      assert %{outcome: :trusted} = raid.last
+      assert Raid.over?(raid)
+    end
+
+    test "nothing is locked for running at an exit" do
+      raid = %{new_raid(@squad, [:exit_coop]) | retreats: 2}
+      assert Enum.map(Raid.options(raid), & &1.locked) == [true, false, false]
+    end
+  end
+
+  test "a member may be lost where an option can cost one" do
+    assert Raid.deadly?(:pmc) and Raid.deadly?(:kaban)
+    refute Raid.deadly?(:office) or Raid.deadly?(:trunk)
+  end
+
   test "last always has the same keys, whatever happened" do
-    keys =
-      Enum.sort(~w(event outcome member index item stat path retreat follow_up karma used quirk)a)
+    keys = Enum.sort(~w(event outcome member index item stat retreat follow_up karma used quirk)a)
 
     lasts = [
       (@squad |> new_raid([:office]) |> Raid.choose(1, 1)).last,
       (@squad |> new_raid([:office]) |> Raid.choose(0, 1, :sj6)).last,
-      (@squad |> new_raid([:fork_road, :pmc]) |> Raid.choose(0, 1)).last,
       (@squad |> new_raid([:kaban]) |> Raid.choose(0, 1)).last,
       (@squad
        |> new_raid([:trunk, :gnome_thief])
@@ -538,11 +639,11 @@ defmodule NeuroScav.RaidTest do
       assert locks(raid) == [false, false]
     end
 
-    test "a crossroads path counts neither way" do
-      raid = @squad |> new_raid([:office, :fork_road, :pmc]) |> Raid.choose(1, 1)
-      raid = Raid.choose(raid, 0, 1)
+    test "leaving a search counts neither way" do
+      raid = @squad |> new_raid([:office, :abandoned_store, :pmc]) |> Raid.choose(1, 1)
+      raid = Raid.choose(raid, 1, 1)
 
-      assert %{outcome: :path} = raid.last
+      assert %{outcome: :left} = raid.last
       assert raid.retreats == 1
     end
   end
@@ -555,8 +656,8 @@ defmodule NeuroScav.RaidTest do
       raid = Raid.choose(raid, 1, 100)
 
       assert %{event: :desync, outcome: :stall} = raid.last
-      assert raid.step == 0 and raid.turn == 1
-      assert raid.route == [:office, :pmc]
+      assert Raid.at(raid) == {0, 0} and raid.turn == 1
+      assert raid.map.nodes == %{{0, 0} => :office, {1, 0} => :pmc}
       assert raid.spares == [:bait]
       assert Raid.event(raid) == :office
     end
@@ -564,14 +665,14 @@ defmodule NeuroScav.RaidTest do
     test "with no spares left the squad meets the same event again" do
       raid = %{new_raid(@squad, [:desync, :pmc]) | spares: []} |> Raid.choose(1, 100)
 
-      assert raid.step == 0 and raid.turn == 1
+      assert Raid.at(raid) == {0, 0} and raid.turn == 1
       assert Raid.event(raid) == :desync
     end
 
-    test "spares are off the route and the crossroads paths, and don't stall themselves" do
+    test "spares are off the map and don't stall themselves" do
       for _ <- 1..50 do
-        raid = new_raid(@squad, [:fork_road, :pmc, :desync])
-        taken = raid.route ++ raid.forks.fork_road
+        raid = new_raid(@squad)
+        taken = Map.values(raid.map.nodes)
 
         assert length(raid.spares) == 5
 

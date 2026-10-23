@@ -456,7 +456,7 @@ msgid "Go raid"
 msgstr "Auf Streifzug"
 
 msgid "Raid intro %{steps}"
-msgstr "Ein Trupp aus fünf Wildlingen geht in einen Raid: %{steps} Begegnungen, in jeder wählst du eine Aktion, und der Beste im passenden Wert versucht sie. Du kannst Kämpfer verlieren und das Versteck mit Beute füllen."
+msgstr "Ein Trupp aus fünf Wildlingen geht in einen Raid über eine Karte: %{steps} Begegnungen bis zum Ausgang. Den Weg wählst du selbst, in jeder Begegnung eine Aktion, und der Beste im passenden Wert versucht sie. Du kannst Kämpfer verlieren und das Versteck mit Beute füllen."
 
 msgid "Recruit squad"
 msgstr "Trupp anwerben"
@@ -1088,24 +1088,6 @@ msgstr "Im Nebel verschwinden"
 msgid "Raid follow up"
 msgstr "Das wird noch Folgen haben."
 
-msgid "Raid fork_road"
-msgstr "Weggabelung"
-
-msgid "Raid fork_road text"
-msgstr "Die Straße teilt sich an einem schiefen Wegweiser. Wohin?"
-
-msgid "Raid fork_tunnel"
-msgstr "Unterführung"
-
-msgid "Raid fork_tunnel text"
-msgstr "Ihr könnt in eine dunkle Unterführung steigen oder oben bleiben. Jeder Weg klingt anders."
-
-msgid "Raid radio"
-msgstr "Abgefangener Funk"
-
-msgid "Raid radio text"
-msgstr "Das Funkgerät knistert: Ihr hört, was vorne los ist. Wählt euren Weg."
-
 msgid "Raid scav_camp"
 msgstr "Wildling-Lager"
 
@@ -1159,9 +1141,6 @@ msgstr "Amulett des Priesters"
 
 msgid "Raid trophy %{name} %{item}"
 msgstr "%{name} hat den Boss besiegt! Trophäe: „%{item}“."
-
-msgid "Raid path %{event}"
-msgstr "Der Trupp bog ab: %{event}."
 
 msgid "Raid karma %{value}"
 msgstr "Wildling-Karma: %{value}"
@@ -1777,3 +1756,132 @@ msgstr "Wohnheimzimmer"
 
 msgid "Raid dorm_room text"
 msgstr "Ein Wohnheim auf Customs, die Tür einen Spalt offen. Nachttische, Taschen, Matratzen — man könnte ewig suchen, aber die Schritte im Flur kommen näher."
+
+msgid "Raid map"
+msgstr "Karte"
+
+msgid "Raid map about"
+msgstr "Nahe Punkte sieht man ganz, ferne nur am Symbol, nachts und im Nebel gar nicht. Bosse und Ausgänge sieht man immer."
+
+msgid "Raid way start"
+msgstr "Wo gehen wir rein?"
+
+msgid "Raid way next"
+msgstr "Wohin jetzt?"
+
+msgid "Raid exited %{exit}"
+msgstr "Ausgang: %{exit}"
+
+msgid "Raid node boss"
+msgstr "Boss"
+
+msgid "Raid node exit"
+msgstr "Ausgang"
+
+msgid "Raid node fight"
+msgstr "Kampf"
+
+msgid "Raid node loot"
+msgstr "Beute zu finden"
+
+msgid "Raid node search"
+msgstr "Durchsuchen"
+
+msgid "Raid node scav"
+msgstr "Wildlinge"
+
+msgid "Raid node gnome"
+msgstr "Gnome"
+
+msgid "Raid node rare"
+msgstr "Seltene Begegnung"
+
+msgid "Raid node hazard"
+msgstr "Gefahr"
+
+msgid "Raid node hidden"
+msgstr "Nicht zu sehen"
+
+msgid "Raid exit_car"
+msgstr "Auto am Ausgang"
+
+msgid "Raid exit_car text"
+msgstr "Am Tor tuckert ein Kleinbus. Der Fahrer will fünf Riesen und stellt keine Fragen."
+
+msgid "Raid exit_car luck"
+msgstr "Handeln"
+
+msgid "Raid exit_car agility"
+msgstr "Zu Fuß übers Feld"
+
+msgid "Raid exit_coop"
+msgstr "Koop-Ausgang"
+
+msgid "Raid exit_coop text"
+msgstr "Am Ausgang rauchen Wildlinge. Wer nett zu ihnen ist, darf mit raus."
+
+msgid "Raid exit_coop luck"
+msgstr "Die Wildlinge überreden"
+
+msgid "Raid exit_coop agility"
+msgstr "Vorbeischleichen"
+
+msgid "Raid exit_bunker"
+msgstr "Bunker ZB-014"
+
+msgid "Raid exit_bunker text"
+msgstr "Eine Panzertür. Das Schloss will einen Code, darunter ist ein Kartenschlitz."
+
+msgid "Raid exit_bunker keycard"
+msgstr "Mit der Schlüsselkarte öffnen"
+
+msgid "Raid exit_bunker strength"
+msgstr "Die Tür aufbrechen"
+
+msgid "Raid exit_bunker luck"
+msgstr "Den Code raten"
+
+msgid "Raid exit_boat"
+msgstr "Boot am Pier"
+
+msgid "Raid exit_boat text"
+msgstr "Der Bootsmann winkt vom Pier: „Schnell, bevor sie schießen!“"
+
+msgid "Raid exit_boat agility"
+msgstr "Zum Boot rennen"
+
+msgid "Raid exit_boat luck"
+msgstr "Dem Bootsmann einen Anteil versprechen"
+
+msgid "Raid exit_train"
+msgstr "Der Zug"
+
+msgid "Raid exit_train text"
+msgstr "Einmal pro Raid kommt ein Zug zum Bahnhof. Man hört schon das Horn — und nicht nur ihr."
+
+msgid "Raid exit_train luck"
+msgstr "Auf den Zug warten"
+
+msgid "Raid exit_train agility"
+msgstr "Im Fahren aufspringen"
+
+msgid "Raid exit_car pay"
+msgstr "Den Fahrer bezahlen"
+
+msgid "Raid exit_coop karma"
+msgstr "Mit den Wildlingen gehen"
+
+msgid "Raid needs payment"
+msgstr "Nichts zum Bezahlen"
+
+msgid "Raid needs karma %{value}"
+msgstr "Die Wildlinge trauen euch nicht: Karma %{value} nötig"
+
+msgid "Raid paid %{name} %{item}"
+msgstr "%{name} hat bezahlt: %{item}."
+
+msgid "Raid trusted"
+msgstr "Die Wildlinge sind Freunde: Sie führen den Trupp ohne Fragen hinaus."
+
+msgid "Raid node deadly"
+msgstr "roter Ring: ein Kämpfer kann fallen"

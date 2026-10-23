@@ -467,7 +467,7 @@ msgid "Go raid"
 msgstr "Go on a raid"
 
 msgid "Raid intro %{steps}"
-msgstr "A squad of five scavs goes into a raid: %{steps} encounters, in each you pick an action and whoever is best at its stat tries it. You may lose fighters and fill the stash with loot."
+msgstr "A squad of five scavs goes into a raid across a map: %{steps} encounters to an extract. You pick the way, and in each encounter an action that whoever is best at its stat tries. You may lose fighters and fill the stash with loot."
 
 msgid "Recruit squad"
 msgstr "Recruit a squad"
@@ -1099,24 +1099,6 @@ msgstr "Slip into the fog"
 msgid "Raid follow up"
 msgstr "This will come back around."
 
-msgid "Raid fork_road"
-msgstr "Crossroads"
-
-msgid "Raid fork_road text"
-msgstr "The road splits at a crooked signpost. Which way?"
-
-msgid "Raid fork_tunnel"
-msgstr "Underpass"
-
-msgid "Raid fork_tunnel text"
-msgstr "You can go down into a dark underpass or stay up top. Each way sounds different."
-
-msgid "Raid radio"
-msgstr "Radio intercept"
-
-msgid "Raid radio text"
-msgstr "The radio crackles: you can hear what's going on ahead. Pick your way."
-
 msgid "Raid scav_camp"
 msgstr "Scav camp"
 
@@ -1170,9 +1152,6 @@ msgstr "Priest's amulet"
 
 msgid "Raid trophy %{name} %{item}"
 msgstr "%{name} beat the boss! Trophy: «%{item}»."
-
-msgid "Raid path %{event}"
-msgstr "The squad turned: %{event}."
 
 msgid "Raid karma %{value}"
 msgstr "Scav karma: %{value}"
@@ -1788,3 +1767,132 @@ msgstr "Dorm room"
 
 msgid "Raid dorm_room text"
 msgstr "A dorm on Customs, the door ajar. Nightstands, bags, mattresses — you could search for ages, but the footsteps in the corridor are getting closer."
+
+msgid "Raid map"
+msgstr "Map"
+
+msgid "Raid map about"
+msgstr "Neighbouring points show in full, distant ones by their icon only, and at night or in fog not at all. Bosses and extracts always show."
+
+msgid "Raid way start"
+msgstr "Where do we go in?"
+
+msgid "Raid way next"
+msgstr "Where next?"
+
+msgid "Raid exited %{exit}"
+msgstr "Extract: %{exit}"
+
+msgid "Raid node boss"
+msgstr "Boss"
+
+msgid "Raid node exit"
+msgstr "Extract"
+
+msgid "Raid node fight"
+msgstr "Fight"
+
+msgid "Raid node loot"
+msgstr "Loot to find"
+
+msgid "Raid node search"
+msgstr "Search"
+
+msgid "Raid node scav"
+msgstr "Scavs"
+
+msgid "Raid node gnome"
+msgstr "Gnomes"
+
+msgid "Raid node rare"
+msgstr "Rare encounter"
+
+msgid "Raid node hazard"
+msgstr "Danger"
+
+msgid "Raid node hidden"
+msgstr "Can't see"
+
+msgid "Raid exit_car"
+msgstr "Car extract"
+
+msgid "Raid exit_car text"
+msgstr "A van idles at the gate. The driver wants five grand and asks no questions."
+
+msgid "Raid exit_car luck"
+msgstr "Haggle"
+
+msgid "Raid exit_car agility"
+msgstr "Walk out across the field"
+
+msgid "Raid exit_coop"
+msgstr "Co-op extract"
+
+msgid "Raid exit_coop text"
+msgstr "Scavs are smoking by the exit. Be nice to them and they'll let you out together."
+
+msgid "Raid exit_coop luck"
+msgstr "Talk the scavs into it"
+
+msgid "Raid exit_coop agility"
+msgstr "Slip past them"
+
+msgid "Raid exit_bunker"
+msgstr "Bunker ZB-014"
+
+msgid "Raid exit_bunker text"
+msgstr "A blast door. The lock takes a code, but there's a card slot under it."
+
+msgid "Raid exit_bunker keycard"
+msgstr "Open with the keycard"
+
+msgid "Raid exit_bunker strength"
+msgstr "Force the door"
+
+msgid "Raid exit_bunker luck"
+msgstr "Guess the code"
+
+msgid "Raid exit_boat"
+msgstr "Boat at the pier"
+
+msgid "Raid exit_boat text"
+msgstr "The boatman waves from the pier: “Hurry, before they start shooting!”"
+
+msgid "Raid exit_boat agility"
+msgstr "Run for the boat"
+
+msgid "Raid exit_boat luck"
+msgstr "Promise the boatman a cut"
+
+msgid "Raid exit_train"
+msgstr "The train"
+
+msgid "Raid exit_train text"
+msgstr "Once a raid a train comes to the station. You can hear its horn already — and not only you."
+
+msgid "Raid exit_train luck"
+msgstr "Wait for the train"
+
+msgid "Raid exit_train agility"
+msgstr "Jump on while it moves"
+
+msgid "Raid exit_car pay"
+msgstr "Pay the driver"
+
+msgid "Raid exit_coop karma"
+msgstr "Leave with the scavs"
+
+msgid "Raid needs payment"
+msgstr "Nothing to pay with"
+
+msgid "Raid needs karma %{value}"
+msgstr "The scavs don't trust you: karma %{value} needed"
+
+msgid "Raid paid %{name} %{item}"
+msgstr "%{name} paid with: %{item}."
+
+msgid "Raid trusted"
+msgstr "The scavs are friends: they lead the squad out, no questions asked."
+
+msgid "Raid node deadly"
+msgstr "red ring: a fighter may be lost"

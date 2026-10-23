@@ -30,10 +30,12 @@ defmodule Mix.Tasks.Raid.SimTest do
     end
   end
 
-  test "every strategy goes through a crossroads, taking a path" do
-    for strategy <- ~w(cautious greedy random),
-        {_raid, [crossroads | _rest]} <- Sim.simulate(strategy, 10, @names, [:fork_road, :pmc]),
-        do: assert(crossroads.outcome == :path)
+  test "every strategy finds its way across random maps" do
+    for strategy <- ~w(cautious careful greedy random),
+        {raid, log} <- Sim.simulate(strategy, 20, @names) do
+      assert Raid.over?(raid)
+      assert log != []
+    end
   end
 
   # a member acting on their own (a greedy one going for the bait) isn't the strategy's choice

@@ -2644,29 +2644,89 @@ kbd {
     font-family: "Bender";
 }
 
-.raid-route {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin: 14px 0 0;
+/* the map: the whole of it on a wide screen, a few layers round the squad on
+   a phone (see the phone block below); the way taken in gold, the squad's
+   node pulsing, the ones it may go to next dashed and clickable */
+.raid-map {
+    display: block;
+    width: 100%;
+    max-width: 760px;
+    height: auto;
+    margin: 12px auto 0;
 }
 
-.raid-dot {
-    width: 14px;
-    height: 14px;
-    border: 2px solid #d49300;
-    border-radius: 50%;
-    background: #212529;
+.raid-map-near {
+    display: none;
 }
 
-.raid-dot-done {
-    background: #d49300;
+.raid-link {
+    stroke: #4a4f55;
+    stroke-width: 2;
 }
 
-.raid-dot-now {
-    animation: borderPulseGold 1.6s ease-in-out infinite;
-    background: #ffd060;
+.raid-link-taken {
+    stroke: #d49300;
+    stroke-width: 3;
+}
+
+.raid-node circle {
+    fill: #212529;
+    stroke: #4a4f55;
+    stroke-width: 2;
+}
+
+.raid-node text {
+    font-size: 17px;
+    text-anchor: middle;
+    dominant-baseline: central;
+    pointer-events: none;
+}
+
+.raid-node-done circle {
+    fill: #3a3320;
+    stroke: #d49300;
+}
+
+.raid-node-at circle {
+    stroke: #ffd060;
+    stroke-width: 3;
+    animation: raidNodePulse 1.6s ease-in-out infinite;
+}
+
+.raid-node-next {
+    cursor: pointer;
+}
+
+.raid-node-next circle {
+    stroke: #ffd060;
+    stroke-dasharray: 4 3;
+}
+
+.raid-node-next:hover circle {
+    fill: #4a3f1c;
+}
+
+.raid-node-hidden text {
+    opacity: 0.45;
+}
+
+/* a member may be lost there: a red ring on what's ahead, a boss's too */
+.raid-node-deadly:not(.raid-node-done) circle {
+    stroke: #e53935;
+}
+
+@keyframes raidNodePulse {
+    50% {
+        stroke-width: 5;
+        stroke-opacity: 0.6;
+    }
+}
+
+.raid-exit {
+    margin: -6px 0 12px;
+    text-align: center;
+    color: #4caf50;
+    font-size: 20px;
 }
 
 /* the scavs' karma at their events, under the text: green when they like the
@@ -2963,9 +3023,12 @@ kbd {
 }
 
 /* a compact panel in the middle of the screen */
+/* the legend outgrows a phone's screen: it scrolls inside */
 .raid-stash {
     position: relative;
     width: min(280px, 85vw);
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
 .raid-stash-empty {
@@ -3167,13 +3230,12 @@ kbd {
         font-size: 28px;
     }
 
-    .raid-route {
-        gap: 6px;
+    .raid-map-full {
+        display: none;
     }
 
-    .raid-dot {
-        width: 12px;
-        height: 12px;
+    .raid-map-near {
+        display: block;
     }
 
     .raid-event .wheel-panel-header {
@@ -3214,7 +3276,7 @@ kbd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .raid-dot-now,
+    .raid-node-at circle,
     .raid-outcome,
     .raid-event,
     .raid-member-killed {

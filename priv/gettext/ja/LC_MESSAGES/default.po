@@ -456,7 +456,7 @@ msgid "Go raid"
 msgstr "Tansaku e"
 
 msgid "Raid intro %{steps}"
-msgstr "Go-nin no yabanjin ga reido e: %{steps} kai no deai. Koudou wo erabu to, sono suteeta ga ichiban takai nakama ga chousen suru. Nakama wo ushinau koto mo, kakushi-dana wo ruuto de umeru koto mo aru."
+msgstr "Go-nin no yabanjin ga chizu no ue no reido e: dasshutsu made %{steps} kai no deai. Michi wa jibun de erabi, deai goto ni koudou wo erabu to, sono suteeta ga ichiban takai nakama ga chousen suru. Nakama wo ushinau koto mo, kakushi-dana wo ruuto de umeru koto mo aru."
 
 msgid "Recruit squad"
 msgstr "Butai wo atsumeru"
@@ -1088,24 +1088,6 @@ msgstr "Kiri ni magireru"
 msgid "Raid follow up"
 msgstr "Kore wa ato de hibiite kuru."
 
-msgid "Raid fork_road"
-msgstr "Wakaremichi"
-
-msgid "Raid fork_road text"
-msgstr "Katamuita douhyou no tokoro de michi ga wakareru. Dochira e?"
-
-msgid "Raid fork_tunnel"
-msgstr "Chika-dou"
-
-msgid "Raid fork_tunnel text"
-msgstr "Kurai chika-dou ni oriru ka, ue wo iku ka. Dochira kara mo betsu no oto ga kikoeru."
-
-msgid "Raid radio"
-msgstr "Musen no boujuu"
-
-msgid "Raid radio text"
-msgstr "Musen ga zaa zaa naru: saki no youbou ga kikoeru. Michi wo erabe."
-
 msgid "Raid scav_camp"
 msgstr "Yabanjin no kyanpu"
 
@@ -1159,9 +1141,6 @@ msgstr "Shisai no omamori"
 
 msgid "Raid trophy %{name} %{item}"
 msgstr "%{name} ga bosu wo taoshita! Torofii: «%{item}»."
-
-msgid "Raid path %{event}"
-msgstr "Butai wa magatta: %{event}."
 
 msgid "Raid karma %{value}"
 msgstr "Yabanjin karuma: %{value}"
@@ -1777,3 +1756,132 @@ msgstr "Ryou no heya"
 
 msgid "Raid dorm_room text"
 msgstr "Customs no ryou, doa ga sukoshi aite iru. Teeburu, kaban, matto — itsumademo sagaseru ga, rouka no ashioto ga chikazuite kuru."
+
+msgid "Raid map"
+msgstr "Chizu"
+
+msgid "Raid map about"
+msgstr "Tonari no pointo wa zenbu mieru ga, tooi pointo wa aikon dake, yoru ya kiri no naka de wa mattaku mienai. Bosu to deguchi wa itsumo mieru."
+
+msgid "Raid way start"
+msgstr "Doko kara hairu?"
+
+msgid "Raid way next"
+msgstr "Tsugi wa doko?"
+
+msgid "Raid exited %{exit}"
+msgstr "Dasshutsu: %{exit}"
+
+msgid "Raid node boss"
+msgstr "Bosu"
+
+msgid "Raid node exit"
+msgstr "Dasshutsu"
+
+msgid "Raid node fight"
+msgstr "Tatakai"
+
+msgid "Raid node loot"
+msgstr "Ruuto ari"
+
+msgid "Raid node search"
+msgstr "Sousaku"
+
+msgid "Raid node scav"
+msgstr "Yabanjin"
+
+msgid "Raid node gnome"
+msgstr "Gnoomu"
+
+msgid "Raid node rare"
+msgstr "Mezurashii deai"
+
+msgid "Raid node hazard"
+msgstr "Kiken"
+
+msgid "Raid node hidden"
+msgstr "Mienai"
+
+msgid "Raid exit_car"
+msgstr "Kuruma no dasshutsu"
+
+msgid "Raid exit_car text"
+msgstr "Mon no mae de wagon ga matte iru. Untenshu wa gosen hoshii ga, nani mo kikanai."
+
+msgid "Raid exit_car luck"
+msgstr "Negiru"
+
+msgid "Raid exit_car agility"
+msgstr "Hatake o aruite nukeru"
+
+msgid "Raid exit_coop"
+msgstr "Kyoudou dasshutsu"
+
+msgid "Raid exit_coop text"
+msgstr "Deguchi de yabanjin ga tabako o sutte iru. Yasashiku sureba issho ni dashite kureru."
+
+msgid "Raid exit_coop luck"
+msgstr "Yabanjin o settoku suru"
+
+msgid "Raid exit_coop agility"
+msgstr "Kossori tooru"
+
+msgid "Raid exit_bunker"
+msgstr "Bunkaa ZB-014"
+
+msgid "Raid exit_bunker text"
+msgstr "Bunkaa no atsui doa. Angou shiki da ga, shita ni kaado no ana ga aru."
+
+msgid "Raid exit_bunker keycard"
+msgstr "Kaado de akeru"
+
+msgid "Raid exit_bunker strength"
+msgstr "Doa o kowasu"
+
+msgid "Raid exit_bunker luck"
+msgstr "Angou o ateru"
+
+msgid "Raid exit_boat"
+msgstr "Sanbashi no booto"
+
+msgid "Raid exit_boat text"
+msgstr "Sendou ga sanbashi kara te o furu: 「Isoge, utareru mae ni!」"
+
+msgid "Raid exit_boat agility"
+msgstr "Booto made hashiru"
+
+msgid "Raid exit_boat luck"
+msgstr "Sendou ni wakemae o yakusoku suru"
+
+msgid "Raid exit_train"
+msgstr "Ressha"
+
+msgid "Raid exit_train text"
+msgstr "Reido ni ichido, eki ni ressha ga kuru. Mou kiteki ga kikoeru — kikoeru no wa anata dake ja nai."
+
+msgid "Raid exit_train luck"
+msgstr "Ressha o matsu"
+
+msgid "Raid exit_train agility"
+msgstr "Hashitte iru ressha ni tobinoru"
+
+msgid "Raid exit_car pay"
+msgstr "Untenshu ni harau"
+
+msgid "Raid exit_coop karma"
+msgstr "Yabanjin to issho ni deru"
+
+msgid "Raid needs payment"
+msgstr "Harau mono ga nai"
+
+msgid "Raid needs karma %{value}"
+msgstr "Yabanjin wa shinyou shinai: karuma %{value} ga hitsuyou"
+
+msgid "Raid paid %{name} %{item}"
+msgstr "%{name} wa shiharatta: %{item}."
+
+msgid "Raid trusted"
+msgstr "Yabanjin wa nakama da: nani mo kikazu ni butai o tsuredashita."
+
+msgid "Raid node deadly"
+msgstr "akai wa: nakama o ushinau kamo"
