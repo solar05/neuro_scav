@@ -14,7 +14,8 @@ defmodule Mix.Tasks.Raid.Sim do
 
   At every event a strategy picks an option:
 
-  - `cautious` - the safe option when there is one, otherwise the best chance
+  - `cautious` - the safe option when there is one (leaving a search too),
+    otherwise the best chance
   - `careful` - the best worth, as a player would weigh it: the chance of what
     a success brings against the cost of a failure (a death costs the most);
     the safe option is worth nothing either way
@@ -22,7 +23,8 @@ defmodule Mix.Tasks.Raid.Sim do
   - `random` - any option
 
   Squads are five random first and last names of the locale, rarity by the
-  usual rules (`ScavengersServer.check_name/1`).
+  usual rules (`ScavengersServer.check_name/1`). Members act on their own as
+  on the site: every choice has a quirk roll.
   """
 
   use Mix.Task
@@ -45,7 +47,7 @@ defmodule Mix.Tasks.Raid.Sim do
     events: :boolean
   ]
   # outcomes a raid may or may not meet, shown as the share of raids with one
-  @outcomes [:loot, :train, :wound, :promote, :trophy, :revive, :drop, :stall]
+  @outcomes [:loot, :found, :train, :wound, :promote, :trophy, :revive, :drop, :stall]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
   @squad_size 5
 
@@ -96,7 +98,8 @@ defmodule Mix.Tasks.Raid.Sim do
     if Raid.over?(raid) do
       {raid, Enum.reverse(log)}
     else
-      next = Raid.choose(raid, pick(strategy, Raid.options(raid)), :rand.uniform(100))
+      index = pick(strategy, Raid.options(raid))
+      next = Raid.choose(raid, index, :rand.uniform(100), Raid.random_item(), :rand.uniform(100))
 
       if next.turn == raid.turn,
         do: Mix.raise("#{strategy} took an option that can't be taken at #{Raid.event(raid)}")
@@ -106,7 +109,9 @@ defmodule Mix.Tasks.Raid.Sim do
   end
 
   defp pick("cautious", options) do
-    Enum.find_value(open(options), fn {option, index} -> is_nil(option.stat) && index end) ||
+    Enum.find_value(open(options), fn {option, index} ->
+      (is_nil(option.stat) and is_nil(option.search)) && index
+    end) ||
       best(options)
   end
 

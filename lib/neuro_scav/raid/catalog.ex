@@ -19,6 +19,7 @@ defmodule NeuroScav.Raid.Catalog do
   # - `scav: true`: a scav event, karma eases its luck checks (talks with scavs)
   # - `gnome: true`: a gnome, after the squad's loot
   # - `crossroads: true`: no options of its own but paths, see `NeuroScav.Raid.new/3`
+  # - `search: true`: no options of its own but a search, see `NeuroScav.Raid`
   #
   # option: {stat, difficulty, on success, on failure}, :safe, or a key
   # {:key, item, on success}: no check, the success sure if an alive member
@@ -133,6 +134,9 @@ defmodule NeuroScav.Raid.Catalog do
     fork_road: %{crossroads: true, weight: 0.5},
     fork_tunnel: %{crossroads: true, weight: 0.5},
     radio: %{crossroads: true, weight: 0.5},
+    # searches: one more box, and one more, till the squad leaves or gets hurt
+    abandoned_store: %{search: true},
+    dorm_room: %{search: true},
     # scavs
     scav_camp: %{
       options: [{:luck, 5, :loot, :nothing}, {:strength, 10, :loot, :lose}, :safe],
@@ -266,7 +270,10 @@ defmodule NeuroScav.Raid.Catalog do
     night: %{hide: 10, fight: -5, search: -5}
   ]
 
-  # every event as a map; a crossroads has no options
+  # what a member is like, drawn from the name, see `NeuroScav.Raid`
+  @traits [:greedy, :coward, :chatty, :lucky, :psycho]
+
+  # every event as a map; a crossroads and a search have no options
   @specs Map.new(@events, fn
            {event, options} when is_list(options) -> {event, %{options: options}}
            {event, spec} -> {event, Map.put_new(spec, :options, [])}
@@ -278,7 +285,18 @@ defmodule NeuroScav.Raid.Catalog do
   # come, karma for an unchecked stat: all just ignored; an unknown outcome
   # would be a plain pass; a check made by `:each` of the squad needs a pass
   # to bring and a wound to cost).
-  @spec_keys [:options, :weight, :trophy, :chain, :karma, :modes, :scav, :gnome, :crossroads]
+  @spec_keys [
+    :options,
+    :weight,
+    :trophy,
+    :chain,
+    :karma,
+    :modes,
+    :scav,
+    :gnome,
+    :crossroads,
+    :search
+  ]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
   @failures [:lose, :wound, :drop, :nothing, :stall]
 
@@ -325,7 +343,8 @@ defmodule NeuroScav.Raid.Catalog do
           Map.has_key?(spec, :trophy) && not Map.has_key?(@loot, spec.trophy) &&
             "an unknown trophy",
           Map.keys(Map.get(spec, :karma, %{})) -- stats != [] &&
-            "karma for a stat no option checks"
+            "karma for a stat no option checks",
+          Map.get(spec, :search) && spec.options != [] && "a search with options of its own"
         ],
         &is_binary/1
       )
@@ -335,6 +354,7 @@ defmodule NeuroScav.Raid.Catalog do
   end
 
   @crossroads for {event, %{crossroads: true}} <- @specs, do: event
+  @searches for {event, %{search: true}} <- @specs, do: event
   @bosses for {event, %{trophy: _trophy}} <- @specs, do: event
   @trophies for {event, %{trophy: trophy}} <- @specs, into: %{}, do: {event, trophy}
   @weights for {event, %{weight: weight}} <- @specs, into: %{}, do: {event, weight}
@@ -380,6 +400,8 @@ defmodule NeuroScav.Raid.Catalog do
       weathers: @weathers,
       daytimes: @daytimes,
       crossroads: @crossroads,
+      searches: @searches,
+      traits: @traits,
       bosses: @bosses,
       trophies: @trophies,
       weights: @weights,

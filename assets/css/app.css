@@ -2669,10 +2669,10 @@ kbd {
     background: #ffd060;
 }
 
-/* the scavs' karma under the route: green when they like the squad, red when not */
+/* the scavs' karma at their events, under the text: green when they like the
+   squad, red when not */
 .raid-karma {
-    margin: 6px 0 0;
-    text-align: center;
+    margin: -6px 0 12px;
     color: #a0a0a0;
     font-size: 15px;
 }
@@ -2685,18 +2685,38 @@ kbd {
     color: #e53935;
 }
 
-/* the time of day and the weather, what they add to checks under them */
+/* the time of day and the weather in a line, the checks they ease and harden after them */
 .raid-world {
-    margin: 2px 0 0;
+    margin: 6px 0 0;
     text-align: center;
     color: #c8c8c8;
     font-size: 15px;
 }
 
 .raid-world-effects {
-    display: block;
     color: #a0a0a0;
-    font-size: 13px;
+}
+
+/* a member's trait beside the rarity */
+.raid-trait {
+    margin-left: 2px;
+}
+
+/* what a member did on their own, before what came of it */
+.raid-quirk {
+    display: block;
+    margin-bottom: 4px;
+    color: #ffd060;
+    font-size: 90%;
+    font-style: italic;
+}
+
+/* in line with the list's own padding */
+.raid-legend-title {
+    margin: 4px 0 0;
+    padding: 0 14px;
+    color: #d49300;
+    font: bold 17px "Bender";
 }
 
 /* minmax(0, 1fr): a column may shrink below its card's content, or the cards

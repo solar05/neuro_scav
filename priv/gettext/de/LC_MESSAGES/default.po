@@ -1681,3 +1681,99 @@ msgstr "„Freund!“ rufen"
 
 msgid "Raid chatty_scav strength"
 msgstr "Der Stimme nachgehen"
+
+msgid "Raid kind strength"
+msgstr "Stärke"
+
+msgid "Raid kind agility"
+msgstr "Geschick"
+
+msgid "Raid kind luck"
+msgstr "Glück"
+
+msgid "Raid easier %{list}"
+msgstr "leichter: %{list}"
+
+msgid "Raid harder %{list}"
+msgstr "schwerer: %{list}"
+
+msgid "Raid traits"
+msgstr "Charakterzüge"
+
+msgid "Raid trait greedy"
+msgstr "Gierig"
+
+msgid "Raid trait greedy about"
+msgstr "geht ab und zu selbst auf Beute los, egal was der Trupp beschlossen hat"
+
+msgid "Raid trait coward"
+msgstr "Feigling"
+
+msgid "Raid trait coward about"
+msgstr "drückt sich ab und zu vor tödlichem Risiko, dann geht der Nächste"
+
+msgid "Raid trait chatty"
+msgstr "Plappermaul"
+
+msgid "Raid trait chatty about"
+msgstr "beschwatzt ab und zu Wildlinge, verrät aber manchmal den Trupp beim Verstecken"
+
+msgid "Raid trait lucky"
+msgstr "Glückspilz"
+
+msgid "Raid trait lucky about"
+msgstr "ab und zu gelingt eine misslungene Probe doch noch"
+
+msgid "Raid trait psycho"
+msgstr "Psycho"
+
+msgid "Raid trait psycho about"
+msgstr "stürzt sich ab und zu ungefragt in den Kampf"
+
+msgid "Raid quirk greedy %{name}"
+msgstr "%{name} konnte nicht widerstehen und ging auf Beute los."
+
+msgid "Raid quirk psycho %{name}"
+msgstr "%{name} stürzte sich schreiend in den Kampf."
+
+msgid "Raid quirk coward %{name}"
+msgstr "%{name} kniff und versteckte sich hinter den anderen."
+
+msgid "Raid quirk chatty %{name}"
+msgstr "%{name} redete ununterbrochen — der Trupp wurde gehört."
+
+msgid "Raid quirk chatty_scav %{name}"
+msgstr "%{name} hat die Wildlinge beschwatzt."
+
+msgid "Raid quirk lucky %{name}"
+msgstr "%{name} ist ein Glückspilz: noch mal gut gegangen."
+
+msgid "Raid search"
+msgstr "Durchsuchen"
+
+msgid "Raid search again"
+msgstr "Noch eine Kiste"
+
+msgid "Raid search leave"
+msgstr "Mit dem Gefundenen gehen"
+
+msgid "Raid found %{name} %{item}"
+msgstr "%{name} hat gefunden: %{item}. Da ist noch mehr."
+
+msgid "Raid left"
+msgstr "Der Trupp geht mit dem, was er gefunden hat."
+
+msgid "Raid caught %{name} %{stat} %{value}"
+msgstr "%{name} wühlte in Kisten und wurde angeschossen: %{stat} −%{value}. Zeit zu gehen."
+
+msgid "Raid abandoned_store"
+msgstr "Verlassener Laden"
+
+msgid "Raid abandoned_store text"
+msgstr "Ein geplünderter OLI auf Interchange. Unter den Theken stehen noch viele Kisten — aber Lärm trägt hier weit."
+
+msgid "Raid dorm_room"
+msgstr "Wohnheimzimmer"
+
+msgid "Raid dorm_room text"
+msgstr "Ein Wohnheim auf Customs, die Tür einen Spalt offen. Nachttische, Taschen, Matratzen — man könnte ewig suchen, aber die Schritte im Flur kommen näher."

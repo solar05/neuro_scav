@@ -174,4 +174,123 @@ defmodule NeuroScav.RaidMechanicsTest do
       assert chances.([:trunk], @calm) == [55, nil]
     end
   end
+
+  describe "searches" do
+    test "each look finds an item for the luckiest, the squad stays, the next one riskier" do
+      raid = new_raid(@squad, [:abandoned_store, :pmc])
+      luckiest = Enum.max_by(raid.squad, & &1.stats.luck)
+
+      # the first look's danger is 10%, the morning eases searching by 5
+      assert [%{search: 0, member: ^luckiest, chance: 95, reward: :loot}, %{leave: true}] =
+               Raid.options(raid)
+
+      raid = Raid.choose(raid, 0, 1, :sj6)
+      assert %{outcome: :found, item: :sj6, member: name} = raid.last
+      assert name == luckiest.name
+      assert %{step: 0, searched: 1, stash: [%{item: :sj6, owner: owner}]} = raid
+      assert owner == luckiest.index
+      assert [%{search: 1, chance: 80}, _leave] = Raid.options(raid)
+
+      raid = Raid.choose(raid, 1, 1)
+      assert %{outcome: :left, retreat: nil} = raid.last
+      assert %{step: 1, searched: 0} = raid
+    end
+
+    test "a look that fails hurts the searcher on luck, and the squad moves on" do
+      raid = new_raid(@squad, [:dorm_room, :pmc])
+      luckiest = Enum.max_by(raid.squad, & &1.stats.luck)
+
+      raid = Raid.choose(raid, 0, 100)
+      assert %{outcome: :wound, stat: :luck} = raid.last
+      assert actor(raid, luckiest.index).stats.luck == luckiest.stats.luck - Raid.stat_step()
+      assert %{step: 1, searched: 0} = raid
+    end
+  end
+
+  describe "traits" do
+    # members with these traits, every stat of each at its value
+    defp squad(route, members) do
+      raid = new_raid(Enum.take(@squad, length(members)), route)
+
+      put_in(
+        raid.squad,
+        Enum.zip_with(raid.squad, members, fn member, {trait, value} ->
+          %{member | trait: trait, stats: %{strength: value, agility: value, luck: value}}
+        end)
+      )
+    end
+
+    defp name(raid, index), do: actor(raid, index).name
+
+    test "a trait comes from the name, the same every time" do
+      raid = new_raid(@squad, [:pmc])
+      for member <- raid.squad, do: assert(member.trait == Raid.trait(member.name))
+      assert Raid.trait("Дед Мороз") in Raid.traits()
+    end
+
+    test "nobody acts on their own unless the quirk roll says so" do
+      raid = squad([:office, :pmc], [{:greedy, 50}])
+      assert %{outcome: :safe, quirk: nil} = Raid.choose(raid, 1, 1, :sj6, 26).last
+      assert %{outcome: :safe, quirk: nil} = Raid.choose(raid, 1, 1).last
+    end
+
+    test "a greedy one goes for the loot whatever the squad chose, one more box too" do
+      raid = squad([:office, :pmc], [{:greedy, 50}, {:coward, 70}])
+      greedy = name(raid, 0)
+
+      assert %{outcome: :loot, member: ^greedy, quirk: {:greedy, ^greedy}} =
+               Raid.choose(raid, 1, 1, :sj6, 1).last
+
+      raid = squad([:abandoned_store, :pmc], [{:greedy, 50}, {:coward, 70}])
+      raid = Raid.choose(raid, 1, 1, :sj6, 1)
+      assert %{outcome: :found, member: ^greedy, quirk: {:greedy, ^greedy}} = raid.last
+      assert %{step: 0, searched: 1} = raid
+    end
+
+    test "a psycho goes for the fight" do
+      raid = squad([:pmc, :office], [{:coward, 60}, {:psycho, 40}])
+      psycho = name(raid, 1)
+      raid = Raid.choose(raid, 1, 100, :sj6, 1)
+
+      assert %{outcome: :lose, stat: :strength, member: ^psycho, quirk: {:psycho, ^psycho}} =
+               raid.last
+
+      refute actor(raid, 1).alive
+    end
+
+    test "a coward leaves a deadly check to the next best one" do
+      raid = squad([:pmc, :office], [{:coward, 60}, {:psycho, 40}])
+      coward = name(raid, 0)
+      other = name(raid, 1)
+
+      assert %{member: ^other, quirk: {:coward, ^coward}} = Raid.choose(raid, 0, 1, :sj6, 1).last
+    end
+
+    test "a chatterbox gives the squad away when it hides, and talks scavs round" do
+      # the train: an escape (agility 5, a stall at worst), 45% for a plain 50
+      raid = squad([:train, :pmc], [{:chatty, 50}])
+      chatty = name(raid, 0)
+      assert %{outcome: :pass} = Raid.choose(raid, 0, 40).last
+
+      assert %{outcome: :stall, quirk: {:chatty, ^chatty}} =
+               Raid.choose(raid, 0, 40, :sj6, 1).last
+
+      # the toll: a luck check at a scav event, 50%
+      raid = squad([:toll, :pmc], [{:chatty, 50}])
+      assert %{outcome: :drop} = Raid.choose(raid, 0, 60).last
+
+      assert %{outcome: :pass, quirk: {:chatty_scav, ^chatty}} =
+               Raid.choose(raid, 0, 60, :sj6, 1).last
+    end
+
+    test "a lucky one's failed check comes off after all" do
+      raid = squad([:pmc, :office], [{:lucky, 50}])
+      lucky = name(raid, 0)
+
+      assert %{outcome: :pass, quirk: {:lucky, ^lucky}} = Raid.choose(raid, 0, 100, :sj6, 1).last
+      # a check that comes off by itself needs no luck
+      assert %{outcome: :pass, quirk: nil} = Raid.choose(raid, 0, 10, :sj6, 1).last
+      assert %{outcome: :lose} = Raid.choose(raid, 0, 100, :sj6, 26).last
+    end
+  end
 end

@@ -5,7 +5,6 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   alias NeuroScav.{Locale, Raid, RaidStore, ScavengersServer}
 
   @max_name_length 40
-  # what an option may bring and cost, shown on its button (legend under the options)
   # what an option may bring and cost, each icon telling its meaning on hover,
   # all of them in the legend (see legend/1)
   @icons [
@@ -32,6 +31,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     heat: "🔥",
     storm: "⛈"
   }
+  # a member's trait on their card, telling what it is on hover (and in the legend)
+  @trait_icons %{greedy: "🤑", coward: "🐔", chatty: "🗣", lucky: "🍀", psycho: "🤪"}
   # the runs a page keeps of those it started: the last few, for the back and
   # forward buttons; the older ones are forgotten, so no page fills the store
   @kept_runs 3
@@ -204,7 +205,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
       ) do
     with {index, ""} <- Integer.parse(index),
          {^current, ""} <- Integer.parse(turn) do
-      {:noreply, assign_raid(socket, members, Raid.choose(raid, index, :rand.uniform(100)))}
+      raid = Raid.choose(raid, index, :rand.uniform(100), Raid.random_item(), :rand.uniform(100))
+      {:noreply, assign_raid(socket, members, raid)}
     else
       _invalid_or_stale -> {:noreply, socket}
     end
@@ -265,7 +267,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp hide_stash, do: JS.add_class("hidden", to: "#raid-stash")
 
   @doc """
-  What the icons on the options mean: a compact modal like the stash's, opened
+  What the icons on the options and the traits mean: a compact modal like the stash's, opened
   by the small button in the event's header (`#btn-raid-legend`), so the
   legend takes no room on the page. It sits outside the event's panel, which
   clips what it holds.
@@ -287,6 +289,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
         <ul class="raid-stash-list">
           <li :for={key <- icon_keys()}>
             <span class="raid-legend-icon">{option_icon(key)}</span> {icon_meaning(key)}
+          </li>
+        </ul>
+        <p class="raid-legend-title">{gettext("Raid traits")}</p>
+        <ul id="raid-legend-traits" class="raid-stash-list">
+          <li :for={trait <- Raid.traits()}>
+            <span class="raid-legend-icon">{trait_icon(trait)}</span> {trait_tip(trait)}
           </li>
         </ul>
       </div>
@@ -325,6 +333,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp icon_meaning(key), do: Locale.get_text("Raid icon #{key}")
 
+  defp trait_icon(trait), do: Map.fetch!(@trait_icons, trait)
+
+  defp trait_tip(trait),
+    do:
+      "#{Locale.get_text("Raid trait #{trait}")}: #{Locale.get_text("Raid trait #{trait} about")}"
+
   # the stash with the finder's name and whether they're still around (the item works)
   defp stash_entries(%{stash: stash, squad: squad}) do
     for %{item: item, owner: index} <- stash do
@@ -346,6 +360,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp option_label(event, %{key: key}) when key != nil,
     do: Locale.get_text("Raid #{event} #{key}")
 
+  defp option_label(_event, %{search: 0}), do: gettext("Raid search")
+
+  defp option_label(_event, %{search: looks}) when is_integer(looks),
+    do: gettext("Raid search again")
+
+  defp option_label(_event, %{leave: true}), do: gettext("Raid search leave")
   defp option_label(_event, %{stat: nil}), do: gettext("Raid pass by")
   defp option_label(event, %{stat: stat}), do: Locale.get_text("Raid #{event} #{stat}")
 
@@ -363,7 +383,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp locked_text(_retreat), do: gettext("Raid retreat locked")
 
-  # the time of day and the weather, and what they add to the checks now
+  # the time of day and the weather in a line, with the checks they ease and harden now
   defp world_text(raid) do
     %{daytime: daytime, weather: weather} = Raid.world(raid)
 
@@ -371,15 +391,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
       "#{@weather_icons[weather]} #{Locale.get_text("Raid weather #{weather}")}"
   end
 
+  # "easier: hiding, agility; harder: fighting", a kind of check or a stat each
   defp world_effects(raid) do
     world = Raid.world(raid)
+    effects = Enum.sort(world.daytime_kinds) ++ Enum.sort(world.weather_stats)
+    easier = for {kind, value} <- effects, value > 0, do: Locale.get_text("Raid kind #{kind}")
+    harder = for {kind, value} <- effects, value < 0, do: Locale.get_text("Raid kind #{kind}")
 
-    kinds =
-      for {kind, value} <- world.daytime_kinds,
-          do: "#{Locale.get_text("Raid kind #{kind}")} #{signed(value)}"
-
-    stats = for {stat, value} <- world.weather_stats, do: "#{stat_label(stat)} #{signed(value)}"
-    Enum.join(kinds ++ stats, ", ")
+    [
+      {easier, gettext("Raid easier %{list}", list: Enum.join(easier, ", "))},
+      {harder, gettext("Raid harder %{list}", list: Enum.join(harder, ", "))}
+    ]
+    |> Enum.reject(fn {kinds, _text} -> kinds == [] end)
+    |> Enum.map_join("; ", fn {_kinds, text} -> text end)
   end
 
   defp stat_label(stat), do: Locale.get_text("Stat #{stat}")
@@ -443,13 +467,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
         value: Raid.stat_step()
       )
 
-  defp outcome_text(%{outcome: :wound, member: name, stat: stat}),
-    do:
-      gettext("Raid wound %{name} %{stat} %{value}",
-        name: name,
-        stat: stat_label(stat),
-        value: Raid.stat_step()
-      )
+  # a search hurts the one digging through the boxes
+  defp outcome_text(%{outcome: :wound, member: name, stat: stat, event: event}) do
+    bindings = [name: name, stat: stat_label(stat), value: Raid.stat_step()]
+
+    if Raid.search?(event),
+      do: gettext("Raid caught %{name} %{stat} %{value}", bindings),
+      else: gettext("Raid wound %{name} %{stat} %{value}", bindings)
+  end
+
+  defp outcome_text(%{outcome: :found, member: name, item: item}),
+    do: gettext("Raid found %{name} %{item}", name: name, item: item_name(item))
+
+  defp outcome_text(%{outcome: :left}), do: gettext("Raid left")
 
   defp outcome_text(%{outcome: :stall, member: name}),
     do: gettext("Raid stall %{name}", name: name)
@@ -478,6 +508,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp outcome_text(%{outcome: :path, path: path}),
     do: gettext("Raid path %{event}", event: event_title(path))
 
+  # what a member did on their own
+  defp quirk_note(%{quirk: {quirk, name}}),
+    do: Locale.get_text("Raid quirk #{quirk} %{name}", name: name)
+
+  defp quirk_note(_last), do: nil
+
   # what the scavs made of the last choice
   defp karma_note(%{karma: change}) when change > 0, do: gettext("Raid karma up")
   defp karma_note(%{karma: change}) when change < 0, do: gettext("Raid karma down")
@@ -493,7 +529,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp karma_text(karma), do: gettext("Raid karma %{value}", value: signed(karma))
 
   defp outcome_class(%{outcome: outcome})
-       when outcome in [:pass, :loot, :revive, :train, :heal, :spared],
+       when outcome in [:pass, :loot, :found, :revive, :train, :heal, :spared],
        do: "raid-outcome-good"
 
   defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
@@ -527,7 +563,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp member_change(%{last: %{index: index, outcome: outcome}}, %{index: index}) do
     case outcome do
       promoted when promoted in [:promote, :trophy] -> "raid-member-promoted"
-      up when up in [:train, :revive, :loot, :heal, :spared] -> "raid-member-up"
+      up when up in [:train, :revive, :loot, :found, :heal, :spared] -> "raid-member-up"
       down when down in [:wound, :wounds] -> "raid-member-down"
       :lose -> "raid-member-killed"
       _other -> nil

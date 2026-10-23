@@ -1442,13 +1442,13 @@ msgid "Raid weather storm"
 msgstr "Thunderstorm"
 
 msgid "Raid kind fight"
-msgstr "Fighting"
+msgstr "fighting"
 
 msgid "Raid kind search"
-msgstr "Searching"
+msgstr "searching"
 
 msgid "Raid kind hide"
-msgstr "Hiding"
+msgstr "hiding"
 
 msgid "Raid labs keycard"
 msgstr "Open with the keycard"
@@ -1692,3 +1692,99 @@ msgstr "Shout “Friendly!”"
 
 msgid "Raid chatty_scav strength"
 msgstr "Head for the voice"
+
+msgid "Raid kind strength"
+msgstr "strength"
+
+msgid "Raid kind agility"
+msgstr "agility"
+
+msgid "Raid kind luck"
+msgstr "luck"
+
+msgid "Raid easier %{list}"
+msgstr "easier: %{list}"
+
+msgid "Raid harder %{list}"
+msgstr "harder: %{list}"
+
+msgid "Raid traits"
+msgstr "Traits"
+
+msgid "Raid trait greedy"
+msgstr "Greedy"
+
+msgid "Raid trait greedy about"
+msgstr "now and then goes for the loot, whatever the squad decided"
+
+msgid "Raid trait coward"
+msgstr "Coward"
+
+msgid "Raid trait coward about"
+msgstr "now and then backs out of a deadly risk, and the next one goes"
+
+msgid "Raid trait chatty"
+msgstr "Chatterbox"
+
+msgid "Raid trait chatty about"
+msgstr "now and then talks scavs round, now and then gives the squad away while hiding"
+
+msgid "Raid trait lucky"
+msgstr "Lucky"
+
+msgid "Raid trait lucky about"
+msgstr "now and then a failed check comes off after all"
+
+msgid "Raid trait psycho"
+msgstr "Psycho"
+
+msgid "Raid trait psycho about"
+msgstr "now and then rushes into a fight unasked"
+
+msgid "Raid quirk greedy %{name}"
+msgstr "%{name} couldn't resist and went for the loot."
+
+msgid "Raid quirk psycho %{name}"
+msgstr "%{name} charged into the fight screaming."
+
+msgid "Raid quirk coward %{name}"
+msgstr "%{name} chickened out and hid behind the others."
+
+msgid "Raid quirk chatty %{name}"
+msgstr "%{name} wouldn't stop talking — the squad was heard."
+
+msgid "Raid quirk chatty_scav %{name}"
+msgstr "%{name} talked the scavs round."
+
+msgid "Raid quirk lucky %{name}"
+msgstr "%{name} is lucky: got away with it."
+
+msgid "Raid search"
+msgstr "Search"
+
+msgid "Raid search again"
+msgstr "One more box"
+
+msgid "Raid search leave"
+msgstr "Leave with what you have"
+
+msgid "Raid found %{name} %{item}"
+msgstr "%{name} found: %{item}. There's more to search."
+
+msgid "Raid left"
+msgstr "The squad leaves with what it found."
+
+msgid "Raid caught %{name} %{stat} %{value}"
+msgstr "%{name} was digging through boxes and got shot: %{stat} −%{value}. Time to go."
+
+msgid "Raid abandoned_store"
+msgstr "Abandoned store"
+
+msgid "Raid abandoned_store text"
+msgstr "A looted OLI on Interchange. Plenty of boxes left under the counters — but noise carries far here."
+
+msgid "Raid dorm_room"
+msgstr "Dorm room"
+
+msgid "Raid dorm_room text"
+msgstr "A dorm on Customs, the door ajar. Nightstands, bags, mattresses — you could search for ages, but the footsteps in the corridor are getting closer."

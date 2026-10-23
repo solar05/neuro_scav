@@ -36,8 +36,10 @@ defmodule Mix.Tasks.Raid.SimTest do
         do: assert(crossroads.outcome == :path)
   end
 
+  # a member acting on their own (a greedy one going for the bait) isn't the strategy's choice
   test "the careful strategy weighs a death: it walks past the bait" do
     for {_raid, [bait]} <- Sim.simulate("careful", 20, @names, [:bait]),
+        bait.quirk == nil,
         do: assert(bait.outcome == :safe)
   end
 
@@ -47,13 +49,15 @@ defmodule Mix.Tasks.Raid.SimTest do
     for strategy <- ~w(cautious careful greedy random),
         do: assert(length(Sim.simulate(strategy, 20, @names, route)) == 20)
 
-    for {_raid, [_office, _again, axeman | _rest]} <-
-          Sim.simulate("cautious", 20, @names, route),
+    # unless a greedy one went for the office's loot: that's no retreat
+    for {_raid, [office, again, axeman | _rest]} <- Sim.simulate("cautious", 20, @names, route),
+        office.quirk == nil and again.quirk == nil,
         do: assert(axeman.stat == :strength)
   end
 
   test "the cautious strategy takes the safe option where there is one" do
     for {_raid, [_pmc, office]} <- Sim.simulate("cautious", 20, @names, [:pmc, :office]),
+        office.quirk == nil,
         do: assert(office.outcome == :safe)
   end
 

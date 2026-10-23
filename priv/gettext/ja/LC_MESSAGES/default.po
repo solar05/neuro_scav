@@ -1431,13 +1431,13 @@ msgid "Raid weather storm"
 msgstr "Raiu"
 
 msgid "Raid kind fight"
-msgstr "Tatakau"
+msgstr "tatakau"
 
 msgid "Raid kind search"
-msgstr "Sagasu"
+msgstr "sagasu"
 
 msgid "Raid kind hide"
-msgstr "Kakureru"
+msgstr "kakureru"
 
 msgid "Raid labs keycard"
 msgstr "Kii kaado de akeru"
@@ -1681,3 +1681,99 @@ msgstr "«Mikata da!» to sakebu"
 
 msgid "Raid chatty_scav strength"
 msgstr "Koe no hou e iku"
+
+msgid "Raid kind strength"
+msgstr "chikara"
+
+msgid "Raid kind agility"
+msgstr "binshou"
+
+msgid "Raid kind luck"
+msgstr "un"
+
+msgid "Raid easier %{list}"
+msgstr "raku: %{list}"
+
+msgid "Raid harder %{list}"
+msgstr "muzukashii: %{list}"
+
+msgid "Raid traits"
+msgstr "Seikaku"
+
+msgid "Raid trait greedy"
+msgstr "Yokubari"
+
+msgid "Raid trait greedy about"
+msgstr "tokidoki butai no kettei o mushi shite ruuto ni hashiru"
+
+msgid "Raid trait coward"
+msgstr "Okubyoumono"
+
+msgid "Raid trait coward about"
+msgstr "tokidoki inochigake no kiken kara nige, tsugi no hito ga iku"
+
+msgid "Raid trait chatty"
+msgstr "Oshaberi"
+
+msgid "Raid trait chatty about"
+msgstr "tokidoki yabanjin o iikurumeru ga, kakureru toki ni butai o barasu koto mo"
+
+msgid "Raid trait lucky"
+msgstr "Kyouun"
+
+msgid "Raid trait lucky about"
+msgstr "tokidoki shippai shita chekku ga kekkyoku umaku iku"
+
+msgid "Raid trait psycho"
+msgstr "Kyouki"
+
+msgid "Raid trait psycho about"
+msgstr "tokidoki katte ni tatakai ni tobikomu"
+
+msgid "Raid quirk greedy %{name}"
+msgstr "%{name} wa gaman dekizu ruuto ni hashitta."
+
+msgid "Raid quirk psycho %{name}"
+msgstr "%{name} wa sakebinagara tatakai ni tobikonda."
+
+msgid "Raid quirk coward %{name}"
+msgstr "%{name} wa ojikezuite minna no ushiro ni kakureta."
+
+msgid "Raid quirk chatty %{name}"
+msgstr "%{name} ga shaberi tsuzuketa — butai wa kikitsukerareta."
+
+msgid "Raid quirk chatty_scav %{name}"
+msgstr "%{name} ga yabanjin o iikurumeta."
+
+msgid "Raid quirk lucky %{name}"
+msgstr "%{name} wa kyouun: nantoka natta."
+
+msgid "Raid search"
+msgstr "Sagasu"
+
+msgid "Raid search again"
+msgstr "Mou hitohako"
+
+msgid "Raid search leave"
+msgstr "Mitsuketa mono o motte saru"
+
+msgid "Raid found %{name} %{item}"
+msgstr "%{name} ga mitsuketa: %{item}. Mada sagaseru."
+
+msgid "Raid left"
+msgstr "Butai wa mitsuketa mono o motte saru."
+
+msgid "Raid caught %{name} %{stat} %{value}"
+msgstr "%{name} ga hako o asatte iru aida ni utareta: %{stat} −%{value}. Mou iku jikan da."
+
+msgid "Raid abandoned_store"
+msgstr "Haikyo no mise"
+
+msgid "Raid abandoned_store text"
+msgstr "Interchange no arasareta OLI. Kauntaa no shita ni hako ga mada takusan — demo oto wa tooku made hibiku."
+
+msgid "Raid dorm_room"
+msgstr "Ryou no heya"
+
+msgid "Raid dorm_room text"
+msgstr "Customs no ryou, doa ga sukoshi aite iru. Teeburu, kaban, matto — itsumademo sagaseru ga, rouka no ashioto ga chikazuite kuru."

@@ -1442,13 +1442,13 @@ msgid "Raid weather storm"
 msgstr "Гроза"
 
 msgid "Raid kind fight"
-msgstr "Драться"
+msgstr "драться"
 
 msgid "Raid kind search"
-msgstr "Искать"
+msgstr "искать"
 
 msgid "Raid kind hide"
-msgstr "Прятаться"
+msgstr "прятаться"
 
 msgid "Raid labs keycard"
 msgstr "Открыть ключ-картой"
@@ -1692,3 +1692,99 @@ msgstr "Крикнуть «Свой!»"
 
 msgid "Raid chatty_scav strength"
 msgstr "Пойти на голос"
+
+msgid "Raid kind strength"
+msgstr "сила"
+
+msgid "Raid kind agility"
+msgstr "ловкость"
+
+msgid "Raid kind luck"
+msgstr "удача"
+
+msgid "Raid easier %{list}"
+msgstr "легче: %{list}"
+
+msgid "Raid harder %{list}"
+msgstr "тяжелее: %{list}"
+
+msgid "Raid traits"
+msgstr "Характеры"
+
+msgid "Raid trait greedy"
+msgstr "Жадный"
+
+msgid "Raid trait greedy about"
+msgstr "иногда сам лезет за добычей, что бы ни решил отряд"
+
+msgid "Raid trait coward"
+msgstr "Трус"
+
+msgid "Raid trait coward about"
+msgstr "иногда отказывается от смертельного риска, и идёт следующий"
+
+msgid "Raid trait chatty"
+msgstr "Болтун"
+
+msgid "Raid trait chatty about"
+msgstr "иногда уболтает диких, а иногда выдаст отряд, когда надо прятаться"
+
+msgid "Raid trait lucky"
+msgstr "Везунчик"
+
+msgid "Raid trait lucky about"
+msgstr "иногда проваленная проверка всё-таки удаётся"
+
+msgid "Raid trait psycho"
+msgstr "Псих"
+
+msgid "Raid trait psycho about"
+msgstr "иногда сам бросается в драку"
+
+msgid "Raid quirk greedy %{name}"
+msgstr "%{name} не удержался и полез за добычей."
+
+msgid "Raid quirk psycho %{name}"
+msgstr "%{name} с криком бросился в драку."
+
+msgid "Raid quirk coward %{name}"
+msgstr "%{name} струсил и спрятался за спины."
+
+msgid "Raid quirk chatty %{name}"
+msgstr "%{name} болтал без умолку — отряд услышали."
+
+msgid "Raid quirk chatty_scav %{name}"
+msgstr "%{name} заболтал диких."
+
+msgid "Raid quirk lucky %{name}"
+msgstr "%{name} — везунчик: пронесло."
+
+msgid "Raid search"
+msgstr "Обыскать"
+
+msgid "Raid search again"
+msgstr "Ещё один ящик"
+
+msgid "Raid search leave"
+msgstr "Уйти с тем, что есть"
+
+msgid "Raid found %{name} %{item}"
+msgstr "%{name} нашёл: %{item}. Можно поискать ещё."
+
+msgid "Raid left"
+msgstr "Отряд уходит с тем, что нашёл."
+
+msgid "Raid caught %{name} %{stat} %{value}"
+msgstr "Пока %{name} копался в ящиках, его подстрелили: %{stat} −%{value}. Пора уходить."
+
+msgid "Raid abandoned_store"
+msgstr "Брошенный магазин"
+
+msgid "Raid abandoned_store text"
+msgstr "Разграбленный ОЛИ на Развязке. Под прилавками ещё полно коробок — но шум здесь разносится далеко."
+
+msgid "Raid dorm_room"
+msgstr "Комната в общаге"
+
+msgid "Raid dorm_room text"
+msgstr "Общага на Таможне, дверь приоткрыта. Тумбочки, сумки, матрасы — искать можно долго, только шаги в коридоре всё ближе."

@@ -47,7 +47,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert members(lv) == 5
     assert has_element?(lv, "#raid-event-0")
     assert render(lv) =~ ~r/Встреча 1 из 1[0-3]/
-    assert lv |> element("#raid-karma") |> render() =~ "Карма у диких: 0"
+    assert has_element?(lv, "#raid-world")
 
     lv |> element("#raid-option-0") |> render_click()
     assert has_element?(lv, "#raid-outcome-1")
@@ -258,7 +258,9 @@ defmodule NeuroScavWeb.RaidLiveTest do
     for locale <- ~w(ru en de ja), item <- NeuroScav.Raid.loot() do
       Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
         msgid = "Item #{item}"
-        assert Gettext.gettext(NeuroScavWeb.Gettext, msgid) != msgid, "#{locale}: #{msgid}"
+
+        assert Gettext.gettext(NeuroScavWeb.Gettext, msgid, list: "X") != msgid,
+               "#{locale}: #{msgid}"
       end)
     end
   end
@@ -323,11 +325,30 @@ defmodule NeuroScavWeb.RaidLiveTest do
     msgids =
       Enum.map(Map.keys(catalog.weathers), &"Raid weather #{&1}") ++
         Enum.map(Keyword.keys(catalog.daytimes), &"Raid daytime #{&1}") ++
-        Enum.map(~w(fight search hide), &"Raid kind #{&1}")
+        Enum.map(~w(fight search hide strength agility luck), &"Raid kind #{&1}") ++
+        ["Raid easier %{list}", "Raid harder %{list}"]
 
     for locale <- ~w(ru en de ja), msgid <- msgids do
       Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
-        assert Gettext.gettext(NeuroScavWeb.Gettext, msgid) != msgid, "#{locale}: #{msgid}"
+        assert Gettext.gettext(NeuroScavWeb.Gettext, msgid, list: "X") != msgid,
+               "#{locale}: #{msgid}"
+      end)
+    end
+  end
+
+  test "every trait, what it does and the search are translated in every language" do
+    msgids =
+      ["Raid traits", "Raid search", "Raid search again", "Raid search leave", "Raid left"] ++
+        ["Raid found %{name} %{item}", "Raid caught %{name} %{stat} %{value}"] ++
+        Enum.flat_map(NeuroScav.Raid.traits(), &["Raid trait #{&1}", "Raid trait #{&1} about"]) ++
+        Enum.map(~w(greedy psycho coward chatty chatty_scav lucky), &"Raid quirk #{&1} %{name}")
+
+    for locale <- ~w(ru en de ja), msgid <- msgids do
+      Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
+        told =
+          Gettext.gettext(NeuroScavWeb.Gettext, msgid, name: "X", item: "Y", stat: "Z", value: 1)
+
+        refute told =~ "Raid ", "#{locale}: #{msgid}"
       end)
     end
   end
@@ -392,7 +413,8 @@ defmodule NeuroScavWeb.RaidLiveTest do
         retreat: false,
         follow_up: nil,
         karma: 0,
-        used: nil
+        used: nil,
+        quirk: nil
       }
 
       {lv, _raid} =
@@ -446,7 +468,20 @@ defmodule NeuroScavWeb.RaidLiveTest do
              ru("Raid spared %{name} %{item}", name: name, item: ru("Item propital"))},
             {%{outcome: :wound, used: :medkit}, ru("Raid used %{item}", item: ru("Item medkit"))},
             {%{event: :labs, outcome: :loot, item: :sj6, used: :keycard},
-             ru("Raid used %{item}", item: ru("Item keycard"))}
+             ru("Raid used %{item}", item: ru("Item keycard"))},
+            {%{event: :abandoned_store, outcome: :found, stat: :luck, item: :sj6},
+             ru("Raid found %{name} %{item}", name: name, item: sj6)},
+            {%{event: :abandoned_store, outcome: :left, member: nil, stat: nil}, ru("Raid left")},
+            {%{event: :abandoned_store, outcome: :wound, stat: :luck},
+             ru("Raid caught %{name} %{stat} %{value}",
+               name: name,
+               stat: ru("Stat luck"),
+               value: 10
+             )},
+            {%{event: :office, outcome: :loot, item: :sj6, quirk: {:greedy, name}},
+             ru("Raid quirk greedy %{name}", name: name)},
+            {%{outcome: :pass, quirk: {:chatty_scav, "Дед Мороз"}},
+             ru("Raid quirk chatty_scav %{name}", name: "Дед Мороз")}
           ] do
         assert told(conn, changes) =~ words, inspect(changes)
       end
@@ -477,13 +512,45 @@ defmodule NeuroScavWeb.RaidLiveTest do
       assert told_ways |> Enum.uniq() |> length() > 3
     end
 
-    test "the world is told under the route, with what it adds to checks", %{conn: conn} do
+    test "the world is told in a line: the conditions, then the checks they ease and harden",
+         %{conn: conn} do
       {lv, _raid} = raid_page(conn, [:pmc], &%{&1 | weather: :fog, daytime_start: 3})
       world = lv |> element("#raid-world") |> render()
 
       assert world =~ ru("Raid daytime night") and world =~ ru("Raid weather fog")
-      assert world =~ ru("Raid kind hide") <> " +10"
-      assert world =~ ru("Stat strength") <> " −10"
+      # the night: hiding +10, fights and searches −5; fog: agility +5, strength −10
+      assert world =~ "легче: прятаться, ловкость; тяжелее: драться, искать, сила"
+      refute world =~ "+" or world =~ "−"
+
+      {lv, _raid} = raid_page(conn, [:pmc], &%{&1 | weather: :clear, daytime_start: 0})
+      world = lv |> element("#raid-world") |> render()
+      assert world =~ ru("Raid daytime morning") <> " · 🌤 " <> ru("Raid weather clear")
+      assert world =~ "— легче: искать"
+      refute world =~ "тяжелее"
+    end
+
+    test "a member's trait shows on the card, all of them in the legend", %{conn: conn} do
+      {lv, raid} = raid_page(conn, [:pmc])
+      member = Enum.at(raid.squad, 1)
+      tip = ru("Raid trait #{member.trait}") <> ": " <> ru("Raid trait #{member.trait} about")
+
+      assert has_element?(lv, ~s(#raid-member-trait-1[data-tip="#{tip}"]))
+      legend = lv |> element("#raid-legend-traits") |> render()
+      for trait <- NeuroScav.Raid.traits(), do: assert(legend =~ ru("Raid trait #{trait}"))
+    end
+
+    test "a search offers one more look, riskier every time, or leaving", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:abandoned_store, :pmc])
+      search = lv |> element("#raid-option-0") |> render()
+      assert search =~ ru("Raid search") and search =~ "%"
+      assert lv |> element("#raid-option-1") |> render() =~ ru("Raid search leave")
+
+      {lv, _raid} =
+        raid_page(conn, [:abandoned_store, :pmc], &NeuroScav.Raid.choose(&1, 0, 1, :sj6))
+
+      assert lv |> element("#raid-option-0") |> render() =~ ru("Raid search again")
+      assert lv |> element("#raid-event-1 .wheel-panel-header") |> render() =~ "Встреча 1 из 2"
+      assert lv |> element("#raid-outcome-1") |> render() =~ ru("Item sj6")
     end
 
     test "a key shows what it needs, and who'd use it", %{conn: conn} do
@@ -611,13 +678,16 @@ defmodule NeuroScavWeb.RaidLiveTest do
                ru("Raid #{second}")
     end
 
-    test "karma shows under the route and in the outcome", %{conn: conn} do
-      {lv, _raid} = raid_page(conn, [:wounded, :pmc])
-      assert lv |> element("#raid-karma") |> render() =~ "Карма у диких: 0"
+    test "karma shows at the scavs' events only, and in the outcome", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:pmc])
+      refute has_element?(lv, "#raid-karma")
 
-      # helping a scav counts whatever the roll
+      {lv, _raid} = raid_page(conn, [:wounded, :toll])
+      assert lv |> element("#raid-event-0 #raid-karma") |> render() =~ "Карма у диких: 0"
+
+      # helping a scav counts whatever the roll; the next event is the scavs' too
       lv |> element("#raid-option-0") |> render_click()
-      assert lv |> element("#raid-karma.raid-karma-good") |> render() =~ "+1"
+      assert lv |> element("#raid-event-1 #raid-karma.raid-karma-good") |> render() =~ "+1"
       assert lv |> element("#raid-outcome-1") |> render() =~ "Дикие это запомнят."
     end
 

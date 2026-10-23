@@ -21,6 +21,14 @@
                 {if member.alive,
                   do: Locale.get_text("Stats #{member.rarity}"),
                   else: gettext("Raid dead")}
+                <span
+                  id={"raid-member-trait-#{member.index}"}
+                  class="raid-icon raid-trait"
+                  data-tip={trait_tip(member.trait)}
+                  aria-label={trait_tip(member.trait)}
+                >
+                  {trait_icon(member.trait)}
+                </span>
               </p>
               <.card_stats card={member} bonus={Raid.loot_bonuses(@raid, member)} />
               <span
@@ -48,21 +56,11 @@
             class={["raid-dot", route_dot(@raid, index)]}
           ></span>
         </div>
-        <p
-          id="raid-karma"
-          class={[
-            "raid-karma",
-            @raid.karma > 0 && "raid-karma-good",
-            @raid.karma < 0 && "raid-karma-bad"
-          ]}
-        >
-          {karma_text(@raid.karma)}
-        </p>
         <p id="raid-world" class="raid-world">
           {world_text(@raid)}
-          <small :if={world_effects(@raid) != ""} class="raid-world-effects">
-            {world_effects(@raid)}
-          </small>
+          <span :if={world_effects(@raid) != ""} class="raid-world-effects">
+            — {world_effects(@raid)}
+          </span>
         </p>
 
         <%!-- a new turn is a new element (a stall too), so the outcome plays its entrance again --%>
@@ -71,6 +69,9 @@
           id={"raid-outcome-#{@raid.turn}"}
           class={["raid-outcome", outcome_class(@raid.last)]}
         >
+          <span :if={quirk_note(@raid.last)} class="raid-quirk">
+            {quirk_note(@raid.last)}
+          </span>
           {outcome_text(@raid.last)}
           <span :if={@raid.last.follow_up} class="raid-follow-up">
             {gettext("Raid follow up")}
@@ -111,6 +112,18 @@
             </div>
             <div class="raid-event-body">
               <p class="raid-event-text">{event_text(event)}</p>
+              <%!-- karma eases luck checks at the scavs' events only, so it shows there --%>
+              <p
+                :if={Raid.scav?(event)}
+                id="raid-karma"
+                class={[
+                  "raid-karma",
+                  @raid.karma > 0 && "raid-karma-good",
+                  @raid.karma < 0 && "raid-karma-bad"
+                ]}
+              >
+                {karma_text(@raid.karma)}
+              </p>
               <button
                 :for={{option, index} <- Enum.with_index(Raid.options(@raid))}
                 id={"raid-option-#{index}"}
@@ -131,10 +144,13 @@
                   🔑 {item_name(option.key)} · {option.member.name}
                   <.icons option={option} />
                 </small>
+                <small :if={option.search}>
+                  {option.member.name} · {option.chance}% <.icons option={option} />
+                </small>
                 <small :if={option.path}>{event_text(option.path)}</small>
                 <small :if={
                   is_nil(option.stat) and is_nil(option.path) and is_nil(option.key) and
-                    not option.locked
+                    is_nil(option.search) and not option.locked
                 }>
                   {gettext("Raid safe")}
                   <.icons option={option} />

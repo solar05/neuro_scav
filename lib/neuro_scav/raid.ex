@@ -68,6 +68,20 @@ defmodule NeuroScav.Raid do
   squad takes something else, unless an event has nothing else. A crossroads
   path is neither.
 
+  A search (`search?/1`) has no check of its own: the luckiest member looks
+  through one more box, and one more, each look finding an item but riskier
+  than the last (`@search_danger`, then `@search_step` more each time); the
+  squad stays till it leaves (`:left`) or the searcher gets hurt and it moves
+  on. A look's outcome is `:found`, the looks so far are in `searched`.
+
+  Every member has a trait (`traits/0`), the same for a name every time, and
+  now and then (a choice's quirk roll within `@quirk_chance`) one acts on
+  their own, one at a choice (`last.quirk`): a greedy one goes for the loot
+  (one more box, too), a psycho for the fight, whatever the squad chose; a
+  coward leaves a deadly check to the next best one; a chatterbox talks scavs
+  round (a luck check at a scav event) or gives the squad away when it hides
+  (`@chatter`); a lucky one's failed check comes off after all.
+
   The events and the loot are in `NeuroScav.Raid.Catalog`.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
@@ -84,8 +98,9 @@ defmodule NeuroScav.Raid do
   it happened to; the `item` found, dropped or stolen; the `stat` checked;
   the `path` taken at a crossroads; whether it was a `retreat` (nil for a
   path); the event a chain brought (`follow_up`), the change of `karma` and
-  the item `used` (a key, or a consumable spent). A check by each names all
-  it beat in `member` (`:wounds` when they're more than one).
+  the item `used` (a key, or a consumable spent); the `quirk`, `{what,
+  name}`, when a member acted on their own. A check by each names all it beat
+  in `member` (`:wounds` when they're more than one).
   """
   @type last :: %{
           event: atom(),
@@ -98,7 +113,8 @@ defmodule NeuroScav.Raid do
           retreat: boolean() | nil,
           follow_up: atom() | nil,
           karma: integer(),
-          used: atom() | nil
+          used: atom() | nil,
+          quirk: {atom(), String.t()} | nil
         }
   @last %{
     event: nil,
@@ -111,13 +127,23 @@ defmodule NeuroScav.Raid do
     retreat: nil,
     follow_up: nil,
     karma: 0,
-    used: nil
+    used: nil,
+    quirk: nil
   }
 
   # the events and the loot, see NeuroScav.Raid.Catalog
   @catalog Catalog.compiled()
   @specs @catalog.specs
   @crossroads @catalog.crossroads
+  @searches @catalog.searches
+  # a search: the first look's danger (%), and what each next one adds
+  @search_danger 10
+  @search_step 15
+  @traits @catalog.traits
+  # a member acts on their own when a choice's quirk roll is within it
+  @quirk_chance 25
+  # how much a chatterbox eases a talk with scavs or hardens hiding
+  @chatter 15
   @bosses @catalog.bosses
   @trophies @catalog.trophies
   @weights @catalog.weights
@@ -161,6 +187,8 @@ defmodule NeuroScav.Raid do
   @base_share 60
 
   @steps 10..13
+  # a search's look, as an option: luck isn't checked, a box comes or a wound
+  @search {:luck, 0, :found, :wound}
   # retreats in a row a squad may make: then it has to take a risk
   @retreat_limit 2
   # an option with no check: a safe one, a key or a crossroads path
@@ -173,6 +201,8 @@ defmodule NeuroScav.Raid do
     path: nil,
     key: nil,
     mode: nil,
+    search: nil,
+    leave: false,
     retreat: false,
     locked: false
   }
@@ -204,6 +234,22 @@ defmodule NeuroScav.Raid do
   @doc "Whether an event is a crossroads: its options are paths."
   @spec crossroads?(atom()) :: boolean()
   def crossroads?(event), do: event in @crossroads
+
+  @doc "Whether an event is a search: one more box till the squad leaves."
+  @spec search?(atom()) :: boolean()
+  def search?(event), do: event in @searches
+
+  @doc "Whether an event is the scavs': karma eases its luck checks."
+  @spec scav?(atom()) :: boolean()
+  def scav?(event), do: event in @scav_events
+
+  @doc "Every trait a member may have, see `trait/1`."
+  @spec traits() :: [atom()]
+  def traits, do: @traits
+
+  @doc "A member's trait: what they may do on their own, the same for a name every time."
+  @spec trait(String.t()) :: atom()
+  def trait(name), do: Enum.at(@traits, :erlang.phash2({name, :trait}, length(@traits)))
 
   @doc "The loot beating a boss brings, nil for any other event."
   @spec trophy(atom()) :: atom() | nil
@@ -294,7 +340,9 @@ defmodule NeuroScav.Raid do
       members
       |> Enum.with_index()
       |> Enum.map(fn {member, index} ->
-        member |> card() |> Map.merge(%{index: index, alive: true, wounds: 0})
+        member
+        |> card()
+        |> Map.merge(%{index: index, alive: true, wounds: 0, trait: trait(member.name)})
       end)
 
     forks = forks || draw_forks(route)
@@ -312,6 +360,7 @@ defmodule NeuroScav.Raid do
       spares: draw(@detours -- taken, @weights, @spares),
       step: 0,
       turn: 0,
+      searched: 0,
       stash: [],
       karma: 0,
       retreats: 0,
@@ -374,17 +423,34 @@ defmodule NeuroScav.Raid do
   the item in `key`, the member who has it and a sure chance, or is `locked`
   with nobody to have it. A `retreat` is `locked` once the squad has
   retreated `@retreat_limit` times in a row. At a crossroads each is an
-  option with no check and the event it leads to in `path`.
+  option with no check and the event it leads to in `path`. A search has
+  two: one more look (`search`, the looks so far) by the luckiest member,
+  and leaving (`leave: true`).
   """
   @spec options(map()) :: [map()]
   def options(raid) do
     event = event(raid)
 
-    case raid.forks do
-      %{^event => paths} ->
+    cond do
+      paths = raid.forks[event] ->
         Enum.map(paths, &%{@no_check | path: &1})
 
-      _forks ->
+      search?(event) ->
+        %{member: member, chance: chance} = search_plan(raid)
+
+        [
+          %{
+            @no_check
+            | search: raid.searched,
+              member: member,
+              chance: chance,
+              reward: :loot,
+              risk: :wound
+          },
+          %{@no_check | leave: true}
+        ]
+
+      true ->
         for option <- options_of(event) do
           %{
             option(raid, event, option)
@@ -403,22 +469,44 @@ defmodule NeuroScav.Raid do
   end
 
   defp option(raid, event, {stat, _difficulty, success, failure} = option) do
-    mode = Map.get(@modes, {event, stat}, :best)
-    by_chance = &chance(raid, event, option, &1)
-    alive = alive(raid)
-
-    member =
-      if mode == :best, do: Enum.max_by(alive, by_chance), else: Enum.min_by(alive, by_chance)
+    %{member: member, chance: chance} = plan(raid, event, option)
 
     %{
       @no_check
       | stat: stat,
-        mode: mode,
+        mode: mode(event, stat),
         member: member,
-        chance: by_chance.(member),
+        chance: chance,
         reward: success,
         risk: failure
     }
+  end
+
+  defp mode(event, stat), do: Map.get(@modes, {event, stat}, :best)
+
+  # the check an option makes: who makes it (by its mode unless given), the
+  # chance, and the quirk when a member acted on their own
+  defp plan(raid, event, option, member \\ nil) do
+    member = member || performer(raid, event, option, alive(raid))
+    %{option: option, member: member, chance: chance(raid, event, option, member), quirk: nil}
+  end
+
+  # the one of `members` to make a check: the best at it, or the worst
+  defp performer(raid, event, {stat, _difficulty, _success, _failure} = option, members) do
+    by_chance = &chance(raid, event, option, &1)
+
+    if mode(event, stat) == :best,
+      do: Enum.max_by(members, by_chance),
+      else: Enum.min_by(members, by_chance)
+  end
+
+  # A search's look, by the luckiest unless given: a box found or a wound on
+  # luck, the danger growing with every look; the time of day eases it or not.
+  defp search_plan(raid, member \\ nil) do
+    member = member || Enum.max_by(alive(raid), &with_loot(raid, &1, :luck))
+    daytime = Map.get(world(raid).daytime_kinds, :search, 0)
+    chance = 100 - @search_danger - @search_step * raid.searched + daytime
+    %{option: @search, member: member, chance: chance |> max(5) |> min(95), quirk: nil}
   end
 
   # a member's chance at a check: their stat with their loot, minus the
@@ -491,13 +579,15 @@ defmodule NeuroScav.Raid do
 
   @doc """
   Takes option `index` of the current event: a check succeeds when `roll`
-  (1..100) is within its chance; the loot found is `item`. `last` (`t:last/0`)
-  holds what happened, for the page to tell. A locked option changes nothing.
+  (1..100) is within its chance; the loot found is `item`. A member acts on
+  their own when `quirk` (1..100) is within `@quirk_chance`: by default
+  nobody does, so a raid stays predictable. `last` (`t:last/0`) holds what
+  happened, for the page to tell. A locked option changes nothing.
   """
-  @spec choose(map(), non_neg_integer(), 1..100, atom()) :: map()
-  def choose(raid, index, roll, item \\ random_item()) do
+  @spec choose(map(), non_neg_integer(), 1..100, atom(), 1..100) :: map()
+  def choose(raid, index, roll, item \\ random_item(), quirk \\ 100) do
     event = event(raid)
-    safe = %{@last | event: event, outcome: :safe, retreat: true}
+    quirky = quirk <= @quirk_chance
 
     case event && pick(raid, event, index) do
       nil ->
@@ -505,25 +595,114 @@ defmodule NeuroScav.Raid do
 
       {:path, path} ->
         route = List.insert_at(raid.route, raid.step + 1, path)
-        step(%{raid | route: route}, %{safe | outcome: :path, path: path, retreat: nil})
+        step(%{raid | route: route}, %{@last | event: event, outcome: :path, path: path})
 
-      :safe ->
-        step(raid, safe)
+      picked ->
+        case quirky && takeover(raid, event, picked) do
+          %{} = plan -> check(raid, event, plan, roll, item, false)
+          _none -> act(raid, event, picked, roll, item, quirky)
+        end
+    end
+  end
 
-      {:key, key, success} ->
-        holder = holder(raid, key)
+  defp act(raid, event, :safe, _roll, _item, _quirky),
+    do: step(raid, %{@last | event: event, outcome: :safe, retreat: true})
 
-        settle(raid, success, holder, item, %{
-          safe
-          | outcome: success,
-            member: holder.name,
-            index: holder.index,
-            retreat: false,
-            used: key
-        })
+  defp act(raid, event, :leave, _roll, _item, _quirky),
+    do: step(raid, %{@last | event: event, outcome: :left})
 
-      option ->
-        check(raid, event, option, roll, item)
+  defp act(raid, event, :search, roll, item, quirky),
+    do: check(raid, event, search_plan(raid), roll, item, quirky)
+
+  defp act(raid, event, {:key, key, success}, _roll, item, _quirky) do
+    holder = holder(raid, key)
+
+    settle(raid, success, holder, item, %{
+      @last
+      | event: event,
+        outcome: success,
+        member: holder.name,
+        index: holder.index,
+        retreat: false,
+        used: key
+    })
+  end
+
+  defp act(raid, event, {stat, _difficulty, _success, _failure} = option, roll, item, quirky) do
+    cond do
+      mode(event, stat) == :each ->
+        check_each(raid, event, option, roll)
+
+      quirky ->
+        check(raid, event, twist(raid, event, plan(raid, event, option)), roll, item, true)
+
+      true ->
+        check(raid, event, plan(raid, event, option), roll, item, false)
+    end
+  end
+
+  # the first alive member with the trait, nil when there's none
+  defp quirky(raid, trait), do: Enum.find(alive(raid), &(&1.trait == trait))
+
+  # A greedy one goes for the loot (one more box rather than leaving, too), a
+  # psycho for the fight, whatever the squad chose: the check they make instead.
+  defp takeover(raid, _event, :leave) do
+    if greedy = quirky(raid, :greedy),
+      do: %{search_plan(raid, greedy) | quirk: {:greedy, greedy.name}}
+  end
+
+  defp takeover(raid, event, picked) do
+    Enum.find_value(
+      [
+        greedy: &match?({_stat, _difficulty, :loot, _failure}, &1),
+        psycho: &match?({:strength, _, _, _}, &1)
+      ],
+      fn {trait, target?} ->
+        member = quirky(raid, trait)
+
+        option =
+          Enum.find(options_of(event), &(target?.(&1) and not locked?(raid, event, &1)))
+
+        if member && option && option != picked,
+          do: %{plan(raid, event, option, member) | quirk: {trait, member.name}}
+      end
+    )
+  end
+
+  # what a member does on their own at a check, if anything
+  defp twist(raid, event, plan),
+    do: coward(raid, event, plan) || chatter(raid, event, plan) || plan
+
+  # a coward leaves a deadly check to the next best one
+  defp coward(raid, event, %{option: {stat, _difficulty, _success, failure} = option} = plan) do
+    coward = plan.member
+    others = Enum.reject(alive(raid), &(&1.index == coward.index))
+
+    if coward.trait == :coward and failure == :lose and others != [] and
+         mode(event, stat) == :best,
+       do: %{
+         plan(raid, event, option, performer(raid, event, option, others))
+         | quirk: {:coward, coward.name}
+       }
+  end
+
+  # a chatterbox talks scavs round (a luck check at their event) or gives the
+  # squad away when it hides
+  defp chatter(raid, event, %{option: {stat, _difficulty, _success, _failure} = option} = plan) do
+    chatty = quirky(raid, :chatty)
+
+    cond do
+      chatty == nil ->
+        nil
+
+      stat == :luck and scav?(event) ->
+        %{plan | chance: min(plan.chance + @chatter, 95), quirk: {:chatty_scav, chatty.name}}
+
+      kind(event, option) == :hide ->
+        %{plan | chance: max(plan.chance - @chatter, 5), quirk: {:chatty, chatty.name}}
+
+      true ->
+        nil
     end
   end
 
@@ -535,6 +714,8 @@ defmodule NeuroScav.Raid do
     end
   end
 
+  defp pick(_raid, event, index) when event in @searches, do: Enum.at([:search, :leave], index)
+
   defp pick(raid, event, index) do
     option = Enum.at(options_of(event), index)
     if option && not locked?(raid, event, option), do: option
@@ -543,27 +724,30 @@ defmodule NeuroScav.Raid do
   # an event's options as listed, none when there's no event
   defp options_of(event), do: get_in(@specs, [event, :options]) || []
 
-  defp check(raid, event, {stat, _difficulty, success, failure} = option, roll, item) do
-    %{member: member, chance: chance, mode: mode} = option(raid, event, option)
-    last = %{@last | event: event, stat: stat, retreat: retreat?(option)}
+  # A check succeeds when the roll is within the chance; a lucky one's failed
+  # one comes off after all when nobody else acted on their own (`lucky`).
+  defp check(raid, event, %{option: option, member: member} = plan, roll, item, lucky) do
+    {stat, _difficulty, success, failure} = option
+    lucky = lucky and plan.quirk == nil and member.trait == :lucky and roll > plan.chance
+    outcome = if roll <= plan.chance or lucky, do: success, else: failure
 
-    if mode == :each do
-      check_each(raid, event, option, roll, last)
-    else
-      outcome = if roll <= chance, do: success, else: failure
-
-      settle(raid, outcome, member, item, %{
-        last
-        | outcome: outcome,
-          member: member.name,
-          index: member.index
-      })
-    end
+    settle(raid, outcome, member, item, %{
+      @last
+      | event: event,
+        stat: stat,
+        retreat: retreat?(option),
+        outcome: outcome,
+        member: member.name,
+        index: member.index,
+        quirk: if(lucky, do: {:lucky, member.name}, else: plan.quirk)
+    })
   end
 
   # one roll against everyone's chance: the ones it beats are wounded (the
   # catalog has an each check pass or wound)
-  defp check_each(raid, event, option, roll, last) do
+  defp check_each(raid, event, {stat, _difficulty, _success, _failure} = option, roll) do
+    last = %{@last | event: event, stat: stat, retreat: retreat?(option)}
+
     case for member <- alive(raid), roll > chance(raid, event, option, member), do: member do
       [] ->
         step(raid, %{last | outcome: :pass})
@@ -631,7 +815,8 @@ defmodule NeuroScav.Raid do
     end
   end
 
-  defp settle(raid, :loot, member, item, last),
+  # a look at a search finds loot like any other
+  defp settle(raid, found, member, item, last) when found in [:loot, :found],
     do:
       step(%{raid | stash: raid.stash ++ [%{item: item, owner: member.index}]}, %{
         last
@@ -771,9 +956,10 @@ defmodule NeuroScav.Raid do
       raid
       | route: route,
         squad: Enum.map(raid.squad, &bleed/1),
-        # a stall keeps the squad where it is
-        step: if(last.outcome == :stall, do: raid.step, else: raid.step + 1),
+        # a stall keeps the squad where it is, so does a look at a search
+        step: if(last.outcome in [:stall, :found], do: raid.step, else: raid.step + 1),
         turn: raid.turn + 1,
+        searched: if(last.outcome == :found, do: raid.searched + 1, else: 0),
         karma: karma,
         retreats: retreats(raid.retreats, last.retreat),
         last: %{last | follow_up: follow_up, karma: karma - raid.karma}
