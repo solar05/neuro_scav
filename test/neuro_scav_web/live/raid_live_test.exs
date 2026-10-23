@@ -18,12 +18,19 @@ defmodule NeuroScavWeb.RaidLiveTest do
       |> LazyHTML.query(".raid-member")
       |> Enum.count()
 
-  # takes the first option until the raid ends
+  # takes the first option there is to take (a locked retreat isn't) until the raid ends
   defp finish(view) do
     if has_element?(view, "#raid-end") do
       view
     else
-      view |> element("#raid-option-0") |> render_click()
+      [id | _open] =
+        view
+        |> render()
+        |> LazyHTML.from_fragment()
+        |> LazyHTML.query(".raid-option:not([disabled])")
+        |> LazyHTML.attribute("id")
+
+      view |> element("##{id}") |> render_click()
       finish(view)
     end
   end
@@ -51,6 +58,34 @@ defmodule NeuroScavWeb.RaidLiveTest do
     lv |> element("#btn-raid-again") |> render_click()
     assert has_element?(lv, "#raid-event-0")
     refute has_element?(lv, ".raid-member-lost")
+  end
+
+  test "a late or double click doesn't choose for the next event", %{conn: conn} do
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+    lv |> element("#btn-raid-recruit") |> render_click()
+    lv |> element("#raid-option-0") |> render_click()
+    assert has_element?(lv, "#raid-outcome-1")
+
+    # a click made at the first event arrives once the squad has moved on
+    render_click(lv, "choose", %{"index" => "0", "step" => "0"})
+    refute has_element?(lv, "#raid-outcome-2")
+  end
+
+  test "a reconnect picks the raid in progress up again, a finished one it doesn't",
+       %{conn: conn} do
+    conn = init_test_session(conn, %{"user_id" => "raid-#{System.unique_integer()}"})
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+    lv |> element("#btn-raid-recruit") |> render_click()
+    lv |> element("#raid-option-0") |> render_click()
+    squad = lv |> element("#raid-squad") |> render()
+
+    {:ok, again, _html} = live(conn, ~p"/raid")
+    assert has_element?(again, "#raid-outcome-1")
+    assert again |> element("#raid-squad") |> render() == squad
+
+    finish(again)
+    {:ok, _fresh, html} = live(conn, ~p"/raid")
+    assert html =~ "Набрать отряд"
   end
 
   test "takes the squad from the Team page link, rarities worked out again", %{conn: conn} do

@@ -133,7 +133,7 @@ defmodule NeuroScav.RaidTest do
         battle = BattleRoom.card(member).stats[stat] - BattleRoom.rarity_bonus(member.rarity)
         raid = Raid.card(member).stats[stat] - BattleRoom.rarity_bonus(member.rarity)
 
-        assert raid == max(div(battle * 70, 100), 1)
+        assert raid == max(div(battle * 60, 100), 1)
       end
 
       gnome = %{name: "Гном", rarity: :gnome}
@@ -344,6 +344,13 @@ defmodule NeuroScav.RaidTest do
       assert Raid.trophy_item?(:komar_wings)
     end
 
+    test "every gnome is after the loot: a failure there may cost an item" do
+      for gnome <- [:gnome_thief, :gnome_trader, :gnome_ambush, :gnome_pmc] do
+        risks = @squad |> Raid.new([gnome]) |> Raid.options() |> Enum.map(& &1.risk)
+        assert :drop in risks, "#{gnome}"
+      end
+    end
+
     test "the gnome thief steals the last item on a failure, whichever way the squad tries" do
       for index <- [0, 1] do
         raid = @squad |> Raid.new([:trunk, :gnome_thief, :pmc]) |> Raid.choose(0, 1, :rooster)
@@ -448,6 +455,43 @@ defmodule NeuroScav.RaidTest do
       raid = Raid.choose(raid, 0, 100)
       refute Raid.over?(raid)
       assert Raid.event(raid) == path
+    end
+  end
+
+  describe "retreats" do
+    defp locks(raid), do: raid |> Raid.options() |> Enum.map(& &1.locked)
+
+    test "after two in a row the retreats are locked until the squad takes a risk" do
+      assert Raid.retreat_limit() == 2
+      raid = Raid.new(@squad, [:office, :office, :axeman, :office])
+
+      # the safe option twice
+      raid = raid |> Raid.choose(1, 1) |> Raid.choose(1, 1)
+      assert raid.retreats == 2
+
+      # fists or running from the hatchet: running is a retreat, and it's locked
+      assert Enum.map(Raid.options(raid), & &1.retreat) == [false, true]
+      assert locks(raid) == [false, true]
+      assert Raid.choose(raid, 1, 1) == raid
+
+      raid = Raid.choose(raid, 0, 1, :sj6)
+      assert raid.retreats == 0
+      assert locks(raid) == [false, false]
+    end
+
+    test "an event with nothing but retreats stays open" do
+      raid =
+        @squad |> Raid.new([:office, :office, :toll]) |> Raid.choose(1, 1) |> Raid.choose(1, 1)
+
+      assert locks(raid) == [false, false]
+    end
+
+    test "a crossroads path counts neither way" do
+      raid = @squad |> Raid.new([:office, :fork_road, :pmc]) |> Raid.choose(1, 1)
+      raid = Raid.choose(raid, 0, 1)
+
+      assert %{outcome: :path} = raid.last
+      assert raid.retreats == 1
     end
   end
 end

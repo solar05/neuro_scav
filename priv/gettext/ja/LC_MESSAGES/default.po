@@ -1208,16 +1208,16 @@ msgstr "Harai nagara nigeru"
 msgid "Item komar_wings"
 msgstr "Ka no hane"
 
-msgid "Raid hatchling"
-msgstr "Hacchiringu"
+msgid "Raid axeman"
+msgstr "Ono-otoko"
 
-msgid "Raid hatchling text"
+msgid "Raid axeman text"
 msgstr "Hadaka no PMC ga ono wo motte sakebi nagara tsukkonde kuru. Kare ni ushinau mono wa nai, kimi-tachi ni wa subete aru."
 
-msgid "Raid hatchling strength"
+msgid "Raid axeman strength"
 msgstr "Suede de mukaeutsu"
 
-msgid "Raid hatchling agility"
+msgid "Raid axeman agility"
 msgstr "Ono kara nigeru"
 
 msgid "Raid cheater"
@@ -1321,3 +1321,63 @@ msgstr "Keri yaburu"
 
 msgid "Raid door_key luck"
 msgstr "Totte wo mawasu — aite iru kamo"
+
+msgid "Raid jaeger_quest"
+msgstr "Yeegaa no ninmu"
+
+msgid "Raid jaeger_quest text"
+msgstr "Yeegaa no irai: yoru, gasu masuku de, booto no soba ni kataashi de tachi, PM de yabanjin wo sannin taose."
+
+msgid "Raid jaeger_quest agility"
+msgstr "Subete no jouken wo mitasu"
+
+msgid "Raid bitcoin_farm"
+msgstr "Bittokoin faamu"
+
+msgid "Raid bitcoin_farm text"
+msgstr "Chikashitsu de gojuu-mai no gurafikku boodo no faamu ga unatte iru. Mamotte iru no wa, totemo shinkeishitsu na shottogan no yabanjin hitori."
+
+msgid "Raid bitcoin_farm strength"
+msgstr "Faamu wo ubau"
+
+msgid "Raid bitcoin_farm luck"
+msgstr "Kossori bittokoin wo kakiatsumeru"
+
+msgid "Raid gnome_trader"
+msgstr "Gnoomu no yami-shounin"
+
+msgid "Raid gnome_trader text"
+msgstr "Sebiro no gnoomu ga «hyaku-paasento ugoku» ruuto wo uru. Nedan wa kimi-tachi no aitemu hitotsu dake."
+
+msgid "Raid gnome_trader luck"
+msgstr "Minai de kau"
+
+msgid "Raid gnome_ambush"
+msgstr "Gnoomu no machibuse"
+
+msgid "Raid gnome_ambush text"
+msgstr "Shigemi kara Arutin herumetto no gnoomu ga gonin tobidasu. Ichiban chiisai no ga RPK wo hikizutte iru."
+
+msgid "Raid gnome_ambush strength"
+msgstr "Uchikaesu"
+
+msgid "Raid gnome_ambush agility"
+msgstr "Ryukku wo osaete nigeru"
+
+msgid "Raid gnome_pmc"
+msgstr "Gnoomu PMC"
+
+msgid "Raid gnome_pmc text"
+msgstr "Kanzen soubi no gnoomu PMC: kurasu roku no boudan-gu, koshi ni LEDX, se wa hiza made."
+
+msgid "Raid gnome_pmc strength"
+msgstr "Ruuto wo yusuri dasu"
+
+msgid "Raid gnome_pmc luck"
+msgstr "Sain wo tanomu"
+
+msgid "Raid retreat locked"
+msgstr "Mou nigerarenai — kiken wo okasu shika nai"
+
+msgid "Raid retreat legend %{limit}"
+msgstr "🏃 tettai: renzoku %{limit}-kai made"

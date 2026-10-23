@@ -15,6 +15,9 @@ defmodule Mix.Tasks.Raid.Sim do
   At every event a strategy picks an option:
 
   - `cautious` - the safe option when there is one, otherwise the best chance
+  - `careful` - the best worth, as a player would weigh it: the chance of what
+    a success brings against the cost of a failure (a death costs the most);
+    the safe option is worth nothing either way
   - `greedy` - the best chance, never the safe option
   - `random` - any option
 
@@ -29,7 +32,10 @@ defmodule Mix.Tasks.Raid.Sim do
 
   @requirements ["compile"]
 
-  @strategies ~w(cautious greedy random)
+  @strategies ~w(cautious careful greedy random)
+  # how the careful strategy weighs what a check may bring and cost
+  @gains %{loot: 1, train: 1, revive: 2, promote: 2, trophy: 3}
+  @costs %{lose: 3, wound: 1, drop: 1}
   @switches [
     runs: :integer,
     strategy: :string,
@@ -84,23 +90,51 @@ defmodule Mix.Tasks.Raid.Sim do
     end
   end
 
+  # an option that can't be taken leaves the raid where it was: better to fail
+  # loudly than to play the same event forever
   defp play(raid, strategy, log) do
     if Raid.over?(raid) do
       {raid, Enum.reverse(log)}
     else
-      raid = Raid.choose(raid, pick(strategy, Raid.options(raid)), :rand.uniform(100))
-      play(raid, strategy, [raid.last | log])
+      next = Raid.choose(raid, pick(strategy, Raid.options(raid)), :rand.uniform(100))
+
+      if next.step == raid.step,
+        do: Mix.raise("#{strategy} took an option that can't be taken at #{Raid.event(raid)}")
+
+      play(next, strategy, [next.last | log])
     end
   end
 
-  defp pick("cautious", options), do: Enum.find_index(options, &is_nil(&1.stat)) || best(options)
-  defp pick("greedy", options), do: best(options)
-  defp pick("random", options), do: Enum.random(0..(length(options) - 1))
+  defp pick("cautious", options) do
+    Enum.find_value(open(options), fn {option, index} -> is_nil(option.stat) && index end) ||
+      best(options)
+  end
 
-  # a crossroads has no check: its first path then
+  defp pick("careful", options) do
+    options
+    |> open()
+    |> Enum.max_by(fn {option, _index} -> worth(option) end)
+    |> elem(1)
+  end
+
+  defp pick("greedy", options), do: best(options)
+  defp pick("random", options), do: options |> open() |> Enum.random() |> elem(1)
+
+  # the options there are to take, with their indexes: a locked retreat isn't
+  defp open(options),
+    do: options |> Enum.with_index() |> Enum.reject(fn {option, _index} -> option.locked end)
+
+  # a safe option or a crossroads path brings and costs nothing
+  defp worth(%{stat: nil}), do: 0
+
+  defp worth(%{chance: chance, reward: reward, risk: risk}),
+    do: chance * Map.get(@gains, reward, 0) - (100 - chance) * Map.get(@costs, risk, 0)
+
+  # the best chance among the checks there are to take; a crossroads has no
+  # check: its first path then
   defp best(options) do
     options
-    |> Enum.with_index()
+    |> open()
     |> Enum.reject(fn {option, _index} -> is_nil(option.stat) end)
     |> Enum.max_by(fn {option, _index} -> option.chance end, fn -> {nil, 0} end)
     |> elem(1)

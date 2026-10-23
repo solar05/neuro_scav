@@ -1219,16 +1219,16 @@ msgstr "Back off, swatting"
 msgid "Item komar_wings"
 msgstr "Mosquito wings"
 
-msgid "Raid hatchling"
-msgstr "Hatchling"
+msgid "Raid axeman"
+msgstr "Axeman"
 
-msgid "Raid hatchling text"
+msgid "Raid axeman text"
 msgstr "A naked PMC with a hatchet charges at you, screaming. He has nothing to lose; you have everything."
 
-msgid "Raid hatchling strength"
+msgid "Raid axeman strength"
 msgstr "Meet him with fists"
 
-msgid "Raid hatchling agility"
+msgid "Raid axeman agility"
 msgstr "Run from the hatchet"
 
 msgid "Raid cheater"
@@ -1332,3 +1332,63 @@ msgstr "Kick it in"
 
 msgid "Raid door_key luck"
 msgstr "Try the handle — maybe it's open"
+
+msgid "Raid jaeger_quest"
+msgstr "Jaeger's task"
+
+msgid "Raid jaeger_quest text"
+msgstr "Jaeger wants three scavs killed with a PM — in a gas mask, at night, standing on one leg by the boat."
+
+msgid "Raid jaeger_quest agility"
+msgstr "Meet every condition"
+
+msgid "Raid bitcoin_farm"
+msgstr "Bitcoin farm"
+
+msgid "Raid bitcoin_farm text"
+msgstr "A farm of fifty graphics cards hums in the basement. One very nervous scav with a shotgun guards it."
+
+msgid "Raid bitcoin_farm strength"
+msgstr "Take the farm"
+
+msgid "Raid bitcoin_farm luck"
+msgstr "Scrape up a bitcoin on the quiet"
+
+msgid "Raid gnome_trader"
+msgstr "Gnome dealer"
+
+msgid "Raid gnome_trader text"
+msgstr "A gnome in a suit sells “one hundred percent working” loot. The price is just one of your items."
+
+msgid "Raid gnome_trader luck"
+msgstr "Buy without looking"
+
+msgid "Raid gnome_ambush"
+msgstr "Gnome ambush"
+
+msgid "Raid gnome_ambush text"
+msgstr "Five gnomes in Altyn helmets jump out of the bushes. The smallest one drags an RPK."
+
+msgid "Raid gnome_ambush strength"
+msgstr "Fight them off"
+
+msgid "Raid gnome_ambush agility"
+msgstr "Run, holding on to the backpack"
+
+msgid "Raid gnome_pmc"
+msgstr "Gnome PMC"
+
+msgid "Raid gnome_pmc text"
+msgstr "A gnome in full PMC gear: class 6 armor, a LEDX on his belt, knee-high."
+
+msgid "Raid gnome_pmc strength"
+msgstr "Shake the loot out of him"
+
+msgid "Raid gnome_pmc luck"
+msgstr "Ask for an autograph"
+
+msgid "Raid retreat locked"
+msgstr "No more running — time to take a risk"
+
+msgid "Raid retreat legend %{limit}"
+msgstr "🏃 a retreat: no more than %{limit} in a row"

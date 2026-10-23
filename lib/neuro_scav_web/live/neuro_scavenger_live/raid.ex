@@ -2,7 +2,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   use NeuroScavWeb, :live_view
   use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, Raid, ScavengersServer}
+  alias NeuroScav.{Locale, Raid, RaidStore, ScavengersServer}
 
   @max_name_length 40
   # what an option may bring and cost, shown on its button (legend under the options)
@@ -16,13 +16,42 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     if connected?(socket), do: Locale.setup_locale(locale)
     members = decode(params["team"])
 
+    socket =
+      assign(socket,
+        user_locale: locale,
+        user_id: session["user_id"],
+        members: members,
+        raid: nil
+      )
+
     {:ok,
-     assign(socket,
-       user_locale: locale,
-       members: members,
+     cond do
        # the route is random, so only once connected: the dead render would show another one
-       raid: if(connected?(socket) and members, do: Raid.new(members))
-     )}
+       not connected?(socket) -> socket
+       resumed = resumable(socket.assigns.user_id, members) -> assign(socket, resumed)
+       members -> assign_raid(socket, members, Raid.new(members))
+       true -> socket
+     end}
+  end
+
+  # what a reconnect picks up: the user's raid in progress, if it's this
+  # squad's (any squad's when the link brings none)
+  defp resumable(user_id, members) when is_binary(user_id) do
+    case RaidStore.get(user_id) do
+      %{members: saved, raid: raid} = resumed ->
+        if members in [nil, saved] and not Raid.over?(raid), do: resumed
+
+      nil ->
+        nil
+    end
+  end
+
+  defp resumable(_user_id, _members), do: nil
+
+  # every change of the raid is kept, so a reconnect picks it up
+  defp assign_raid(socket, members, raid) do
+    RaidStore.put(socket.assigns.user_id, members, raid)
+    assign(socket, members: members, raid: raid)
   end
 
   @doc "The raid page for a team: its names travel in the link, rarities are worked out again."
@@ -64,21 +93,25 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
       for _ <- 1..ScavengersServer.max_team_members(),
           do: ScavengersServer.generate_uncounted(socket.assigns.user_locale)
 
-    {:noreply, assign(socket, members: members, raid: Raid.new(members))}
+    {:noreply, assign_raid(socket, members, Raid.new(members))}
   end
 
   def handle_event("again", _params, %{assigns: %{members: members}} = socket)
       when members != nil,
-      do: {:noreply, assign(socket, :raid, Raid.new(members))}
+      do: {:noreply, assign_raid(socket, members, Raid.new(members))}
 
-  def handle_event("choose", %{"index" => index}, %{assigns: %{raid: raid}} = socket)
-      when raid != nil do
-    case Integer.parse(index) do
-      {index, ""} ->
-        {:noreply, assign(socket, :raid, Raid.choose(raid, index, :rand.uniform(100)))}
-
-      _invalid ->
-        {:noreply, socket}
+  # the click names the step it was made at: a late or a double one meant an
+  # event that's gone, and must not choose for the next one
+  def handle_event(
+        "choose",
+        %{"index" => index, "step" => step},
+        %{assigns: %{raid: %{step: current} = raid, members: members}} = socket
+      ) do
+    with {index, ""} <- Integer.parse(index),
+         {^current, ""} <- Integer.parse(step) do
+      {:noreply, assign_raid(socket, members, Raid.choose(raid, index, :rand.uniform(100)))}
+    else
+      _invalid_or_stale -> {:noreply, socket}
     end
   end
 
@@ -206,18 +239,15 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp outcome_text(%{outcome: :promote, member: name}),
     do: gettext("Raid promote %{name}", name: name)
 
-  # the gnome doesn't make anyone drop loot: he steals it
-  defp outcome_text(%{event: :gnome_thief, outcome: :drop, item: nil}),
-    do: gettext("Raid gnome stole nothing")
-
-  defp outcome_text(%{event: :gnome_thief, outcome: :drop, item: item}),
-    do: gettext("Raid gnome stole %{item}", item: item_name(item))
-
-  defp outcome_text(%{outcome: :drop, member: name, item: nil}),
-    do: gettext("Raid drop nothing %{name}", name: name)
-
-  defp outcome_text(%{outcome: :drop, member: name, item: item}),
-    do: gettext("Raid drop %{name} %{item}", name: name, item: item_name(item))
+  # gnomes don't make anyone drop loot: they steal it
+  defp outcome_text(%{outcome: :drop, event: event, member: name, item: item}) do
+    case {Raid.gnome?(event), item} do
+      {true, nil} -> gettext("Raid gnome stole nothing")
+      {true, item} -> gettext("Raid gnome stole %{item}", item: item_name(item))
+      {false, nil} -> gettext("Raid drop nothing %{name}", name: name)
+      {false, item} -> gettext("Raid drop %{name} %{item}", name: name, item: item_name(item))
+    end
+  end
 
   defp outcome_text(%{outcome: :loot, member: name, item: item}),
     do:
@@ -260,8 +290,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     end
   end
 
-  defp option_icons(%{reward: reward, risk: risk}),
-    do: [@reward_icons[reward], @risk_icons[risk]] |> Enum.reject(&is_nil/1) |> Enum.join(" ")
+  # a retreat is marked: only so many of them in a row
+  defp option_icons(%{reward: reward, risk: risk, retreat: retreat}),
+    do:
+      [@reward_icons[reward], @risk_icons[risk], if(retreat, do: "🏃")]
+      |> Enum.reject(&is_nil/1)
+      |> Enum.join(" ")
 
   # "10–13"
   defp steps_text, do: "#{Raid.steps().first}–#{Raid.steps().last}"

@@ -1219,16 +1219,16 @@ msgstr "Уйти, отмахиваясь"
 msgid "Item komar_wings"
 msgstr "Комариные крылья"
 
-msgid "Raid hatchling"
-msgstr "Хэтчлинг"
+msgid "Raid axeman"
+msgstr "Топорист"
 
-msgid "Raid hatchling text"
+msgid "Raid axeman text"
 msgstr "На вас с диким криком несётся голый ЧВК с топором. Терять ему нечего, а вам — всё."
 
-msgid "Raid hatchling strength"
+msgid "Raid axeman strength"
 msgstr "Встретить кулаками"
 
-msgid "Raid hatchling agility"
+msgid "Raid axeman agility"
 msgstr "Убегать от топора"
 
 msgid "Raid cheater"
@@ -1332,3 +1332,63 @@ msgstr "Выбить ногой"
 
 msgid "Raid door_key luck"
 msgstr "Подёргать ручку — вдруг открыто"
+
+msgid "Raid jaeger_quest"
+msgstr "Задание Егеря"
+
+msgid "Raid jaeger_quest text"
+msgstr "Егерь просит убить трёх диких из ПМ — в противогазе, ночью, стоя на одной ноге у лодки."
+
+msgid "Raid jaeger_quest agility"
+msgstr "Выполнить все условия"
+
+msgid "Raid bitcoin_farm"
+msgstr "Биткоин-ферма"
+
+msgid "Raid bitcoin_farm text"
+msgstr "В подвале гудит ферма на пятьдесят видеокарт. Охраняет её один очень нервный дикий с дробовиком."
+
+msgid "Raid bitcoin_farm strength"
+msgstr "Отобрать ферму"
+
+msgid "Raid bitcoin_farm luck"
+msgstr "Наскрести биткоин под шумок"
+
+msgid "Raid gnome_trader"
+msgstr "Гном-барыга"
+
+msgid "Raid gnome_trader text"
+msgstr "Гном в пиджаке торгует «стопроцентно рабочим» лутом. Цена — всего один ваш предмет."
+
+msgid "Raid gnome_trader luck"
+msgstr "Купить не глядя"
+
+msgid "Raid gnome_ambush"
+msgstr "Гномья засада"
+
+msgid "Raid gnome_ambush text"
+msgstr "Из кустов выскакивают пять гномов в касках «Алтын». Самый маленький тащит РПК."
+
+msgid "Raid gnome_ambush strength"
+msgstr "Отбиваться"
+
+msgid "Raid gnome_ambush agility"
+msgstr "Бежать, придерживая рюкзак"
+
+msgid "Raid gnome_pmc"
+msgstr "Гном-ЧВК"
+
+msgid "Raid gnome_pmc text"
+msgstr "Гном в полной экипировке ЧВК: шестой класс брони, ЛЕДХ на поясе, ростом по колено."
+
+msgid "Raid gnome_pmc strength"
+msgstr "Вытрясти из него лут"
+
+msgid "Raid gnome_pmc luck"
+msgstr "Попросить автограф"
+
+msgid "Raid retreat locked"
+msgstr "Хватит отступать — придётся рискнуть"
+
+msgid "Raid retreat legend %{limit}"
+msgstr "🏃 — отступление: подряд можно не больше %{limit}"

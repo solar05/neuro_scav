@@ -1208,16 +1208,16 @@ msgstr "Wedelnd zurückweichen"
 msgid "Item komar_wings"
 msgstr "Mückenflügel"
 
-msgid "Raid hatchling"
-msgstr "Hatchling"
+msgid "Raid axeman"
+msgstr "Axtmann"
 
-msgid "Raid hatchling text"
+msgid "Raid axeman text"
 msgstr "Ein nackter PMC mit Beil stürmt schreiend auf euch zu. Er hat nichts zu verlieren, ihr alles."
 
-msgid "Raid hatchling strength"
+msgid "Raid axeman strength"
 msgstr "Mit Fäusten empfangen"
 
-msgid "Raid hatchling agility"
+msgid "Raid axeman agility"
 msgstr "Vor dem Beil fliehen"
 
 msgid "Raid cheater"
@@ -1321,3 +1321,63 @@ msgstr "Eintreten"
 
 msgid "Raid door_key luck"
 msgstr "An der Klinke rütteln – vielleicht ist offen"
+
+msgid "Raid jaeger_quest"
+msgstr "Jaegers Auftrag"
+
+msgid "Raid jaeger_quest text"
+msgstr "Jaeger will drei Wildlinge mit einer PM erledigt sehen – mit Gasmaske, nachts, auf einem Bein am Boot."
+
+msgid "Raid jaeger_quest agility"
+msgstr "Alle Bedingungen erfüllen"
+
+msgid "Raid bitcoin_farm"
+msgstr "Bitcoin-Farm"
+
+msgid "Raid bitcoin_farm text"
+msgstr "Im Keller summt eine Farm aus fünfzig Grafikkarten. Bewacht wird sie von einem sehr nervösen Wildling mit Schrotflinte."
+
+msgid "Raid bitcoin_farm strength"
+msgstr "Die Farm übernehmen"
+
+msgid "Raid bitcoin_farm luck"
+msgstr "Heimlich einen Bitcoin abzweigen"
+
+msgid "Raid gnome_trader"
+msgstr "Gnom-Händler"
+
+msgid "Raid gnome_trader text"
+msgstr "Ein Gnom im Anzug verkauft „hundertprozentig funktionierende“ Beute. Preis: nur einer eurer Gegenstände."
+
+msgid "Raid gnome_trader luck"
+msgstr "Ungesehen kaufen"
+
+msgid "Raid gnome_ambush"
+msgstr "Gnom-Hinterhalt"
+
+msgid "Raid gnome_ambush text"
+msgstr "Fünf Gnome mit Altyn-Helmen springen aus dem Gebüsch. Der Kleinste schleppt ein RPK."
+
+msgid "Raid gnome_ambush strength"
+msgstr "Sich wehren"
+
+msgid "Raid gnome_ambush agility"
+msgstr "Rennen, den Rucksack festhalten"
+
+msgid "Raid gnome_pmc"
+msgstr "Gnom-PMC"
+
+msgid "Raid gnome_pmc text"
+msgstr "Ein Gnom in voller PMC-Ausrüstung: Schutzklasse 6, ein LEDX am Gürtel, kniehoch."
+
+msgid "Raid gnome_pmc strength"
+msgstr "Die Beute aus ihm schütteln"
+
+msgid "Raid gnome_pmc luck"
+msgstr "Um ein Autogramm bitten"
+
+msgid "Raid retreat locked"
+msgstr "Schluss mit dem Rückzug — jetzt heißt es Risiko"
+
+msgid "Raid retreat legend %{limit}"
+msgstr "🏃 ein Rückzug: höchstens %{limit} hintereinander"
