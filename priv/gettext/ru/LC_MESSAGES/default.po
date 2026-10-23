@@ -1005,3 +1005,99 @@ msgstr "С вышки видно всю карту. Залезть — знач�
 
 msgid "Raid tower agility"
 msgstr "Залезть наверх"
+
+msgid "Raid reshala_guards"
+msgstr "Свита Решалы"
+
+msgid "Raid reshala_guards text"
+msgstr "Охрана Решалы выяснила, кто положил их босса, и идёт по следу."
+
+msgid "Raid reshala_guards strength"
+msgstr "Отбиться"
+
+msgid "Raid reshala_guards agility"
+msgstr "Оторваться дворами"
+
+msgid "Raid ambush"
+msgstr "Засада"
+
+msgid "Raid ambush text"
+msgstr "Хозяева приманки не дождались гостей и пошли за вами сами."
+
+msgid "Raid ambush agility"
+msgstr "Уйти из-под огня"
+
+msgid "Raid ambush strength"
+msgstr "Перебить засаду"
+
+msgid "Raid debtor"
+msgstr "Должник"
+
+msgid "Raid debtor text"
+msgstr "Тот самый дикий от костра машет рукой: «Братишка, я добро помню!»"
+
+msgid "Raid debtor luck"
+msgstr "Попросить о помощи"
+
+msgid "Raid drop_hunters"
+msgstr "Охотники за аирдропом"
+
+msgid "Raid drop_hunters text"
+msgstr "Аирдроп видели все: к вам бегут те, кто не успел первым."
+
+msgid "Raid drop_hunters agility"
+msgstr "Унести груз"
+
+msgid "Raid drop_hunters strength"
+msgstr "Встретить огнём"
+
+msgid "Raid pmc_killer"
+msgstr "Убийца ЧВК"
+
+msgid "Raid pmc_killer text"
+msgstr "Тот, кто убил ЧВК, вернулся за его рюкзаком — и нашёл вас."
+
+msgid "Raid pmc_killer strength"
+msgstr "Принять бой"
+
+msgid "Raid pmc_killer luck"
+msgstr "Разойтись миром"
+
+msgid "Raid kaban"
+msgstr "Кабан"
+
+msgid "Raid kaban text"
+msgstr "Во дворе за бетонными блоками засел Кабан с пулемётом, вокруг его охрана."
+
+msgid "Raid kaban strength"
+msgstr "Штурмовать позицию"
+
+msgid "Raid kaban agility"
+msgstr "Прорваться дворами"
+
+msgid "Raid partisan"
+msgstr "Партизан"
+
+msgid "Raid partisan text"
+msgstr "Кусты шевелятся не от ветра: здесь охотится Партизан, на тропах его растяжки."
+
+msgid "Raid partisan agility"
+msgstr "Выследить его"
+
+msgid "Raid partisan luck"
+msgstr "Пройти его тропой"
+
+msgid "Raid priest"
+msgstr "Жрец культистов"
+
+msgid "Raid priest text"
+msgstr "В тумане горят свечи: Жрец ведёт культистов на ночной обряд."
+
+msgid "Raid priest luck"
+msgstr "Сорвать обряд"
+
+msgid "Raid priest agility"
+msgstr "Уйти в туман"
+
+msgid "Raid follow up"
+msgstr "Это ещё аукнется."

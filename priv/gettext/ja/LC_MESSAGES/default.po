@@ -994,3 +994,99 @@ msgstr "Tou kara mappu zentai ga mieru. Noboreba, minna ni mirareru."
 
 msgid "Raid tower agility"
 msgstr "Ue made noboru"
+
+msgid "Raid reshala_guards"
+msgstr "Reshara no goei"
+
+msgid "Raid reshala_guards text"
+msgstr "Reshara no goei ga, bosu wo taoshita yatsu wo tsukitome, ato wo otte kuru."
+
+msgid "Raid reshala_guards strength"
+msgstr "Mukaeutsu"
+
+msgid "Raid reshala_guards agility"
+msgstr "Uraniwa de furikiru"
+
+msgid "Raid ambush"
+msgstr "Machibuse"
+
+msgid "Raid ambush text"
+msgstr "Esa no mochinushi-tachi ga machikirezu, jibun de otte kita."
+
+msgid "Raid ambush agility"
+msgstr "Shasen kara nigeru"
+
+msgid "Raid ambush strength"
+msgstr "Machibuse wo tsubusu"
+
+msgid "Raid debtor"
+msgstr "Ongaeshi"
+
+msgid "Raid debtor text"
+msgstr "Takibi no yabanjin ga te wo furu: «Kyoudai, on wa wasurenee ze!»"
+
+msgid "Raid debtor luck"
+msgstr "Tasuke wo tanomu"
+
+msgid "Raid drop_hunters"
+msgstr "Eaa doroppu-gari"
+
+msgid "Raid drop_hunters text"
+msgstr "Eaa doroppu wa minna ga mite ita: maniawanakatta yatsura ga kocchi e hashitte kuru."
+
+msgid "Raid drop_hunters agility"
+msgstr "Nimotsu wo hakobidasu"
+
+msgid "Raid drop_hunters strength"
+msgstr "Juuka de mukaeru"
+
+msgid "Raid pmc_killer"
+msgstr "PMC-goroshi"
+
+msgid "Raid pmc_killer text"
+msgstr "PMC wo koroshita yatsu ga ryukku wo tori ni modori, kimi-tachi wo mitsuketa."
+
+msgid "Raid pmc_killer strength"
+msgstr "Tatakau"
+
+msgid "Raid pmc_killer luck"
+msgstr "Odayaka ni wakareru"
+
+msgid "Raid kaban"
+msgstr "Kaban"
+
+msgid "Raid kaban text"
+msgstr "Uraniwa no konkuriito burokku no kage ni kikanjuu wo kamaeta Kaban. Mawari ni goei."
+
+msgid "Raid kaban strength"
+msgstr "Jinchi wo kyoushuu suru"
+
+msgid "Raid kaban agility"
+msgstr "Uraniwa wo toppa suru"
+
+msgid "Raid partisan"
+msgstr "Paruchizan"
+
+msgid "Raid partisan text"
+msgstr "Shigemi ga yureru no wa kaze no sei ja nai: Paruchizan no kariba da. Michi goto ni wana no ito."
+
+msgid "Raid partisan agility"
+msgstr "Oitsumeru"
+
+msgid "Raid partisan luck"
+msgstr "Kare no michi wo tadoru"
+
+msgid "Raid priest"
+msgstr "Kyoudan no shisai"
+
+msgid "Raid priest text"
+msgstr "Kiri no naka de rousoku ga moeru: shisai ga kyoudan-in wo yoru no gishiki e michibiku."
+
+msgid "Raid priest luck"
+msgstr "Gishiki wo bougai suru"
+
+msgid "Raid priest agility"
+msgstr "Kiri ni magireru"
+
+msgid "Raid follow up"
+msgstr "Kore wa ato de hibiite kuru."

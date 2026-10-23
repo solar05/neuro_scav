@@ -994,3 +994,99 @@ msgstr "Vom Turm sieht man die ganze Karte. Wer hinaufklettert, wird gesehen."
 
 msgid "Raid tower agility"
 msgstr "Hinaufklettern"
+
+msgid "Raid reshala_guards"
+msgstr "Reshalas Wachen"
+
+msgid "Raid reshala_guards text"
+msgstr "Reshalas Wachen wissen jetzt, wer ihren Boss erledigt hat, und sind euch auf der Spur."
+
+msgid "Raid reshala_guards strength"
+msgstr "Abwehren"
+
+msgid "Raid reshala_guards agility"
+msgstr "In den Höfen abhängen"
+
+msgid "Raid ambush"
+msgstr "Hinterhalt"
+
+msgid "Raid ambush text"
+msgstr "Die Besitzer des Köders haben genug gewartet und kommen selbst hinter euch her."
+
+msgid "Raid ambush agility"
+msgstr "Raus aus der Schusslinie"
+
+msgid "Raid ambush strength"
+msgstr "Den Hinterhalt ausschalten"
+
+msgid "Raid debtor"
+msgstr "Der Schuldner"
+
+msgid "Raid debtor text"
+msgstr "Der Wildling vom Feuer winkt: „Bruder, ich vergesse keinen Gefallen!“"
+
+msgid "Raid debtor luck"
+msgstr "Um Hilfe bitten"
+
+msgid "Raid drop_hunters"
+msgstr "Airdrop-Jäger"
+
+msgid "Raid drop_hunters text"
+msgstr "Alle haben den Airdrop gesehen: Wer zu spät kam, rennt jetzt auf euch zu."
+
+msgid "Raid drop_hunters agility"
+msgstr "Die Fracht wegschleppen"
+
+msgid "Raid drop_hunters strength"
+msgstr "Mit Feuer empfangen"
+
+msgid "Raid pmc_killer"
+msgstr "Der Mörder des PMC"
+
+msgid "Raid pmc_killer text"
+msgstr "Wer den PMC getötet hat, kam für den Rucksack zurück – und fand euch."
+
+msgid "Raid pmc_killer strength"
+msgstr "Kämpfen"
+
+msgid "Raid pmc_killer luck"
+msgstr "Friedlich auseinandergehen"
+
+msgid "Raid kaban"
+msgstr "Kaban"
+
+msgid "Raid kaban text"
+msgstr "Kaban hat sich mit einem MG hinter Betonblöcken im Hof verschanzt, ringsum seine Wachen."
+
+msgid "Raid kaban strength"
+msgstr "Die Stellung stürmen"
+
+msgid "Raid kaban agility"
+msgstr "Durch die Höfe durchbrechen"
+
+msgid "Raid partisan"
+msgstr "Partisan"
+
+msgid "Raid partisan text"
+msgstr "Die Büsche bewegen sich nicht im Wind: Hier jagt Partisan, auf jedem Pfad seine Stolperdrähte."
+
+msgid "Raid partisan agility"
+msgstr "Ihn aufspüren"
+
+msgid "Raid partisan luck"
+msgstr "Seinem Pfad folgen"
+
+msgid "Raid priest"
+msgstr "Kultistenpriester"
+
+msgid "Raid priest text"
+msgstr "Im Nebel brennen Kerzen: Der Priester führt die Kultisten zu einem nächtlichen Ritual."
+
+msgid "Raid priest luck"
+msgstr "Das Ritual stören"
+
+msgid "Raid priest agility"
+msgstr "Im Nebel verschwinden"
+
+msgid "Raid follow up"
+msgstr "Das wird noch Folgen haben."

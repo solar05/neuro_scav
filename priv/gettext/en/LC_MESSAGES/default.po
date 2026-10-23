@@ -1005,3 +1005,99 @@ msgstr "You can see the whole map from the tower. Climb it and everyone sees you
 
 msgid "Raid tower agility"
 msgstr "Climb to the top"
+
+msgid "Raid reshala_guards"
+msgstr "Reshala's guards"
+
+msgid "Raid reshala_guards text"
+msgstr "Reshala's guards found out who took down their boss and are on your trail."
+
+msgid "Raid reshala_guards strength"
+msgstr "Fight them off"
+
+msgid "Raid reshala_guards agility"
+msgstr "Lose them in the yards"
+
+msgid "Raid ambush"
+msgstr "Ambush"
+
+msgid "Raid ambush text"
+msgstr "The bait's owners got tired of waiting and came after you themselves."
+
+msgid "Raid ambush agility"
+msgstr "Get out of the line of fire"
+
+msgid "Raid ambush strength"
+msgstr "Wipe out the ambush"
+
+msgid "Raid debtor"
+msgstr "The debtor"
+
+msgid "Raid debtor text"
+msgstr "The scav from the fire waves at you: “Brother, I don't forget a favor!”"
+
+msgid "Raid debtor luck"
+msgstr "Ask for help"
+
+msgid "Raid drop_hunters"
+msgstr "Airdrop hunters"
+
+msgid "Raid drop_hunters text"
+msgstr "Everyone saw the airdrop: the ones who came too late are running at you."
+
+msgid "Raid drop_hunters agility"
+msgstr "Carry the cargo away"
+
+msgid "Raid drop_hunters strength"
+msgstr "Meet them with fire"
+
+msgid "Raid pmc_killer"
+msgstr "The PMC's killer"
+
+msgid "Raid pmc_killer text"
+msgstr "Whoever killed the PMC came back for the backpack — and found you."
+
+msgid "Raid pmc_killer strength"
+msgstr "Fight"
+
+msgid "Raid pmc_killer luck"
+msgstr "Part ways peacefully"
+
+msgid "Raid kaban"
+msgstr "Kaban"
+
+msgid "Raid kaban text"
+msgstr "Kaban has dug in behind concrete blocks in the yard with a machine gun, his guards all around."
+
+msgid "Raid kaban strength"
+msgstr "Storm the position"
+
+msgid "Raid kaban agility"
+msgstr "Break through the yards"
+
+msgid "Raid partisan"
+msgstr "Partisan"
+
+msgid "Raid partisan text"
+msgstr "The bushes aren't moving in the wind: Partisan hunts here, tripwires on every path."
+
+msgid "Raid partisan agility"
+msgstr "Track him down"
+
+msgid "Raid partisan luck"
+msgstr "Follow his path"
+
+msgid "Raid priest"
+msgstr "Cultist priest"
+
+msgid "Raid priest text"
+msgstr "Candles burn in the fog: the Priest leads the cultists to a night ritual."
+
+msgid "Raid priest luck"
+msgstr "Break up the ritual"
+
+msgid "Raid priest agility"
+msgstr "Slip into the fog"
+
+msgid "Raid follow up"
+msgstr "This will come back around."

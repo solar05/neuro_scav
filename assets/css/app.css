@@ -2833,6 +2833,27 @@ kbd {
     padding: 14px;
 }
 
+/* a boss is the one event in red */
+.raid-event.raid-event-boss {
+    border-color: #e53935;
+    animation: none;
+    box-shadow: 0 0 16px 0 rgba(229, 57, 53, 0.6);
+}
+
+.raid-event-boss .wheel-panel-header {
+    background-color: #e53935;
+    color: #fff;
+}
+
+/* an outcome that starts a chain hints at what's coming */
+.raid-follow-up {
+    display: block;
+    margin-top: 4px;
+    font-size: 85%;
+    font-style: italic;
+    opacity: 0.8;
+}
+
 .raid-event-text {
     margin: 0 0 14px;
     color: #d0d0d0;

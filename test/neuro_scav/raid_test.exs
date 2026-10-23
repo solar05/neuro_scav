@@ -259,7 +259,7 @@ defmodule NeuroScav.RaidTest do
     end
 
     test "a failed drop takes the last active item, not a fallen finder's" do
-      raid = Raid.new(Enum.take(@squad, 2), [:wounded, :office, :pmc, :toll])
+      raid = Raid.new(Enum.take(@squad, 2), [:trunk, :office, :pmc, :toll])
       # one strong, one lucky: each finds an item of their own
       raid =
         update_in(raid.squad, fn [strong, lucky] ->
@@ -284,6 +284,59 @@ defmodule NeuroScav.RaidTest do
       assert share.(:veteran) * 3 < share.(:pmc)
       assert share.(:lightkeeper) * 3 < share.(:pmc)
       assert Enum.all?(routes, &(length(&1) in Raid.steps() and &1 == Enum.uniq(&1)))
+    end
+  end
+
+  describe "chains and bosses" do
+    @chain_events [:reshala_guards, :ambush, :debtor, :drop_hunters, :pmc_killer]
+
+    test "an outcome may bring another event a few events later" do
+      raid = @squad |> Raid.new([:reshala, :pmc, :office, :medic]) |> Raid.choose(0, 1, :sj6)
+
+      assert %{outcome: :loot, follow_up: :reshala_guards} = raid.last
+      assert raid.route == [:reshala, :pmc, :reshala_guards, :office, :medic]
+    end
+
+    test "other outcomes of the same event bring nothing" do
+      raid = @squad |> Raid.new([:reshala, :pmc, :office]) |> Raid.choose(1, 1)
+
+      assert %{outcome: :pass, follow_up: nil} = raid.last
+      assert raid.route == [:reshala, :pmc, :office]
+    end
+
+    test "a chain's event comes before the last one at the latest; the last starts none" do
+      raid = @squad |> Raid.new([:bait, :pmc]) |> Raid.choose(1, 1)
+      assert raid.route == [:bait, :ambush, :pmc]
+
+      raid = @squad |> Raid.new([:pmc, :bait]) |> Raid.choose(0, 1) |> Raid.choose(1, 1)
+      assert Raid.over?(raid)
+      assert %{outcome: :safe, follow_up: nil} = raid.last
+      assert raid.route == [:pmc, :bait]
+    end
+
+    test "beating a boss promotes, there is no way around one" do
+      raid = Raid.new([%{name: "Гена Лена", rarity: :epic}], [:kaban])
+
+      assert Enum.all?(Raid.options(raid), & &1.stat)
+      assert %{outcome: :promote} = Raid.choose(raid, 0, 1).last
+    end
+
+    test "random routes hold no chain events and now and then a boss, in the middle or at the end" do
+      routes = for _ <- 1..2_000, do: Raid.route()
+
+      bosses =
+        for route <- routes,
+            {event, at} <- Enum.with_index(route),
+            Raid.boss?(event),
+            do: {route, at}
+
+      # @boss_chance 0.4: 800 expected
+      assert length(bosses) in 650..950
+
+      for {route, at} <- bosses,
+          do: assert(at in [div(length(route), 2), length(route) - 1])
+
+      refute Enum.any?(routes, fn route -> Enum.any?(route, &(&1 in @chain_events)) end)
     end
   end
 end

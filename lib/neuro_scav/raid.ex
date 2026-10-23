@@ -21,7 +21,12 @@ defmodule NeuroScav.Raid do
     stat drops by `stat_step/0`, to 1 at least), `:drop` (the last active
     item of the stash is gone) or `:nothing`
 
-  Routes pick events by weight: the promoting ones are rare.
+  Routes pick events by weight: the promoting ones are rare. A route may get
+  a boss (`boss?/1`), in the middle or at the end; beating one promotes.
+
+  Some outcomes start a chain: another event (never on a random route) comes
+  a few events later, before the last one, so the route grows by one. What
+  brought it is in `last.follow_up`.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
   roll (1..100) and the loot found are arguments, so a raid is fully
@@ -72,11 +77,34 @@ defmodule NeuroScav.Raid do
     trunk: [{:luck, 0, :loot, :wound}, :safe],
     goons: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
     flea: [{:luck, 0, :loot, :drop}, :safe],
-    tower: [{:agility, 5, :train, :lose}, :safe]
+    tower: [{:agility, 5, :train, :lose}, :safe],
+    # chains, see @chains
+    reshala_guards: [{:strength, 20, :loot, :lose}, {:agility, 10, :pass, :wound}],
+    ambush: [{:agility, 10, :pass, :wound}, {:strength, 15, :loot, :lose}],
+    debtor: [{:luck, -15, :revive, :nothing}, :safe],
+    drop_hunters: [{:agility, 15, :pass, :drop}, {:strength, 20, :loot, :lose}],
+    pmc_killer: [{:strength, 15, :loot, :lose}, {:luck, 10, :pass, :drop}],
+    # bosses: no way around, only a fight that promotes or a costly escape
+    kaban: [{:strength, 30, :promote, :lose}, {:agility, 15, :pass, :wound}],
+    partisan: [{:agility, 30, :promote, :lose}, {:luck, 15, :pass, :wound}],
+    priest: [{:luck, 30, :promote, :lose}, {:agility, 15, :pass, :wound}]
   }
 
   # how often an event comes up on a route, 1 unless listed
   @weights %{veteran: 0.12, lightkeeper: 0.12}
+
+  @bosses [:kaban, :partisan, :priest]
+  @boss_chance 0.4
+
+  # {event, outcome} => {the event it brings, how many events later}
+  @chains %{
+    {:reshala, :loot} => {:reshala_guards, 2},
+    {:bait, :safe} => {:ambush, 2},
+    {:wounded, :loot} => {:debtor, 3},
+    {:airdrop, :loot} => {:drop_hunters, 1},
+    {:dead_pmc, :loot} => {:pmc_killer, 2}
+  }
+  @follow_ups for {_trigger, {event, _delay}} <- @chains, do: event
 
   @rarities [:common, :uncommon, :rare, :epic, :legendary]
   @stat_step 10
@@ -117,12 +145,26 @@ defmodule NeuroScav.Raid do
   @spec stat_step() :: pos_integer()
   def stat_step, do: @stat_step
 
+  @doc "Whether an event is a boss."
+  @spec boss?(atom()) :: boolean()
+  def boss?(event), do: event in @bosses
+
   @doc """
   A random route: as many different events as `steps/0` picks, drawn by
   weight (keys `u^(1/weight)`, the largest win), so rare events seldom show up.
+  Bosses and chain events aren't drawn: with `@boss_chance` a boss takes the
+  middle or the last place.
   """
   @spec route() :: [atom()]
-  def route, do: draw(events(), @weights, Enum.random(@steps))
+  def route do
+    route = draw(events() -- (@bosses ++ @follow_ups), @weights, Enum.random(@steps))
+
+    if :rand.uniform() < @boss_chance do
+      List.replace_at(route, Enum.random([div(length(route), 2), -1]), Enum.random(@bosses))
+    else
+      route
+    end
+  end
 
   @doc "A random find, drawn by weight like a route: the valuables are rare."
   @spec random_item() :: atom()
@@ -356,5 +398,15 @@ defmodule NeuroScav.Raid do
 
   defp update_member(raid, index, fun), do: update_in(raid.squad, &List.update_at(&1, index, fun))
 
-  defp step(raid, last), do: %{raid | step: raid.step + 1, last: last}
+  defp step(raid, last) do
+    {follow_up, route} = follow(raid, Map.get(@chains, {last.event, last.outcome}))
+    %{raid | route: route, step: raid.step + 1, last: Map.put(last, :follow_up, follow_up)}
+  end
+
+  # a chain's event comes `delay` events later, before the last one at the
+  # latest: the route ends where it did, so the last event starts no chain
+  defp follow(%{route: route, step: step}, {event, delay}) when step < length(route) - 1,
+    do: {event, List.insert_at(route, min(step + delay, length(route) - 1), event)}
+
+  defp follow(raid, _chain), do: {nil, raid.route}
 end

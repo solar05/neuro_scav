@@ -49,12 +49,18 @@
           class={["raid-outcome", outcome_class(@raid.last)]}
         >
           {outcome_text(@raid.last)}
+          <span :if={@raid.last.follow_up} class="raid-follow-up">
+            {gettext("Raid follow up")}
+          </span>
         </p>
 
         <%= if event = Raid.event(@raid) do %>
-          <div id={"raid-event-#{@raid.step}"} class="wheel-panel raid-event">
+          <div
+            id={"raid-event-#{@raid.step}"}
+            class={["wheel-panel raid-event", Raid.boss?(event) && "raid-event-boss"]}
+          >
             <div class="wheel-panel-header">
-              <span>{event_title(event)}</span>
+              <span>{if Raid.boss?(event), do: "☠ "}{event_title(event)}</span>
               <span class="wheel-panel-count">
                 {gettext("Raid step %{n} %{total}", n: @raid.step + 1, total: length(@raid.route))}
               </span>
