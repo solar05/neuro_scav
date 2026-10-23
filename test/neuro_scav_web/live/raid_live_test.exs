@@ -20,6 +20,12 @@ defmodule NeuroScavWeb.RaidLiveTest do
       |> LazyHTML.query(".raid-member")
       |> Enum.count()
 
+  # into the raid: where it starts with picking a way in, the first one
+  defp enter(view) do
+    if has_element?(view, "#raid-moves"), do: view |> element("#raid-option-0") |> render_click()
+    view
+  end
+
   # takes the first option there is to take (a locked retreat isn't) until the raid ends
   defp finish(view) do
     if has_element?(view, "#raid-end") do
@@ -45,11 +51,12 @@ defmodule NeuroScavWeb.RaidLiveTest do
 
     lv |> element("#btn-raid-recruit") |> render_click()
     assert members(lv) == 5
-    assert has_element?(lv, "#raid-event-0")
+    # the whole map, and a few layers round the squad for a phone
+    assert has_element?(lv, "#raid-map") and has_element?(lv, "#raid-map-near")
     assert render(lv) =~ ~r/Встреча 1 из 1[0-3]/
     assert has_element?(lv, "#raid-world")
 
-    lv |> element("#raid-option-0") |> render_click()
+    lv |> enter() |> element("#raid-option-0") |> render_click()
     assert has_element?(lv, "#raid-outcome-1")
 
     lv = finish(lv)
@@ -58,14 +65,14 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert html =~ "Чистый выход" or html =~ "Вышли" or html =~ "Никто не выжил"
 
     lv |> element("#btn-raid-again") |> render_click()
-    assert has_element?(lv, "#raid-event-0")
+    assert has_element?(lv, "#raid-event-0") or has_element?(lv, "#raid-moves")
     refute has_element?(lv, ".raid-member-lost")
   end
 
   test "a late or double click doesn't choose for the next event", %{conn: conn} do
     {:ok, lv, _html} = live(conn, ~p"/raid")
     lv |> element("#btn-raid-recruit") |> render_click()
-    lv |> element("#raid-option-0") |> render_click()
+    lv |> enter() |> element("#raid-option-0") |> render_click()
     assert has_element?(lv, "#raid-outcome-1")
 
     # a click made at the first event arrives once the squad has moved on
@@ -79,7 +86,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     {:ok, lv, _html} = live(conn, ~p"/raid")
     lv |> element("#btn-raid-recruit") |> render_click()
     run = assert_patch(lv)
-    lv |> element("#raid-option-0") |> render_click()
+    lv |> enter() |> element("#raid-option-0") |> render_click()
     squad = lv |> element("#raid-squad") |> render()
 
     {:ok, again, _html} = live(conn, run)
@@ -277,10 +284,10 @@ defmodule NeuroScavWeb.RaidLiveTest do
     squad = [%{name: "Алиса Аврора", rarity: :common}]
 
     for locale <- ~w(ru en de ja), event <- NeuroScav.Raid.events() do
-      # an option is named by the stat it checks or the item it needs
+      # an option is named by the stat it checks, the item it needs or its condition
       labels =
         for option <- NeuroScav.Raid.options(NeuroScav.Raid.new(squad, [event])),
-            label = option.stat || option.key,
+            label = option.stat || option.key || (option.pay && :pay) || (option.trust && :karma),
             label != nil,
             do: label
 
@@ -315,6 +322,27 @@ defmodule NeuroScavWeb.RaidLiveTest do
       Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
         told = Gettext.gettext(NeuroScavWeb.Gettext, msgid, value: 10, limit: 2)
         refute told =~ "Raid ", "#{locale}: #{msgid}"
+      end)
+    end
+  end
+
+  test "the map's words are translated in every language" do
+    msgids =
+      ["Raid map", "Raid map about", "Raid way start", "Raid way next", "Raid exited %{exit}"] ++
+        ["Raid node deadly", "Raid needs payment", "Raid needs karma %{value}", "Raid trusted"] ++
+        ["Raid paid %{name} %{item}"] ++
+        Enum.map(
+          ~w(boss exit fight loot search scav gnome rare hazard hidden),
+          &"Raid node #{&1}"
+        )
+
+    for locale <- ~w(ru en de ja), msgid <- msgids do
+      Gettext.with_locale(NeuroScavWeb.Gettext, locale, fn ->
+        told =
+          Gettext.gettext(NeuroScavWeb.Gettext, msgid, exit: "X", value: 1, name: "Y", item: "Z")
+
+        refute told =~ "Raid ",
+               "#{locale}: #{msgid}"
       end)
     end
   end
@@ -409,7 +437,6 @@ defmodule NeuroScavWeb.RaidLiveTest do
         index: 1,
         item: nil,
         stat: :strength,
-        path: nil,
         retreat: false,
         follow_up: nil,
         karma: 0,
@@ -421,7 +448,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
         raid_page(
           conn,
           [:pmc, :office],
-          &%{&1 | step: 1, turn: 1, last: Map.merge(last, changes)}
+          &%{NeuroScav.Raid.choose(&1, 1, 1) | last: Map.merge(last, changes)}
         )
 
       lv |> element("#raid-outcome-1") |> render()
@@ -452,8 +479,6 @@ defmodule NeuroScavWeb.RaidLiveTest do
             {%{outcome: :loot, item: :sj6}, ru("Raid loot %{item}", item: sj6)},
             {%{event: :kaban, outcome: :trophy, item: :pkm},
              ru("Raid trophy %{name} %{item}", name: name, item: ru("Item pkm"))},
-            {%{event: :fork_road, outcome: :path, path: :office},
-             ru("Raid path %{event}", event: ru("Raid office"))},
             {%{follow_up: :ambush}, ru("Raid follow up")},
             {%{karma: -1}, ru("Raid karma down")},
             {%{event: :mines, outcome: :pass, member: nil}, ru("Raid all passed")},
@@ -631,6 +656,10 @@ defmodule NeuroScavWeb.RaidLiveTest do
           ],
           do: assert(legend =~ meaning)
 
+      map = lv |> element("#raid-legend-map") |> render()
+      assert map =~ ru("Raid node boss") and map =~ ru("Raid node hidden")
+      assert map =~ ru("Raid map about")
+
       # the bait: an agility check for loot that may kill, or the safe way, a retreat
       assert has_element?(lv, ~s(#raid-option-0 .raid-icon[data-tip="#{ru("Raid icon loot")}"]))
       assert has_element?(lv, ~s(#raid-option-0 .raid-icon[data-tip="#{ru("Raid icon lose")}"]))
@@ -664,18 +693,109 @@ defmodule NeuroScavWeb.RaidLiveTest do
       refute has_element?(lv, "#raid-outcome-3")
     end
 
-    test "a crossroads shows where each path leads; the one taken comes next", %{conn: conn} do
-      {lv, raid} = raid_page(conn, [:fork_road, :pmc])
-      [first, second] = raid.forks.fork_road
+    test "the map shows where the squad is; where the way forks it picks, on the map too",
+         %{conn: conn} do
+      fork = %{
+        nodes: %{{0, 0} => :office, {1, 0} => :pmc, {1, 1} => :bait, {2, 0} => :exit_car},
+        links: %{{0, 0} => [{1, 0}, {1, 1}], {1, 0} => [{2, 0}], {1, 1} => [{2, 0}], {2, 0} => []}
+      }
 
-      assert lv |> element("#raid-option-0") |> render() =~ "→ " <> ru("Raid #{first}")
-      assert lv |> element("#raid-option-1") |> render() =~ "→ " <> ru("Raid #{second}")
+      {lv, _raid} = raid_page(conn, fork)
+      assert has_element?(lv, ~s(#raid-map [data-node="0-0"].raid-node-at))
+      assert lv |> element(~s(#raid-map [data-node="2-0"])) |> render() =~ ru("Raid exit_car")
+
+      # whatever comes of the office, the way forks after it
+      lv |> element("#raid-option-1") |> render_click()
+      assert lv |> element("#raid-moves .wheel-panel-header") |> render() =~ ru("Raid way next")
+      assert lv |> element("#raid-option-0") |> render() =~ ru("Raid pmc")
+      assert lv |> element("#raid-option-1") |> render() =~ ru("Raid bait")
+      assert has_element?(lv, ~s(#raid-map [data-node="1-1"].raid-node-next))
+      # both ways may cost a member
+      assert lv |> element("#raid-option-1") |> render() =~ "💀"
+
+      lv |> element(~s(#raid-map [data-node="1-1"])) |> render_click()
+      assert lv |> element("#raid-event-1 .wheel-panel-header") |> render() =~ ru("Raid bait")
+      assert has_element?(lv, "#raid-map line.raid-link-taken")
+
+      # a late click on the other way, or one naming no node, changes nothing
+      render_click(lv, "move", %{"node" => "1-0"})
+      render_click(lv, "move", %{"node" => "x"})
+      assert lv |> element("#raid-event-1 .wheel-panel-header") |> render() =~ ru("Raid bait")
+    end
+
+    test "with several ways in, the raid starts with picking one", %{conn: conn} do
+      starts = %{
+        nodes: %{{0, 0} => :office, {0, 2} => :pmc, {1, 1} => :exit_boat},
+        links: %{{0, 0} => [{1, 1}], {0, 2} => [{1, 1}], {1, 1} => []}
+      }
+
+      {lv, _raid} = raid_page(conn, starts)
+      assert lv |> element("#raid-moves .wheel-panel-header") |> render() =~ ru("Raid way start")
 
       lv |> element("#raid-option-1") |> render_click()
-      assert lv |> element("#raid-outcome-1") |> render() =~ "Отряд свернул"
+      assert lv |> element("#raid-event-0 .wheel-panel-header") |> render() =~ ru("Raid pmc")
+    end
 
-      assert lv |> element("#raid-event-1 .wheel-panel-header") |> render() =~
-               ru("Raid #{second}")
+    test "the car takes the stash's last item for the way out; with nothing to pay it's locked",
+         %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:exit_car])
+      assert lv |> element("#raid-option-0[disabled]") |> render() =~ ru("Raid needs payment")
+
+      {lv, _raid} = raid_page(conn, [:exit_car], &%{&1 | stash: [%{item: :sj6, owner: 0}]})
+      pay = lv |> element("#raid-option-0") |> render()
+      assert pay =~ ru("Raid exit_car pay") and pay =~ ru("Item sj6") and pay =~ "Алиса Аврора"
+
+      lv |> element("#raid-option-0") |> render_click()
+
+      assert lv |> element("#raid-outcome-1") |> render() =~
+               ru("Raid paid %{name} %{item}", name: "Алиса Аврора", item: ru("Item sj6"))
+
+      assert has_element?(lv, "#raid-exit")
+    end
+
+    test "the co-op exit is open to a squad the scavs like", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:exit_coop])
+
+      assert lv |> element("#raid-option-0[disabled]") |> render() =~
+               ru("Raid needs karma %{value}", value: 1)
+
+      {lv, _raid} = raid_page(conn, [:exit_coop], &%{&1 | karma: 2})
+      assert lv |> element("#raid-option-0") |> render() =~ ru("Raid exit_coop karma")
+
+      lv |> element("#raid-option-0") |> render_click()
+      assert lv |> element("#raid-outcome-1") |> render() =~ ru("Raid trusted")
+    end
+
+    test "a red ring marks where a member may be lost", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:office, :pmc, :trunk])
+
+      assert lv |> element(~s(#raid-map [data-node="1-0"].raid-node-deadly)) |> render() =~
+               ru("Raid icon lose")
+
+      refute has_element?(lv, ~s(#raid-map [data-node="2-0"].raid-node-deadly))
+      assert lv |> element("#raid-legend-map") |> render() =~ ru("Raid node deadly")
+    end
+
+    test "through an exit the raid is over, the end tells which", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:exit_car])
+      lv |> element("#raid-option-1") |> render_click()
+
+      assert lv |> element("#raid-end #raid-exit") |> render() =~
+               ru("Raid exited %{exit}", exit: ru("Raid exit_car"))
+    end
+
+    test "at night the map hides what's far off, but not a boss or the exits", %{conn: conn} do
+      {lv, _raid} =
+        raid_page(
+          conn,
+          [:office, :pmc, :trunk, :kaban, :exit_car],
+          &%{&1 | weather: :clear, daytime_start: 3}
+        )
+
+      assert lv |> element(~s(#raid-map [data-node="1-0"])) |> render() =~ ru("Raid pmc")
+      assert has_element?(lv, ~s(#raid-map [data-node="2-0"].raid-node-hidden))
+      assert lv |> element(~s(#raid-map [data-node="3-0"].raid-node-boss)) |> render() =~ "☠"
+      assert lv |> element(~s(#raid-map [data-node="4-0"])) |> render() =~ ru("Raid exit_car")
     end
 
     test "karma shows at the scavs' events only, and in the outcome", %{conn: conn} do

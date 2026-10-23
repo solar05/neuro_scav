@@ -467,7 +467,7 @@ msgid "Go raid"
 msgstr "В вылазку"
 
 msgid "Raid intro %{steps}"
-msgstr "Отряд из пяти дичков идёт в рейд: %{steps} встреч, в каждой выбираешь действие, а лучший в нужном стате пробует его выполнить. Можно потерять бойцов и набить нычку лутом."
+msgstr "Отряд из пяти дичков идёт в рейд по карте: %{steps} встреч до выхода. Путь выбираешь сам, а в каждой встрече — действие, и лучший в нужном стате пробует его выполнить. Можно потерять бойцов и набить нычку лутом."
 
 msgid "Recruit squad"
 msgstr "Набрать отряд"
@@ -1099,24 +1099,6 @@ msgstr "Уйти в туман"
 msgid "Raid follow up"
 msgstr "Это ещё аукнется."
 
-msgid "Raid fork_road"
-msgstr "Развилка"
-
-msgid "Raid fork_road text"
-msgstr "Дорога расходится у покосившегося указателя. Куда свернуть?"
-
-msgid "Raid fork_tunnel"
-msgstr "Подземный переход"
-
-msgid "Raid fork_tunnel text"
-msgstr "Можно спуститься в тёмный переход или идти поверху. С каждой стороны доносится своё."
-
-msgid "Raid radio"
-msgstr "Перехват рации"
-
-msgid "Raid radio text"
-msgstr "Рация трещит: слышно, что творится впереди. Можно выбрать, куда идти."
-
 msgid "Raid scav_camp"
 msgstr "Лагерь диких"
 
@@ -1170,9 +1152,6 @@ msgstr "Амулет Жреца"
 
 msgid "Raid trophy %{name} %{item}"
 msgstr "%{name} одолел босса! Трофей: «%{item}»."
-
-msgid "Raid path %{event}"
-msgstr "Отряд свернул: %{event}."
 
 msgid "Raid karma %{value}"
 msgstr "Карма у диких: %{value}"
@@ -1788,3 +1767,132 @@ msgstr "Комната в общаге"
 
 msgid "Raid dorm_room text"
 msgstr "Общага на Таможне, дверь приоткрыта. Тумбочки, сумки, матрасы — искать можно долго, только шаги в коридоре всё ближе."
+
+msgid "Raid map"
+msgstr "Карта"
+
+msgid "Raid map about"
+msgstr "Соседние точки видно целиком, дальние — только по значку, а ночью и в тумане не видно вовсе. Боссов и выходы видно всегда."
+
+msgid "Raid way start"
+msgstr "Где заходим?"
+
+msgid "Raid way next"
+msgstr "Куда дальше?"
+
+msgid "Raid exited %{exit}"
+msgstr "Выход: %{exit}"
+
+msgid "Raid node boss"
+msgstr "Босс"
+
+msgid "Raid node exit"
+msgstr "Выход"
+
+msgid "Raid node fight"
+msgstr "Драка"
+
+msgid "Raid node loot"
+msgstr "Можно найти лут"
+
+msgid "Raid node search"
+msgstr "Обыск"
+
+msgid "Raid node scav"
+msgstr "Дикие"
+
+msgid "Raid node gnome"
+msgstr "Гномы"
+
+msgid "Raid node rare"
+msgstr "Редкая встреча"
+
+msgid "Raid node hazard"
+msgstr "Опасность"
+
+msgid "Raid node hidden"
+msgstr "Не видно"
+
+msgid "Raid exit_car"
+msgstr "Машина на выезде"
+
+msgid "Raid exit_car text"
+msgstr "У ворот тарахтит буханка. Водитель просит пять тысяч и не задаёт вопросов."
+
+msgid "Raid exit_car luck"
+msgstr "Сторговаться"
+
+msgid "Raid exit_car agility"
+msgstr "Уйти пешком через поле"
+
+msgid "Raid exit_coop"
+msgstr "Кооп-выход"
+
+msgid "Raid exit_coop text"
+msgstr "У выхода курят дикие. Если с ними по-хорошему — выпустят вместе."
+
+msgid "Raid exit_coop luck"
+msgstr "Уговорить диких"
+
+msgid "Raid exit_coop agility"
+msgstr "Проскочить мимо"
+
+msgid "Raid exit_bunker"
+msgstr "Бункер ЗБ-014"
+
+msgid "Raid exit_bunker text"
+msgstr "Гермодверь бункера. Замок кодовый, но под ним прорезь для карты."
+
+msgid "Raid exit_bunker keycard"
+msgstr "Открыть ключ-картой"
+
+msgid "Raid exit_bunker strength"
+msgstr "Выломать дверь"
+
+msgid "Raid exit_bunker luck"
+msgstr "Подобрать код"
+
+msgid "Raid exit_boat"
+msgstr "Лодка у пирса"
+
+msgid "Raid exit_boat text"
+msgstr "Лодочник машет с пирса: «Быстрее, пока не начали стрелять!»"
+
+msgid "Raid exit_boat agility"
+msgstr "Добежать до лодки"
+
+msgid "Raid exit_boat luck"
+msgstr "Пообещать лодочнику долю"
+
+msgid "Raid exit_train"
+msgstr "Поезд"
+
+msgid "Raid exit_train text"
+msgstr "Раз в рейд к станции приходит поезд. Гудок уже слышно — и не только вам."
+
+msgid "Raid exit_train luck"
+msgstr "Дождаться поезда"
+
+msgid "Raid exit_train agility"
+msgstr "Запрыгнуть на ходу"
+
+msgid "Raid exit_car pay"
+msgstr "Заплатить водителю"
+
+msgid "Raid exit_coop karma"
+msgstr "Выйти вместе с дикими"
+
+msgid "Raid needs payment"
+msgstr "Нечем заплатить"
+
+msgid "Raid needs karma %{value}"
+msgstr "Дикие не доверяют: нужна карма %{value}"
+
+msgid "Raid paid %{name} %{item}"
+msgstr "%{name} расплатился: %{item}."
+
+msgid "Raid trusted"
+msgstr "Дикие свои: вывели отряд без лишних вопросов."
+
+msgid "Raid node deadly"
+msgstr "красная обводка: можно потерять бойца"

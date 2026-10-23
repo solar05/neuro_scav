@@ -9,7 +9,7 @@ defmodule Mix.Tasks.Raid.Sim do
       mix raid.sim                              # 5000 raids per strategy
       mix raid.sim --runs 20000 --seed 42       # more raids, the same ones every time
       mix raid.sim --strategy greedy --events   # one strategy, with a table per event
-      mix raid.sim --route pmc,veteran,labs     # a fixed route instead of a random one
+      mix raid.sim --route pmc,veteran,labs     # a fixed route instead of a random map
       mix raid.sim --locale en                  # squads from English names
 
   At every event a strategy picks an option:
@@ -21,6 +21,12 @@ defmodule Mix.Tasks.Raid.Sim do
     the safe option is worth nothing either way
   - `greedy` - the best chance, never the safe option
   - `random` - any option
+
+  Where the map forks a strategy goes by the kind of event it sees ahead
+  (`Raid.kind/1`) and whether a member may be lost there (`Raid.deadly?/1`;
+  nothing to go by where it can't see): the cautious one keeps off bosses,
+  fights and red rings, the careful one off bosses and red rings, the greedy
+  one goes for bosses and loot, the random one anywhere.
 
   Squads are five random first and last names of the locale, rarity by the
   usual rules (`ScavengersServer.check_name/1`). Members act on their own as
@@ -38,6 +44,13 @@ defmodule Mix.Tasks.Raid.Sim do
   # how the careful strategy weighs what a check may bring and cost
   @gains %{loot: 1, train: 1, revive: 2, promote: 2, trophy: 3}
   @costs %{lose: 3, wound: 1, drop: 1, stall: 1}
+  # how a strategy takes a kind of node ahead and a red ring (deadly), 0 unless listed
+  @leanings %{
+    "cautious" => %{boss: -3, fight: -2, gnome: -1, hazard: -1, deadly: -1},
+    "careful" => %{boss: -2, fight: -1, loot: 1, search: 1, deadly: -1},
+    "greedy" => %{boss: 3, rare: 2, loot: 2, search: 1},
+    "random" => %{}
+  }
   @switches [
     runs: :integer,
     strategy: :string,
@@ -78,7 +91,7 @@ defmodule Mix.Tasks.Raid.Sim do
   @doc """
   Plays `runs` raids with `strategy`; each result is the finished raid and
   what happened at every event, in order. `names` is `{first_names,
-  last_names}`, `route` a fixed route or nil for a random one each time.
+  last_names}`, `route` a fixed route or nil for a random map each time.
   """
   @spec simulate(String.t(), pos_integer(), {[String.t()], [String.t()]}, [atom()] | nil) ::
           [{map(), [map()]}]
@@ -88,24 +101,51 @@ defmodule Mix.Tasks.Raid.Sim do
         for _ <- 1..@squad_size,
             do: ScavengersServer.check_name("#{Enum.random(firsts)} #{Enum.random(lasts)}")
 
-      play(Raid.new(squad, route || Raid.route()), strategy, [])
+      play(Raid.new(squad, route || Raid.random_map()), strategy, [])
     end
   end
 
-  # an option that can't be taken leaves the raid where it was: better to fail
-  # loudly than to play the same event forever
+  # an option that can't be taken or a node the squad can't go to leaves the
+  # raid where it was: better to fail loudly than to stand there forever
   defp play(raid, strategy, log) do
-    if Raid.over?(raid) do
-      {raid, Enum.reverse(log)}
-    else
-      index = pick(strategy, Raid.options(raid))
-      next = Raid.choose(raid, index, :rand.uniform(100), Raid.random_item(), :rand.uniform(100))
+    cond do
+      Raid.over?(raid) ->
+        {raid, Enum.reverse(log)}
 
-      if next.turn == raid.turn,
-        do: Mix.raise("#{strategy} took an option that can't be taken at #{Raid.event(raid)}")
+      Raid.event(raid) ->
+        index = pick(strategy, Raid.options(raid))
 
-      play(next, strategy, [next.last | log])
+        next =
+          Raid.choose(raid, index, :rand.uniform(100), Raid.random_item(), :rand.uniform(100))
+
+        if next.turn == raid.turn,
+          do: Mix.raise("#{strategy} took an option that can't be taken at #{Raid.event(raid)}")
+
+        play(next, strategy, [next.last | log])
+
+      true ->
+        next = Raid.move(raid, way(strategy, raid))
+        if next == raid, do: Mix.raise("#{strategy} went where the squad can't go")
+        play(next, strategy, log)
     end
+  end
+
+  # the next node the strategy likes best by what it sees there, a random one of equals
+  defp way(strategy, raid) do
+    raid
+    |> Raid.next_nodes()
+    |> Enum.shuffle()
+    |> Enum.max_by(&lure(@leanings[strategy], raid, &1))
+  end
+
+  # how much a node draws a strategy: nothing where it can't see
+  defp lure(leaning, raid, node) do
+    event = raid.map.nodes[node]
+    deadly = if Raid.deadly?(event), do: Map.get(leaning, :deadly, 0), else: 0
+
+    if Raid.sight(raid, node) == :hidden,
+      do: 0,
+      else: Map.get(leaning, Raid.kind(event), 0) + deadly
   end
 
   defp pick("cautious", options) do
@@ -129,14 +169,14 @@ defmodule Mix.Tasks.Raid.Sim do
   defp open(options),
     do: options |> Enum.with_index() |> Enum.reject(fn {option, _index} -> option.locked end)
 
-  # a safe option or a crossroads path (no chance) brings and costs nothing; a key is a sure chance
+  # a safe option (no chance) brings and costs nothing; a key is a sure chance
   defp worth(%{chance: nil}), do: 0
 
   defp worth(%{chance: chance, reward: reward, risk: risk}),
     do: chance * Map.get(@gains, reward, 0) - (100 - chance) * Map.get(@costs, risk, 0)
 
-  # the best chance among the checks and keys there are to take; a crossroads has no
-  # check: its first path then
+  # the best chance among the checks, keys and searches there are to take;
+  # the first option where none has one
   defp best(options) do
     options
     |> open()

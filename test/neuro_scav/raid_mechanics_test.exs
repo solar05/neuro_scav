@@ -10,7 +10,7 @@ defmodule NeuroScav.RaidMechanicsTest do
   ]
   @calm %{weather: :clear, daytime: :morning}
 
-  defp new_raid(members, route, world \\ @calm), do: Raid.new(members, route, nil, world)
+  defp new_raid(members, route, world \\ @calm), do: Raid.new(members, route, world)
   defp actor(raid, index), do: Enum.at(raid.squad, index)
 
   # one member with every stat at 50, so a chance is plain to work out
@@ -187,13 +187,14 @@ defmodule NeuroScav.RaidMechanicsTest do
       raid = Raid.choose(raid, 0, 1, :sj6)
       assert %{outcome: :found, item: :sj6, member: name} = raid.last
       assert name == luckiest.name
-      assert %{step: 0, searched: 1, stash: [%{item: :sj6, owner: owner}]} = raid
+      assert %{searched: 1, stash: [%{item: :sj6, owner: owner}]} = raid
+      assert Raid.at(raid) == {0, 0}
       assert owner == luckiest.index
       assert [%{search: 1, chance: 80}, _leave] = Raid.options(raid)
 
       raid = Raid.choose(raid, 1, 1)
       assert %{outcome: :left, retreat: nil} = raid.last
-      assert %{step: 1, searched: 0} = raid
+      assert Raid.at(raid) == {1, 0} and raid.searched == 0
     end
 
     test "a look that fails hurts the searcher on luck, and the squad moves on" do
@@ -203,7 +204,7 @@ defmodule NeuroScav.RaidMechanicsTest do
       raid = Raid.choose(raid, 0, 100)
       assert %{outcome: :wound, stat: :luck} = raid.last
       assert actor(raid, luckiest.index).stats.luck == luckiest.stats.luck - Raid.stat_step()
-      assert %{step: 1, searched: 0} = raid
+      assert Raid.at(raid) == {1, 0} and raid.searched == 0
     end
   end
 
@@ -244,7 +245,7 @@ defmodule NeuroScav.RaidMechanicsTest do
       raid = squad([:abandoned_store, :pmc], [{:greedy, 50}, {:coward, 70}])
       raid = Raid.choose(raid, 1, 1, :sj6, 1)
       assert %{outcome: :found, member: ^greedy, quirk: {:greedy, ^greedy}} = raid.last
-      assert %{step: 0, searched: 1} = raid
+      assert Raid.at(raid) == {0, 0} and raid.searched == 1
     end
 
     test "a psycho goes for the fight" do
