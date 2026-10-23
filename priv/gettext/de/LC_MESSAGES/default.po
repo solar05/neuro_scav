@@ -834,7 +834,7 @@ msgid "Raid labs agility"
 msgstr "Zu den Tresoren rennen"
 
 msgid "Raid legend %{value}"
-msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}"
+msgstr "💰 Beute, ➕ einen Kämpfer zurückholen, 💪 Wert +%{value}, ⭐ Seltenheit steigt, 🏆 Boss-Trophäe, 💀 ein Kämpfer in Gefahr, 🎒 Beute in Gefahr, 🩸 Wert −%{value}"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} wird besser: %{stat} +%{value}!"
@@ -1090,3 +1090,120 @@ msgstr "Im Nebel verschwinden"
 
 msgid "Raid follow up"
 msgstr "Das wird noch Folgen haben."
+
+msgid "Raid fork_road"
+msgstr "Weggabelung"
+
+msgid "Raid fork_road text"
+msgstr "Die Straße teilt sich an einem schiefen Wegweiser. Wohin?"
+
+msgid "Raid fork_tunnel"
+msgstr "Unterführung"
+
+msgid "Raid fork_tunnel text"
+msgstr "Ihr könnt in eine dunkle Unterführung steigen oder oben bleiben. Jeder Weg klingt anders."
+
+msgid "Raid radio"
+msgstr "Abgefangener Funk"
+
+msgid "Raid radio text"
+msgstr "Das Funkgerät knistert: Ihr hört, was vorne los ist. Wählt euren Weg."
+
+msgid "Raid scav_camp"
+msgstr "Wildling-Lager"
+
+msgid "Raid scav_camp text"
+msgstr "Wildlinge wärmen sich am Feuer, darüber ein Kessel. Sie haben euch noch nicht bemerkt."
+
+msgid "Raid scav_camp luck"
+msgstr "Sich ans Feuer setzen"
+
+msgid "Raid scav_camp strength"
+msgstr "Das Lager ausrauben"
+
+msgid "Raid fence"
+msgstr "Fence"
+
+msgid "Raid fence text"
+msgstr "In einer Bude am Ausgang sitzt Fence. Er hilft mit Ausrüstung – wenn die Wildlinge gut von euch reden."
+
+msgid "Raid fence luck"
+msgstr "Um Ausrüstung bitten"
+
+msgid "Raid scav_patrol"
+msgstr "Wildling-Patrouille"
+
+msgid "Raid scav_patrol text"
+msgstr "Eine Wildling-Patrouille kommt auf euch zu, die Finger schon am Abzug."
+
+msgid "Raid scav_patrol luck"
+msgstr "Sagen, dass ihr Freunde seid"
+
+msgid "Raid scav_patrol strength"
+msgstr "Zuerst schießen"
+
+msgid "Raid lost_scav"
+msgstr "Verirrter Wildling"
+
+msgid "Raid lost_scav text"
+msgstr "Ein junger Wildling hat seine Leute verloren und bittet, ihn zum Ausgang zu bringen."
+
+msgid "Raid lost_scav agility"
+msgstr "Ihn hinausbringen"
+
+msgid "Item pkm"
+msgstr "Kabans PKM"
+
+msgid "Item ghillie"
+msgstr "Partisans Tarnanzug"
+
+msgid "Item amulet"
+msgstr "Amulett des Priesters"
+
+msgid "Raid trophy %{name} %{item}"
+msgstr "%{name} hat den Boss besiegt! Trophäe: „%{item}“."
+
+msgid "Raid path %{event}"
+msgstr "Der Trupp bog ab: %{event}."
+
+msgid "Raid karma %{value}"
+msgstr "Wildling-Karma: %{value}"
+
+msgid "Raid karma up"
+msgstr "Die Wildlinge werden sich daran erinnern."
+
+msgid "Raid karma down"
+msgstr "Das verzeihen die Wildlinge nicht."
+
+msgid "Raid gnome_thief"
+msgstr "Gnom Langfinger"
+
+msgid "Raid gnome_thief text"
+msgstr "Hinter den Kisten lugt ein Gnom mit roter Mütze hervor. Seine Augen funkeln, die Finger greifen schon nach euren Rucksäcken."
+
+msgid "Raid gnome_thief agility"
+msgstr "Ihn an der Mütze packen"
+
+msgid "Raid gnome_thief luck"
+msgstr "Mit etwas Glänzendem ablenken"
+
+msgid "Raid gnome stole nothing"
+msgstr "Der Gnom durchwühlte die Rucksäcke, doch sie waren leer. Er zog mit leeren Händen ab."
+
+msgid "Raid gnome stole %{item}"
+msgstr "Der Gnom hat „%{item}“ geklaut und ist in den Schatten verschwunden!"
+
+msgid "Raid komar"
+msgstr "SBEU Tarkowski Komar"
+
+msgid "Raid komar text"
+msgstr "Über dem Sumpf liegt ein Sirren: SBEU Tarkowski Komar, die Mücke, ist auf der Jagd. Man sagt, seine Flügel bringen unerhörtes Glück."
+
+msgid "Raid komar agility"
+msgstr "Zuschlagen"
+
+msgid "Raid komar luck"
+msgstr "Wedelnd zurückweichen"
+
+msgid "Item komar_wings"
+msgstr "Mückenflügel"

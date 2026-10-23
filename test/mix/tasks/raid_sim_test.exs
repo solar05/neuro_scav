@@ -20,6 +20,12 @@ defmodule Mix.Tasks.Raid.SimTest do
     end
   end
 
+  test "every strategy goes through a crossroads, taking a path" do
+    for strategy <- ~w(cautious greedy random),
+        {_raid, [crossroads | _rest]} <- Sim.simulate(strategy, 10, @names, [:fork_road, :pmc]),
+        do: assert(crossroads.outcome == :path)
+  end
+
   test "the cautious strategy takes the safe option where there is one" do
     for {_raid, [_pmc, office]} <- Sim.simulate("cautious", 20, @names, [:pmc, :office]),
         do: assert(office.outcome == :safe)

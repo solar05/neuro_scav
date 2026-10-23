@@ -6,7 +6,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   @max_name_length 40
   # what an option may bring and cost, shown on its button (legend under the options)
-  @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐"}
+  @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
   @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸"}
 
   # /raid?team=<token> brings the squad from the Team page, see path/1
@@ -123,7 +123,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
             :for={%{item: item, owner: owner, alive: alive} <- @loot}
             class={not alive && "raid-stash-inactive"}
           >
-            <b>{item_name(item)}</b> {item_bonus(item)}
+            <b class={Raid.trophy_item?(item) && "raid-stash-trophy"}>{item_name(item)}</b>
+            {item_bonus(item)}
             <span class={["raid-stash-owner", not alive && "raid-stash-owner-dead"]}>{owner}</span>
           </li>
         </ul>
@@ -151,6 +152,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp event_title(event), do: Locale.get_text("Raid #{event}")
   defp event_text(event), do: Locale.get_text("Raid #{event} text")
 
+  defp option_label(_event, %{path: path}) when path != nil, do: "→ " <> event_title(path)
   defp option_label(_event, %{stat: nil}), do: gettext("Raid pass by")
   defp option_label(event, %{stat: stat}), do: Locale.get_text("Raid #{event} #{stat}")
 
@@ -204,6 +206,13 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp outcome_text(%{outcome: :promote, member: name}),
     do: gettext("Raid promote %{name}", name: name)
 
+  # the gnome doesn't make anyone drop loot: he steals it
+  defp outcome_text(%{event: :gnome_thief, outcome: :drop, item: nil}),
+    do: gettext("Raid gnome stole nothing")
+
+  defp outcome_text(%{event: :gnome_thief, outcome: :drop, item: item}),
+    do: gettext("Raid gnome stole %{item}", item: item_name(item))
+
   defp outcome_text(%{outcome: :drop, member: name, item: nil}),
     do: gettext("Raid drop nothing %{name}", name: name)
 
@@ -215,10 +224,25 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
       gettext("Raid success %{name}", name: name) <>
         " " <> gettext("Raid loot %{item}", item: item_name(item))
 
+  defp outcome_text(%{outcome: :trophy, member: name, item: item}),
+    do: gettext("Raid trophy %{name} %{item}", name: name, item: item_name(item))
+
+  defp outcome_text(%{outcome: :path, path: path}),
+    do: gettext("Raid path %{event}", event: event_title(path))
+
+  # what the scavs made of the last choice
+  defp karma_note(%{karma: change}) when change > 0, do: gettext("Raid karma up")
+  defp karma_note(%{karma: change}) when change < 0, do: gettext("Raid karma down")
+  defp karma_note(_last), do: nil
+
+  defp karma_text(0), do: gettext("Raid karma %{value}", value: 0)
+  defp karma_text(karma), do: gettext("Raid karma %{value}", value: signed(karma))
+
   defp outcome_class(%{outcome: outcome}) when outcome in [:pass, :loot, :revive, :train],
     do: "raid-outcome-good"
 
-  defp outcome_class(%{outcome: :promote}), do: "raid-outcome-rare"
+  defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
+    do: "raid-outcome-rare"
 
   defp outcome_class(%{outcome: outcome}) when outcome in [:lose, :drop, :wound],
     do: "raid-outcome-bad"
@@ -245,7 +269,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   # the member the last event changed flashes: up, down, a promotion or a death
   defp member_change(%{last: %{index: index, outcome: outcome}}, %{index: index}) do
     case outcome do
-      :promote -> "raid-member-promoted"
+      promoted when promoted in [:promote, :trophy] -> "raid-member-promoted"
       up when up in [:train, :revive, :loot] -> "raid-member-up"
       :wound -> "raid-member-down"
       :lose -> "raid-member-killed"

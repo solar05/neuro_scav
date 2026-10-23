@@ -190,7 +190,7 @@ defmodule NeuroScav.RaidTest do
       finds = for _ <- 1..3_000, do: Raid.random_item()
       count = fn item -> Enum.count(finds, &(&1 == item)) end
 
-      assert MapSet.new(finds) == MapSet.new(Raid.loot())
+      assert MapSet.new(finds) == MapSet.new(Enum.reject(Raid.loot(), &Raid.trophy_item?/1))
       assert count.(:ledx) * 2 < count.(:sj6)
       assert count.(:keycard) * 2 < count.(:bitcoin)
     end
@@ -314,11 +314,48 @@ defmodule NeuroScav.RaidTest do
       assert raid.route == [:pmc, :bait]
     end
 
-    test "beating a boss promotes, there is no way around one" do
-      raid = Raid.new([%{name: "Гена Лена", rarity: :epic}], [:kaban])
+    test "beating a boss brings its trophy and a promotion, there is no way around one" do
+      raid = Raid.new([%{name: "Гена Лена", rarity: :epic}], [:kaban, :pmc])
 
       assert Enum.all?(Raid.options(raid), & &1.stat)
-      assert %{outcome: :promote} = Raid.choose(raid, 0, 1).last
+
+      raid = Raid.choose(raid, 0, 1, :sj6)
+      assert %{outcome: :trophy, item: :pkm} = raid.last
+      assert raid.stash == [%{item: :pkm, owner: 0}]
+      assert actor(raid, 0).rarity == :legendary
+      assert Raid.loot_bonuses(raid, actor(raid, 0)) == Raid.loot_bonus(:pkm)
+    end
+
+    test "a legendary beating a boss trains instead, the trophy is theirs all the same" do
+      raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:priest])
+      [%{member: before}, _escape] = Raid.options(raid)
+
+      raid = Raid.choose(raid, 0, 1)
+      assert %{outcome: :trophy, item: :amulet} = raid.last
+      assert actor(raid, 0).stats.luck == before.stats.luck + Raid.stat_step()
+    end
+
+    test "Komar's wings are legendary: +40 luck" do
+      raid = @squad |> Raid.new([:komar]) |> Raid.choose(0, 1)
+
+      assert Raid.boss?(:komar)
+      assert %{outcome: :trophy, item: :komar_wings} = raid.last
+      assert Raid.loot_bonus(:komar_wings) == %{luck: 40}
+      assert Raid.trophy_item?(:komar_wings)
+    end
+
+    test "the gnome thief steals the last item on a failure, whichever way the squad tries" do
+      for index <- [0, 1] do
+        raid = @squad |> Raid.new([:trunk, :gnome_thief, :pmc]) |> Raid.choose(0, 1, :rooster)
+        assert Enum.all?(Raid.options(raid), & &1.stat)
+
+        raid = Raid.choose(raid, index, 100)
+        assert %{event: :gnome_thief, outcome: :drop, item: :rooster} = raid.last
+        assert raid.stash == []
+      end
+
+      raid = @squad |> Raid.new([:gnome_thief]) |> Raid.choose(0, 1, :nvg)
+      assert %{outcome: :loot, item: :nvg} = raid.last
     end
 
     test "random routes hold no chain events and now and then a boss, in the middle or at the end" do
@@ -337,6 +374,75 @@ defmodule NeuroScav.RaidTest do
           do: assert(at in [div(length(route), 2), length(route) - 1])
 
       refute Enum.any?(routes, fn route -> Enum.any?(route, &(&1 in @chain_events)) end)
+    end
+  end
+
+  describe "karma" do
+    defp luck_chance(route, karma),
+      do:
+        %{Raid.new(@squad, route) | karma: karma} |> Raid.options() |> hd() |> Map.fetch!(:chance)
+
+    test "helping scavs raises it whatever the roll, robbing them lowers it" do
+      raid = Raid.new(@squad, [:wounded, :scav_camp, :pmc])
+      assert raid.karma == 0
+
+      raid = Raid.choose(raid, 0, 100)
+      assert %{outcome: :nothing, karma: 1} = raid.last
+      assert raid.karma == 1
+
+      raid = Raid.choose(raid, 1, 1, :sj6)
+      assert %{outcome: :loot, karma: -2} = raid.last
+      assert raid.karma == -1
+    end
+
+    test "it stays within ±3" do
+      raid = %{Raid.new(@squad, [:wounded]) | karma: 3} |> Raid.choose(0, 1, :sj6)
+
+      assert raid.karma == 3
+      assert raid.last.karma == 0
+    end
+
+    test "it eases a talk with scavs and nothing else" do
+      luck = best(:luck).stats.luck
+
+      assert luck_chance([:toll], 0) == luck |> max(5) |> min(95)
+      assert luck_chance([:toll], 2) == (luck + 10) |> max(5) |> min(95)
+      assert luck_chance([:toll], -2) == (luck - 10) |> max(5) |> min(95)
+      # a sniper is no scav to talk to
+      assert luck_chance([:sniper], 3) == luck_chance([:sniper], 0)
+    end
+  end
+
+  describe "crossroads" do
+    test "it offers two paths off the route; the one taken comes next" do
+      raid = Raid.new(@squad, [:fork_road, :pmc, :office])
+      %{fork_road: [first, second] = paths} = raid.forks
+
+      assert first != second
+
+      for path <- paths,
+          do: refute(path in raid.route or Raid.boss?(path) or Raid.crossroads?(path))
+
+      assert Enum.map(Raid.options(raid), &{&1.stat, &1.path}) == [{nil, first}, {nil, second}]
+
+      raid = Raid.choose(raid, 1, 100)
+      assert %{outcome: :path, path: ^second} = raid.last
+      assert raid.route == [:fork_road, second, :pmc, :office]
+      assert Raid.event(raid) == second
+    end
+
+    test "two crossroads never offer the same path, the last one still leads somewhere" do
+      for _ <- 1..50 do
+        raid = Raid.new(@squad, [:radio, :fork_tunnel])
+        assert raid.forks.radio -- raid.forks.fork_tunnel == raid.forks.radio
+      end
+
+      raid = Raid.new(@squad, [:radio])
+      [path, _other] = raid.forks.radio
+
+      raid = Raid.choose(raid, 0, 100)
+      refute Raid.over?(raid)
+      assert Raid.event(raid) == path
     end
   end
 end

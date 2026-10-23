@@ -14,19 +14,27 @@ defmodule NeuroScav.Raid do
   - success: `:pass`, `:loot` (an item to the stash, `%{item, owner}` with
     the finder's index), `:revive` (the first
     fallen member is back; with nobody fallen it's a pass), `:train` (the
-    member's checked stat grows by `stat_step/0`) or `:promote` (the member's
+    member's checked stat grows by `stat_step/0`), `:promote` (the member's
     rarity goes one up, the stats grow by the difference of rarity bonuses;
-    at the top it's a `:train`)
+    at the top it's a `:train`) or `:trophy` (a won boss fight: the boss's
+    own loot, `trophy/1`, and a promotion, a training at the top)
   - failure: `:lose` (the member doesn't make it out), `:wound` (the checked
     stat drops by `stat_step/0`, to 1 at least), `:drop` (the last active
     item of the stash is gone) or `:nothing`
 
   Routes pick events by weight: the promoting ones are rare. A route may get
-  a boss (`boss?/1`), in the middle or at the end; beating one promotes.
+  a boss (`boss?/1`), in the middle or at the end; beating one brings a trophy.
 
   Some outcomes start a chain: another event (never on a random route) comes
   a few events later, before the last one, so the route grows by one. What
   brought it is in `last.follow_up`.
+
+  At a crossroads (`crossroads?/1`) there's no check: each option is a path,
+  an event drawn when the raid starts (`forks`), and the one taken comes next.
+
+  Scavs remember: some options change the squad's `karma` (within
+  ±`@karma_limit`, the change is in `last.karma`), and every point of it
+  eases a luck check at a scav event by `@karma_step`, a bad one makes it harder.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
   roll (1..100) and the loot found are arguments, so a raid is fully
@@ -84,17 +92,53 @@ defmodule NeuroScav.Raid do
     debtor: [{:luck, -15, :revive, :nothing}, :safe],
     drop_hunters: [{:agility, 15, :pass, :drop}, {:strength, 20, :loot, :lose}],
     pmc_killer: [{:strength, 15, :loot, :lose}, {:luck, 10, :pass, :drop}],
-    # bosses: no way around, only a fight that promotes or a costly escape
-    kaban: [{:strength, 30, :promote, :lose}, {:agility, 15, :pass, :wound}],
-    partisan: [{:agility, 30, :promote, :lose}, {:luck, 15, :pass, :wound}],
-    priest: [{:luck, 30, :promote, :lose}, {:agility, 15, :pass, :wound}]
+    # bosses: no way around, only a fight for the trophy or a costly escape
+    kaban: [{:strength, 30, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+    partisan: [{:agility, 30, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+    priest: [{:luck, 30, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+    # the toughest: its trophy is legendary
+    komar: [{:agility, 35, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+    # a thief: whatever the squad tries, a failure costs loot
+    gnome_thief: [{:agility, 10, :loot, :drop}, {:luck, 5, :pass, :drop}],
+    # scavs, see @karma
+    scav_camp: [{:luck, 5, :loot, :nothing}, {:strength, 10, :loot, :lose}, :safe],
+    fence: [{:luck, 15, :loot, :nothing}, :safe],
+    scav_patrol: [{:luck, 10, :pass, :wound}, {:strength, 15, :loot, :lose}],
+    lost_scav: [{:agility, 10, :train, :wound}, :safe]
   }
 
-  # how often an event comes up on a route, 1 unless listed
-  @weights %{veteran: 0.12, lightkeeper: 0.12}
+  # crossroads: no options of their own, see `forks` in new/2
+  @crossroads [:fork_road, :fork_tunnel, :radio]
 
-  @bosses [:kaban, :partisan, :priest]
+  # how often an event comes up on a route, 1 unless listed
+  @weights %{
+    veteran: 0.12,
+    lightkeeper: 0.12,
+    fork_road: 0.5,
+    fork_tunnel: 0.5,
+    radio: 0.5,
+    gnome_thief: 0.5
+  }
+
+  @bosses [:kaban, :partisan, :priest, :komar]
   @boss_chance 0.4
+  # a boss's own loot: nothing else brings it
+  @trophies %{kaban: :pkm, partisan: :ghillie, priest: :amulet, komar: :komar_wings}
+
+  # {event, the stat checked} => how the scavs take it
+  @karma %{
+    {:wounded, :luck} => 1,
+    {:lost_scav, :agility} => 1,
+    {:scav_camp, :luck} => 1,
+    {:scav_camp, :strength} => -2,
+    {:scav_patrol, :strength} => -1,
+    {:reshala, :strength} => -1,
+    {:reshala_guards, :strength} => -1
+  }
+  @karma_limit 3
+  @karma_step 5
+  # where karma counts: the luck checks here are talks with scavs
+  @scav_events [:toll, :flea, :medic, :wounded, :debtor, :scav_camp, :fence, :scav_patrol]
 
   # {event, outcome} => {the event it brings, how many events later}
   @chains %{
@@ -105,6 +149,8 @@ defmodule NeuroScav.Raid do
     {:dead_pmc, :loot} => {:pmc_killer, 2}
   }
   @follow_ups for {_trigger, {event, _delay}} <- @chains, do: event
+  # what a random route or a crossroads path is drawn from
+  @common Map.keys(@events) -- (@bosses ++ @follow_ups)
 
   @rarities [:common, :uncommon, :rare, :epic, :legendary]
   @stat_step 10
@@ -125,7 +171,12 @@ defmodule NeuroScav.Raid do
     moonshine: %{strength: 10, luck: -5},
     bitcoin: %{luck: 5},
     keycard: %{luck: 15},
-    nvg: %{agility: 5, luck: 5}
+    nvg: %{agility: 5, luck: 5},
+    # trophies, see @trophies
+    pkm: %{strength: 20},
+    ghillie: %{agility: 15, luck: 5},
+    amulet: %{luck: 20},
+    komar_wings: %{luck: 40}
   }
 
   # how often a kind of loot turns up, 1 unless listed: the valuables are rare
@@ -139,7 +190,7 @@ defmodule NeuroScav.Raid do
 
   @doc "Every event."
   @spec events() :: [atom()]
-  def events, do: Map.keys(@events)
+  def events, do: Map.keys(@events) ++ @crossroads
 
   @doc "How much a member's stat grows or drops on `:train` and `:wound`."
   @spec stat_step() :: pos_integer()
@@ -149,6 +200,18 @@ defmodule NeuroScav.Raid do
   @spec boss?(atom()) :: boolean()
   def boss?(event), do: event in @bosses
 
+  @doc "Whether an event is a crossroads: its options are paths."
+  @spec crossroads?(atom()) :: boolean()
+  def crossroads?(event), do: event in @crossroads
+
+  @doc "The loot beating a boss brings, nil for any other event."
+  @spec trophy(atom()) :: atom() | nil
+  def trophy(event), do: @trophies[event]
+
+  @doc "Whether a piece of loot is a boss's trophy."
+  @spec trophy_item?(atom()) :: boolean()
+  def trophy_item?(item), do: item in Map.values(@trophies)
+
   @doc """
   A random route: as many different events as `steps/0` picks, drawn by
   weight (keys `u^(1/weight)`, the largest win), so rare events seldom show up.
@@ -157,7 +220,7 @@ defmodule NeuroScav.Raid do
   """
   @spec route() :: [atom()]
   def route do
-    route = draw(events() -- (@bosses ++ @follow_ups), @weights, Enum.random(@steps))
+    route = draw(@common ++ @crossroads, @weights, Enum.random(@steps))
 
     if :rand.uniform() < @boss_chance do
       List.replace_at(route, Enum.random([div(length(route), 2), -1]), Enum.random(@bosses))
@@ -166,9 +229,9 @@ defmodule NeuroScav.Raid do
     end
   end
 
-  @doc "A random find, drawn by weight like a route: the valuables are rare."
+  @doc "A random find, drawn by weight like a route: the valuables are rare, trophies never."
   @spec random_item() :: atom()
-  def random_item, do: hd(draw(loot(), @loot_weights, 1))
+  def random_item, do: hd(draw(Enum.reject(loot(), &trophy_item?/1), @loot_weights, 1))
 
   # `count` different keys, each with a chance by its weight (1 unless listed)
   defp draw(keys, weights, count) do
@@ -188,7 +251,8 @@ defmodule NeuroScav.Raid do
   @doc """
   A new raid for `members` (maps with `:name` and `:rarity`) along `route`,
   a random `route/0` by default. Members are told apart by `:index`, names
-  may repeat.
+  may repeat. Each crossroads on the route gets two paths (`forks`), events
+  that are on the route nowhere else.
   """
   @spec new([map()], [atom()]) :: map()
   def new(members, route \\ route()) do
@@ -199,11 +263,20 @@ defmodule NeuroScav.Raid do
         member |> card() |> Map.merge(%{index: index, alive: true})
       end)
 
+    forks =
+      for crossroads <- route, crossroads?(crossroads), reduce: %{} do
+        forks ->
+          taken = route ++ Enum.concat(Map.values(forks))
+          Map.put(forks, crossroads, draw(@common -- taken, @weights, 2))
+      end
+
     %{
       squad: squad,
       route: route,
+      forks: forks,
       step: 0,
       stash: [],
+      karma: 0,
       last: nil
     }
   end
@@ -244,20 +317,32 @@ defmodule NeuroScav.Raid do
   @doc """
   The current event's options: `%{stat: nil}` for a safe one, otherwise the
   stat, the member who'd do it, the chance in percent and what a success
-  brings (`reward`) and a failure costs (`risk`).
+  brings (`reward`) and a failure costs (`risk`). At a crossroads each is a
+  safe one with the event it leads to in `path`.
   """
   @spec options(map()) :: [map()]
   def options(raid) do
-    raid |> event() |> then(&Map.get(@events, &1, [])) |> Enum.map(&option(raid, &1))
+    event = event(raid)
+
+    case raid.forks do
+      %{^event => paths} -> Enum.map(paths, &%{option(raid, event, :safe) | path: &1})
+      _forks -> @events |> Map.get(event, []) |> Enum.map(&option(raid, event, &1))
+    end
   end
 
-  defp option(_raid, :safe), do: %{stat: nil, member: nil, chance: nil, reward: nil, risk: nil}
+  defp option(_raid, _event, :safe),
+    do: %{stat: nil, member: nil, chance: nil, reward: nil, risk: nil, path: nil}
 
-  defp option(raid, {stat, difficulty, success, failure}) do
+  defp option(raid, event, {stat, difficulty, success, failure}) do
     member = raid |> alive() |> Enum.max_by(&with_loot(raid, &1, stat))
+    difficulty = difficulty - karma_ease(raid, event, stat)
     chance = (with_loot(raid, member, stat) - difficulty) |> max(5) |> min(95)
-    %{stat: stat, member: member, chance: chance, reward: success, risk: failure}
+    %{stat: stat, member: member, chance: chance, reward: success, risk: failure, path: nil}
   end
+
+  # talking to scavs (a luck check at a scav event) goes as the squad's karma
+  defp karma_ease(raid, event, :luck) when event in @scav_events, do: raid.karma * @karma_step
+  defp karma_ease(_raid, _event, _stat), do: 0
 
   # a member's stat with the bonuses of the loot they found
   defp with_loot(raid, member, stat),
@@ -288,21 +373,36 @@ defmodule NeuroScav.Raid do
   @spec choose(map(), non_neg_integer(), 1..100, atom()) :: map()
   def choose(raid, index, roll, item \\ random_item()) do
     event = event(raid)
+    safe = %{event: event, outcome: :safe, member: nil, index: nil, item: nil, stat: nil}
 
-    case event && Enum.at(Map.fetch!(@events, event), index) do
+    case event && pick(raid, event, index) do
       nil ->
         raid
 
+      {:path, path} ->
+        route = List.insert_at(raid.route, raid.step + 1, path)
+        step(%{raid | route: route}, Map.merge(safe, %{outcome: :path, path: path}))
+
       :safe ->
-        step(raid, %{event: event, outcome: :safe, member: nil, index: nil, item: nil, stat: nil})
+        step(raid, safe)
 
       option ->
         check(raid, event, option, roll, item)
     end
   end
 
+  # option `index` of an event: a path at a crossroads, otherwise as listed
+  defp pick(%{forks: forks}, event, index) when is_map_key(forks, event) do
+    case Enum.at(forks[event], index) do
+      nil -> nil
+      path -> {:path, path}
+    end
+  end
+
+  defp pick(_raid, event, index), do: Enum.at(Map.fetch!(@events, event), index)
+
   defp check(raid, event, {stat, _difficulty, success, failure} = option, roll, item) do
-    %{member: member, chance: chance} = option(raid, option)
+    %{member: member, chance: chance} = option(raid, event, option)
     outcome = if roll <= chance, do: success, else: failure
 
     settle(raid, outcome, member, item, %{
@@ -358,11 +458,17 @@ defmodule NeuroScav.Raid do
   defp settle(raid, :wound, member, _item, last),
     do: raid |> add_stat(member.index, last.stat, -@stat_step) |> step(last)
 
-  defp settle(raid, :promote, member, item, last) do
-    case next_rarity(member.rarity) do
-      nil -> settle(raid, :train, member, item, %{last | outcome: :train})
-      rarity -> raid |> promote(member.index, rarity) |> step(last)
-    end
+  defp settle(raid, :promote, member, _item, last) do
+    last = if next_rarity(member.rarity), do: last, else: %{last | outcome: :train}
+    raid |> rank_up(member, last.stat) |> step(last)
+  end
+
+  defp settle(raid, :trophy, member, _item, last) do
+    trophy = trophy(last.event)
+
+    %{raid | stash: raid.stash ++ [%{item: trophy, owner: member.index}]}
+    |> rank_up(member, last.stat)
+    |> step(%{last | item: trophy})
   end
 
   defp settle(raid, _pass_or_nothing, _member, _item, last), do: step(raid, last)
@@ -374,6 +480,14 @@ defmodule NeuroScav.Raid do
       update_member(raid, index, fn member ->
         update_in(member.stats[stat], &max(&1 + delta, 1))
       end)
+
+  # a promotion; at the top the checked stat is trained instead
+  defp rank_up(raid, member, stat) do
+    case next_rarity(member.rarity) do
+      nil -> add_stat(raid, member.index, stat, @stat_step)
+      rarity -> promote(raid, member.index, rarity)
+    end
+  end
 
   # the stats keep what the raid did to them and take the new rarity's bonus on top
   defp promote(raid, index, rarity) do
@@ -400,7 +514,19 @@ defmodule NeuroScav.Raid do
 
   defp step(raid, last) do
     {follow_up, route} = follow(raid, Map.get(@chains, {last.event, last.outcome}))
-    %{raid | route: route, step: raid.step + 1, last: Map.put(last, :follow_up, follow_up)}
+
+    karma =
+      (raid.karma + Map.get(@karma, {last.event, last.stat}, 0))
+      |> max(-@karma_limit)
+      |> min(@karma_limit)
+
+    %{
+      raid
+      | route: route,
+        step: raid.step + 1,
+        karma: karma,
+        last: Map.merge(last, %{follow_up: follow_up, karma: karma - raid.karma})
+    }
   end
 
   # a chain's event comes `delay` events later, before the last one at the

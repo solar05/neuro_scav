@@ -834,7 +834,7 @@ msgid "Raid labs agility"
 msgstr "Kinko made hashiru"
 
 msgid "Raid legend %{value}"
-msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}"
+msgstr "💰 ruuto, ➕ nakama fukki, 💪 suteeta +%{value}, ⭐ rea-do appu, 🏆 bosu torofii, 💀 nakama ni kiken, 🎒 ruuto ni kiken, 🩸 suteeta −%{value}"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} ga kitaerareta: %{stat} +%{value}!"
@@ -1090,3 +1090,120 @@ msgstr "Kiri ni magireru"
 
 msgid "Raid follow up"
 msgstr "Kore wa ato de hibiite kuru."
+
+msgid "Raid fork_road"
+msgstr "Wakaremichi"
+
+msgid "Raid fork_road text"
+msgstr "Katamuita douhyou no tokoro de michi ga wakareru. Dochira e?"
+
+msgid "Raid fork_tunnel"
+msgstr "Chika-dou"
+
+msgid "Raid fork_tunnel text"
+msgstr "Kurai chika-dou ni oriru ka, ue wo iku ka. Dochira kara mo betsu no oto ga kikoeru."
+
+msgid "Raid radio"
+msgstr "Musen no boujuu"
+
+msgid "Raid radio text"
+msgstr "Musen ga zaa zaa naru: saki no youbou ga kikoeru. Michi wo erabe."
+
+msgid "Raid scav_camp"
+msgstr "Yabanjin no kyanpu"
+
+msgid "Raid scav_camp text"
+msgstr "Takibi de yabanjin ga atatamatte iru, hi no ue ni nabe. Mada kidzukarete inai."
+
+msgid "Raid scav_camp luck"
+msgstr "Takibi ni kuwawaru"
+
+msgid "Raid scav_camp strength"
+msgstr "Kyanpu wo osou"
+
+msgid "Raid fence"
+msgstr "Fensu"
+
+msgid "Raid fence text"
+msgstr "Deguchi no koya ni Fensu ga iru. Yabanjin no aida de hyouban ga yokereba, soubi wo kureru."
+
+msgid "Raid fence luck"
+msgstr "Soubi wo tanomu"
+
+msgid "Raid scav_patrol"
+msgstr "Yabanjin no patorooru"
+
+msgid "Raid scav_patrol text"
+msgstr "Yabanjin no patorooru ga kochira e kuru. Yubi wa mou hikigane ni."
+
+msgid "Raid scav_patrol luck"
+msgstr "Mikata da to iu"
+
+msgid "Raid scav_patrol strength"
+msgstr "Saki ni utsu"
+
+msgid "Raid lost_scav"
+msgstr "Mayotta yabanjin"
+
+msgid "Raid lost_scav text"
+msgstr "Wakai yabanjin ga nakama to hagure, deguchi made tsurete itte kure to tanomu."
+
+msgid "Raid lost_scav agility"
+msgstr "Okuri todokeru"
+
+msgid "Item pkm"
+msgstr "Kaban no PKM"
+
+msgid "Item ghillie"
+msgstr "Paruchizan no giri suutsu"
+
+msgid "Item amulet"
+msgstr "Shisai no omamori"
+
+msgid "Raid trophy %{name} %{item}"
+msgstr "%{name} ga bosu wo taoshita! Torofii: «%{item}»."
+
+msgid "Raid path %{event}"
+msgstr "Butai wa magatta: %{event}."
+
+msgid "Raid karma %{value}"
+msgstr "Yabanjin karuma: %{value}"
+
+msgid "Raid karma up"
+msgstr "Yabanjin-tachi wa kore wo oboete iru daro."
+
+msgid "Raid karma down"
+msgstr "Yabanjin-tachi wa kore wo yurusanai."
+
+msgid "Raid gnome_thief"
+msgstr "Ruuto-dorobou no gnoomu"
+
+msgid "Raid gnome_thief text"
+msgstr "Hako no kage kara akai boushi no gnoomu ga nozoku. Me wa hikari, yubi wa mou ryukku ni nobite iru."
+
+msgid "Raid gnome_thief agility"
+msgstr "Boushi wo tsukamu"
+
+msgid "Raid gnome_thief luck"
+msgstr "Kirakira shita mono de sorasu"
+
+msgid "Raid gnome stole nothing"
+msgstr "Gnoomu wa ryukku wo asatta ga, kara datta. Tebura de satta."
+
+msgid "Raid gnome stole %{item}"
+msgstr "Gnoomu ga «%{item}» wo nusumi, kage ni kieta!"
+
+msgid "Raid komar"
+msgstr "SBEU Tarukofusukii Komaaru"
+
+msgid "Raid komar text"
+msgstr "Numa no ue ni haoto ga hibiku: SBEU Tarukofusukii Komaaru ga kari ni deta. Sono hane wa kiita koto mo nai un wo motarasu to iu."
+
+msgid "Raid komar agility"
+msgstr "Tataki tsubusu"
+
+msgid "Raid komar luck"
+msgstr "Harai nagara nigeru"
+
+msgid "Item komar_wings"
+msgstr "Ka no hane"

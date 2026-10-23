@@ -2669,6 +2669,22 @@ kbd {
     background: #ffd060;
 }
 
+/* the scavs' karma under the route: green when they like the squad, red when not */
+.raid-karma {
+    margin: 6px 0 0;
+    text-align: center;
+    color: #a0a0a0;
+    font-size: 15px;
+}
+
+.raid-karma-good {
+    color: #4caf50;
+}
+
+.raid-karma-bad {
+    color: #e53935;
+}
+
 .raid-squad {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -2944,6 +2960,11 @@ kbd {
 /* a fallen finder's loot doesn't work until they're back */
 .raid-stash-inactive {
     opacity: 0.45;
+}
+
+/* a boss's trophy is legendary loot */
+.raid-stash-trophy {
+    color: #ffd060;
 }
 
 /* how many items a member carries: loot works for its finder alone */

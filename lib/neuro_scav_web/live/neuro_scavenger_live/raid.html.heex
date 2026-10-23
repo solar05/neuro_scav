@@ -41,6 +41,16 @@
             class={["raid-dot", route_dot(@raid, index)]}
           ></span>
         </div>
+        <p
+          id="raid-karma"
+          class={[
+            "raid-karma",
+            @raid.karma > 0 && "raid-karma-good",
+            @raid.karma < 0 && "raid-karma-bad"
+          ]}
+        >
+          {karma_text(@raid.karma)}
+        </p>
 
         <%!-- a new step is a new element, so the outcome plays its entrance again --%>
         <p
@@ -51,6 +61,9 @@
           {outcome_text(@raid.last)}
           <span :if={@raid.last.follow_up} class="raid-follow-up">
             {gettext("Raid follow up")}
+          </span>
+          <span :if={karma_note(@raid.last)} class="raid-follow-up">
+            {karma_note(@raid.last)}
           </span>
         </p>
 
@@ -80,7 +93,10 @@
                   {stat_label(option.stat)} · {option.member.name} · {option.chance}%
                   <span class="raid-option-icons">{option_icons(option)}</span>
                 </small>
-                <small :if={is_nil(option.stat)}>{gettext("Raid safe")}</small>
+                <small :if={option.path}>{event_text(option.path)}</small>
+                <small :if={is_nil(option.stat) and is_nil(option.path)}>
+                  {gettext("Raid safe")}
+                </small>
               </button>
               <p class="raid-legend">
                 {gettext("Raid legend %{value}", value: Raid.stat_step())}

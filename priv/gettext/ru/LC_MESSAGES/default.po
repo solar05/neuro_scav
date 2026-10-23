@@ -845,7 +845,7 @@ msgid "Raid labs agility"
 msgstr "Пробежать до сейфов"
 
 msgid "Raid legend %{value}"
-msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}"
+msgstr "💰 — лут, ➕ — вернуть бойца, 💪 — стат +%{value}, ⭐ — редкость выше, 🏆 — трофей босса, 💀 — можно потерять бойца, 🎒 — можно потерять лут, 🩸 — стат −%{value}"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} набил руку: %{stat} +%{value}!"
@@ -1101,3 +1101,120 @@ msgstr "Уйти в туман"
 
 msgid "Raid follow up"
 msgstr "Это ещё аукнется."
+
+msgid "Raid fork_road"
+msgstr "Развилка"
+
+msgid "Raid fork_road text"
+msgstr "Дорога расходится у покосившегося указателя. Куда свернуть?"
+
+msgid "Raid fork_tunnel"
+msgstr "Подземный переход"
+
+msgid "Raid fork_tunnel text"
+msgstr "Можно спуститься в тёмный переход или идти поверху. С каждой стороны доносится своё."
+
+msgid "Raid radio"
+msgstr "Перехват рации"
+
+msgid "Raid radio text"
+msgstr "Рация трещит: слышно, что творится впереди. Можно выбрать, куда идти."
+
+msgid "Raid scav_camp"
+msgstr "Лагерь диких"
+
+msgid "Raid scav_camp text"
+msgstr "У костра греются дикие, на огне котелок. Вас пока не заметили."
+
+msgid "Raid scav_camp luck"
+msgstr "Подсесть к костру"
+
+msgid "Raid scav_camp strength"
+msgstr "Ограбить лагерь"
+
+msgid "Raid fence"
+msgstr "Скупщик"
+
+msgid "Raid fence text"
+msgstr "В будке у выхода сидит Скупщик. Поможет снаряжением — если о вас хорошая слава."
+
+msgid "Raid fence luck"
+msgstr "Попросить снаряжение"
+
+msgid "Raid scav_patrol"
+msgstr "Патруль диких"
+
+msgid "Raid scav_patrol text"
+msgstr "Навстречу идёт патруль диких. Пальцы уже на спусковых крючках."
+
+msgid "Raid scav_patrol luck"
+msgstr "Сказать, что свои"
+
+msgid "Raid scav_patrol strength"
+msgstr "Открыть огонь первыми"
+
+msgid "Raid lost_scav"
+msgstr "Заблудившийся дикий"
+
+msgid "Raid lost_scav text"
+msgstr "Молодой дикий потерял своих и просит проводить его до выхода."
+
+msgid "Raid lost_scav agility"
+msgstr "Проводить"
+
+msgid "Item pkm"
+msgstr "ПКМ Кабана"
+
+msgid "Item ghillie"
+msgstr "Маскхалат Партизана"
+
+msgid "Item amulet"
+msgstr "Амулет Жреца"
+
+msgid "Raid trophy %{name} %{item}"
+msgstr "%{name} одолел босса! Трофей: «%{item}»."
+
+msgid "Raid path %{event}"
+msgstr "Отряд свернул: %{event}."
+
+msgid "Raid karma %{value}"
+msgstr "Карма у диких: %{value}"
+
+msgid "Raid karma up"
+msgstr "Дикие это запомнят."
+
+msgid "Raid karma down"
+msgstr "Дикие этого не простят."
+
+msgid "Raid gnome_thief"
+msgstr "Гном-лутокрад"
+
+msgid "Raid gnome_thief text"
+msgstr "Из-за ящиков выглядывает гном в красном колпаке. Глаза горят, пальцы уже тянутся к вашим рюкзакам."
+
+msgid "Raid gnome_thief agility"
+msgstr "Схватить за колпак"
+
+msgid "Raid gnome_thief luck"
+msgstr "Отвлечь блестяшкой"
+
+msgid "Raid gnome stole nothing"
+msgstr "Гном обшарил рюкзаки, но там пусто. Ушёл ни с чем."
+
+msgid "Raid gnome stole %{item}"
+msgstr "Гном утащил «%{item}» и растворился в тенях!"
+
+msgid "Raid komar"
+msgstr "СБЭУ Тарковский Комар"
+
+msgid "Raid komar text"
+msgstr "Над болотом стоит звон: на охоту вышел СБЭУ Тарковский Комар. Говорят, его крылья приносят небывалую удачу."
+
+msgid "Raid komar agility"
+msgstr "Прихлопнуть"
+
+msgid "Raid komar luck"
+msgstr "Уйти, отмахиваясь"
+
+msgid "Item komar_wings"
+msgstr "Комариные крылья"

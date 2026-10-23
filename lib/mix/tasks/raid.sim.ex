@@ -39,8 +39,8 @@ defmodule Mix.Tasks.Raid.Sim do
     events: :boolean
   ]
   # outcomes a raid may or may not meet, shown as the share of raids with one
-  @outcomes [:loot, :train, :wound, :promote, :revive, :drop]
-  @successes [:pass, :loot, :revive, :train, :promote]
+  @outcomes [:loot, :train, :wound, :promote, :trophy, :revive, :drop]
+  @successes [:pass, :loot, :revive, :train, :promote, :trophy]
   @squad_size 5
 
   @impl Mix.Task
@@ -97,12 +97,12 @@ defmodule Mix.Tasks.Raid.Sim do
   defp pick("greedy", options), do: best(options)
   defp pick("random", options), do: Enum.random(0..(length(options) - 1))
 
-  # every event has a check, so there always is a best one
+  # a crossroads has no check: its first path then
   defp best(options) do
     options
     |> Enum.with_index()
     |> Enum.reject(fn {option, _index} -> is_nil(option.stat) end)
-    |> Enum.max_by(fn {option, _index} -> option.chance end)
+    |> Enum.max_by(fn {option, _index} -> option.chance end, fn -> {nil, 0} end)
     |> elem(1)
   end
 
@@ -118,6 +118,7 @@ defmodule Mix.Tasks.Raid.Sim do
       alive: average(alive),
       steps: average(Enum.map(results, fn {_raid, log} -> length(log) end)),
       stash: average(Enum.map(results, fn {raid, _log} -> length(raid.stash) end)),
+      karma: average(Enum.map(results, fn {raid, _log} -> raid.karma end)),
       with:
         Map.new(@outcomes, fn outcome ->
           {outcome,
@@ -148,7 +149,7 @@ defmodule Mix.Tasks.Raid.Sim do
 
   defp print_summary(strategies, results) do
     outcomes = Enum.map(@outcomes, &Atom.to_string/1)
-    header = ~w(strategy wiped clean alive steps stash) ++ outcomes
+    header = ~w(strategy wiped clean alive steps stash karma) ++ outcomes
     rows = for strategy <- strategies, do: [strategy | summary_row(summary(results[strategy]))]
 
     Mix.shell().info("\nRaids (outcome columns: share of raids that met one)")
@@ -157,7 +158,7 @@ defmodule Mix.Tasks.Raid.Sim do
 
   defp summary_row(summary) do
     [percent(summary.wiped), percent(summary.clean), number(summary.alive)] ++
-      [number(summary.steps), number(summary.stash)] ++
+      [number(summary.steps), number(summary.stash), number(summary.karma)] ++
       Enum.map(@outcomes, &percent(summary.with[&1]))
   end
 

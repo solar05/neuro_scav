@@ -845,7 +845,7 @@ msgid "Raid labs agility"
 msgstr "Run for the safes"
 
 msgid "Raid legend %{value}"
-msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}"
+msgstr "💰 loot, ➕ bring a fighter back, 💪 stat +%{value}, ⭐ rarity up, 🏆 boss trophy, 💀 a fighter at risk, 🎒 loot at risk, 🩸 stat −%{value}"
 
 msgid "Raid train %{name} %{stat} %{value}"
 msgstr "%{name} got better: %{stat} +%{value}!"
@@ -1101,3 +1101,120 @@ msgstr "Slip into the fog"
 
 msgid "Raid follow up"
 msgstr "This will come back around."
+
+msgid "Raid fork_road"
+msgstr "Crossroads"
+
+msgid "Raid fork_road text"
+msgstr "The road splits at a crooked signpost. Which way?"
+
+msgid "Raid fork_tunnel"
+msgstr "Underpass"
+
+msgid "Raid fork_tunnel text"
+msgstr "You can go down into a dark underpass or stay up top. Each way sounds different."
+
+msgid "Raid radio"
+msgstr "Radio intercept"
+
+msgid "Raid radio text"
+msgstr "The radio crackles: you can hear what's going on ahead. Pick your way."
+
+msgid "Raid scav_camp"
+msgstr "Scav camp"
+
+msgid "Raid scav_camp text"
+msgstr "Scavs warm up by the fire, a pot on the flames. They haven't seen you yet."
+
+msgid "Raid scav_camp luck"
+msgstr "Join them by the fire"
+
+msgid "Raid scav_camp strength"
+msgstr "Rob the camp"
+
+msgid "Raid fence"
+msgstr "Fence"
+
+msgid "Raid fence text"
+msgstr "Fence sits in a booth by the exit. He'll help with gear — if the scavs speak well of you."
+
+msgid "Raid fence luck"
+msgstr "Ask for gear"
+
+msgid "Raid scav_patrol"
+msgstr "Scav patrol"
+
+msgid "Raid scav_patrol text"
+msgstr "A scav patrol is coming your way, fingers already on the triggers."
+
+msgid "Raid scav_patrol luck"
+msgstr "Say you're friendly"
+
+msgid "Raid scav_patrol strength"
+msgstr "Shoot first"
+
+msgid "Raid lost_scav"
+msgstr "Lost scav"
+
+msgid "Raid lost_scav text"
+msgstr "A young scav lost his crew and asks you to walk him to the exit."
+
+msgid "Raid lost_scav agility"
+msgstr "Walk him out"
+
+msgid "Item pkm"
+msgstr "Kaban's PKM"
+
+msgid "Item ghillie"
+msgstr "Partisan's ghillie suit"
+
+msgid "Item amulet"
+msgstr "Priest's amulet"
+
+msgid "Raid trophy %{name} %{item}"
+msgstr "%{name} beat the boss! Trophy: «%{item}»."
+
+msgid "Raid path %{event}"
+msgstr "The squad turned: %{event}."
+
+msgid "Raid karma %{value}"
+msgstr "Scav karma: %{value}"
+
+msgid "Raid karma up"
+msgstr "The scavs will remember this."
+
+msgid "Raid karma down"
+msgstr "The scavs won't forgive this."
+
+msgid "Raid gnome_thief"
+msgstr "Loot-thief gnome"
+
+msgid "Raid gnome_thief text"
+msgstr "A gnome in a red cap peeks out from behind the crates. His eyes gleam, his fingers already reaching for your backpacks."
+
+msgid "Raid gnome_thief agility"
+msgstr "Grab him by the cap"
+
+msgid "Raid gnome_thief luck"
+msgstr "Distract him with something shiny"
+
+msgid "Raid gnome stole nothing"
+msgstr "The gnome went through the backpacks, but they were empty. He left with nothing."
+
+msgid "Raid gnome stole %{item}"
+msgstr "The gnome snatched «%{item}» and vanished into the shadows!"
+
+msgid "Raid komar"
+msgstr "SBEU Tarkovsky Komar"
+
+msgid "Raid komar text"
+msgstr "A whine hangs over the swamp: SBEU Tarkovsky Komar, the mosquito, is out hunting. They say his wings bring unheard-of luck."
+
+msgid "Raid komar agility"
+msgstr "Swat it"
+
+msgid "Raid komar luck"
+msgstr "Back off, swatting"
+
+msgid "Item komar_wings"
+msgstr "Mosquito wings"

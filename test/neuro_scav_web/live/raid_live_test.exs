@@ -38,6 +38,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert members(lv) == 5
     assert has_element?(lv, "#raid-event-0")
     assert render(lv) =~ ~r/Встреча 1 из 1[0-3]/
+    assert lv |> element("#raid-karma") |> render() =~ "Карма у диких: 0"
 
     lv |> element("#raid-option-0") |> render_click()
     assert has_element?(lv, "#raid-outcome-1")
