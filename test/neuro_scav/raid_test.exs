@@ -176,6 +176,16 @@ defmodule NeuroScav.RaidTest do
       for stat <- BattleRoom.stats(), do: assert(after_.stats[stat] == before.stats[stat] + delta)
     end
 
+    test "the gnome is off the scale: a promotion trains it, it stays the gnome" do
+      raid = Raid.new([%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome}], [:veteran])
+      [%{member: before}, _safe] = Raid.options(raid)
+
+      raid = Raid.choose(raid, 0, 1)
+      assert %{outcome: :train} = raid.last
+      assert actor(raid, 0).rarity == :gnome
+      assert actor(raid, 0).stats.strength == before.stats.strength + Raid.stat_step()
+    end
+
     test "a legendary has nowhere to go: a promotion trains instead" do
       raid = Raid.new([%{name: "Дед Мороз", rarity: :legendary}], [:veteran])
       [%{member: before}, _safe] = Raid.options(raid)
@@ -426,6 +436,12 @@ defmodule NeuroScav.RaidTest do
   end
 
   describe "crossroads" do
+    test "a path that isn't there changes nothing" do
+      raid = Raid.new(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
+
+      assert Raid.choose(raid, 2, 1) == raid
+    end
+
     test "its paths may be pinned when the raid starts" do
       raid = Raid.new(@squad, [:fork_road, :pmc], %{fork_road: [:office, :bait]})
 

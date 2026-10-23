@@ -8,6 +8,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   # what an option may bring and cost, shown on its button (legend under the options)
   @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
   @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸"}
+  # the runs a page keeps of those it started: the last few, for the back and
+  # forward buttons; the older ones are forgotten, so no page fills the store
+  @kept_runs 3
 
   # /raid?team=<token> brings the squad from the Team page, see path/1;
   # `run=<id>` names the page's raid, see handle_params/3
@@ -23,6 +26,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
        team: params["team"],
        members: decode(params["team"]),
        run: params["run"],
+       # the runs this page started, the latest first, see start_run/3
+       runs: [],
        raid: nil
      )}
   end
@@ -50,7 +55,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
          socket |> assign(team: params["team"]) |> assign(saved)
 
        team = decode(params["team"]) ->
-         socket |> assign(team: params["team"]) |> start_run(team)
+         socket |> assign(team: params["team"]) |> start_run(team, true)
 
        true ->
          assign(socket, team: nil, members: nil, run: nil, raid: nil)
@@ -66,16 +71,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp saved_run(_user_id, _run), do: nil
 
-  # the page's previous run is forgotten: however many raids it starts, a page
-  # keeps one in the store
-  defp start_run(socket, members) do
-    forget_run(socket)
+  # A raid the address starts (a team's link, a forgotten run of one) takes the
+  # address's place in the history, so the back button leaves the page rather
+  # than coming to the link and starting yet another raid; a raid the squad
+  # starts is a new page in it.
+  defp start_run(socket, members, replace) do
     run = Base.url_encode64(:crypto.strong_rand_bytes(6), padding: false)
+    {runs, forgotten} = Enum.split([run | socket.assigns.runs], @kept_runs)
+    Enum.each(forgotten, &RaidStore.delete({socket.assigns.user_id, &1}))
 
     socket
-    |> assign(run: run)
+    |> assign(run: run, runs: runs)
     |> assign_raid(members, Raid.new(members))
-    |> push_patch(to: run_path(socket.assigns.team, run))
+    |> push_patch(to: run_path(socket.assigns.team, run), replace: replace)
   end
 
   defp forget_run(%{assigns: %{run: nil}}), do: true
@@ -123,16 +131,24 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp gnome_name, do: Locale.get_text("Gnome catched")
 
+  # a new raid of the squad's own forgets the page's previous one: however many
+  # it starts, a page keeps one in the store (one the address starts forgets
+  # nothing: the back and forward buttons may still come to it)
   defp new_raid("recruit", socket) do
     members =
       for _ <- 1..ScavengersServer.max_team_members(),
           do: ScavengersServer.generate_uncounted(socket.assigns.user_locale)
 
-    socket |> assign(team: nil) |> start_run(members)
+    forget_run(socket)
+    socket |> assign(team: nil) |> start_run(members, false)
   end
 
   defp new_raid("again", %{assigns: %{members: nil}} = socket), do: socket
-  defp new_raid("again", socket), do: start_run(socket, socket.assigns.members)
+
+  defp new_raid("again", socket) do
+    forget_run(socket)
+    start_run(socket, socket.assigns.members, false)
+  end
 
   # a new raid comes from the lobby or once a raid is over: one under way is
   # left with "leave", never dropped for a new one

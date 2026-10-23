@@ -114,6 +114,64 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert lv |> element("#raid") |> render() == raid
   end
 
+  # the runs a user has in RaidStore (its table holds {{user_id, run}, saved, at})
+  defp runs(user_id),
+    do: for({{^user_id, run}, _saved, _at} <- :ets.tab2list(RaidStore), do: run)
+
+  test "a raid the address starts forgets nothing: the raid under way is still there",
+       %{conn: conn} do
+    user_id = "raid-#{System.unique_integer([:positive])}"
+    conn = init_test_session(conn, %{"user_id" => user_id})
+    link = Raid.path([%{name: "Дед Мороз", rarity: :common}, %{name: "Гена Лена", rarity: :epic}])
+
+    {:ok, lv, _html} = live(conn, link)
+    [run] = runs(user_id)
+    lv |> element("#raid-option-0") |> render_click()
+    raid = lv |> element("#raid") |> render()
+
+    # the link once more, without its run (as the back button used to bring it)
+    render_patch(lv, link)
+    assert_patch(lv)
+    assert run in runs(user_id) and length(runs(user_id)) == 2
+
+    render_patch(lv, link <> "&run=" <> run)
+    assert lv |> element("#raid") |> render() == raid
+  end
+
+  test "a page keeps its last three runs, however many it's made to start", %{conn: conn} do
+    user_id = "raid-#{System.unique_integer([:positive])}"
+    conn = init_test_session(conn, %{"user_id" => user_id})
+    link = Raid.path([%{name: "Дед Мороз", rarity: :common}])
+    {:ok, lv, _html} = live(conn, link)
+
+    # what a crafted client may send: a patch to the link, over and over
+    for _ <- 1..200 do
+      render_patch(lv, link)
+      assert_patch(lv)
+    end
+
+    assert length(runs(user_id)) == 3
+  end
+
+  test "a squad link skips empty names and knows the gnome", %{conn: conn} do
+    token = Base.url_encode64("Дед Мороз\n \nГНОМ ГНОМЫЧ", padding: false)
+    {:ok, lv, _html} = live(conn, "/raid?team=" <> token)
+
+    assert members(lv) == 2
+    assert lv |> element("#raid-member-1") |> render() =~ "gnome-name"
+  end
+
+  test "the lobby lets be what it has no raid for", %{conn: conn} do
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+
+    render_click(lv, "again")
+    render_click(lv, "choose", %{"index" => "0", "step" => "0"})
+    render_click(lv, "nope", %{})
+
+    refute has_element?(lv, "#raid")
+    assert has_element?(lv, "#btn-raid-recruit")
+  end
+
   test "a raid under way isn't dropped for a new one", %{conn: conn} do
     {:ok, lv, _html} = live(conn, ~p"/raid")
     lv |> element("#btn-raid-recruit") |> render_click()
@@ -272,11 +330,81 @@ defmodule NeuroScavWeb.RaidLiveTest do
       {lv, raid}
     end
 
-    defp ru(msgid),
+    defp ru(msgid, bindings \\ %{}),
       do:
         Gettext.with_locale(NeuroScavWeb.Gettext, "ru", fn ->
-          Gettext.gettext(NeuroScavWeb.Gettext, msgid)
+          Gettext.gettext(NeuroScavWeb.Gettext, msgid, bindings)
         end)
+
+    # the raid a step on, the step having done `changes`: the page tells it
+    defp told(conn, changes) do
+      last = %{
+        event: :pmc,
+        outcome: :pass,
+        member: "Гена Лена",
+        index: 1,
+        item: nil,
+        stat: :strength,
+        path: nil,
+        retreat: false,
+        follow_up: nil,
+        karma: 0
+      }
+
+      {lv, _raid} =
+        raid_page(conn, [:pmc, :office], &%{&1 | step: 1, last: Map.merge(last, changes)})
+
+      lv |> element("#raid-outcome-1") |> render()
+    end
+
+    test "every outcome is told in words of its own", %{conn: conn} do
+      name = "Гена Лена"
+      strength = ru("Stat strength")
+      sj6 = ru("Item sj6")
+
+      for {changes, words} <- [
+            {%{outcome: :safe}, ru("Raid passed")},
+            {%{outcome: :pass}, ru("Raid success %{name}", name: name)},
+            {%{outcome: :lose}, ru("Raid lost %{name}", name: name)},
+            {%{outcome: :nothing}, ru("Raid nothing %{name}", name: name)},
+            {%{outcome: :revive}, ru("Raid revive %{name}", name: name)},
+            {%{outcome: :train},
+             ru("Raid train %{name} %{stat} %{value}", name: name, stat: strength, value: 10)},
+            {%{outcome: :wound},
+             ru("Raid wound %{name} %{stat} %{value}", name: name, stat: strength, value: 10)},
+            {%{outcome: :promote}, ru("Raid promote %{name}", name: name)},
+            {%{outcome: :drop}, ru("Raid drop nothing %{name}", name: name)},
+            {%{outcome: :drop, item: :sj6},
+             ru("Raid drop %{name} %{item}", name: name, item: sj6)},
+            {%{event: :gnome_thief, outcome: :drop}, ru("Raid gnome stole nothing")},
+            {%{event: :gnome_thief, outcome: :drop, item: :sj6},
+             ru("Raid gnome stole %{item}", item: sj6)},
+            {%{outcome: :loot, item: :sj6}, ru("Raid loot %{item}", item: sj6)},
+            {%{event: :kaban, outcome: :trophy, item: :pkm},
+             ru("Raid trophy %{name} %{item}", name: name, item: ru("Item pkm"))},
+            {%{event: :fork_road, outcome: :path, path: :office},
+             ru("Raid path %{event}", event: ru("Raid office"))},
+            {%{follow_up: :ambush}, ru("Raid follow up")},
+            {%{karma: -1}, ru("Raid karma down")}
+          ] do
+        assert told(conn, changes) =~ words, inspect(changes)
+      end
+    end
+
+    test "the end tells how many made it out", %{conn: conn} do
+      verdict = fn route, play ->
+        {lv, _raid} = raid_page(conn, route, play)
+        lv |> element("#raid-end") |> render()
+      end
+
+      assert verdict.([:office], &NeuroScav.Raid.choose(&1, 1, 1)) =~ ru("Raid clean")
+
+      assert verdict.([:pmc], &NeuroScav.Raid.choose(&1, 0, 100)) =~
+               ru("Raid survived %{alive} %{total}", alive: 2, total: 3)
+
+      wiped = fn raid -> %{raid | squad: Enum.map(raid.squad, &%{&1 | alive: false})} end
+      assert verdict.([:pmc], wiped) =~ ru("Raid failed")
+    end
 
     test "a boss stands out in red", %{conn: conn} do
       {lv, _raid} = raid_page(conn, [:kaban, :pmc])

@@ -9,6 +9,11 @@ defmodule NeuroScav.RaidStore do
   Kept in memory (ETS), each with its squad: a raid lives `@ttl` after its
   last step, a sweep every `@sweep` drops the stale ones. The server only
   owns the table: reads and writes go straight to it.
+
+  However many runs the clients make (a page keeps a few, but pages can be
+  opened over and over, users made anew), the store holds `max_runs/0` at
+  most: past it a new run isn't kept (its raid plays on, only a reconnect
+  won't pick it up) while the kept ones go on.
   """
 
   # ponytail: in memory, so a restart (a deploy) still loses the raids; a signed
@@ -19,13 +24,22 @@ defmodule NeuroScav.RaidStore do
   @table __MODULE__
   @ttl :timer.hours(1)
   @sweep :timer.minutes(10)
+  # a raid is about a kilobyte: some 10 MB at the most
+  @max_runs 10_000
 
   def start_link(_opts), do: GenServer.start_link(__MODULE__, nil, name: __MODULE__)
 
-  @doc "Keeps a run's raid with its squad."
-  @spec put({String.t(), String.t()}, [map()], map()) :: true
-  def put(key, members, raid),
-    do: :ets.insert(@table, {key, %{members: members, raid: raid}, now()})
+  @doc "How many runs the store holds at most."
+  @spec max_runs() :: pos_integer()
+  def max_runs, do: @max_runs
+
+  @doc "Keeps a run's raid with its squad; false for a new run when the store is full."
+  @spec put({String.t(), String.t()}, [map()], map()) :: boolean()
+  def put(key, members, raid) do
+    if :ets.member(@table, key) or :ets.info(@table, :size) < @max_runs,
+      do: :ets.insert(@table, {key, %{members: members, raid: raid}, now()}),
+      else: false
+  end
 
   @doc "A run's raid with its squad, `%{members, raid}`, nil when there's none or it's stale."
   @spec get({String.t(), String.t()}) :: %{members: [map()], raid: map()} | nil
