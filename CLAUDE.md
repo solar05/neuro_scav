@@ -12,7 +12,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Real-time**: LiveView + PubSub
 - **UI**: Tailwind CSS + Heroicons
 - **AI**: Ollama (local LLM)
-- **State Management**: Finitomata (state machines)
 - **Server**: Bandit
 - **HTTP**: Req (built-in)
 - **Monitoring**: PromEx for Prometheus metrics

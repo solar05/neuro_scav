@@ -32,12 +32,6 @@ defmodule NeuroScavWeb do
     end
   end
 
-  def channel do
-    quote do
-      use Phoenix.Channel
-    end
-  end
-
   def controller do
     quote do
       use Phoenix.Controller,
@@ -59,14 +53,6 @@ defmodule NeuroScavWeb do
 
       on_mount NeuroScavWeb.LegendaryToast
       on_mount NeuroScavWeb.OnlineCounter
-
-      unquote(html_helpers())
-    end
-  end
-
-  def live_component do
-    quote do
-      use Phoenix.LiveComponent
 
       unquote(html_helpers())
     end

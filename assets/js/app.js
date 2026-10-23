@@ -313,7 +313,8 @@ document.addEventListener('keydown', (e) => {
     const btn = document.getElementById('btn-single') ||
                 document.getElementById('btn-team') ||
                 document.getElementById('neuroButton') ||
-                document.getElementById('btn-wheel');
+                document.getElementById('btn-wheel') ||
+                document.getElementById('btn-quiz-next');
     if (btn && !btn.disabled) btn.click();
   } else if (e.key === '1') {
     window.location.href = '/';
@@ -331,6 +332,8 @@ document.addEventListener('keydown', (e) => {
     window.location.href = '/collection';
   } else if (e.key === '8') {
     window.location.href = '/battle';
+  } else if (e.key === '9') {
+    window.location.href = '/quiz';
   } else if (e.key === '?') {
     window.toggleShortcutsModal();
   } else if (e.key === 'Escape') {

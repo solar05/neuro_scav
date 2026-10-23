@@ -14,8 +14,8 @@ defmodule NeuroScavWeb.WheelLiveTest do
       lv
       |> element("#wheel-winner-name")
       |> render()
-      |> Floki.parse_fragment!()
-      |> Floki.text()
+      |> LazyHTML.from_fragment()
+      |> LazyHTML.text()
       |> String.trim()
 
   defp rotation(html), do: Regex.run(~r/rotate\(([\d.]+)deg\)/, html) |> List.last()

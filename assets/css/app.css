@@ -71,18 +71,6 @@ p {
     background-size: cover;
 }
 
-.blended-border {
-    border-color: #a5a5a5;
-}
-
-.btn-blended {
-    background-color: #d49300 !important;
-}
-
-.btn-blended:hover {
-    background-color: rgb(195, 195, 195) !important;
-}
-
 .blended {
     color: #a5a5a5;
 }
@@ -90,15 +78,6 @@ p {
 .blended-reg-bg {
     font-size: 120%;
     color: #a5a5a5;
-}
-
-.blended-nav {
-    color: #212529 !important;
-    background-color: #d49300 !important;
-}
-
-.blended-nav:hover {
-    background-color: rgb(195, 195, 195) !important;
 }
 
 .navbar-scav {
@@ -126,11 +105,6 @@ p {
     color: #ffffff !important;
     text-align: center;
     width: 50%;
-}
-
-.tr-scav:hover {
-    color: #fff !important;
-    background-color: #5a95ec !important;
 }
 
 
@@ -435,10 +409,6 @@ p {
     border-radius: 18px;
 }
 
-.blended-reg {
-    color: #a5a5a5;
-}
-
 * {
     -webkit-tap-highlight-color: transparent;
     -webkit-touch-callout: none;
@@ -603,10 +573,6 @@ body {
         padding: 12px 14px;
     }
 
-    .display-4 {
-        font-size: 1.5rem;
-    }
-
     h2 {
         font-size: 1.2rem;
         word-wrap: break-word;
@@ -693,10 +659,6 @@ body {
         font-size: 0.75rem;
         padding: 6px 2px;
         min-height: 44px;
-    }
-
-    .display-4 {
-        font-size: 1.3rem;
     }
 
     h2 {
@@ -1136,6 +1098,7 @@ body {
 .suggest-epic { --c: darkorchid; }
 .suggest-rare { --c: rgb(37, 171, 215); }
 .suggest-uncommon { --c: #4caf50; }
+.suggest-common { --c: #a5a5a5; }
 
 .team-slot {
     cursor: pointer;
@@ -2348,6 +2311,128 @@ kbd {
 .battle-actions .btn {
     flex: 1;
     font-size: 20px;
+}
+
+/* ── Draft table and team sets ── */
+.draft-pool {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .draft-pool {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* a button holding a whole card: no button look of its own */
+.draft-card,
+.quiz-card {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: inherit;
+}
+
+.draft-card {
+    padding: 8px;
+    border-radius: 12px;
+    background: rgba(33, 37, 41, 0.85);
+    font-family: "Bender";
+    transition: transform 0.15s;
+}
+
+.draft-card:not(:disabled):hover {
+    transform: translateY(-3px);
+    outline: 2px solid #d49300;
+}
+
+.draft-card:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.draft-card .battle-card-name {
+    padding: 4px 6px;
+    font-size: 16px;
+}
+
+.draft-card .battle-card-rarity {
+    margin: 4px 0 6px;
+    font-size: 13px;
+}
+
+.draft-card .battle-stat {
+    grid-template-columns: 1fr 2em;
+    margin-bottom: 0;
+    padding: 1px 4px;
+    font-size: 13px;
+}
+
+/* the bar doesn't fit four cards in a row */
+.draft-card .battle-stat-bar {
+    display: none;
+}
+
+.battle-sets {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0 0;
+    color: #a5a5a5;
+    font-family: "Bender";
+}
+
+.battle-set {
+    padding: 2px 10px;
+    border: 2px solid #d49300;
+    border-radius: 10px;
+    background: #212529;
+    color: #ffd060;
+}
+
+.check-name-card {
+    max-width: 640px;
+    margin: 1.5rem auto 0;
+}
+
+.check-name-card .battle-stats {
+    padding: 14px;
+    font-family: "Bender";
+}
+
+/* ── Quiz ── */
+.quiz-options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 1rem 0;
+}
+
+.quiz-options .suggest-chip:disabled {
+    cursor: default;
+}
+
+.quiz-card:disabled {
+    cursor: default;
+}
+
+.quiz-right {
+    outline: 3px solid #4caf50;
+    outline-offset: 2px;
+}
+
+.quiz-wrong {
+    outline: 3px solid #e53935;
+    outline-offset: 2px;
 }
 
 /* ── Team share card ── */

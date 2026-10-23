@@ -132,14 +132,4 @@ defmodule NeuroScav.PubSub do
   def broadcast_battle(id, message) do
     PubSub.broadcast(NeuroScav.PubSub, Topics.battle_topic(id), message)
   end
-
-  @doc """
-  Get the global statistics topic name.
-
-  Returns: "statistics:lobby"
-  """
-  @spec statistics_topic() :: String.t()
-  def statistics_topic do
-    Topics.statistics_topic()
-  end
 end

@@ -22,6 +22,10 @@
       </tr>
     </tbody>
   </table>
+  <p :if={team_sets(@team) != []} id="team-sets" class="battle-sets">
+    {gettext("Team sets")}:
+    <span :for={set <- team_sets(@team)} class="battle-set">{set_label(set)}</span>
+  </p>
   <p :if={@team != []} class="team-lock-hint">{gettext("Team lock hint")}</p>
   <p class="lead">
     <.link

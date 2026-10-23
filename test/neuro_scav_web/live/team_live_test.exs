@@ -41,6 +41,19 @@ defmodule NeuroScavWeb.TeamLiveTest do
       refute lv |> element(~s(td[phx-value-index="0"])) |> render_click() =~ "🔒"
     end
 
+    test "shows the sets the team collects", %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/team_scavengers")
+      refute has_element?(lv, "#team-sets")
+
+      send(
+        lv.pid,
+        {:team_generated,
+         team(["Гена Лебедев", "Дима Ворона", "Олег Борона", "Анна Кот", "Борис Сом"])}
+      )
+
+      assert lv |> element("#team-sets") |> render() =~ "Рифма"
+    end
+
     test "gnome clicked shows gnome team", %{conn: conn} do
       {:ok, index_live, _html} = live(conn, ~p"/team_scavengers")
 

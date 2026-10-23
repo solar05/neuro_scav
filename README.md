@@ -21,7 +21,6 @@ A Phoenix-based web application for neural scavenger hunts. NeuroScav provides r
 - **Real-time Communication**: Phoenix LiveView & PubSub
 - **UI**: Tailwind CSS & Heroicons
 - **AI**: Ollama for local LLM inference
-- **State Management**: Finitomata state machines
 - **HTTP Client**: Finch (AI calls go through the [Ollama](https://hex.pm/packages/ollama) client, which is built on Req)
 - **Server**: Bandit
 - **Monitoring**: PromEx for Prometheus metrics

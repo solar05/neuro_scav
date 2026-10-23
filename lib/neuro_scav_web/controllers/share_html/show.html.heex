@@ -73,7 +73,7 @@
       <button
         class="share-copy-btn"
         data-url={url(~p"/share/#{@token}")}
-        onclick="var btn=this; navigator.clipboard.writeText(btn.dataset.url).then(function(){var orig=btn.textContent; btn.textContent='copied!'; setTimeout(function(){btn.textContent=orig;},1500);});"
+        onclick={share_js()}
       >
         copy link
       </button>

@@ -58,17 +58,4 @@ defmodule NeuroScav.PubSub.Topics do
   """
   @spec user_topic(String.t(), atom() | String.t()) :: String.t()
   def user_topic(user_id, page) when is_binary(user_id), do: "user:#{user_id}:#{page}"
-
-  # Event message types
-  @doc "Message type for statistics update events"
-  @spec statistics_updated_message() :: atom()
-  def statistics_updated_message, do: :statistics_updated
-
-  @doc "Message type for single scavenger generation"
-  @spec single_generated_message() :: atom()
-  def single_generated_message, do: :single_generated
-
-  @doc "Message type for team scavenger generation"
-  @spec team_generated_message() :: atom()
-  def team_generated_message, do: :team_generated
 end

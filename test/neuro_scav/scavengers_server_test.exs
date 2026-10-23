@@ -110,6 +110,34 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
+  describe "random_name/3" do
+    test "gives a name of the asked rarity" do
+      for locale <- ~w(ru en de ja), rarity <- [:legendary, :epic, :rare, :uncommon, :common] do
+        name = Server.random_name(locale, rarity)
+        assert Server.check_name(name).rarity == rarity, "#{locale} #{rarity}: #{name}"
+      end
+    end
+  end
+
+  describe "team_sets/1" do
+    test "finds the sets a team collects" do
+      assert Server.team_sets(["Анна Кот", "Алла Лисица", "Ася Смирнова"]) == [:initial]
+      assert Server.team_sets(["Гена Лебедев", "Дима Ворона", "Олег Борона"]) == [:rhyme]
+      assert Server.team_sets(["Гена Кот", "Дима Лис", "Олег Сом"]) == [:length]
+
+      assert Server.team_sets(["Ира Лебеда", "Ира Ворона", "Ира Борона"]) == [
+               :initial,
+               :rhyme,
+               :length
+             ]
+    end
+
+    test "a lone card or an unmatched team collects nothing" do
+      assert Server.team_sets(["Анна Анна"]) == []
+      assert Server.team_sets(["Анна Иванова", "Борис Кот", "Вера Лисица"]) == []
+    end
+  end
+
   describe "legendary announcements" do
     test "generated legendaries are broadcast with the finder's id" do
       NeuroScav.PubSub.subscribe_finds()

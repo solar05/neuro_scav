@@ -8,6 +8,7 @@ defmodule NeuroScavWeb.CheckNameLiveTest do
 
     assert html =~ "Что ты такое?"
     refute html =~ ~s(data-url="/share/)
+    refute html =~ "check-name-card"
   end
 
   test "shows the rarity of a typed name", %{conn: conn} do
@@ -17,6 +18,14 @@ defmodule NeuroScavWeb.CheckNameLiveTest do
     assert html =~ "Алиса Аврора"
     assert html =~ "Редкий дичок!"
     assert html =~ ~s(data-url="/share/)
+    # touch devices get the system share sheet, the rest a copy
+    assert html =~ "navigator.share"
+    assert html =~ "navigator.clipboard.writeText"
+
+    card = NeuroScav.BattleRoom.card(%{name: "Алиса Аврора", rarity: :rare})
+    stats = lv |> element("#check-name-card") |> render()
+    assert stats =~ "Сила"
+    for value <- Map.values(card.stats), do: assert(stats =~ "<b>#{value}</b>")
   end
 
   test "finds legendary names regardless of case", %{conn: conn} do

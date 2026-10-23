@@ -1,8 +1,3 @@
-#: lib/neuro_scav_web/components/core_components.ex:482
-#, elixir-autogen, elixir-format
-msgid "Actions"
-msgstr ""
-
 #: lib/neuro_scav_web/components/core_components.ex:160
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"
@@ -63,13 +58,7 @@ msgstr "Generate team"
 msgid "Single placeholder"
 msgstr "Here will be scavenger"
 
-msgid "Team placeholder"
-msgstr "Here will be team"
-
 msgid "Stats"
-msgstr "Stats"
-
-msgid "Stats placeholder"
 msgstr "Stats"
 
 msgid "Neuro placeholder"
@@ -120,14 +109,8 @@ msgstr "Neuro"
 msgid "Stats gnome"
 msgstr "Secret"
 
-msgid "Single generating"
-msgstr "Generaing scavenger..."
-
 msgid "Chill"
 msgstr "Chillout, friend..."
-
-msgid "Team generating"
-msgstr "Generating team..."
 
 msgid "legendary"
 msgstr "Legendary!"
@@ -388,4 +371,76 @@ msgid "Draw team"
 msgstr "Draw a team"
 
 msgid "Team battle rules"
-msgstr "5 × 5: scavengers fight in pairs slot by slot, every stat of every pair is a round. Whoever wins more rounds wins."
+msgstr "3 × 3: scavengers fight in pairs slot by slot, every stat of every pair is a round. Whoever wins more rounds wins. Sets add a bonus to all stats."
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Draft rules"
+msgstr "Draft 3 × 3: 8 open cards lie on the table, you take them in turns (1-2-2-1) until each has three. Everyone sees every card, sets give a bonus — pick wisely."
+
+msgid "Your pick"
+msgstr "Your turn: take a card from the table"
+
+msgid "Opponent picks"
+msgstr "Opponent is picking a card…"
+
+msgid "Picking card"
+msgstr "Picking a card…"
+
+msgid "Accept rematch"
+msgstr "Accept rematch"
+
+msgid "Rematch asked"
+msgstr "Waiting for the opponent to agree…"
+
+msgid "Wants rematch"
+msgstr "Wants a rematch!"
+
+msgid "Set initial"
+msgstr "One letter"
+
+msgid "Set rhyme"
+msgstr "Rhyme"
+
+msgid "Set length"
+msgstr "Even ranks"
+
+msgid "Set initial rule"
+msgstr "Every first name starts with the same letter"
+
+msgid "Set rhyme rule"
+msgstr "At least two last names rhyme"
+
+msgid "Set length rule"
+msgstr "Every last name has the same length"
+
+msgid "Team sets"
+msgstr "Team sets"
+
+msgid "Sets note %{bonus}"
+msgstr "In 3 × 3 battles and drafts every set a team collects adds +%{bonus} to all its stats."
+
+msgid "Battle card"
+msgstr "Battle card"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Quiz rarity question"
+msgstr "What rarity is this scavenger?"
+
+msgid "Quiz duel question"
+msgstr "Who wins the battle? Hint: the rarer the scavenger, the stronger it is."
+
+msgid "Quiz right"
+msgstr "Right!"
+
+msgid "Quiz wrong"
+msgstr "Wrong!"
+
+msgid "Quiz score %{right} %{total}"
+msgstr "Guessed: %{right} of %{total}"
+
+msgid "Next"
+msgstr "Next"

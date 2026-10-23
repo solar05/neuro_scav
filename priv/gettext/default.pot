@@ -11,11 +11,6 @@
 msgid ""
 msgstr ""
 
-#: lib/neuro_scav_web/components/core_components.ex:482
-#, elixir-autogen, elixir-format
-msgid "Actions"
-msgstr ""
-
 #: lib/neuro_scav_web/components/core_components.ex:160
 #, elixir-autogen, elixir-format
 msgid "Attempting to reconnect"

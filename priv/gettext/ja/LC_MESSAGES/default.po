@@ -2,9 +2,6 @@ msgid ""
 msgstr ""
 "Language: ja\n"
 
-msgid "Actions"
-msgstr ""
-
 msgid "Attempting to reconnect"
 msgstr ""
 
@@ -53,13 +50,7 @@ msgstr "Chiimu wo seisei"
 msgid "Single placeholder"
 msgstr "Koko ni yabanjin ga hyouji saremasu"
 
-msgid "Team placeholder"
-msgstr "Koko ni chiimu ga hyouji saremasu"
-
 msgid "Stats"
-msgstr "Toukei"
-
-msgid "Stats placeholder"
 msgstr "Toukei"
 
 msgid "Neuro placeholder"
@@ -109,12 +100,6 @@ msgstr "Nyuuro yabanjin"
 
 msgid "Stats gnome"
 msgstr "Shiikuretto"
-
-msgid "Single generating"
-msgstr "Yabanjin wo sagashite imasu..."
-
-msgid "Team generating"
-msgstr "Chiimu wo atsumete imasu..."
 
 msgid "legendary"
 msgstr "Rejendarii!"
@@ -375,4 +360,76 @@ msgid "Draw team"
 msgstr "Chiimu wo hiku"
 
 msgid "Team battle rules"
-msgstr "5 × 5: suroto goto ni pea de tatakau. Kaku pea no kaku suteeta ga ichi raundo. Ooku katta hou no kachi."
+msgstr "3 × 3: suroto goto ni pea de tatakau. Kaku pea no kaku suteeta ga ichi raundo. Ooku katta hou no kachi. Setto wa zen suteeta ni boonasu."
+
+msgid "Draft"
+msgstr "Dorafuto"
+
+msgid "Draft rules"
+msgstr "Dorafuto 3 × 3: ba ni hachi-mai no kaado. Junban ni toru (1-2-2-1), sorezore san-mai made. Kaado wa zenin ni mieru, setto wa boonasu — kashikoku erabou."
+
+msgid "Your pick"
+msgstr "Anata no ban: ba kara kaado wo torou"
+
+msgid "Opponent picks"
+msgstr "Aite ga kaado wo erande imasu…"
+
+msgid "Picking card"
+msgstr "Kaado wo erande imasu…"
+
+msgid "Accept rematch"
+msgstr "Ribenji wo ukeru"
+
+msgid "Rematch asked"
+msgstr "Aite no henji wo matteimasu…"
+
+msgid "Wants rematch"
+msgstr "Ribenji shitai!"
+
+msgid "Set initial"
+msgstr "Onaji inishiaru"
+
+msgid "Set rhyme"
+msgstr "Rain"
+
+msgid "Set length"
+msgstr "Seiretsu"
+
+msgid "Set initial rule"
+msgstr "Zenin no namae ga onaji moji de hajimaru"
+
+msgid "Set rhyme rule"
+msgstr "Sukunaku tomo futari no myouji ga rain wo fumu"
+
+msgid "Set length rule"
+msgstr "Zenin no myouji ga onaji nagasa"
+
+msgid "Team sets"
+msgstr "Chiimu setto"
+
+msgid "Sets note %{bonus}"
+msgstr "3 × 3 batoru to dorafuto de wa, setto hitotsu goto ni chiimu no zen suteeta ga +%{bonus}."
+
+msgid "Battle card"
+msgstr "Batoru kaado"
+
+msgid "Quiz"
+msgstr "Kuizu"
+
+msgid "Quiz rarity question"
+msgstr "Kono yabanjin no rea-do wa?"
+
+msgid "Quiz duel question"
+msgstr "Batoru de katsu no wa dotchi? Hinto: rea na yabanjin hodo tsuyoi."
+
+msgid "Quiz right"
+msgstr "Seikai!"
+
+msgid "Quiz wrong"
+msgstr "Hazure!"
+
+msgid "Quiz score %{right} %{total}"
+msgstr "Seikai: %{total} mon-chuu %{right} mon"
+
+msgid "Next"
+msgstr "Tsugi e"

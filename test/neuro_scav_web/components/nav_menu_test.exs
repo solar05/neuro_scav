@@ -19,7 +19,7 @@ defmodule NeuroScavWeb.NavMenuTest do
 
     assert summary(html) == "Дичок"
 
-    for path <- ~w(/ /team_scavengers /statistics /wheel /check_name /collection),
+    for path <- ~w(/ /team_scavengers /statistics /wheel /check_name /collection /battle /quiz),
         do: assert(html =~ ~s(href="#{path}"))
 
     refute html =~ "/neuro_scavengers"

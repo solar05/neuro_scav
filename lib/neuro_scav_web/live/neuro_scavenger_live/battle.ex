@@ -6,7 +6,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   alias NeuroScavWeb.Presence
 
   @bot BattleRoom.bot()
-  @team_size BattleRoom.team_size()
+  @modes %{"duel" => :duel, "team" => :team, "draft" => :draft}
   # open rooms whose owner is waiting on the page, keyed by room id
   @queue "battle_queue"
 
@@ -24,7 +24,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
         battle: nil,
         closed: false,
         queued: false,
-        size: 1
+        mode: :duel
       )
 
     {:ok, join(socket)}
@@ -47,29 +47,42 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   defp join(socket), do: socket
 
   @impl true
-  def handle_event("size", %{"size" => size}, socket),
-    do: {:noreply, assign(socket, :size, if(size == "#{@team_size}", do: @team_size, else: 1))}
+  def handle_event("mode", %{"mode" => mode}, socket),
+    do: {:noreply, assign(socket, :mode, Map.get(@modes, mode, :duel))}
 
   def handle_event("create", _params, %{assigns: assigns} = socket) do
-    {:ok, id} = BattleRoom.create(assigns.user_id, size: assigns.size)
+    {:ok, id} =
+      BattleRoom.create(assigns.user_id, mode: assigns.mode, locale: assigns.user_locale)
+
     {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
   end
 
-  def handle_event("find", _params, %{assigns: %{user_id: user_id, size: size}} = socket) do
-    waiting = for {id, %{metas: [%{size: ^size} | _]}} <- Presence.list(@queue), do: id
+  def handle_event(
+        "find",
+        _params,
+        %{assigns: %{user_id: user_id, mode: mode} = assigns} = socket
+      ) do
+    waiting = for {id, %{metas: [%{mode: ^mode} | _]}} <- Presence.list(@queue), do: id
 
     id =
       Enum.find(waiting, &seated?(BattleRoom.join(&1, user_id), user_id)) ||
-        open_room(user_id, size)
+        open_room(user_id, mode, assigns.user_locale)
 
     {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
   end
 
   def handle_event("create_bot", _params, %{assigns: assigns} = socket) do
     {:ok, id} =
-      BattleRoom.create_with_bot(assigns.user_id, assigns.user_locale, size: assigns.size)
+      BattleRoom.create_with_bot(assigns.user_id, assigns.user_locale, mode: assigns.mode)
 
     {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+  end
+
+  def handle_event("pick", %{"index" => index}, %{assigns: assigns} = socket) do
+    case Integer.parse(index) do
+      {index, ""} -> act(socket, BattleRoom.pick(assigns.room_id, assigns.user_id, index))
+      _invalid -> {:noreply, socket}
+    end
   end
 
   def handle_event("draw", _params, %{assigns: assigns} = socket),
@@ -85,8 +98,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   defp seated?({:ok, battle}, user_id), do: player?(battle, user_id)
   defp seated?({:error, :not_found}, _user_id), do: false
 
-  defp open_room(user_id, size) do
-    {:ok, id} = BattleRoom.create(user_id, open: true, size: size)
+  defp open_room(user_id, mode, locale) do
+    {:ok, id} = BattleRoom.create(user_id, open: true, mode: mode, locale: locale)
     id
   end
 
@@ -95,7 +108,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     waiting = match?(%{open: true, players: [^user_id]}, battle)
 
     cond do
-      waiting and not queued -> Presence.track(self(), @queue, battle.id, %{size: battle.size})
+      waiting and not queued -> Presence.track(self(), @queue, battle.id, %{mode: battle.mode})
       queued and not waiting -> Presence.untrack(self(), @queue, socket.assigns.room_id)
       true -> :ok
     end
@@ -135,6 +148,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     player: nil,
     own?: false,
     cards: nil,
+    sets: nil,
     ready?: false,
     can_draw?: false,
     can_fight?: false,
@@ -156,19 +170,19 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   defp seat_state(_battle, %{player: nil} = seat), do: seat
 
-  # before the reveal only the viewer's own cards are rendered;
+  # before the reveal only the viewer's own cards are rendered (a draft is open);
   # each card gets `won`, the stats it took in its pair
   defp seat_state(%{result: nil} = battle, %{player: player, own?: own?} = seat) do
     cards = battle.cards[player]
+    open? = own? or battle.mode == :draft
 
     %{
       seat
-      | cards: if(own? and cards, do: Enum.map(cards, &Map.put(&1, :won, []))),
+      | cards: if(open? and cards, do: Enum.map(cards, &Map.put(&1, :won, []))),
+        sets: if(open?, do: battle.sets[player]),
         ready?: player in battle.ready,
-        # a ready card is final, as BattleRoom.draw/3 enforces
-        can_draw?:
-          own? and (cards == nil or player not in battle.redrawn) and player not in battle.ready,
-        can_fight?: own? and cards != nil and player not in battle.ready
+        can_draw?: can_draw?(battle, seat),
+        can_fight?: can_fight?(battle, seat)
     }
   end
 
@@ -178,10 +192,24 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     %{
       seat
       | cards: Enum.zip_with(battle.cards[player], won, &Map.put(&1, :won, &2)),
+        sets: battle.sets[player],
         score_steps: score_steps(result.rounds, player),
         outcome: outcome(result, player)
     }
   end
+
+  # a ready card is final, as BattleRoom.draw/3 enforces; a draft has no draws
+  defp can_draw?(%{mode: :draft}, _seat), do: false
+
+  defp can_draw?(battle, %{player: player, own?: own?}) do
+    own? and (not Map.has_key?(battle.cards, player) or player not in battle.redrawn) and
+      player not in battle.ready
+  end
+
+  defp can_fight?(%{mode: :draft}, _seat), do: false
+
+  defp can_fight?(battle, %{player: player, own?: own?}),
+    do: own? and Map.has_key?(battle.cards, player) and player not in battle.ready
 
   defp seat_label(_battle, nil, _user_id), do: gettext("Opponent")
   defp seat_label(_battle, player, player), do: gettext("You")
@@ -195,9 +223,34 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   end
 
   # what the other seat is up to, shown in its action row
-  defp seat_status(%{player: nil}), do: gettext("Waiting for opponent")
-  defp seat_status(%{ready?: true}), do: gettext("Card ready")
-  defp seat_status(_seat), do: gettext("Drawing card")
+  defp seat_status(_battle, %{player: nil}), do: gettext("Waiting for opponent")
+
+  defp seat_status(%{mode: :draft} = battle, %{player: player}),
+    do: if(BattleRoom.turn(battle) == player, do: gettext("Picking card"), else: "\u00a0")
+
+  defp seat_status(_battle, %{ready?: true}), do: gettext("Card ready")
+  defp seat_status(_battle, _seat), do: gettext("Drawing card")
+
+  defp draft_note(battle, user_id) do
+    if BattleRoom.turn(battle) == user_id,
+      do: gettext("Your pick"),
+      else: gettext("Opponent picks")
+  end
+
+  defp my_turn?(battle, user_id), do: BattleRoom.turn(battle) == user_id
+
+  # unknown cards (and picks still to come in a draft) are placeholders
+  defp pad(cards, size), do: Enum.take((cards || []) ++ List.duplicate(nil, size), size)
+
+  defp rematch_offered?(battle, user_id), do: Enum.any?(battle.rematch, &(&1 != user_id))
+
+  defp mode_label(:duel), do: "1 × 1"
+  defp mode_label(:team), do: "3 × 3"
+  defp mode_label(:draft), do: gettext("Draft")
+
+  defp mode_rules(:team), do: gettext("Team battle rules")
+  defp mode_rules(:draft), do: gettext("Draft rules")
+  defp mode_rules(:duel), do: nil
 
   defp outcome(%{winner: :draw}, _player), do: :draw
   defp outcome(%{winner: player}, player), do: :won
@@ -217,7 +270,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   # The reveal lights the rounds up one by one (CSS delays of --round × --step),
   # then shows the outcome after --rounds steps. A duel's 3 rounds take 600ms
-  # each, a team battle's 15 rounds 240ms each.
+  # each, a team battle's 9 rounds 400ms each.
   defp reveal_style(%{size: size}) do
     rounds = size * length(BattleRoom.stats())
     "--rounds: #{rounds}; --step: #{min(600, div(3_600, rounds))}ms"
@@ -236,4 +289,5 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
 
   defp stat_label(stat), do: Locale.get_text("Stat #{stat}")
   defp rarity_text(rarity), do: Locale.get_text(Atom.to_string(rarity))
+  defp set_label(set), do: Locale.get_text("Set #{set}")
 end

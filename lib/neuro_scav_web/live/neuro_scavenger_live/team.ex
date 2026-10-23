@@ -51,6 +51,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
   def on_gnome_clicked(socket),
     do: {:noreply, assign(socket, team: gnome_team(), locked: MapSet.new())}
 
+  defp team_sets(team), do: team |> Enum.map(& &1.name) |> ScavengersServer.team_sets()
+  defp set_label(set), do: Locale.get_text("Set #{set}")
+
   # pubsub callbacks
   @impl true
   def handle_info({:team_generated, fresh}, socket) do

@@ -28,8 +28,4 @@ defmodule NeuroScav.Scavengers do
     |> Statistics.changeset(attrs)
     |> Repo.update()
   end
-
-  def change_statistics(%Statistics{} = statistics, attrs \\ %{}) do
-    Statistics.changeset(statistics, attrs)
-  end
 end

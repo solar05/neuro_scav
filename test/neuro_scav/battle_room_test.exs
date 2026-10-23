@@ -21,9 +21,9 @@ defmodule NeuroScav.BattleRoomTest do
       assert Enum.all?(Map.values(card.stats), &(&1 in 1..75))
     end
 
-    test "the gnome beats the best legendary in every stat" do
+    test "the gnome beats the best legendary with every set in every stat" do
       gnome = BattleRoom.card(%{name: "ГНОМ ГНОМЫЧ", rarity: :gnome})
-      best = 75 + 25
+      best = 75 + 25 + 3 * BattleRoom.set_bonus()
 
       assert Enum.all?(Map.values(gnome.stats), &(&1 > best))
     end
@@ -85,7 +85,9 @@ defmodule NeuroScav.BattleRoomTest do
       assert BattleRoom.draw(id, "a", "ru") == {:error, :not_allowed}
     end
 
-    test "a rematch clears the cards and keeps the players", %{id: id} do
+    test "a rematch starts once both players ask, clears the cards and keeps the players", %{
+      id: id
+    } do
       assert BattleRoom.rematch(id, "a") == {:error, :not_allowed}
 
       {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
@@ -95,10 +97,16 @@ defmodule NeuroScav.BattleRoomTest do
 
       assert BattleRoom.rematch(id, "c") == {:error, :not_allowed}
 
-      assert {:ok, %{players: ["a", "b"], cards: cards, result: nil}} =
-               BattleRoom.rematch(id, "b")
+      assert {:ok, %{result: %{}, rematch: rematch}} = BattleRoom.rematch(id, "b")
+      assert MapSet.to_list(rematch) == ["b"]
+      # asking twice doesn't count for the other player
+      assert {:ok, %{result: %{}}} = BattleRoom.rematch(id, "b")
+
+      assert {:ok, %{players: ["a", "b"], cards: cards, result: nil, rematch: rematch}} =
+               BattleRoom.rematch(id, "a")
 
       assert cards == %{}
+      assert MapSet.size(rematch) == 0
     end
 
     test "a rematch keeps the count of battles won", %{id: id} do
@@ -108,33 +116,105 @@ defmodule NeuroScav.BattleRoomTest do
       {:ok, %{result: %{winner: winner}, wins: wins}} = BattleRoom.ready(id, "b")
 
       assert wins == if(winner == :draw, do: %{}, else: %{winner => 1})
-      assert {:ok, %{wins: ^wins}} = BattleRoom.rematch(id, "a")
+      {:ok, _battle} = BattleRoom.rematch(id, "a")
+      assert {:ok, %{wins: ^wins, result: nil}} = BattleRoom.rematch(id, "b")
     end
   end
 
-  test "in a team battle every stat of every pair is a round" do
-    {:ok, id} = BattleRoom.create("a", size: BattleRoom.team_size())
+  defp start_room(opts) do
+    {:ok, id} = BattleRoom.create("a", opts)
     [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
     on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
+    {id, pid}
+  end
+
+  test "in a team battle every stat of every pair is a round" do
+    {id, _pid} = start_room(mode: :team)
 
     {:ok, _battle} = BattleRoom.join(id, "b")
     {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
     {:ok, _battle} = BattleRoom.draw(id, "b", "ru")
     {:ok, _battle} = BattleRoom.ready(id, "a")
-    {:ok, %{result: result, cards: cards}} = BattleRoom.ready(id, "b")
+    {:ok, %{result: result, cards: cards} = battle} = BattleRoom.ready(id, "b")
 
-    assert length(cards["a"]) == BattleRoom.team_size()
-    assert length(result.rounds) == BattleRoom.team_size()
+    assert BattleRoom.team_size() == 3
+    assert length(cards["a"]) == 3
+    assert length(result.rounds) == 3
     assert_rules(result, cards)
+    assert_sets(battle)
   end
 
-  test "a room is a duel unless it asks for a full team" do
-    for {opts, size} <- [{[], 1}, {[size: 3], 1}, {[size: BattleRoom.team_size()], 5}] do
-      {:ok, id} = BattleRoom.create("a", opts)
-      [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
-      on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
-
+  test "a room is a duel unless it asks for a team or a draft" do
+    for {opts, size} <- [{[], 1}, {[mode: :bogus], 1}, {[mode: :team], 3}, {[mode: :draft], 3}] do
+      {id, _pid} = start_room(opts)
       assert {:ok, %{size: ^size}} = BattleRoom.join(id, "a")
+    end
+  end
+
+  describe "draft" do
+    setup do
+      {id, _pid} = start_room(mode: :draft, locale: "en")
+      %{draft_id: id}
+    end
+
+    test "deals open cards and waits for the second player", %{draft_id: id} do
+      assert {:ok, %{draft: %{pool: pool}} = battle} = BattleRoom.join(id, "a")
+      assert length(pool) == 2 * BattleRoom.team_size() + 2
+      assert BattleRoom.turn(battle) == nil
+      assert BattleRoom.pick(id, "a", 0) == {:error, :not_allowed}
+    end
+
+    test "players pick in snake order and the last pick starts the battle", %{draft_id: id} do
+      {:ok, battle} = BattleRoom.join(id, "b")
+      assert BattleRoom.draw(id, "a", "ru") == {:error, :not_allowed}
+      assert BattleRoom.pick(id, "b", 0) == {:error, :not_allowed}
+      assert BattleRoom.pick(id, "a", 99) == {:error, :not_allowed}
+
+      [first, second, third | _] = battle.draft.pool
+
+      {:ok, battle} = BattleRoom.pick(id, "a", 0)
+      assert battle.cards["a"] == [first]
+      assert BattleRoom.ready(id, "a") == {:error, :not_allowed}
+
+      {:ok, battle} =
+        Enum.reduce(~w(b b a a), {:ok, battle}, fn player, {:ok, battle} ->
+          assert BattleRoom.turn(battle) == player
+          BattleRoom.pick(id, player, 0)
+        end)
+
+      assert battle.cards["b"] |> Enum.take(2) |> Enum.map(& &1.name) ==
+               Enum.map([second, third], & &1.name)
+
+      assert BattleRoom.turn(battle) == "b"
+      assert battle.result == nil
+      {:ok, %{result: result, cards: cards} = battle} = BattleRoom.pick(id, "b", 0)
+
+      assert length(battle.draft.pool) == 2
+      assert_rules(result, cards)
+      assert_sets(battle)
+    end
+
+    test "the other player picks first after a rematch", %{draft_id: id} do
+      {:ok, _battle} = BattleRoom.join(id, "b")
+      for player <- ~w(a b b a a b), do: {:ok, _battle} = BattleRoom.pick(id, player, 0)
+
+      {:ok, _battle} = BattleRoom.rematch(id, "a")
+      {:ok, battle} = BattleRoom.rematch(id, "b")
+
+      assert length(battle.draft.pool) == 2 * BattleRoom.team_size() + 2
+      assert BattleRoom.turn(battle) == "b"
+    end
+  end
+
+  # a team gets the set bonus on every stat of every card
+  defp assert_sets(%{cards: cards, sets: sets}) do
+    for {player, team} <- cards do
+      assert sets[player] == team |> Enum.map(& &1.name) |> NeuroScav.ScavengersServer.team_sets()
+      bonus = BattleRoom.set_bonus() * length(sets[player])
+
+      for card <- team,
+          stat <- BattleRoom.stats(),
+          do: assert(card.stats[stat] == BattleRoom.card(card).stats[stat] + bonus)
     end
   end
 
@@ -223,6 +303,29 @@ defmodule NeuroScav.BattleRoomTest do
       assert {:ok, %{result: nil, cards: cards}} = BattleRoom.rematch(id, "a")
       assert cards == %{}
       assert bot in bot_turn(pid).ready
+    end
+
+    test "agrees to a rematch at once", %{bot_room: id, bot_pid: pid} do
+      {:ok, _battle} = BattleRoom.draw(id, "a", "ru")
+      {:ok, _battle} = BattleRoom.ready(id, "a")
+      %{result: %{}} = bot_turn(pid)
+
+      assert {:ok, %{result: nil}} = BattleRoom.rematch(id, "a")
+    end
+
+    test "picks the strongest card on its draft turns" do
+      {:ok, id} = BattleRoom.create_with_bot("a", "ru", mode: :draft, think_ms: 60_000..60_000)
+      [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
+      on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)
+      bot = BattleRoom.bot()
+
+      {:ok, battle} = BattleRoom.pick(id, "a", 0)
+      assert BattleRoom.turn(battle) == bot
+      best = Enum.max_by(battle.draft.pool, &(&1.stats |> Map.values() |> Enum.sum()))
+
+      send(pid, :bot_turn)
+      %{cards: cards} = :sys.get_state(pid)
+      assert cards[bot] == [best]
     end
 
     test "a stray turn message changes nothing", %{bot_room: id, bot_pid: pid} do

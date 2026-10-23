@@ -3,8 +3,6 @@ defmodule TurnstileMock do
   Mocks for turnstile.
   """
 
-  def refresh(socket), do: socket
-
   def verify(_) do
     if :persistent_term.get({TurnstileMock, :error}, false) do
       {:error, :invalid_token}

@@ -82,4 +82,19 @@
       </tr>
     </tbody>
   </table>
+
+  <h2 class="text-center blended-reg-bg mb-4 mt-4">{gettext("Team sets")}</h2>
+  <p class="battle-note">{gettext("Sets note %{bonus}", bonus: BattleRoom.set_bonus())}</p>
+  <table id="glossary-sets" class="table table-responsive table-scav table-hover">
+    <tbody>
+      <tr :for={{set, i} <- Enum.with_index([:initial, :rhyme, :length])}>
+        <td class="td-scav" style={set_cell_style(i, :name)}>
+          <span class="text-container">{set_label(set)}</span>
+        </td>
+        <td class="td-scav-desc" style={set_cell_style(i, :rule)}>
+          {set_rule(set)}
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

@@ -2,7 +2,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.CheckName do
   use NeuroScavWeb, :live_view
   use NeuroScavWeb.GnomeCapture
 
-  alias NeuroScav.{Locale, ScavengersServer}
+  alias NeuroScav.{BattleRoom, Locale, ScavengersServer}
 
   @max_name_length 40
 
@@ -15,6 +15,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.CheckName do
      socket
      |> assign(:user_locale, locale)
      |> assign(:suggestions, nil)
+     |> assign(:card, nil)
      |> assign(:scavenger, %{
        name: Locale.get_text("Check name title"),
        rarity: nil,
@@ -30,9 +31,12 @@ defmodule NeuroScavWeb.NeuroScavengerLive.CheckName do
     socket =
       case String.split(name) do
         [_first, _last | _] ->
-          %{name: name, rarity: rarity} = ScavengersServer.check_name(name)
+          %{name: name, rarity: rarity} = scavenger = ScavengersServer.check_name(name)
           rarity_text = Locale.get_text(Atom.to_string(rarity))
-          assign(socket, :scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
+
+          socket
+          |> assign(:scavenger, %{name: name, rarity: rarity, rarity_text: rarity_text})
+          |> assign(:card, BattleRoom.card(scavenger))
 
         [first] ->
           suggestions = ScavengersServer.suggest_last_names(first, socket.assigns.user_locale)

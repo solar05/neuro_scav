@@ -402,6 +402,50 @@ defmodule NeuroScav.ScavengersServer do
   end
 
   @doc """
+  A random name of `locale` with `rarity` (any but the gnome), without counting
+  it in statistics. Rule rarities are found by drawing random pairs, so an epic
+  takes about a thousand cheap draws.
+  """
+  @spec random_name(String.t(), atom(), module()) :: String.t()
+  def random_name(locale, rarity, names \\ NeuroScav.Scavengers.Names) do
+    state = load_names(names)
+
+    if rarity == :legendary,
+      do: state |> Map.fetch!("legendary_names_#{locale}") |> Enum.random(),
+      else:
+        fn -> name_pair(state, locale) end
+        |> Stream.repeatedly()
+        |> Enum.find(&(&1.rarity == rarity))
+        |> Map.fetch!(:name)
+  end
+
+  @doc """
+  Sets a team of names (two or more) collects, each one a battle bonus:
+
+  - `:initial` - every first name starts with the same letter
+  - `:rhyme` - at least two last names rhyme
+  - `:length` - every last name has the same length
+  """
+  @spec team_sets([String.t()]) :: [atom()]
+  def team_sets([_, _ | _] = names) do
+    {firsts, lasts} = names |> Enum.map(&split_name/1) |> Enum.unzip()
+
+    initials = Enum.map(firsts, &(&1 |> String.first() |> String.downcase()))
+    rhymes = Enum.map(lasts, &rhyme_suffix/1)
+
+    for {set, true} <- [
+          initial: same?(initials),
+          rhyme: Enum.uniq(rhymes) != rhymes,
+          length: same?(Enum.map(lasts, &String.length/1))
+        ],
+        do: set
+  end
+
+  def team_sets(_names), do: []
+
+  defp same?(values), do: values |> Enum.uniq() |> length() == 1
+
+  @doc """
   Exact chance (in percent) of each rarity for `locale`.
 
   Walks every first × last name pair from the `names` module, so it takes

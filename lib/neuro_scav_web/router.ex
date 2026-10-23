@@ -39,6 +39,7 @@ defmodule NeuroScavWeb.Router do
     live "/collection", NeuroScavengerLive.Collection, :collection
     live "/battle", NeuroScavengerLive.Battle, :battle
     live "/battle/:id", NeuroScavengerLive.Battle, :battle
+    live "/quiz", NeuroScavengerLive.Quiz, :quiz
 
     get "/share/:token", ShareController, :show
     get "/share/team/:token", ShareController, :team

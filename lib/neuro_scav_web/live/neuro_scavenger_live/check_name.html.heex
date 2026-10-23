@@ -7,6 +7,12 @@
       {@scavenger.rarity_text}
     </h3>
   </div>
+  <div :if={@card} id="check-name-card" class="wheel-panel check-name-card">
+    <div class="wheel-panel-header">
+      <span>{gettext("Battle card")}</span>
+    </div>
+    <.card_stats card={@card} />
+  </div>
   <div class="wheel-panel check-name-panel">
     <div class="wheel-panel-header">
       <span>{gettext("Check name hint")}</span>

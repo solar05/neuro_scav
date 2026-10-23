@@ -103,43 +103,44 @@ defmodule NeuroScavWeb.BattleLiveTest do
     assert other != id
   end
 
-  test "the lobby switches to a team battle" do
+  test "the lobby switches to a team battle or a draft" do
     {:ok, lv, html} = live(conn_for("a"), ~p"/battle")
     refute html =~ "дички бьются парами"
 
-    assert lv |> element("#btn-battle-size-5") |> render_click() =~ "дички бьются парами"
+    assert lv |> element("#btn-battle-mode-team") |> render_click() =~ "дички бьются парами"
+    assert lv |> element("#btn-battle-mode-draft") |> render_click() =~ "8 открытых карт"
 
     assert {:error, {:live_redirect, %{to: "/battle/" <> id}}} =
              lv |> element("#btn-battle-bot") |> render_click()
 
     stop_room_on_exit(id)
-    assert {:ok, %{size: 5}} = BattleRoom.join(id, "a")
+    assert {:ok, %{mode: :draft, size: 3}} = BattleRoom.join(id, "a")
   end
 
-  test "a team battle shows five cards a side after the reveal" do
-    {:ok, id} = BattleRoom.create("a", size: BattleRoom.team_size())
+  test "a team battle shows three cards a side after the reveal" do
+    {:ok, id} = BattleRoom.create("a", mode: :team)
     stop_room_on_exit(id)
 
     {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
     {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
-    # unknown cards are placeholders, so the arena has all ten slots from the start
-    assert card_slots(a) == 10
+    # unknown cards are placeholders, so the arena has all six slots from the start
+    assert card_slots(a) == 6
 
     assert a |> element("#btn-battle-draw") |> render_click() =~ "Перетянуть"
-    assert has_element?(a, "#battle-card-0-4")
+    assert has_element?(a, "#battle-card-0-2")
     refute has_element?(b, "#battle-card-1-0")
-    assert card_slots(b) == 10
+    assert card_slots(b) == 6
 
     a |> element("#btn-battle-ready") |> render_click()
     b |> element("#btn-battle-draw") |> render_click()
     b |> element("#btn-battle-ready") |> render_click()
-    assert card_slots(a) == 10
+    assert card_slots(a) == 6
 
-    for view <- [a, b], seat <- [0, 1], do: assert(has_element?(view, "#battle-card-#{seat}-4"))
+    for view <- [a, b], seat <- [0, 1], do: assert(has_element?(view, "#battle-card-#{seat}-2"))
 
-    # the reveal: 15 rounds of 240ms, each seat's score steps up in the rounds it won
+    # the reveal: 9 rounds of 400ms, each seat's score steps up in the rounds it won
     html = render(a)
-    assert html =~ "--rounds: 15; --step: 240ms"
+    assert html =~ "--rounds: 9; --step: 400ms"
 
     seats = html |> LazyHTML.from_fragment() |> LazyHTML.query(".battle-seat")
     assert Enum.count(seats) == 2
@@ -169,9 +170,9 @@ defmodule NeuroScavWeb.BattleLiveTest do
     String.to_integer(round)
   end
 
-  test "find opponent pairs only searchers of the same size" do
+  test "find opponent pairs only searchers of the same mode" do
     {:ok, lobby, _html} = live(conn_for("a"), ~p"/battle")
-    lobby |> element("#btn-battle-size-5") |> render_click()
+    lobby |> element("#btn-battle-mode-team") |> render_click()
 
     assert {:error, {:live_redirect, %{to: "/battle/" <> team_id}}} =
              lobby |> element("#btn-battle-find") |> render_click()
@@ -233,4 +234,56 @@ defmodule NeuroScavWeb.BattleLiveTest do
     assert has_element?(a, "#btn-battle-rematch")
     refute has_element?(c, "#btn-battle-rematch")
   end
+
+  test "a draft deals open cards that the players take in turns" do
+    {:ok, id} = BattleRoom.create("a", mode: :draft, locale: "ru")
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+    {:ok, c, _html} = live(conn_for("c"), ~p"/battle/#{id}")
+
+    assert render(a) =~ "Твой ход"
+    assert render(b) =~ "Соперник выбирает карту"
+    assert has_element?(b, "#draft-card-0[disabled]")
+    refute has_element?(a, "#draft-card-0[disabled]")
+    refute has_element?(a, "#btn-battle-draw")
+
+    first = a |> element("#draft-card-0 .battle-card-name") |> render() |> text()
+    a |> element("#draft-card-0") |> render_click()
+
+    # picks are open: the opponent and spectators see them right away
+    for view <- [a, b, c], do: assert(view |> element(".battle-arena") |> render() =~ first)
+    assert render(b) =~ "Твой ход"
+
+    for player <- [b, b, a, a, b], do: player |> element("#draft-card-0") |> render_click()
+
+    refute has_element?(a, "#draft-pool")
+    assert render(a) =~ "Победа!" or render(a) =~ "Поражение" or render(a) =~ "Ничья"
+  end
+
+  test "a rematch waits until both players agree" do
+    {:ok, id} = BattleRoom.create("a")
+    stop_room_on_exit(id)
+
+    {:ok, a, _html} = live(conn_for("a"), ~p"/battle/#{id}")
+    {:ok, b, _html} = live(conn_for("b"), ~p"/battle/#{id}")
+
+    for view <- [a, b] do
+      view |> element("#btn-battle-draw") |> render_click()
+      view |> element("#btn-battle-ready") |> render_click()
+    end
+
+    a |> element("#btn-battle-rematch") |> render_click()
+    assert render(a) =~ "Ждём ответа соперника"
+    refute has_element?(a, "#btn-battle-rematch")
+    assert render(b) =~ "Хочет реванш!"
+    assert b |> element("#btn-battle-rematch") |> render() =~ "Принять реванш"
+
+    b |> element("#btn-battle-rematch") |> render_click()
+    assert has_element?(a, "#btn-battle-draw")
+    refute render(a) =~ "Ждём ответа соперника"
+  end
+
+  defp text(html), do: html |> LazyHTML.from_fragment() |> LazyHTML.text() |> String.trim()
 end

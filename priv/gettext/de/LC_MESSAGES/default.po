@@ -2,9 +2,6 @@ msgid ""
 msgstr ""
 "Language: de\n"
 
-msgid "Actions"
-msgstr ""
-
 msgid "Attempting to reconnect"
 msgstr ""
 
@@ -53,13 +50,7 @@ msgstr "Team generieren"
 msgid "Single placeholder"
 msgstr "Hier erscheint der Wildling"
 
-msgid "Team placeholder"
-msgstr "Hier erscheint das Team"
-
 msgid "Stats"
-msgstr "Statistik"
-
-msgid "Stats placeholder"
 msgstr "Statistik"
 
 msgid "Neuro placeholder"
@@ -109,12 +100,6 @@ msgstr "Neuro-Wildlinge"
 
 msgid "Stats gnome"
 msgstr "Geheim"
-
-msgid "Single generating"
-msgstr "Wildling wird gesucht..."
-
-msgid "Team generating"
-msgstr "Team wird zusammengestellt..."
 
 msgid "legendary"
 msgstr "Legendärer Fund!"
@@ -375,4 +360,76 @@ msgid "Draw team"
 msgstr "Team ziehen"
 
 msgid "Team battle rules"
-msgstr "5 × 5: Wildlinge kämpfen paarweise Platz für Platz, jeder Wert jedes Paares ist eine Runde. Wer mehr Runden gewinnt, gewinnt."
+msgstr "3 × 3: Wildlinge kämpfen paarweise Platz für Platz, jeder Wert jedes Paares ist eine Runde. Wer mehr Runden gewinnt, gewinnt. Sets geben einen Bonus auf alle Werte."
+
+msgid "Draft"
+msgstr "Draft"
+
+msgid "Draft rules"
+msgstr "Draft 3 × 3: 8 offene Karten liegen auf dem Tisch, ihr nehmt sie abwechselnd (1-2-2-1), bis jeder drei hat. Alle sehen alle Karten, Sets geben einen Bonus — wähle klug."
+
+msgid "Your pick"
+msgstr "Du bist dran: nimm eine Karte vom Tisch"
+
+msgid "Opponent picks"
+msgstr "Der Gegner wählt eine Karte…"
+
+msgid "Picking card"
+msgstr "Wählt eine Karte…"
+
+msgid "Accept rematch"
+msgstr "Revanche annehmen"
+
+msgid "Rematch asked"
+msgstr "Warte auf die Zusage des Gegners…"
+
+msgid "Wants rematch"
+msgstr "Will eine Revanche!"
+
+msgid "Set initial"
+msgstr "Ein Buchstabe"
+
+msgid "Set rhyme"
+msgstr "Reim"
+
+msgid "Set length"
+msgstr "Reih und Glied"
+
+msgid "Set initial rule"
+msgstr "Alle Vornamen beginnen mit demselben Buchstaben"
+
+msgid "Set rhyme rule"
+msgstr "Mindestens zwei Nachnamen reimen sich"
+
+msgid "Set length rule"
+msgstr "Alle Nachnamen sind gleich lang"
+
+msgid "Team sets"
+msgstr "Team-Sets"
+
+msgid "Sets note %{bonus}"
+msgstr "Im 3 × 3-Kampf und im Draft gibt jedes gesammelte Set dem Team +%{bonus} auf alle Werte."
+
+msgid "Battle card"
+msgstr "Kampfkarte"
+
+msgid "Quiz"
+msgstr "Quiz"
+
+msgid "Quiz rarity question"
+msgstr "Wie selten ist dieser Wildling?"
+
+msgid "Quiz duel question"
+msgstr "Wer gewinnt den Kampf? Tipp: je seltener der Wildling, desto stärker."
+
+msgid "Quiz right"
+msgstr "Richtig!"
+
+msgid "Quiz wrong"
+msgstr "Daneben!"
+
+msgid "Quiz score %{right} %{total}"
+msgstr "Erraten: %{right} von %{total}"
+
+msgid "Next"
+msgstr "Weiter"

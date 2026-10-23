@@ -18,8 +18,6 @@ defmodule NeuroScav.Application do
         # Card battle rooms: one process per invite link
         {Registry, keys: :unique, name: NeuroScav.BattleRegistry},
         {DynamicSupervisor, name: NeuroScav.BattleSupervisor, strategy: :one_for_one},
-        # Start the Finch HTTP client for sending emails
-        {Finch, name: NeuroScav.Finch},
         # Start a worker by calling: NeuroScav.Worker.start_link(arg)
         # {NeuroScav.Worker, arg},
         # Start to serve requests, typically the last entry
