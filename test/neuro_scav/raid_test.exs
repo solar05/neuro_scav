@@ -458,6 +458,23 @@ defmodule NeuroScav.RaidTest do
     end
   end
 
+  test "last always has the same keys, whatever happened" do
+    keys = Enum.sort(~w(event outcome member index item stat path retreat follow_up karma)a)
+
+    lasts = [
+      (@squad |> Raid.new([:office]) |> Raid.choose(1, 1)).last,
+      (@squad |> Raid.new([:office]) |> Raid.choose(0, 1, :sj6)).last,
+      (@squad |> Raid.new([:fork_road, :pmc]) |> Raid.choose(0, 1)).last,
+      (@squad |> Raid.new([:kaban]) |> Raid.choose(0, 1)).last,
+      (@squad
+       |> Raid.new([:trunk, :gnome_thief])
+       |> Raid.choose(0, 1, :sj6)
+       |> Raid.choose(1, 100)).last
+    ]
+
+    for last <- lasts, do: assert(last |> Map.keys() |> Enum.sort() == keys)
+  end
+
   describe "retreats" do
     defp locks(raid), do: raid |> Raid.options() |> Enum.map(& &1.locked)
 

@@ -49,6 +49,38 @@ defmodule NeuroScav.Raid do
 
   alias NeuroScav.BattleRoom
 
+  @typedoc """
+  What the last step did, every key always there, nil where it doesn't apply:
+  the `event` and its `outcome`; the `member` (a name) and `index` of the one
+  it happened to; the `item` found, dropped or stolen; the `stat` checked;
+  the `path` taken at a crossroads; whether it was a `retreat` (nil for a
+  path); the event a chain brought (`follow_up`) and the change of `karma`.
+  """
+  @type last :: %{
+          event: atom(),
+          outcome: atom(),
+          member: String.t() | nil,
+          index: non_neg_integer() | nil,
+          item: atom() | nil,
+          stat: atom() | nil,
+          path: atom() | nil,
+          retreat: boolean() | nil,
+          follow_up: atom() | nil,
+          karma: integer()
+        }
+  @last %{
+    event: nil,
+    outcome: nil,
+    member: nil,
+    index: nil,
+    item: nil,
+    stat: nil,
+    path: nil,
+    retreat: nil,
+    follow_up: nil,
+    karma: 0
+  }
+
   # An event: its options, or a map with `options` and what else it is:
   #
   # - `weight`: how often it comes up on a route, 1 unless given
@@ -202,12 +234,6 @@ defmodule NeuroScav.Raid do
            {event, spec} -> {event, Map.put_new(spec, :options, [])}
          end)
 
-  for {event, %{options: options}} <- @specs,
-      stats = for({stat, _difficulty, _success, _failure} <- options, do: stat),
-      stats != Enum.uniq(stats) do
-    raise CompileError, description: "raid event #{event}: two options check the same stat"
-  end
-
   @crossroads for {event, %{crossroads: true}} <- @specs, do: event
   @bosses for {event, %{trophy: _trophy}} <- @specs, do: event
   @boss_chance 0.4
@@ -262,6 +288,46 @@ defmodule NeuroScav.Raid do
 
   # how often a kind of loot turns up, 1 unless listed: the valuables are rare
   @loot_weights %{ledx: 0.3, keycard: 0.3, slick: 0.5}
+
+  # The catalog is checked as it compiles: a slip in it would show only in a
+  # raid (a chain to an unknown event stops it for good, an unknown trophy
+  # crashes it) or never (an unknown key, a chain on an outcome that doesn't
+  # come, karma for an unchecked stat: all just ignored).
+  @spec_keys [:options, :weight, :trophy, :chain, :karma, :scav, :gnome, :crossroads]
+
+  for {event, spec} <- @specs do
+    checks =
+      for {stat, _difficulty, success, failure} <- spec.options, do: {stat, success, failure}
+
+    stats = for {stat, _success, _failure} <- checks, do: stat
+    safe = if :safe in spec.options, do: [:safe], else: []
+
+    outcomes =
+      safe ++ Enum.flat_map(checks, fn {_stat, success, failure} -> [success, failure] end)
+
+    chain = Map.get(spec, :chain, %{})
+    unknown = Map.keys(spec) -- @spec_keys
+
+    problems =
+      Enum.filter(
+        [
+          unknown != [] && "unknown keys #{inspect(unknown)}",
+          stats != Enum.uniq(stats) && "two options check the same stat",
+          Map.keys(chain) -- outcomes != [] && "a chain on an outcome its options don't have",
+          Enum.any?(chain, fn {_outcome, {follow_up, _delay}} ->
+            not Map.has_key?(@specs, follow_up)
+          end) && "a chain to an unknown event",
+          Map.has_key?(spec, :trophy) && not Map.has_key?(@loot, spec.trophy) &&
+            "an unknown trophy",
+          Map.keys(Map.get(spec, :karma, %{})) -- stats != [] &&
+            "karma for a stat no option checks"
+        ],
+        &is_binary/1
+      )
+
+    if problems != [],
+      do: raise(CompileError, description: "raid event #{event}: #{Enum.join(problems, "; ")}")
+  end
 
   @steps 10..13
   # retreats in a row a squad may make: then it has to take a risk
@@ -491,22 +557,13 @@ defmodule NeuroScav.Raid do
 
   @doc """
   Takes option `index` of the current event: a check succeeds when `roll`
-  (1..100) is within its chance; the loot found is `item`. `last` holds what
-  happened, for the page to tell. A locked option changes nothing.
+  (1..100) is within its chance; the loot found is `item`. `last` (`t:last/0`)
+  holds what happened, for the page to tell. A locked option changes nothing.
   """
   @spec choose(map(), non_neg_integer(), 1..100, atom()) :: map()
   def choose(raid, index, roll, item \\ random_item()) do
     event = event(raid)
-
-    safe = %{
-      event: event,
-      outcome: :safe,
-      member: nil,
-      index: nil,
-      item: nil,
-      stat: nil,
-      retreat: true
-    }
+    safe = %{@last | event: event, outcome: :safe, retreat: true}
 
     case event && pick(raid, event, index) do
       nil ->
@@ -514,7 +571,7 @@ defmodule NeuroScav.Raid do
 
       {:path, path} ->
         route = List.insert_at(raid.route, raid.step + 1, path)
-        step(%{raid | route: route}, Map.merge(safe, %{outcome: :path, path: path, retreat: nil}))
+        step(%{raid | route: route}, %{safe | outcome: :path, path: path, retreat: nil})
 
       :safe ->
         step(raid, safe)
@@ -545,13 +602,13 @@ defmodule NeuroScav.Raid do
     outcome = if roll <= chance, do: success, else: failure
 
     settle(raid, outcome, member, item, %{
-      event: event,
-      outcome: outcome,
-      member: member.name,
-      index: member.index,
-      item: nil,
-      stat: stat,
-      retreat: retreat?(option)
+      @last
+      | event: event,
+        outcome: outcome,
+        member: member.name,
+        index: member.index,
+        stat: stat,
+        retreat: retreat?(option)
     })
   end
 
@@ -666,7 +723,7 @@ defmodule NeuroScav.Raid do
         step: raid.step + 1,
         karma: karma,
         retreats: retreats(raid.retreats, last.retreat),
-        last: Map.merge(last, %{follow_up: follow_up, karma: karma - raid.karma})
+        last: %{last | follow_up: follow_up, karma: karma - raid.karma}
     }
   end
 

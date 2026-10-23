@@ -108,6 +108,14 @@
               <p class="raid-legend">
                 {gettext("Raid retreat legend %{limit}", limit: Raid.retreat_limit())}
               </p>
+              <button
+                id="btn-raid-leave"
+                class="btn blend-old-font btn-sm w-100 mt-2"
+                phx-click="leave"
+                data-confirm={gettext("Raid leave confirm")}
+              >
+                {gettext("Raid leave")}
+              </button>
             </div>
           </div>
         <% else %>
@@ -133,8 +141,8 @@
           </div>
         <% end %>
       </div>
-    <% @members -> %>
-      <%!-- the dead render of a squad link: the raid starts once connected --%>
+    <% @members || @run -> %>
+      <%!-- the dead render of a squad link or a run: the raid starts or comes back once connected --%>
     <% true -> %>
       <div class="battle-lobby">
         <p class="battle-note">{gettext("Raid intro %{steps}", steps: steps_text())}</p>

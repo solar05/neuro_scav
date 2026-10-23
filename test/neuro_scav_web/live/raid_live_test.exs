@@ -3,6 +3,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
 
   import Phoenix.LiveViewTest
 
+  alias NeuroScav.{RaidStore, ScavengersServer}
   alias NeuroScavWeb.NeuroScavengerLive.Raid
 
   setup do
@@ -71,20 +72,41 @@ defmodule NeuroScavWeb.RaidLiveTest do
     refute has_element?(lv, "#raid-outcome-2")
   end
 
-  test "a reconnect picks the raid in progress up again, a finished one it doesn't",
+  test "a reconnect picks its run up again; a fresh visit or another tab doesn't",
        %{conn: conn} do
     conn = init_test_session(conn, %{"user_id" => "raid-#{System.unique_integer()}"})
     {:ok, lv, _html} = live(conn, ~p"/raid")
     lv |> element("#btn-raid-recruit") |> render_click()
+    run = assert_patch(lv)
     lv |> element("#raid-option-0") |> render_click()
     squad = lv |> element("#raid-squad") |> render()
 
-    {:ok, again, _html} = live(conn, ~p"/raid")
+    {:ok, again, _html} = live(conn, run)
     assert has_element?(again, "#raid-outcome-1")
     assert again |> element("#raid-squad") |> render() == squad
 
-    finish(again)
-    {:ok, _fresh, html} = live(conn, ~p"/raid")
+    # a fresh visit is the lobby; another tab's raid is a run of its own
+    {:ok, fresh, _html} = live(conn, ~p"/raid")
+    refute has_element?(fresh, "#raid")
+    fresh |> element("#btn-raid-recruit") |> render_click()
+    refute assert_patch(fresh) == run
+
+    {:ok, again, _html} = live(conn, run)
+    assert again |> element("#raid-squad") |> render() == squad
+  end
+
+  test "a squad may leave its raid: the page is back at the lobby, the run is gone",
+       %{conn: conn} do
+    conn = init_test_session(conn, %{"user_id" => "raid-#{System.unique_integer()}"})
+    {:ok, lv, _html} = live(conn, ~p"/raid")
+    lv |> element("#btn-raid-recruit") |> render_click()
+    run = assert_patch(lv)
+
+    lv |> element("#btn-raid-leave") |> render_click()
+    assert_patch(lv, ~p"/raid")
+    refute has_element?(lv, "#raid")
+
+    {:ok, _again, html} = live(conn, run)
     assert html =~ "Набрать отряд"
   end
 
@@ -201,5 +223,82 @@ defmodule NeuroScavWeb.RaidLiveTest do
            |> LazyHTML.from_fragment()
            |> LazyHTML.query(~s([data-stat="luck"] .stat-bonus))
            |> Enum.count() == 0
+  end
+
+  describe "a raid along a route of the test's own" do
+    # the raid is put in RaidStore and the page comes to its run, as a reconnect would
+    defp raid_page(conn, route, play \\ & &1) do
+      user_id = "raid-#{System.unique_integer([:positive])}"
+
+      members =
+        Enum.map(["Алиса Аврора", "Гена Лена", "Дед Мороз"], &ScavengersServer.check_name/1)
+
+      raid = members |> NeuroScav.Raid.new(route) |> play.()
+      RaidStore.put({user_id, "test"}, members, raid)
+
+      {:ok, lv, _html} =
+        conn |> init_test_session(%{"user_id" => user_id}) |> live(~p"/raid?run=test")
+
+      {lv, raid}
+    end
+
+    defp ru(msgid),
+      do:
+        Gettext.with_locale(NeuroScavWeb.Gettext, "ru", fn ->
+          Gettext.gettext(NeuroScavWeb.Gettext, msgid)
+        end)
+
+    test "a boss stands out in red", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:kaban, :pmc])
+
+      assert has_element?(lv, "#raid-event-0.raid-event-boss")
+      assert lv |> element("#raid-event-0 .wheel-panel-header") |> render() =~ "☠ Кабан"
+    end
+
+    test "after two retreats in a row the retreats are locked, the rest isn't", %{conn: conn} do
+      {lv, _raid} =
+        raid_page(conn, [:office, :office, :axeman], fn raid ->
+          raid |> NeuroScav.Raid.choose(1, 1) |> NeuroScav.Raid.choose(1, 1)
+        end)
+
+      assert has_element?(lv, "#raid-option-1[disabled]")
+      assert lv |> element("#raid-option-1") |> render() =~ "Хватит отступать"
+      refute has_element?(lv, "#raid-option-0[disabled]")
+      assert render(lv) =~ "подряд можно не больше 2"
+
+      # a locked retreat sent anyway changes nothing
+      render_click(lv, "choose", %{"index" => "1", "step" => "2"})
+      refute has_element?(lv, "#raid-outcome-3")
+    end
+
+    test "a crossroads shows where each path leads; the one taken comes next", %{conn: conn} do
+      {lv, raid} = raid_page(conn, [:fork_road, :pmc])
+      [first, second] = raid.forks.fork_road
+
+      assert lv |> element("#raid-option-0") |> render() =~ "→ " <> ru("Raid #{first}")
+      assert lv |> element("#raid-option-1") |> render() =~ "→ " <> ru("Raid #{second}")
+
+      lv |> element("#raid-option-1") |> render_click()
+      assert lv |> element("#raid-outcome-1") |> render() =~ "Отряд свернул"
+
+      assert lv |> element("#raid-event-1 .wheel-panel-header") |> render() =~
+               ru("Raid #{second}")
+    end
+
+    test "karma shows under the route and in the outcome", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:wounded, :pmc])
+      assert lv |> element("#raid-karma") |> render() =~ "Карма у диких: 0"
+
+      # helping a scav counts whatever the roll
+      lv |> element("#raid-option-0") |> render_click()
+      assert lv |> element("#raid-karma.raid-karma-good") |> render() =~ "+1"
+      assert lv |> element("#raid-outcome-1") |> render() =~ "Дикие это запомнят."
+    end
+
+    test "a boss's trophy is gold in the stash", %{conn: conn} do
+      {lv, _raid} = raid_page(conn, [:kaban, :pmc], &NeuroScav.Raid.choose(&1, 0, 1))
+
+      assert lv |> element("#raid-stash .raid-stash-trophy") |> render() =~ "ПКМ Кабана"
+    end
   end
 end

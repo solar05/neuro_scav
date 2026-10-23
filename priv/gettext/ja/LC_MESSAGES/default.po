@@ -1381,3 +1381,9 @@ msgstr "Mou nigerarenai — kiken wo okasu shika nai"
 
 msgid "Raid retreat legend %{limit}"
 msgstr "🏃 tettai: renzoku %{limit}-kai made"
+
+msgid "Raid leave"
+msgstr "Reido wo nukeru"
+
+msgid "Raid leave confirm"
+msgstr "Reido wo suteru? Butai mo ruuto mo modoranai."

@@ -9,48 +9,64 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   @reward_icons %{loot: "💰", revive: "➕", train: "💪", promote: "⭐", trophy: "🏆"}
   @risk_icons %{lose: "💀", drop: "🎒", wound: "🩸"}
 
-  # /raid?team=<token> brings the squad from the Team page, see path/1
+  # /raid?team=<token> brings the squad from the Team page, see path/1;
+  # `run=<id>` names the page's raid, see handle_params/3
   @impl true
   def mount(params, session, socket) do
     locale = Map.get(session, "lang")
     if connected?(socket), do: Locale.setup_locale(locale)
-    members = decode(params["team"])
-
-    socket =
-      assign(socket,
-        user_locale: locale,
-        user_id: session["user_id"],
-        members: members,
-        raid: nil
-      )
 
     {:ok,
+     assign(socket,
+       user_locale: locale,
+       user_id: session["user_id"],
+       team: params["team"],
+       members: decode(params["team"]),
+       run: params["run"],
+       raid: nil
+     )}
+  end
+
+  # A page's raid is a run, named in its address and kept in RaidStore: a
+  # reconnect comes back with the run and picks its raid up, a fresh visit
+  # (no run) or another tab (another run) doesn't. A new raid gets a new run.
+  @impl true
+  def handle_params(params, _uri, socket) do
+    {:noreply,
      cond do
-       # the route is random, so only once connected: the dead render would show another one
-       not connected?(socket) -> socket
-       resumed = resumable(socket.assigns.user_id, members) -> assign(socket, resumed)
-       members -> assign_raid(socket, members, Raid.new(members))
-       true -> socket
+       # the route is random, so only once connected: the dead render would show
+       # another one; a patch to the raid's own run changes nothing
+       not connected?(socket) or socket.assigns.raid != nil -> socket
+       saved = saved_run(socket.assigns.user_id, params["run"]) -> assign(socket, saved)
+       socket.assigns.members -> start_run(socket, socket.assigns.members)
+       true -> assign(socket, run: nil)
      end}
   end
 
-  # what a reconnect picks up: the user's raid in progress, if it's this
-  # squad's (any squad's when the link brings none)
-  defp resumable(user_id, members) when is_binary(user_id) do
-    case RaidStore.get(user_id) do
-      %{members: saved, raid: raid} = resumed ->
-        if members in [nil, saved] and not Raid.over?(raid), do: resumed
-
-      nil ->
-        nil
+  defp saved_run(user_id, run) when is_binary(user_id) and is_binary(run) do
+    case RaidStore.get({user_id, run}) do
+      nil -> nil
+      saved -> Map.put(saved, :run, run)
     end
   end
 
-  defp resumable(_user_id, _members), do: nil
+  defp saved_run(_user_id, _run), do: nil
+
+  defp start_run(socket, members) do
+    run = Base.url_encode64(:crypto.strong_rand_bytes(6), padding: false)
+
+    socket
+    |> assign(run: run)
+    |> assign_raid(members, Raid.new(members))
+    |> push_patch(to: run_path(socket.assigns.team, run))
+  end
+
+  defp run_path(nil, run), do: ~p"/raid?#{[run: run]}"
+  defp run_path(team, run), do: ~p"/raid?#{[team: team, run: run]}"
 
   # every change of the raid is kept, so a reconnect picks it up
   defp assign_raid(socket, members, raid) do
-    RaidStore.put(socket.assigns.user_id, members, raid)
+    RaidStore.put({socket.assigns.user_id, socket.assigns.run}, members, raid)
     assign(socket, members: members, raid: raid)
   end
 
@@ -93,12 +109,22 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
       for _ <- 1..ScavengersServer.max_team_members(),
           do: ScavengersServer.generate_uncounted(socket.assigns.user_locale)
 
-    {:noreply, assign_raid(socket, members, Raid.new(members))}
+    {:noreply, socket |> assign(team: nil) |> start_run(members)}
   end
 
   def handle_event("again", _params, %{assigns: %{members: members}} = socket)
       when members != nil,
-      do: {:noreply, assign_raid(socket, members, Raid.new(members))}
+      do: {:noreply, start_run(socket, members)}
+
+  # the squad leaves the raid: it's forgotten, the page is back at the lobby
+  def handle_event("leave", _params, socket) do
+    RaidStore.delete({socket.assigns.user_id, socket.assigns.run})
+
+    {:noreply,
+     socket
+     |> assign(team: nil, members: nil, run: nil, raid: nil)
+     |> push_patch(to: ~p"/raid")}
+  end
 
   # the click names the step it was made at: a late or a double one meant an
   # event that's gone, and must not choose for the next one

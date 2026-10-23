@@ -1,8 +1,10 @@
 defmodule NeuroScav.RaidStore do
   @moduledoc """
-  Raids in progress by user, so a raid page that reconnects (a phone back from
-  the background, a dropped network) picks its raid up again instead of
-  starting over.
+  Raids in progress, so a raid page that reconnects (a phone back from the
+  background, a dropped network) picks its raid up again instead of starting
+  over. A raid is kept by its user and run, `{user_id, run}`: the run names
+  the page's raid in its address, so each tab has its own and a link someone
+  shares picks up nothing of theirs.
 
   Kept in memory (ETS), each with its squad: a raid lives `@ttl` after its
   last step, a sweep every `@sweep` drops the stale ones. The server only
@@ -20,19 +22,23 @@ defmodule NeuroScav.RaidStore do
 
   def start_link(_opts), do: GenServer.start_link(__MODULE__, nil, name: __MODULE__)
 
-  @doc "Keeps a user's raid with its squad."
-  @spec put(String.t(), [map()], map()) :: true
-  def put(user_id, members, raid),
-    do: :ets.insert(@table, {user_id, %{members: members, raid: raid}, now()})
+  @doc "Keeps a run's raid with its squad."
+  @spec put({String.t(), String.t()}, [map()], map()) :: true
+  def put(key, members, raid),
+    do: :ets.insert(@table, {key, %{members: members, raid: raid}, now()})
 
-  @doc "A user's raid with its squad, `%{members, raid}`, nil when there's none or it's stale."
-  @spec get(String.t()) :: %{members: [map()], raid: map()} | nil
-  def get(user_id) do
-    case :ets.lookup(@table, user_id) do
-      [{^user_id, saved, at}] -> if now() - at < @ttl, do: saved
+  @doc "A run's raid with its squad, `%{members, raid}`, nil when there's none or it's stale."
+  @spec get({String.t(), String.t()}) :: %{members: [map()], raid: map()} | nil
+  def get(key) do
+    case :ets.lookup(@table, key) do
+      [{^key, saved, at}] -> if now() - at < @ttl, do: saved
       [] -> nil
     end
   end
+
+  @doc "Forgets a run's raid: the squad has left it."
+  @spec delete({String.t(), String.t()}) :: true
+  def delete(key), do: :ets.delete(@table, key)
 
   @impl true
   def init(nil) do

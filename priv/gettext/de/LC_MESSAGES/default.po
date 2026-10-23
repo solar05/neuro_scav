@@ -1381,3 +1381,9 @@ msgstr "Schluss mit dem Rückzug — jetzt heißt es Risiko"
 
 msgid "Raid retreat legend %{limit}"
 msgstr "🏃 ein Rückzug: höchstens %{limit} hintereinander"
+
+msgid "Raid leave"
+msgstr "Raid verlassen"
+
+msgid "Raid leave confirm"
+msgstr "Den Raid aufgeben? Trupp und Beute kommen nicht zurück."

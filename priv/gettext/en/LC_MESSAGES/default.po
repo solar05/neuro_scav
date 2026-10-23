@@ -1392,3 +1392,9 @@ msgstr "No more running — time to take a risk"
 
 msgid "Raid retreat legend %{limit}"
 msgstr "🏃 a retreat: no more than %{limit} in a row"
+
+msgid "Raid leave"
+msgstr "Leave the raid"
+
+msgid "Raid leave confirm"
+msgstr "Leave the raid? The squad and its loot won't come back."

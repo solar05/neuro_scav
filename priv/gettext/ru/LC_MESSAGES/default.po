@@ -1392,3 +1392,9 @@ msgstr "Хватит отступать — придётся рискнуть"
 
 msgid "Raid retreat legend %{limit}"
 msgstr "🏃 — отступление: подряд можно не больше %{limit}"
+
+msgid "Raid leave"
+msgstr "Покинуть рейд"
+
+msgid "Raid leave confirm"
+msgstr "Бросить рейд? Отряд и лут не вернутся."
