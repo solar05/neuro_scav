@@ -1,6 +1,6 @@
 <%!-- .raid-page keeps the gnome popup away while this page is open, see app.css --%>
 <div class="container pt-2 raid-page">
-  <h2 class="text-center blended-reg-bg scav-container">{gettext("Raid")}</h2>
+  <h2 class="text-center blended-reg-bg scav-container raid-page-title">{gettext("Raid")}</h2>
 
   <%= cond do %>
     <% @raid -> %>
@@ -19,7 +19,7 @@
               <div class={"battle-card-name #{member.rarity}-name"}>{member.name}</div>
               <p class="battle-card-rarity">
                 {if member.alive,
-                  do: Locale.get_text("Stats #{member.rarity}"),
+                  do: rarity_name(member.rarity),
                   else: gettext("Raid dead")}
                 <span
                   id={"raid-member-trait-#{member.index}"}
@@ -27,7 +27,7 @@
                   data-tip={trait_tip(member.trait)}
                   aria-label={trait_tip(member.trait)}
                 >
-                  {trait_icon(member.trait)}
+                  <.icon name={trait_icon(member.trait)} class="raid-trait-icon" />
                 </span>
               </p>
               <.card_stats card={member} bonus={Raid.loot_bonuses(@raid, member)} />
@@ -36,195 +36,262 @@
                 id={"raid-member-loot-#{member.index}"}
                 class="raid-member-loot"
               >
-                🎒 {loot_count(@raid, member)}
+                <.icon name="tabler-backpack" /> {loot_count(@raid, member)}
               </span>
               <span
                 :if={member.alive and member.wounds > 0}
                 id={"raid-member-wounds-#{member.index}"}
                 class={["raid-member-wounds", Raid.bleeding?(member) && "raid-member-bleeding"]}
               >
-                🩸 {member.wounds}{if Raid.bleeding?(member), do: " · " <> gettext("Raid bleeding")}
+                <.icon name="tabler-droplet" /> {member.wounds}{if Raid.bleeding?(member),
+                  do: " · " <> gettext("Raid bleeding")}
               </span>
             </div>
           </div>
           <.stash loot={stash_entries(@raid)} />
         </div>
 
-        <.raid_map raid={@raid} id="raid-map" layers={all_layers(@raid)} class="raid-map-full" />
-        <.raid_map
-          raid={@raid}
-          id="raid-map-near"
-          layers={near_layers(@raid)}
-          class="raid-map-near"
-        />
-        <p id="raid-world" class="raid-world">
-          {world_text(@raid)}
-          <span :if={world_effects(@raid) != ""} class="raid-world-effects">
-            — {world_effects(@raid)}
-          </span>
-        </p>
-
-        <%!-- a new turn is a new element (a stall too), so the outcome plays its entrance again --%>
-        <p
-          :if={@raid.last}
-          id={"raid-outcome-#{@raid.turn}"}
-          class={["raid-outcome", outcome_class(@raid.last)]}
-        >
-          <span :if={quirk_note(@raid.last)} class="raid-quirk">
-            {quirk_note(@raid.last)}
-          </span>
-          {outcome_text(@raid.last)}
-          <span :if={@raid.last.follow_up} class="raid-follow-up">
-            {gettext("Raid follow up")}
-          </span>
-          <span :if={karma_note(@raid.last)} class="raid-follow-up">
-            {karma_note(@raid.last)}
-          </span>
-          <span :if={used_note(@raid.last)} class="raid-follow-up">
-            {used_note(@raid.last)}
-          </span>
-        </p>
-
-        <%= cond do %>
-          <% event = Raid.event(@raid) -> %>
-            <div
-              id={"raid-event-#{@raid.turn}"}
-              class={["wheel-panel raid-event", Raid.boss?(event) && "raid-event-boss"]}
-            >
-              <div class="wheel-panel-header">
-                <span>{if Raid.boss?(event), do: "☠ "}{event_title(event)}</span>
-                <.panel_meta raid={@raid} />
-              </div>
-              <div class="raid-event-body">
-                <p class="raid-event-text">{event_text(event)}</p>
-                <%!-- karma eases luck checks at the scavs' events only, so it shows there --%>
-                <p
-                  :if={Raid.scav?(event)}
-                  id="raid-karma"
-                  class={[
-                    "raid-karma",
-                    @raid.karma > 0 && "raid-karma-good",
-                    @raid.karma < 0 && "raid-karma-bad"
-                  ]}
-                >
-                  {karma_text(@raid.karma)}
-                </p>
-                <button
-                  :for={{option, index} <- Enum.with_index(Raid.options(@raid))}
-                  id={"raid-option-#{index}"}
-                  class="btn btn-old-blended blended w-100 raid-option"
-                  phx-click="choose"
-                  phx-value-index={index}
-                  phx-value-turn={@raid.turn}
-                  phx-throttle="500"
-                  disabled={option.locked}
-                >
-                  <span>{option_label(event, option)}</span>
-                  <small :if={option.locked}>{locked_text(option)}</small>
-                  <small :if={option.stat && not option.locked}>
-                    {stat_label(option.stat)} · {performer(option)} · {option.chance}%
-                    <.icons option={option} />
-                  </small>
-                  <small :if={option.key && not option.locked}>
-                    🔑 {item_name(option.key)} · {option.member.name}
-                    <.icons option={option} />
-                  </small>
-                  <small :if={option.search}>
-                    {option.member.name} · {option.chance}% <.icons option={option} />
-                  </small>
-                  <small :if={option.pay and not option.locked}>
-                    💸 {item_name(option.price)} · {option.member.name}
-                    <.icons option={option} />
-                  </small>
-                  <small :if={option.trust && not option.locked}>
-                    🤝 {karma_text(@raid.karma)}
-                  </small>
-                  <small :if={plain?(option)}>
-                    {gettext("Raid safe")}
-                    <.icons option={option} />
-                  </small>
-                </button>
-                <button
-                  id="btn-raid-leave"
-                  class="btn blend-old-font btn-sm w-100 mt-2"
-                  phx-click="leave"
-                  data-confirm={gettext("Raid leave confirm")}
-                >
-                  {gettext("Raid leave")}
-                </button>
-              </div>
+        <div class="raid-board">
+          <div class="raid-board-main">
+            <%!-- a phone: a strip of the map round the squad, the whole of it in a dialog --%>
+            <div class="raid-strip">
+              <.raid_map
+                raid={@raid}
+                id="raid-map-near"
+                layers={near_layers(@raid)}
+                orientation={:horizontal}
+                info="#raid-strip-info"
+              />
+              <button
+                id="btn-raid-map"
+                type="button"
+                class="raid-map-btn"
+                title={gettext("Raid map")}
+                aria-label={gettext("Raid map")}
+                phx-click={JS.remove_class("hidden", to: "#raid-map-dialog")}
+              >
+                <.icon name="tabler-map" class="raid-map-btn-icon" />
+              </button>
             </div>
-          <% not Raid.over?(@raid) -> %>
-            <%!-- done at a node: where to next (where to go in, before the squad is) --%>
-            <div id="raid-moves" class="wheel-panel raid-event">
-              <div class="wheel-panel-header">
-                <span>
-                  {if Raid.at(@raid),
-                    do: gettext("Raid way next"),
-                    else: gettext("Raid way start")}
+            <p id="raid-strip-info" class="raid-map-info raid-strip-info"></p>
+            <p id="raid-world" class="raid-world">
+              <span :for={{{icon, text}, index} <- Enum.with_index(world_parts(@raid))}>
+                {if index > 0, do: "· "}<.icon name={icon} class="raid-world-icon" /> {text}
+              </span>
+              <span :if={world_effects(@raid) != ""} class="raid-world-effects">
+                — {world_effects(@raid)}
+              </span>
+            </p>
+
+            <%!-- the outcome keeps one height whatever it says, before the first choice too,
+            so the panel under it stays put; a new turn is a new element (a stall too), so
+            the outcome plays its entrance again --%>
+            <div id="raid-outcome-box" class="raid-outcome-box">
+              <p
+                :if={@raid.last}
+                id={"raid-outcome-#{@raid.turn}"}
+                class={[
+                  "raid-outcome",
+                  outcome_class(@raid.last),
+                  outcome_long?(@raid.last) && "raid-outcome-long"
+                ]}
+              >
+                <span class="raid-outcome-body">
+                  <span :if={quirk_note(@raid.last)} class="raid-quirk">
+                    {quirk_note(@raid.last)}
+                  </span>
+                  {outcome_text(@raid.last)}
+                  <span :for={note <- outcome_notes(@raid.last)} class="raid-follow-up">
+                    {note}
+                  </span>
                 </span>
-                <.panel_meta raid={@raid} />
-              </div>
-              <div class="raid-event-body">
-                <button
-                  :for={{node, index} <- Enum.with_index(Raid.next_nodes(@raid))}
-                  id={"raid-option-#{index}"}
-                  class="btn btn-old-blended blended w-100 raid-option"
-                  phx-click="move"
-                  phx-value-node={node_key(node)}
-                  phx-throttle="500"
+              </p>
+              <p :if={!@raid.last} id="raid-outcome-none" class="raid-outcome raid-outcome-none">
+                <span class="raid-outcome-body">{gettext("Raid your move")}</span>
+              </p>
+            </div>
+
+            <%= cond do %>
+              <% event = Raid.event(@raid) -> %>
+                <div
+                  id={"raid-event-#{@raid.turn}"}
+                  class={["wheel-panel raid-event", Raid.boss?(event) && "raid-event-boss"]}
                 >
-                  <span>→ {node_icon(:event, @raid.map.nodes[node])} {event_title(
-                    @raid.map.nodes[node]
-                  )}</span>
-                  <small>
-                    {kind_name(Raid.kind(@raid.map.nodes[node]))}
-                    <span
-                      :if={Raid.deadly?(@raid.map.nodes[node])}
-                      class="raid-icon"
-                      data-tip={icon_meaning(:lose)}
-                      aria-label={icon_meaning(:lose)}
-                    >
-                      {option_icon(:lose)}
+                  <div class="wheel-panel-header">
+                    <span>
+                      <.icon :if={Raid.boss?(event)} name="tabler-skull" />
+                      {event_title(event)}
                     </span>
-                  </small>
-                </button>
-                <button
-                  id="btn-raid-leave"
-                  class="btn blend-old-font btn-sm w-100 mt-2"
-                  phx-click="leave"
-                  data-confirm={gettext("Raid leave confirm")}
-                >
-                  {gettext("Raid leave")}
-                </button>
-              </div>
-            </div>
-          <% true -> %>
-            <div id="raid-end" class="wheel-panel raid-event">
-              <div class="wheel-panel-header"><span>{gettext("Raid over")}</span></div>
-              <div class="raid-event-body">
-                <p class="battle-result">{verdict(@raid)}</p>
-                <p :if={exit_text(@raid)} id="raid-exit" class="raid-exit">
-                  🚪 {exit_text(@raid)}
-                </p>
-                <button
-                  id="btn-raid-again"
-                  class="btn btn-old-blended blended w-100"
-                  phx-click="again"
-                >
-                  {gettext("Raid again")}
-                </button>
-                <button
-                  id="btn-raid-recruit"
-                  class="btn blend-old-font btn-lg w-100 mt-3"
-                  phx-click="recruit"
-                >
-                  {gettext("Raid new squad")}
-                </button>
-              </div>
-            </div>
-        <% end %>
+                    <.panel_meta raid={@raid} />
+                  </div>
+                  <div class="raid-event-body">
+                    <p class="raid-event-text">{event_text(event)}</p>
+                    <%!-- karma eases luck checks at the scavs' events only, so it shows there --%>
+                    <p
+                      :if={Raid.scav?(event)}
+                      id="raid-karma"
+                      class={[
+                        "raid-karma",
+                        @raid.karma > 0 && "raid-karma-good",
+                        @raid.karma < 0 && "raid-karma-bad"
+                      ]}
+                    >
+                      {karma_text(@raid.karma)}
+                    </p>
+                    <button
+                      :for={{option, index} <- Enum.with_index(Raid.options(@raid))}
+                      id={"raid-option-#{index}"}
+                      class="btn btn-old-blended blended w-100 raid-option"
+                      phx-click="choose"
+                      phx-value-index={index}
+                      phx-value-turn={@raid.turn}
+                      phx-throttle="500"
+                      disabled={option.locked}
+                    >
+                      <span>{option_label(event, option)}</span>
+                      <small :if={option.locked}>{locked_text(option)}</small>
+                      <small :if={option.stat && not option.locked}>
+                        {stat_label(option.stat)} · {performer(option)} · {option.chance}%
+                        <.icons option={option} />
+                      </small>
+                      <small :if={option.key && not option.locked}>
+                        <.icon name="tabler-key" /> {item_name(option.key)} · {option.member.name}
+                        <.icons option={option} />
+                      </small>
+                      <small :if={option.search}>
+                        {option.member.name} · {option.chance}% <.icons option={option} />
+                      </small>
+                      <small :if={option.pay and not option.locked}>
+                        <.icon name="tabler-cash" /> {item_name(option.price)} · {option.member.name}
+                        <.icons option={option} />
+                      </small>
+                      <small :if={option.trust && not option.locked}>
+                        <.icon name="tabler-heart-handshake" /> {karma_text(@raid.karma)}
+                      </small>
+                      <small :if={plain?(option)}>
+                        {gettext("Raid safe")}
+                        <.icons option={option} />
+                      </small>
+                    </button>
+                    <button
+                      id="btn-raid-leave"
+                      class="btn blend-old-font btn-sm w-100 mt-2"
+                      phx-click="leave"
+                      data-confirm={gettext("Raid leave confirm")}
+                    >
+                      {gettext("Raid leave")}
+                    </button>
+                  </div>
+                </div>
+              <% not Raid.over?(@raid) -> %>
+                <%!-- done at a node: where to next (where to go in, before the squad is) --%>
+                <div id="raid-moves" class="wheel-panel raid-event">
+                  <div class="wheel-panel-header">
+                    <span>
+                      {if Raid.at(@raid),
+                        do: gettext("Raid way next"),
+                        else: gettext("Raid way start")}
+                    </span>
+                    <.panel_meta raid={@raid} />
+                  </div>
+                  <div class="raid-event-body">
+                    <button
+                      :for={{node, index} <- Enum.with_index(Raid.next_nodes(@raid))}
+                      id={"raid-option-#{index}"}
+                      class="btn btn-old-blended blended w-100 raid-option"
+                      phx-click="move"
+                      phx-value-node={node_key(node)}
+                      phx-throttle="500"
+                    >
+                      <span>
+                        →
+                        <.icon
+                          name={kind_icon(Raid.kind(@raid.map.nodes[node]))}
+                          class="raid-move-icon"
+                        />
+                        {event_title(@raid.map.nodes[node])}
+                      </span>
+                      <small>
+                        {kind_name(Raid.kind(@raid.map.nodes[node]))}
+                        <span
+                          :if={Raid.deadly?(@raid.map.nodes[node])}
+                          class="raid-icon"
+                          data-tip={icon_meaning(:lose)}
+                          aria-label={icon_meaning(:lose)}
+                        >
+                          <.icon name={option_icon(:lose)} />
+                        </span>
+                      </small>
+                    </button>
+                    <button
+                      id="btn-raid-leave"
+                      class="btn blend-old-font btn-sm w-100 mt-2"
+                      phx-click="leave"
+                      data-confirm={gettext("Raid leave confirm")}
+                    >
+                      {gettext("Raid leave")}
+                    </button>
+                  </div>
+                </div>
+              <% true -> %>
+                <div id="raid-end" class="wheel-panel raid-event">
+                  <div class="wheel-panel-header"><span>{gettext("Raid over")}</span></div>
+                  <div class="raid-event-body">
+                    <p class="battle-result">{verdict(@raid)}</p>
+                    <p :if={exit_text(@raid)} id="raid-exit" class="raid-exit">
+                      <.icon name="tabler-door-exit" /> {exit_text(@raid)}
+                    </p>
+                    <ul id="raid-result-squad" class="raid-result-squad">
+                      <li
+                        :for={member <- @raid.squad}
+                        class={not member.alive && "raid-result-lost"}
+                      >
+                        <.icon name={if member.alive, do: "tabler-run", else: "tabler-skull"} />
+                        {member.name}
+                      </li>
+                    </ul>
+                    <p id="raid-result-loot" class="raid-result-loot">{result_loot(@raid)}</p>
+                    <.share_button
+                      path={share_path(@raid, @user_locale)}
+                      label={gettext("Raid share")}
+                    />
+                    <button
+                      id="btn-raid-again"
+                      class="btn btn-old-blended blended w-100"
+                      phx-click="again"
+                    >
+                      {gettext("Raid again")}
+                    </button>
+                    <button
+                      id="btn-raid-recruit"
+                      class="btn blend-old-font btn-lg w-100 mt-3"
+                      phx-click="recruit"
+                    >
+                      {gettext("Raid new squad")}
+                    </button>
+                  </div>
+                </div>
+            <% end %>
+          </div>
+          <%!-- a wide screen: the whole map on a card beside the event --%>
+          <aside class={[
+            "raid-board-map",
+            Raid.dark?(@raid) && "raid-board-dark",
+            location_class(@raid)
+          ]}>
+            <p :if={location_name(@raid)} class="raid-map-location">{location_name(@raid)}</p>
+            <.raid_map
+              raid={@raid}
+              id="raid-map"
+              layers={all_layers(@raid)}
+              orientation={:vertical}
+            />
+            <.map_notes raid={@raid} />
+          </aside>
+        </div>
         <.legend />
+        <.map_dialog raid={@raid} />
+        <.tabler_sprite />
       </div>
     <% @members || @run -> %>
       <%!-- the dead render of a squad link or a run: the raid starts or comes back once connected --%>

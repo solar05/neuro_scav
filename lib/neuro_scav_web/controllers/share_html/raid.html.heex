@@ -1,0 +1,45 @@
+<div class="share-page">
+  <div class="share-card-wrap" style={"--rc: #{@border_color}; --rc-glow: transparent"}>
+    <span class="cb cb-tl"></span>
+    <span class="cb cb-tr"></span>
+    <span class="cb cb-bl"></span>
+    <span class="cb cb-br"></span>
+    <div class="share-card share-team-card">
+      <div class={"share-card-art share-team-art theme-#{@theme}"}>
+        <div class="share-card-art-inner">
+          <div class="share-art-lines"></div>
+        </div>
+      </div>
+      <div class="share-raid-head">
+        <p class="share-raid-location">{@location || gettext("Raid")}</p>
+        <p class="share-raid-verdict">{@verdict}</p>
+        <p :if={@exit} class="share-raid-exit">{gettext("Raid exited %{exit}", exit: @exit)}</p>
+      </div>
+      <ol class="share-team-list">
+        <li
+          :for={member <- @members}
+          class={["share-team-row", not member.alive && "share-raid-lost"]}
+          style={"--mc: #{member.color}"}
+        >
+          <span class="share-team-name">{member.name}</span>
+          <span class="share-team-rarity">{member.status}</span>
+        </li>
+      </ol>
+      <p class="share-raid-loot">{@loot}</p>
+      <div class="share-card-footer">
+        <span class="share-brand">scavgen</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="share-actions">
+    <button
+      class="share-copy-btn"
+      data-url={url(~p"/share/raid/#{@token}")}
+      onclick={share_js()}
+    >
+      {gettext("Raid share copy")}
+    </button>
+    <a href={~p"/raid"} class="share-try-btn">{gettext("Raid share try")}</a>
+  </div>
+</div>

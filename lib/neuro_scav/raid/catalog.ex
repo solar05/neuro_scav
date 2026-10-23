@@ -153,6 +153,15 @@ defmodule NeuroScav.Raid.Catalog do
     },
     exit_boat: %{options: [{:agility, 5, :pass, :wound}, {:luck, 0, :pass, :drop}], exit: true},
     exit_train: %{options: [{:luck, 5, :pass, :wound}, {:agility, 10, :pass, :lose}], exit: true},
+    exit_fence: %{
+      options: [{:agility, 5, :pass, :wound}, {:strength, 10, :pass, :drop}],
+      exit: true
+    },
+    exit_cliff: %{options: [{:agility, 15, :pass, :lose}, {:luck, 10, :pass, :wound}], exit: true},
+    exit_tunnel: %{
+      options: [{:luck, 5, :pass, :wound}, {:strength, 10, :pass, :drop}],
+      exit: true
+    },
     # searches: one more box, and one more, till the squad leaves or gets hurt
     abandoned_store: %{search: true},
     dorm_room: %{search: true},
@@ -410,6 +419,149 @@ defmodule NeuroScav.Raid.Catalog do
                not Enum.any?(@specs[event].options, &match?({_, _, _, :stall}, &1)),
                do: event
 
+  # The locations, Tarkov's: a random map is one of them, with its exits
+  # (as many as a map has columns at least), its bosses and its own events,
+  # which turn up there more often than the rest, see `NeuroScav.Raid`.
+  @locations %{
+    customs: %{
+      exits: [:exit_car, :exit_coop, :exit_fence, :exit_boat],
+      bosses: [:priest, :partisan, :komar],
+      events: [
+        :reshala,
+        :dorm_room,
+        :scav_camp,
+        :prapor_quest,
+        :axeman,
+        :mosin_chad,
+        :extract_campers,
+        :door_key
+      ]
+    },
+    woods: %{
+      exits: [:exit_bunker, :exit_car, :exit_coop, :exit_fence],
+      bosses: [:partisan, :priest],
+      events: [
+        :shturman,
+        :bush_wookie,
+        :sniper,
+        :mines,
+        :jaeger_quest,
+        :lost_scav,
+        :footsteps,
+        :moonshine_still
+      ]
+    },
+    shoreline: %{
+      exits: [:exit_boat, :exit_tunnel, :exit_coop, :exit_car],
+      bosses: [:priest, :komar],
+      events: [
+        :sanitar,
+        :medic,
+        :tripwire,
+        :scav_patrol,
+        :cultists,
+        :therapist_quest,
+        :airdrop,
+        :fence
+      ]
+    },
+    interchange: %{
+      exits: [:exit_car, :exit_train, :exit_fence, :exit_coop],
+      bosses: [:komar, :kaban],
+      events: [
+        :killa,
+        :abandoned_store,
+        :elevator,
+        :mechanic,
+        :extract_queue,
+        :quest_item,
+        :cheater,
+        :flea
+      ]
+    },
+    reserve: %{
+      exits: [:exit_train, :exit_cliff, :exit_bunker, :exit_coop],
+      bosses: [:komar, :partisan],
+      events: [:glukhar, :raiders, :bunker, :train, :bitcoin_farm, :stairs, :tower, :veteran]
+    },
+    lighthouse: %{
+      exits: [:exit_train, :exit_tunnel, :exit_car, :exit_cliff],
+      bosses: [:partisan, :komar],
+      events: [
+        :zryachiy,
+        :rogues,
+        :lightkeeper,
+        :goons,
+        :chatty_scav,
+        :bridge,
+        :vex,
+        :roadblock
+      ]
+    },
+    factory: %{
+      exits: [:exit_fence, :exit_tunnel, :exit_coop, :exit_car],
+      bosses: [:priest, :komar],
+      events: [
+        :tagilla,
+        :skirmish,
+        :stairs,
+        :wipe_day,
+        :obdolbos,
+        :grenade_scav,
+        :cultists,
+        :mosin_chad
+      ]
+    },
+    # the Lab: no boss of its own in Tarkov, Komar comes anywhere
+    labs: %{
+      exits: [:exit_bunker, :exit_tunnel, :exit_car, :exit_fence],
+      bosses: [:komar],
+      events: [
+        :labs,
+        :raiders,
+        :door_key,
+        :elevator,
+        :bitcoin_farm,
+        :cheater,
+        :quest_item,
+        :dead_pmc
+      ]
+    },
+    streets: %{
+      exits: [:exit_car, :exit_tunnel, :exit_fence, :exit_coop],
+      bosses: [:kaban, :komar],
+      events: [
+        :kollontay,
+        :streets_fps,
+        :desync,
+        :trunk,
+        :bear_usec,
+        :grenade_scav,
+        :wipe_day,
+        :office
+      ]
+    }
+  }
+
+  for {location, %{exits: exits, bosses: bosses, events: events}} <- @locations do
+    problems =
+      Enum.filter(
+        [
+          exits -- @exits != [] && "an exit that isn't one",
+          Enum.count_until(Enum.uniq(exits), 4) < 4 && "fewer exits than a map has columns",
+          bosses -- @bosses != [] && "a boss that isn't one",
+          events -- @common != [] && "an event a map doesn't draw"
+        ],
+        &is_binary/1
+      )
+
+    if problems != [],
+      do:
+        raise(CompileError,
+          description: "raid location #{location}: #{Enum.join(problems, "; ")}"
+        )
+  end
+
   # {event, stat} => who makes that check, :best unless given
   @modes for {event, %{modes: modes}} <- @specs,
              {stat, mode} <- modes,
@@ -450,9 +602,12 @@ defmodule NeuroScav.Raid.Catalog do
       specs: @specs,
       modes: @modes,
       consumables: @consumables,
+      # failure => the consumable sparing a member it
+      savers: Map.new(@consumables, fn {item, failure} -> {failure, item} end),
       weathers: @weathers,
       daytimes: @daytimes,
       exits: @exits,
+      locations: @locations,
       kinds: @kinds,
       searches: @searches,
       traits: @traits,

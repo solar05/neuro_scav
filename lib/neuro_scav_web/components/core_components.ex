@@ -393,6 +393,49 @@ defmodule NeuroScavWeb.CoreComponents do
     """
   end
 
+  # a Tabler icon: a symbol of `tabler_sprite/1`, coloured by the text's colour
+  def icon(%{name: "tabler-" <> _} = assigns) do
+    ~H"""
+    <svg class={[@name, @class]} aria-hidden="true"><use href={"#" <> @name} /></svg>
+    """
+  end
+
+  # The Tabler icons (https://tabler.io/icons, MIT, see the LICENSE beside
+  # them) kept in assets/vendor/tabler-icons, read as the app compiles: an
+  # icon is one more SVG file there.
+  @tabler_dir Path.expand("../../../assets/vendor/tabler-icons", __DIR__)
+  @tabler (for file <- Enum.sort(File.ls!(@tabler_dir)), Path.extname(file) == ".svg" do
+             path = Path.join(@tabler_dir, file)
+             @external_resource path
+             [_svg, inner] = Regex.run(~r{<svg[^>]*>(.*)</svg>}s, File.read!(path))
+             {"tabler-" <> Path.rootname(file), String.trim(inner)}
+           end)
+
+  @doc """
+  The Tabler icons' symbols that `icon/1` refers to by `tabler-` names, out of
+  sight: a page using them renders it once.
+  """
+  def tabler_sprite(assigns) do
+    assigns = assign(assigns, :icons, @tabler)
+
+    ~H"""
+    <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+      <symbol
+        :for={{id, paths} <- @icons}
+        id={id}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        {Phoenix.HTML.raw(paths)}
+      </symbol>
+    </svg>
+    """
+  end
+
   ## JS Commands
 
   def show(js \\ %JS{}, selector) do

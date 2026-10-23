@@ -1761,7 +1761,7 @@ msgid "Raid map"
 msgstr "Chizu"
 
 msgid "Raid map about"
-msgstr "Tonari no pointo wa zenbu mieru ga, tooi pointo wa aikon dake, yoru ya kiri no naka de wa mattaku mienai. Bosu to deguchi wa itsumo mieru."
+msgstr "Tonari no pointo wa zenbu mieru ga, tooi pointo wa aikon dake. Yoru ya kiri no naka de wa, sude ni teisatsu shita pointo dake ga usuku mieru. Bosu to deguchi wa itsumo mieru. Totemo usui eda ni wa mou ikenai."
 
 msgid "Raid way start"
 msgstr "Doko kara hairu?"
@@ -1885,3 +1885,117 @@ msgstr "Yabanjin wa nakama da: nani mo kikazu ni butai o tsuredashita."
 
 msgid "Raid node deadly"
 msgstr "akai wa: nakama o ushinau kamo"
+
+msgid "Raid map night"
+msgstr "🌙 Yoru: tooi pointo wa teisatsu-zumi nara mieru"
+
+msgid "Raid map fog"
+msgstr "🌫 Kiri: tooi pointo wa teisatsu-zumi nara mieru"
+
+msgid "Raid chase %{event} %{n}"
+msgstr "👣 Tsuiseki: %{event} — %{n}-banme no pointo de oitsuku"
+
+msgid "Raid location customs"
+msgstr "Kasutamu"
+
+msgid "Raid location woods"
+msgstr "Uzzu"
+
+msgid "Raid location shoreline"
+msgstr "Shoarain"
+
+msgid "Raid location interchange"
+msgstr "Intaachenji"
+
+msgid "Raid location reserve"
+msgstr "Rizaabu"
+
+msgid "Raid location lighthouse"
+msgstr "Raitohausu"
+
+msgid "Raid location streets"
+msgstr "Sutoriito obu Tarukofu"
+
+msgid "Raid exit_fence"
+msgstr "Fensu no ana"
+
+msgid "Raid exit_fence text"
+msgstr "Fensu no ana wa yabanjin hitori bun dake. Futari dato kitsui."
+
+msgid "Raid exit_fence agility"
+msgstr "Kuguri nukeru"
+
+msgid "Raid exit_fence strength"
+msgstr "Ana o hirogeru"
+
+msgid "Raid exit_cliff"
+msgstr "Gake kudari"
+
+msgid "Raid exit_cliff text"
+msgstr "Gake kara furui roopu ga tarete iru. Shita ni wa jiyuu — roopu ga motereba."
+
+msgid "Raid exit_cliff agility"
+msgstr "Roopu de oriru"
+
+msgid "Raid exit_cliff luck"
+msgstr "Michi o sagasu"
+
+msgid "Raid exit_tunnel"
+msgstr "Tonneru"
+
+msgid "Raid exit_tunnel text"
+msgstr "Kurai tonneru ga shuuhen no soto e tsuzuku. Naka de nanika ga shitatari, kasakasa to oto ga suru."
+
+msgid "Raid exit_tunnel luck"
+msgstr "Kurayami o aruku"
+
+msgid "Raid exit_tunnel strength"
+msgstr "Gareki o katazukeru"
+
+msgid "Raid your move"
+msgstr "Anata no ban da."
+
+msgid "Raid rarity common"
+msgstr "Komon"
+
+msgid "Raid rarity uncommon"
+msgstr "Ankomon"
+
+msgid "Raid rarity rare"
+msgstr "Rea"
+
+msgid "Raid rarity epic"
+msgstr "Epikku"
+
+msgid "Raid rarity legendary"
+msgstr "Rejendarii"
+
+msgid "Raid rarity gnome"
+msgstr "Shiikuretto"
+
+msgid "Raid location factory"
+msgstr "Fakutorii"
+
+msgid "Raid location labs"
+msgstr "Rabo"
+
+msgid "Raid share"
+msgstr "Kekka o shea"
+
+msgid "Raid share copy"
+msgstr "Rinku o kopii"
+
+msgid "Raid share try"
+msgstr "Reido ni iku"
+
+msgid "Raid share title %{location}"
+msgstr "Reido: %{location}"
+
+msgid "Raid result loot %{items}"
+msgstr "Mochikaetta: %{items}"
+
+msgid "Raid result no loot"
+msgstr "Nani mo mochikaerenakatta"
+
+msgid "Raid result kia"
+msgstr "senshi"

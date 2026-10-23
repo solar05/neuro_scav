@@ -1761,7 +1761,7 @@ msgid "Raid map"
 msgstr "Karte"
 
 msgid "Raid map about"
-msgstr "Nahe Punkte sieht man ganz, ferne nur am Symbol, nachts und im Nebel gar nicht. Bosse und Ausgänge sieht man immer."
+msgstr "Nahe Punkte sieht man ganz, ferne am Symbol. Nachts und im Nebel sieht man ferne nur, wenn sie schon erkundet sind, und blasser. Bosse und Ausgänge sieht man immer. Ganz blasse Zweige erreicht der Trupp nicht mehr."
 
 msgid "Raid way start"
 msgstr "Wo gehen wir rein?"
@@ -1885,3 +1885,117 @@ msgstr "Die Wildlinge sind Freunde: Sie führen den Trupp ohne Fragen hinaus."
 
 msgid "Raid node deadly"
 msgstr "roter Ring: ein Kämpfer kann fallen"
+
+msgid "Raid map night"
+msgstr "🌙 Nacht: ferne Punkte nur, wenn schon erkundet"
+
+msgid "Raid map fog"
+msgstr "🌫 Nebel: ferne Punkte nur, wenn schon erkundet"
+
+msgid "Raid chase %{event} %{n}"
+msgstr "👣 Auf eurer Spur: %{event} — holt euch am %{n}. Punkt ein"
+
+msgid "Raid location customs"
+msgstr "Zollgelände"
+
+msgid "Raid location woods"
+msgstr "Wald"
+
+msgid "Raid location shoreline"
+msgstr "Küste"
+
+msgid "Raid location interchange"
+msgstr "Autobahnkreuz"
+
+msgid "Raid location reserve"
+msgstr "Reserve"
+
+msgid "Raid location lighthouse"
+msgstr "Leuchtturm"
+
+msgid "Raid location streets"
+msgstr "Straßen von Tarkov"
+
+msgid "Raid exit_fence"
+msgstr "Loch im Zaun"
+
+msgid "Raid exit_fence text"
+msgstr "Das Loch im Zaun passt genau für einen Wildling. Zu zweit wird's eng."
+
+msgid "Raid exit_fence agility"
+msgstr "Durchzwängen"
+
+msgid "Raid exit_fence strength"
+msgstr "Das Loch erweitern"
+
+msgid "Raid exit_cliff"
+msgstr "Abstieg an der Klippe"
+
+msgid "Raid exit_cliff text"
+msgstr "Ein altes Seil hängt von der Klippe. Unten wartet die Freiheit — wenn das Seil hält."
+
+msgid "Raid exit_cliff agility"
+msgstr "Am Seil hinunter"
+
+msgid "Raid exit_cliff luck"
+msgstr "Einen Pfad suchen"
+
+msgid "Raid exit_tunnel"
+msgstr "Der Tunnel"
+
+msgid "Raid exit_tunnel text"
+msgstr "Ein dunkler Tunnel führt hinter den Perimeter. Drinnen tropft und raschelt es."
+
+msgid "Raid exit_tunnel luck"
+msgstr "Im Dunkeln gehen"
+
+msgid "Raid exit_tunnel strength"
+msgstr "Den Schutt wegräumen"
+
+msgid "Raid your move"
+msgstr "Du bist am Zug."
+
+msgid "Raid rarity common"
+msgstr "Gewöhnlich"
+
+msgid "Raid rarity uncommon"
+msgstr "Ungewöhnlich"
+
+msgid "Raid rarity rare"
+msgstr "Selten"
+
+msgid "Raid rarity epic"
+msgstr "Episch"
+
+msgid "Raid rarity legendary"
+msgstr "Legendär"
+
+msgid "Raid rarity gnome"
+msgstr "Geheim"
+
+msgid "Raid location factory"
+msgstr "Fabrik"
+
+msgid "Raid location labs"
+msgstr "Labor"
+
+msgid "Raid share"
+msgstr "Ergebnis teilen"
+
+msgid "Raid share copy"
+msgstr "Link kopieren"
+
+msgid "Raid share try"
+msgstr "Auf Raid gehen"
+
+msgid "Raid share title %{location}"
+msgstr "Raid: %{location}"
+
+msgid "Raid result loot %{items}"
+msgstr "Herausgebracht: %{items}"
+
+msgid "Raid result no loot"
+msgstr "Nichts herausgebracht"
+
+msgid "Raid result kia"
+msgstr "gefallen"

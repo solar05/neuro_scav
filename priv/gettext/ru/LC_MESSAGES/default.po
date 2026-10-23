@@ -1772,7 +1772,7 @@ msgid "Raid map"
 msgstr "Карта"
 
 msgid "Raid map about"
-msgstr "Соседние точки видно целиком, дальние — только по значку, а ночью и в тумане не видно вовсе. Боссов и выходы видно всегда."
+msgstr "Соседние точки видно целиком, дальние — по значку. Ночью и в тумане дальние видно, только если их уже разведали, и они бледнее. Боссов и выходы видно всегда. Совсем бледные ветки — те, куда отряду уже не попасть."
 
 msgid "Raid way start"
 msgstr "Где заходим?"
@@ -1896,3 +1896,117 @@ msgstr "Дикие свои: вывели отряд без лишних воп�
 
 msgid "Raid node deadly"
 msgstr "красная обводка: можно потерять бойца"
+
+msgid "Raid map night"
+msgstr "🌙 Ночь: дальние точки видно, только если их уже разведали"
+
+msgid "Raid map fog"
+msgstr "🌫 Туман: дальние точки видно, только если их уже разведали"
+
+msgid "Raid chase %{event} %{n}"
+msgstr "👣 По следу: %{event} — догонит на %{n}‑й точке"
+
+msgid "Raid location customs"
+msgstr "Таможня"
+
+msgid "Raid location woods"
+msgstr "Лес"
+
+msgid "Raid location shoreline"
+msgstr "Берег"
+
+msgid "Raid location interchange"
+msgstr "Развязка"
+
+msgid "Raid location reserve"
+msgstr "Резерв"
+
+msgid "Raid location lighthouse"
+msgstr "Маяк"
+
+msgid "Raid location streets"
+msgstr "Улицы Таркова"
+
+msgid "Raid exit_fence"
+msgstr "Дыра в заборе"
+
+msgid "Raid exit_fence text"
+msgstr "В заборе дыра ровно на одного дикого. Двоим уже тесно."
+
+msgid "Raid exit_fence agility"
+msgstr "Пролезть"
+
+msgid "Raid exit_fence strength"
+msgstr "Расширить дыру"
+
+msgid "Raid exit_cliff"
+msgstr "Спуск по тросу"
+
+msgid "Raid exit_cliff text"
+msgstr "Со скалы свисает старый трос. Внизу — свобода, если трос выдержит."
+
+msgid "Raid exit_cliff agility"
+msgstr "Спуститься по тросу"
+
+msgid "Raid exit_cliff luck"
+msgstr "Искать тропу"
+
+msgid "Raid exit_tunnel"
+msgstr "Тоннель"
+
+msgid "Raid exit_tunnel text"
+msgstr "Тёмный тоннель ведёт за периметр. Внутри что-то капает и шуршит."
+
+msgid "Raid exit_tunnel luck"
+msgstr "Идти в темноте"
+
+msgid "Raid exit_tunnel strength"
+msgstr "Разобрать завал"
+
+msgid "Raid your move"
+msgstr "Ход за тобой."
+
+msgid "Raid rarity common"
+msgstr "Обычный"
+
+msgid "Raid rarity uncommon"
+msgstr "Необычный"
+
+msgid "Raid rarity rare"
+msgstr "Редкий"
+
+msgid "Raid rarity epic"
+msgstr "Эпичный"
+
+msgid "Raid rarity legendary"
+msgstr "Легендарный"
+
+msgid "Raid rarity gnome"
+msgstr "Секретный"
+
+msgid "Raid location factory"
+msgstr "Завод"
+
+msgid "Raid location labs"
+msgstr "Лаборатория"
+
+msgid "Raid share"
+msgstr "Поделиться итогом"
+
+msgid "Raid share copy"
+msgstr "Скопировать ссылку"
+
+msgid "Raid share try"
+msgstr "Сходить в рейд"
+
+msgid "Raid share title %{location}"
+msgstr "Вылазка: %{location}"
+
+msgid "Raid result loot %{items}"
+msgstr "Вынесли: %{items}"
+
+msgid "Raid result no loot"
+msgstr "Ничего не вынесли"
+
+msgid "Raid result kia"
+msgstr "погиб"

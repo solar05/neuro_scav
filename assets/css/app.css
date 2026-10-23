@@ -573,6 +573,49 @@ body {
         padding: 12px 14px;
     }
 
+    /* one row on a phone: the menu, the Neuro page and the language side by
+       side, not the language on a row of its own under them */
+    .navbar-scav {
+        flex-wrap: nowrap !important;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .navbar-scav > .collapse.navbar-collapse {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+    }
+
+    .navbar-right,
+    .navbar-right .navbar-nav,
+    .navbar-right .lang-dropdown {
+        width: auto;
+        margin-top: 0;
+    }
+
+    .navbar-right {
+        flex: none;
+    }
+
+    .navbar-right .lang-dropdown-btn {
+        width: auto;
+        padding: 8px 12px;
+    }
+
+    .navbar-right .lang-dropdown-menu {
+        width: auto;
+        min-width: 140px;
+        left: auto;
+        right: 0;
+    }
+
+    /* the raid's title says what the menu above it already does (the page's
+       class outweighs .scav-container's display further down) */
+    .raid-page .raid-page-title {
+        display: none;
+    }
+
     h2 {
         font-size: 1.2rem;
         word-wrap: break-word;
@@ -2644,82 +2687,370 @@ kbd {
     font-family: "Bender";
 }
 
-/* the map: the whole of it on a wide screen, a few layers round the squad on
-   a phone (see the phone block below); the way taken in gold, the squad's
-   node pulsing, the ones it may go to next dashed and clickable */
-.raid-map {
-    display: block;
-    width: 100%;
-    max-width: 760px;
-    height: auto;
-    margin: 12px auto 0;
+/* Under the squad: the event on the left and, on a wide screen, the whole map
+   on a card beside it; a phone has a strip of the map and a dialog instead
+   (see the phone block below) */
+.raid-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: start;
+    margin-top: 12px;
 }
 
-.raid-map-near {
+/* a field map: a faint grid on the dark; as narrow as the map, notes wrap under it */
+.raid-board-map {
+    width: min-content;
+    position: sticky;
+    top: 12px;
+    padding: 12px;
+    border: 1px solid rgba(212, 147, 0, 0.35);
+    border-radius: 12px;
+    background-color: rgba(33, 37, 41, 0.85);
+    background-image:
+        linear-gradient(rgba(212, 147, 0, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212, 147, 0, 0.07) 1px, transparent 1px),
+        linear-gradient(var(--raid-tint, transparent), var(--raid-tint, transparent));
+    background-size: 18px 18px, 18px 18px, auto;
+}
+
+/* a location's tint over the card and the dialog, its name on top of the card */
+.raid-location-customs { --raid-tint: rgba(194, 154, 84, 0.16); }
+.raid-location-woods { --raid-tint: rgba(76, 140, 74, 0.18); }
+.raid-location-shoreline { --raid-tint: rgba(56, 132, 160, 0.18); }
+.raid-location-interchange { --raid-tint: rgba(150, 90, 190, 0.16); }
+.raid-location-reserve { --raid-tint: rgba(130, 130, 60, 0.18); }
+.raid-location-lighthouse { --raid-tint: rgba(90, 120, 170, 0.18); }
+.raid-location-streets { --raid-tint: rgba(170, 80, 60, 0.16); }
+.raid-location-factory { --raid-tint: rgba(160, 110, 60, 0.18); }
+.raid-location-labs { --raid-tint: rgba(120, 200, 210, 0.16); }
+
+.raid-map-dialog {
+    background-image: linear-gradient(var(--raid-tint, transparent), var(--raid-tint, transparent));
+}
+
+.raid-map-location {
+    margin: 0 0 8px;
+    color: #d49300;
+    font: bold 15px "Bender";
+    text-align: center;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* at night or in the fog the card goes darker */
+.raid-board-dark {
+    background-color: rgba(8, 10, 14, 0.94);
+}
+
+.raid-strip {
     display: none;
 }
 
+/* under the map: why it's dark, who's on the trail; on a phone the node tapped */
+.raid-map-note {
+    margin: 8px 0 0;
+    color: #a0a0a0;
+    font: 13px "Bender";
+    text-align: center;
+}
+
+.raid-map-chase {
+    color: #e57373;
+}
+
+.raid-map-info {
+    margin: 4px 0 0;
+    color: #ffd060;
+    font: 14px "Bender";
+    text-align: center;
+}
+
+.raid-map-info::before {
+    content: attr(data-text);
+}
+
+.raid-map-info:not([data-text]) {
+    display: none;
+}
+
+/* under the strip the line keeps its room, empty till a tap */
+.raid-strip-info,
+.raid-strip-info:not([data-text]) {
+    display: block;
+    min-height: 1.4em;
+}
+
+/* a Tabler icon (see CoreComponents.icon/1) at the size of the text around
+   it, in its colour, unless a class says otherwise */
+svg[class^="tabler-"] {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+}
+
+.raid-world-icon {
+    color: #d49300;
+}
+
+.raid-trait-icon {
+    color: #d49300;
+}
+
+/* in the legend gold, the dangers red; on a gold option's button dark, the dangers dark red */
+.raid-legend-icon {
+    color: #d49300;
+}
+
+.raid-legend-icon.raid-icon-lose,
+.raid-legend-icon.raid-icon-wound,
+.raid-legend-icon.raid-icon-drop {
+    color: #e57373;
+}
+
+.raid-option .raid-icon-lose,
+.raid-option .raid-icon-wound,
+.raid-option .raid-icon-drop {
+    color: #9b1c1c;
+}
+
+/* the map at its own pixel size (smaller only with less room): links drawn
+   under the nodes, both placed by the same units */
+.raid-map {
+    position: relative;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.raid-map-links {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
 .raid-link {
-    stroke: #4a4f55;
+    fill: none;
+    stroke: rgba(165, 165, 165, 0.35);
     stroke-width: 2;
+    stroke-dasharray: 3 4;
+    vector-effect: non-scaling-stroke;
 }
 
 .raid-link-taken {
     stroke: #d49300;
     stroke-width: 3;
+    stroke-dasharray: none;
 }
 
-.raid-node circle {
-    fill: #212529;
-    stroke: #4a4f55;
-    stroke-width: 2;
+.raid-node {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: 2px solid #4a4f55;
+    border-radius: 50%;
+    background: #1d2024;
+    color: #a5a5a5;
+    transform: translate(-50%, -50%);
+    cursor: default;
+    transition: transform 0.15s, background-color 0.15s;
 }
 
-.raid-node text {
-    font-size: 17px;
-    text-anchor: middle;
-    dominant-baseline: central;
-    pointer-events: none;
+.raid-map-horizontal .raid-node {
+    width: 22px;
+    height: 22px;
 }
 
-.raid-node-done circle {
-    fill: #3a3320;
-    stroke: #d49300;
+.raid-node-icon {
+    width: 14px;
+    height: 14px;
 }
 
-.raid-node-at circle {
-    stroke: #ffd060;
-    stroke-width: 3;
-    animation: raidNodePulse 1.6s ease-in-out infinite;
+/* the kinds' colours, on the map and in the legend */
+.raid-kind-boss { color: #e53935; }
+.raid-kind-exit { color: #4caf50; }
+.raid-kind-fight { color: #d0d0d0; }
+.raid-kind-loot { color: #d49300; }
+.raid-kind-search { color: #c8a060; }
+.raid-kind-scav { color: #6fa8dc; }
+.raid-kind-gnome { color: #b39ddb; }
+.raid-kind-rare { color: #ffd060; }
+.raid-kind-hazard { color: #ff9800; }
+
+/* not seen: a faint dot */
+.raid-node-hidden,
+.raid-map-horizontal .raid-node-hidden {
+    width: 9px;
+    height: 9px;
+    border-color: #4a4f55;
+    background: #4a4f55;
+}
+
+.raid-node-done {
+    border-color: #d49300;
+    background: #3a3320;
+}
+
+/* only remembered (it's dark): pale; out of the squad's reach: paler still */
+.raid-node-remembered {
+    opacity: 0.6;
+}
+
+.raid-node-gone,
+.raid-link-gone {
+    opacity: 0.3;
+}
+
+/* the pursuers' countdown on the squad's node */
+.raid-node[data-chase]::before {
+    content: attr(data-chase);
+    position: absolute;
+    top: -7px;
+    right: -9px;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 3px;
+    border-radius: 8px;
+    background: #e53935;
+    color: #fff;
+    font: bold 10px/15px "Bender";
+}
+
+.raid-node-at {
+    border-color: #ffd060;
+    animation: borderPulseGold 1.6s ease-in-out infinite;
 }
 
 .raid-node-next {
+    border-style: dashed;
+    border-color: #ffd060;
     cursor: pointer;
 }
 
-.raid-node-next circle {
-    stroke: #ffd060;
-    stroke-dasharray: 4 3;
+/* a member may be lost there: a red ring on what's ahead, faint (most events
+   can kill, the icon comes first), a boss's full */
+.raid-node-deadly:not(.raid-node-done) {
+    border-color: rgba(229, 57, 53, 0.5);
 }
 
-.raid-node-next:hover circle {
-    fill: #4a3f1c;
+.raid-node-boss:not(.raid-node-done) {
+    border-color: #e53935;
 }
 
-.raid-node-hidden text {
-    opacity: 0.45;
+.raid-node-next:hover,
+.raid-node-next:focus-visible {
+    background: #4a3f1c;
+    transform: translate(-50%, -50%) scale(1.15);
 }
 
-/* a member may be lost there: a red ring on what's ahead, a boss's too */
-.raid-node-deadly:not(.raid-node-done) circle {
-    stroke: #e53935;
+/* its name on hover, to the left: the card is at the page's right */
+.raid-node[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 8px);
+    z-index: 10;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: #212529;
+    color: #ffd060;
+    font: 13px "Bender";
+    white-space: nowrap;
+    transform: translateY(-50%);
+    pointer-events: none;
 }
 
-@keyframes raidNodePulse {
-    50% {
-        stroke-width: 5;
-        stroke-opacity: 0.6;
-    }
+.raid-map-btn {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #d49300;
+    border-radius: 10px;
+    background: #212529;
+    color: #d49300;
+}
+
+.raid-map-btn-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.raid-map-dialog {
+    padding-bottom: 12px;
+}
+
+.raid-map-dialog .raid-map {
+    margin: 12px auto;
+}
+
+.raid-map-dialog .raid-map-note,
+.raid-map-dialog .raid-map-info {
+    padding: 0 14px;
+}
+
+.raid-move-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.raid-legend-tabler {
+    width: 16px;
+    height: 16px;
+}
+
+.raid-legend-dot,
+.raid-legend-ring {
+    display: inline-block;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+.raid-legend-dot {
+    width: 9px;
+    height: 9px;
+    background: #4a4f55;
+}
+
+.raid-legend-ring {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #e53935;
+}
+
+/* the end of a raid: who made it out (the fallen struck through), the loot carried out */
+.raid-result-squad {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 14px;
+    margin: 0 0 8px;
+    padding: 0;
+    color: #d0d0d0;
+    font-size: 16px;
+    list-style: none;
+}
+
+.raid-result-lost {
+    color: #8a8a8a;
+    text-decoration: line-through;
+}
+
+.raid-result-lost svg {
+    color: #e53935;
+}
+
+.raid-result-loot {
+    margin: 0 0 6px;
+    color: #c8c8c8;
+    font-size: 15px;
+    text-align: center;
 }
 
 .raid-exit {
@@ -2745,8 +3076,11 @@ kbd {
     color: #e53935;
 }
 
-/* the time of day and the weather in a line, the checks they ease and harden after them */
+/* the time of day and the weather in a line, the checks they ease and harden
+   after them; room for two lines kept (three on a phone), as their length changes */
 .raid-world {
+    min-height: 2.8em;
+    line-height: 1.4;
     margin: 6px 0 0;
     text-align: center;
     color: #c8c8c8;
@@ -2764,8 +3098,7 @@ kbd {
 
 /* what a member did on their own, before what came of it */
 .raid-quirk {
-    display: block;
-    margin-bottom: 4px;
+    margin-right: 4px;
     color: #ffd060;
     font-size: 90%;
     font-style: italic;
@@ -2789,7 +3122,7 @@ kbd {
 
 .raid-member {
     position: relative;
-    padding: 8px;
+    padding: 8px 8px 22px;
     border-radius: 12px;
     background: rgba(33, 37, 41, 0.85);
     transition: background-color 0.6s, box-shadow 0.6s;
@@ -2881,6 +3214,30 @@ kbd {
     80% { transform: translateX(0); }
 }
 
+/* The outcome's box keeps one height (a new one, the first choice's
+   placeholder, a long one alike), so the panel under it never jumps; its
+   text in the middle, a long one smaller, scrolling as a last resort */
+.raid-outcome-box {
+    height: 68px;
+    margin: 14px 0 0;
+}
+
+.raid-outcome-box .raid-outcome {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    margin: 0;
+    overflow-y: auto;
+}
+
+.raid-outcome-long {
+    font-size: 16px;
+}
+
+.raid-outcome-none {
+    color: #a0a0a0;
+}
+
 .raid-outcome {
     margin: 14px 0 0;
     padding: 8px 14px;
@@ -2954,8 +3311,7 @@ kbd {
 
 /* an outcome that starts a chain hints at what's coming */
 .raid-follow-up {
-    display: block;
-    margin-top: 4px;
+    margin-left: 6px;
     font-size: 85%;
     font-style: italic;
     opacity: 0.8;
@@ -3073,10 +3429,12 @@ kbd {
     font-size: 12px;
 }
 
-/* wounds add up: from the second one a member bleeds */
+/* wounds add up: from the second one a member bleeds; the badge sits in room
+   every card keeps at its bottom, so a first wound doesn't make the row taller */
 .raid-member-wounds {
-    display: block;
-    margin-top: 4px;
+    position: absolute;
+    left: 8px;
+    bottom: 4px;
     color: #e57373;
     font-size: 12px;
 }
@@ -3208,7 +3566,7 @@ kbd {
     }
 
     .raid-member {
-        padding: 6px;
+        padding: 6px 6px 20px;
     }
 
     .raid-member .battle-card-name {
@@ -3230,12 +3588,36 @@ kbd {
         font-size: 28px;
     }
 
-    .raid-map-full {
+    .raid-board {
+        grid-template-columns: minmax(0, 1fr);
+        margin-top: 8px;
+    }
+
+    .raid-board-map {
         display: none;
     }
 
-    .raid-map-near {
-        display: block;
+    .raid-outcome-box {
+        height: 104px;
+    }
+
+    .raid-outcome {
+        font-size: 16px;
+    }
+
+    .raid-outcome-long {
+        font-size: 14px;
+    }
+
+    .raid-world {
+        min-height: 4.2em;
+    }
+
+    .raid-strip {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 4px;
     }
 
     .raid-event .wheel-panel-header {
@@ -3259,7 +3641,8 @@ kbd {
         background-color: transparent;
     }
 
-    .raid-icon:hover::after {
+    .raid-icon:hover::after,
+    .raid-node[data-tip]:hover::after {
         content: none;
     }
 }
@@ -3276,7 +3659,7 @@ kbd {
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .raid-node-at circle,
+    .raid-node-at,
     .raid-outcome,
     .raid-event,
     .raid-member-killed {
@@ -3352,6 +3735,47 @@ kbd {
     font-size: 75%;
     letter-spacing: 1px;
     text-transform: uppercase;
+}
+
+/* a raid's result: where and how it went above the squad's rows, the loot under them */
+.share-raid-head {
+    padding: 14px 16px 0;
+    font-family: "Bender";
+    text-align: center;
+}
+
+.share-raid-location {
+    margin: 0;
+    color: #d49300;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.share-raid-verdict {
+    margin: 4px 0 0;
+    color: #fff;
+    font-size: 20px;
+}
+
+.share-raid-exit {
+    margin: 2px 0 0;
+    color: #4caf50;
+    font-size: 16px;
+}
+
+.share-raid-lost .share-team-name {
+    color: #8a8a8a;
+    text-decoration: line-through;
+}
+
+.share-raid-loot {
+    margin: 0;
+    padding: 4px 16px 10px;
+    color: #c8c8c8;
+    font: 15px "Bender";
+    text-align: center;
 }
 
 /* ── Wheel ── */

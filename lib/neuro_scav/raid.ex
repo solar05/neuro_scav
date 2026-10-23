@@ -11,7 +11,8 @@ defmodule NeuroScav.Raid do
   there are several to start from. Through an exit the raid is over. The
   squad sees the nodes it may go to next and the exits as they are, the rest
   by their kind of event (`kind/1`), and those not at all at night or in the
-  fog, the bosses aside (`sight/2`).
+  fog, the bosses aside (`sight/2`), unless it has seen them before: what it
+  has seen it remembers, by kind (`seen`).
 
   Each event offers two or three options; an option either needs a stat check,
   is safe (nothing happens), needs an item (a key: an alive member having it
@@ -58,9 +59,12 @@ defmodule NeuroScav.Raid do
   the raid starts (events off the map that can't stall themselves). With none
   left it meets the same event again.
 
-  Maps pick events by weight: the promoting ones are rare. A map may get a
-  boss (`boss?/1`), in the middle or just before the exits, where there's
-  another way past if the map has one; beating one brings a trophy.
+  A random map is one of Tarkov's locations (`locations/0`, `location/1`):
+  its exits, its bosses, and its own events turn up there more often
+  (`@local_weight` times). Maps pick events by weight: the promoting ones are
+  rare. A map may get a boss (`boss?/1`), in the middle or just before the
+  exits, where there's another way past if the map has one; beating one
+  brings a trophy.
 
   Some outcomes start a chain: another event (never on a random map) catches
   up with the squad a few nodes later, at the last node at the latest, and
@@ -98,8 +102,7 @@ defmodule NeuroScav.Raid do
   loot found may all be given, so a raid is fully predictable in tests.
   """
 
-  alias NeuroScav.BattleRoom
-  alias NeuroScav.Raid.{Catalog, Chart}
+  alias NeuroScav.Raid.{Catalog, Chart, Squad}
 
   @typedoc """
   What the last step did, every key always there, nil where it doesn't apply:
@@ -143,13 +146,10 @@ defmodule NeuroScav.Raid do
   @specs @catalog.specs
   @exits @catalog.exits
   @kinds @catalog.kinds
-  # how many walks across the map shape it, see Chart.shape/2
-  @paths 3..4
   @searches @catalog.searches
   # a search: the first look's danger (%), and what each next one adds
   @search_danger 10
   @search_step 15
-  @traits @catalog.traits
   # a member acts on their own when a choice's quirk roll is within it
   @quirk_chance 25
   # how much a chatterbox eases a talk with scavs or hardens hiding
@@ -164,8 +164,6 @@ defmodule NeuroScav.Raid do
   @scav_events @catalog.scav_events
   # {event, outcome} => {the event it brings, how many events later}
   @chains @catalog.chains
-  # what a random map's nodes are drawn from, apart from its exits and boss
-  @common @catalog.common
   # what a stall may bring, see new/3
   @detours @catalog.detours
   @spares 5
@@ -173,36 +171,20 @@ defmodule NeuroScav.Raid do
   @loot_weights @catalog.loot_weights
   # {event, stat} => who makes that check, :best unless listed
   @modes @catalog.modes
-  # failure => the consumable that spares a member from it
-  @savers Map.new(@catalog.consumables, fn {item, failure} -> {failure, item} end)
-  @wound_saver Map.fetch!(@savers, :wound)
-  @death_saver Map.fetch!(@savers, :lose)
+  # the consumable that spares a member a wound
+  @wound_saver @catalog.savers.wound
   @weathers @catalog.weathers
   @daytimes @catalog.daytimes
   # a time of day lasts this many turns
   @daytime_turns 3
-  # from this wound on a member bleeds, losing @bleed of every stat at every
-  # step; @deadly_wound kills
-  @bleeding_at 2
-  @deadly_wound 3
-  @bleed 3
 
-  @boss_chance 0.8
   @karma_limit 3
   @karma_step 5
 
-  @rarities [:common, :uncommon, :rare, :epic, :legendary]
-  @stat_step 10
-  # the share (%) of a battle card's name part a raid stat keeps: with whole
-  # cards the best of five passes nearly every check
-  @base_share 60
-
-  # how many layers a map has, the exits' too
-  @steps 10..13
   # a search's look, as an option: luck isn't checked, a box comes or a wound
   @search {:luck, 0, :found, :wound}
   # retreats in a row a squad may make: then it has to take a risk
-  @retreat_limit 2
+  @retreat_limit 1
   # an option with no check: a safe one, a key, a condition or leaving a search
   @no_check %{
     stat: nil,
@@ -221,9 +203,17 @@ defmodule NeuroScav.Raid do
     locked: false
   }
 
-  @doc "How many layers a map has, the exits' too: the events a way across meets."
-  @spec steps() :: Range.t()
-  def steps, do: @steps
+  defdelegate steps, to: Chart
+  defdelegate locations, to: Chart
+  defdelegate random_map(location \\ nil), to: Chart
+  defdelegate card(member), to: Squad
+  defdelegate traits, to: Squad
+  defdelegate trait(name), to: Squad
+  defdelegate stat_step, to: Squad
+  defdelegate alive(raid), to: Squad
+  defdelegate bleeding?(member), to: Squad
+  defdelegate loot_bonuses(raid, member), to: Squad
+  defdelegate active?(raid, entry), to: Squad
 
   @doc "How many retreats in a row a squad may make before it has to take a risk."
   @spec retreat_limit() :: pos_integer()
@@ -232,10 +222,6 @@ defmodule NeuroScav.Raid do
   @doc "Every event."
   @spec events() :: [atom()]
   def events, do: Map.keys(@specs)
-
-  @doc "How much a member's stat grows or drops on `:train` and `:wound`."
-  @spec stat_step() :: pos_integer()
-  def stat_step, do: @stat_step
 
   @doc "Whether an event is a boss."
   @spec boss?(atom()) :: boolean()
@@ -269,14 +255,6 @@ defmodule NeuroScav.Raid do
   @spec scav?(atom()) :: boolean()
   def scav?(event), do: event in @scav_events
 
-  @doc "Every trait a member may have, see `trait/1`."
-  @spec traits() :: [atom()]
-  def traits, do: @traits
-
-  @doc "A member's trait: what they may do on their own, the same for a name every time."
-  @spec trait(String.t()) :: atom()
-  def trait(name), do: Enum.at(@traits, :erlang.phash2({name, :trait}, length(@traits)))
-
   @doc "The loot beating a boss brings, nil for any other event."
   @spec trophy(atom()) :: atom() | nil
   def trophy(event), do: @trophies[event]
@@ -284,10 +262,6 @@ defmodule NeuroScav.Raid do
   @doc "Whether a piece of loot is a boss's trophy."
   @spec trophy_item?(atom()) :: boolean()
   def trophy_item?(item), do: item in Map.values(@trophies)
-
-  @doc "Whether a member bleeds: wounded enough to lose a little of every stat at every step."
-  @spec bleeding?(map()) :: boolean()
-  def bleeding?(member), do: member.wounds >= @bleeding_at
 
   @doc """
   The world the squad is in now: the `daytime` and the `weather`, with what
@@ -315,52 +289,13 @@ defmodule NeuroScav.Raid do
     }
   end
 
-  @doc """
-  A random map as many layers long as `steps/0` picks: the exits on the
-  last, different events everywhere else, drawn by weight (keys
-  `u^(1/weight)`, the largest win), so rare events seldom show up. Bosses and
-  chain events aren't drawn: with `@boss_chance` a boss takes a node in the
-  middle or just before the exits.
-  """
-  @spec random_map() :: map()
-  def random_map do
-    layers = Enum.random(@steps)
-    links = Chart.shape(layers, Enum.random(@paths))
-    {exits, inner} = links |> Map.keys() |> Enum.split_with(&(elem(&1, 0) == layers - 1))
-    boss = if :rand.uniform() < @boss_chance, do: boss_node(inner, layers)
-    rest = Enum.shuffle(inner -- [boss])
-
-    nodes =
-      Enum.zip(rest, draw(@common, @weights, length(rest))) ++
-        Enum.zip(exits, Enum.take_random(@exits, length(exits))) ++
-        if(boss, do: [{boss, Enum.random(@bosses)}], else: [])
-
-    %{nodes: Map.new(nodes), links: links}
-  end
-
-  # a node in the middle layer or the one before the exits, where there's
-  # another way past if it can be
-  defp boss_node(ids, layers) do
-    places = Enum.filter(ids, &(elem(&1, 0) in [div(layers, 2), layers - 2]))
-
-    wide =
-      Enum.filter(places, fn {layer, _column} ->
-        Enum.count(ids, &(elem(&1, 0) == layer)) > 1
-      end)
-
-    Enum.random(if wide != [], do: wide, else: places)
-  end
+  @doc "The location a raid's map is, nil for a map of a test's own."
+  @spec location(map()) :: atom() | nil
+  def location(raid), do: Map.get(raid.map, :location)
 
   @doc "A random find, drawn by weight like a route: the valuables are rare, trophies never."
   @spec random_item() :: atom()
-  def random_item, do: hd(draw(Enum.reject(loot(), &trophy_item?/1), @loot_weights, 1))
-
-  # `count` different keys, each with a chance by its weight (1 unless listed)
-  defp draw(keys, weights, count) do
-    keys
-    |> Enum.sort_by(&(-:math.pow(:rand.uniform(), 1 / Map.get(weights, &1, 1))))
-    |> Enum.take(count)
-  end
+  def random_item, do: hd(Chart.draw(Enum.reject(loot(), &trophy_item?/1), @loot_weights, 1))
 
   @doc "Every kind of loot, for picking a find."
   @spec loot() :: [atom()]
@@ -381,20 +316,10 @@ defmodule NeuroScav.Raid do
   @spec new([map()], map() | [atom()], map() | nil) :: map()
   def new(members, map \\ random_map(), world \\ nil) do
     map = if is_list(map), do: Chart.linear(map), else: map
-
-    squad =
-      members
-      |> Enum.with_index()
-      |> Enum.map(fn {member, index} ->
-        member
-        |> card()
-        |> Map.merge(%{index: index, alive: true, wounds: 0, trait: trait(member.name)})
-      end)
-
     world = world || %{weather: draw_weather(), daytime: Enum.random(Keyword.keys(@daytimes))}
 
     raid = %{
-      squad: squad,
+      squad: Squad.new(members),
       map: map,
       # the nodes the squad has been at, the latest (where it is) first
       path: [],
@@ -402,11 +327,13 @@ defmodule NeuroScav.Raid do
       facing: nil,
       # chain events after the squad: {event, nodes till it catches up}
       pursuers: [],
+      # the nodes the squad has seen, at least by kind: it remembers them
+      seen: MapSet.new(),
       weather: world.weather,
       daytime_start:
         Enum.find_index(@daytimes, fn {daytime, _kinds} -> daytime == world.daytime end),
       # the events a stall brings, in turn
-      spares: draw(@detours -- Map.values(map.nodes), @weights, @spares),
+      spares: Chart.draw(@detours -- Map.values(map.nodes), @weights, @spares),
       turn: 0,
       searched: 0,
       stash: [],
@@ -417,33 +344,13 @@ defmodule NeuroScav.Raid do
 
     case Chart.starts(map) do
       [start] -> arrive(raid, start)
-      _starts -> raid
+      _starts -> remember(raid)
     end
   end
 
   defp draw_weather do
     weights = Map.new(@weathers, fn {weather, %{weight: weight}} -> {weather, weight} end)
-    hd(draw(Map.keys(@weathers), weights, 1))
-  end
-
-  @doc """
-  A member's raid card: the battle card (`BattleRoom.card/1`) with the part
-  that comes from the name cut to `@base_share` percent (1 at least), the
-  rarity bonus kept whole. The gnome stays a joker.
-  """
-  @spec card(%{name: String.t(), rarity: atom()}) :: map()
-  def card(%{rarity: :gnome} = member), do: BattleRoom.card(member)
-
-  def card(member) do
-    card = BattleRoom.card(member)
-    bonus = BattleRoom.rarity_bonus(card.rarity)
-
-    stats =
-      Map.new(card.stats, fn {stat, value} ->
-        {stat, max(div((value - bonus) * @base_share, 100), 1) + bonus}
-      end)
-
-    %{card | stats: stats}
+    hd(Chart.draw(Map.keys(@weathers), weights, 1))
   end
 
   @doc """
@@ -485,7 +392,7 @@ defmodule NeuroScav.Raid do
   # every pursuer comes a node nearer
   defp arrive(raid, id) do
     pursuers = for {event, left} <- raid.pursuers, do: {event, left - 1}
-    face(%{raid | path: [id | raid.path], pursuers: pursuers})
+    %{raid | path: [id | raid.path], pursuers: pursuers} |> face() |> remember()
   end
 
   # what the squad faces where it stands: a pursuer that caught up, otherwise
@@ -499,25 +406,39 @@ defmodule NeuroScav.Raid do
 
   @doc """
   What the squad can tell of a node: `:event` for where it's been, where it
-  may go next and the exits; `:kind` (`kind/1`) for the rest, `:hidden` at
-  night or in the fog, except a boss.
+  may go next and the exits; `:kind` (`kind/1`) for the rest. In the dark
+  (`dark?/1`) the rest is `:remembered` (by kind) if the squad has seen it
+  before, `:hidden` if not, except a boss.
   """
-  @spec sight(map(), tuple()) :: :event | :kind | :hidden
+  @spec sight(map(), tuple()) :: :event | :kind | :remembered | :hidden
   def sight(raid, id) do
     event = raid.map.nodes[id]
 
     cond do
       id in raid.path or id in ahead(raid) or exit?(event) -> :event
       boss?(event) or not dark?(raid) -> :kind
+      id in raid.seen -> :remembered
       true -> :hidden
     end
   end
 
-  defp dark?(raid), do: world(raid).daytime == :night or raid.weather == :fog
+  # what the squad sees now it knows from then on, if only by its kind
+  defp remember(raid) do
+    seen = for id <- Map.keys(raid.map.nodes), sight(raid, id) != :hidden, into: raid.seen, do: id
+    %{raid | seen: seen}
+  end
 
-  @doc "Members still alive."
-  @spec alive(map()) :: [map()]
-  def alive(raid), do: Enum.filter(raid.squad, & &1.alive)
+  @doc "Whether the squad sees little of the map: at night or in the fog."
+  @spec dark?(map()) :: boolean()
+  def dark?(raid), do: world(raid).daytime == :night or raid.weather == :fog
+
+  @doc """
+  The nodes the squad can still get to, from where it stands (that one too);
+  all of them before it's in.
+  """
+  @spec reachable(map()) :: MapSet.t()
+  def reachable(%{path: []} = raid), do: MapSet.new(Map.keys(raid.map.nodes))
+  def reachable(raid), do: Chart.reachable(raid.map, at(raid))
 
   @doc """
   The current event's options: `%{stat: nil}` for a safe one, otherwise the
@@ -564,7 +485,7 @@ defmodule NeuroScav.Raid do
   defp option(_raid, _event, :safe), do: @no_check
 
   defp option(raid, _event, {:key, item, success}) do
-    holder = holder(raid, item)
+    holder = Squad.holder(raid, item)
     %{@no_check | key: item, member: holder, chance: holder && 100, reward: success}
   end
 
@@ -572,7 +493,7 @@ defmodule NeuroScav.Raid do
   defp option(raid, _event, :pay) do
     payment = %{@no_check | pay: true, reward: :pass, risk: :drop}
 
-    case last_active(raid) do
+    case Squad.last_active(raid) do
       nil ->
         payment
 
@@ -620,7 +541,7 @@ defmodule NeuroScav.Raid do
   # A search's look, by the luckiest unless given: a box found or a wound on
   # luck, the danger growing with every look; the time of day eases it or not.
   defp search_plan(raid, member \\ nil) do
-    member = member || Enum.max_by(alive(raid), &with_loot(raid, &1, :luck))
+    member = member || Enum.max_by(alive(raid), &Squad.with_loot(raid, &1, :luck))
     daytime = Map.get(world(raid).daytime_kinds, :search, 0)
     chance = 100 - @search_danger - @search_step * raid.searched + daytime
     %{option: @search, member: member, chance: chance |> max(5) |> min(95), quirk: nil}
@@ -635,7 +556,7 @@ defmodule NeuroScav.Raid do
       karma_ease(raid, event, stat) + Map.get(world.weather_stats, stat, 0) +
         Map.get(world.daytime_kinds, kind(event, option), 0)
 
-    (with_loot(raid, member, stat) + ease - difficulty) |> max(5) |> min(95)
+    (Squad.with_loot(raid, member, stat) + ease - difficulty) |> max(5) |> min(95)
   end
 
   # what kind of check it is, for the time of day: a fight, a search, hiding or none
@@ -647,24 +568,11 @@ defmodule NeuroScav.Raid do
     if retreat?(option) or Map.get(@modes, {event, stat}) == :weakest, do: :hide
   end
 
-  # the alive member who has the item, nil when nobody does
-  defp holder(raid, item) do
-    Enum.find_value(raid.stash, fn entry ->
-      member = Enum.at(raid.squad, entry.owner)
-      if entry.item == item and member.alive, do: member
-    end)
-  end
-
-  # the index of the stash's last item whose finder is alive, nil when there's none
-  defp last_active(raid) do
-    List.last(for {entry, index} <- Enum.with_index(raid.stash), active?(raid, entry), do: index)
-  end
-
   # A key nobody has is locked, so is a payment with nothing to pay and trust
   # the scavs don't give; and a retreat once the squad has retreated as long as
   # it may, unless the event has nothing else to take or it's an exit.
-  defp locked?(raid, _event, {:key, item, _success}), do: holder(raid, item) == nil
-  defp locked?(raid, _event, :pay), do: last_active(raid) == nil
+  defp locked?(raid, _event, {:key, item, _success}), do: Squad.holder(raid, item) == nil
+  defp locked?(raid, _event, :pay), do: Squad.last_active(raid) == nil
   defp locked?(raid, _event, {:karma, level}), do: raid.karma < level
 
   defp locked?(raid, event, option) do
@@ -680,27 +588,6 @@ defmodule NeuroScav.Raid do
   # talking to scavs (a luck check at a scav event) goes as the squad's karma
   defp karma_ease(raid, event, :luck) when event in @scav_events, do: raid.karma * @karma_step
   defp karma_ease(_raid, _event, _stat), do: 0
-
-  # a member's stat with the bonuses of the loot they found
-  defp with_loot(raid, member, stat),
-    do: member.stats[stat] + Map.get(loot_bonuses(raid, member), stat, 0)
-
-  @doc """
-  What a member's loot adds to each stat, `%{stat => bonus}` (a bonus may be
-  negative). Empty for a fallen member: their loot doesn't work.
-  """
-  @spec loot_bonuses(map(), map()) :: %{atom() => integer()}
-  def loot_bonuses(_raid, %{alive: false}), do: %{}
-
-  def loot_bonuses(raid, member) do
-    for %{item: item, owner: owner} <- raid.stash, owner == member.index, reduce: %{} do
-      bonuses -> Map.merge(bonuses, @loot[item], fn _stat, a, b -> a + b end)
-    end
-  end
-
-  @doc "Whether a stash entry works: its finder is alive."
-  @spec active?(map(), map()) :: boolean()
-  def active?(raid, %{owner: owner}), do: Enum.at(raid.squad, owner).alive
 
   @doc """
   Takes option `index` of the current event: a check succeeds when `roll`
@@ -730,7 +617,7 @@ defmodule NeuroScav.Raid do
     do: step(raid, %{@last | event: event, outcome: :safe, retreat: true})
 
   defp act(raid, event, :pay, _roll, _item, _quirky) do
-    {paid, stash} = List.pop_at(raid.stash, last_active(raid))
+    {paid, stash} = List.pop_at(raid.stash, Squad.last_active(raid))
     owner = Enum.at(raid.squad, paid.owner)
 
     step(%{raid | stash: stash}, %{
@@ -754,7 +641,7 @@ defmodule NeuroScav.Raid do
     do: check(raid, event, search_plan(raid), roll, item, quirky)
 
   defp act(raid, event, {:key, key, success}, _roll, item, _quirky) do
-    holder = holder(raid, key)
+    holder = Squad.holder(raid, key)
 
     settle(raid, success, holder, item, %{
       @last
@@ -887,7 +774,7 @@ defmodule NeuroScav.Raid do
       beaten ->
         {raid, used} =
           Enum.reduce(beaten, {raid, nil}, fn member, {raid, used} ->
-            {raid, spent} = hurt(raid, member, :wound, last.stat)
+            {raid, spent} = Squad.hurt(raid, member, :wound, last.stat)
             {raid, used || spent}
           end)
 
@@ -901,47 +788,8 @@ defmodule NeuroScav.Raid do
     end
   end
 
-  # What a failure does to a member, and the consumable that spared them, if
-  # any: propital takes a wound away, a medkit turns a death (the third
-  # wound's too) into a wound that can't kill; the third wound kills.
-  defp hurt(raid, member, failure, stat) do
-    wounds = Enum.at(raid.squad, member.index).wounds
-    deadly = failure == :lose or wounds + 1 >= @deadly_wound
-
-    cond do
-      failure == :wound and has?(raid, @wound_saver) ->
-        {spend(raid, @wound_saver), @wound_saver}
-
-      deadly and has?(raid, @death_saver) ->
-        raid =
-          raid |> spend(@death_saver) |> wound(member, stat, min(wounds + 1, @deadly_wound - 1))
-
-        {raid, @death_saver}
-
-      deadly ->
-        {set_alive(raid, member.index, false), nil}
-
-      true ->
-        {wound(raid, member, stat, wounds + 1), nil}
-    end
-  end
-
-  defp wound(raid, member, stat, wounds) do
-    raid
-    |> add_stat(member.index, stat, -@stat_step)
-    |> update_member(member.index, &%{&1 | wounds: wounds})
-  end
-
-  # a consumable is the squad's: any alive member's will do, and it's gone once spent
-  defp has?(raid, item), do: spare_entry(raid, item) != nil
-
-  defp spend(raid, item), do: %{raid | stash: List.delete_at(raid.stash, spare_entry(raid, item))}
-
-  defp spare_entry(raid, item),
-    do: Enum.find_index(raid.stash, &(&1.item == item and active?(raid, &1)))
-
   defp settle(raid, :lose, member, _item, last) do
-    case hurt(raid, member, :lose, last.stat) do
+    case Squad.hurt(raid, member, :lose, last.stat) do
       {raid, nil} -> step(raid, last)
       {raid, used} -> step(raid, %{last | outcome: :wound, used: used})
     end
@@ -958,7 +806,7 @@ defmodule NeuroScav.Raid do
   # the last active item goes: a fallen member's loot is no use to give away;
   # an empty stash has nothing to give
   defp settle(raid, :drop, _member, _item, last) do
-    case last_active(raid) do
+    case Squad.last_active(raid) do
       nil ->
         step(raid, last)
 
@@ -974,7 +822,7 @@ defmodule NeuroScav.Raid do
     cond do
       fallen = Enum.find(raid.squad, &(not &1.alive)) ->
         raid
-        |> set_alive(fallen.index, true)
+        |> Squad.set_alive(fallen.index, true)
         |> step(%{last | member: fallen.name, index: fallen.index})
 
       # nobody to bring back: the most wounded one is patched up
@@ -982,7 +830,7 @@ defmodule NeuroScav.Raid do
         patched = Enum.max_by(wounded, & &1.wounds)
 
         raid
-        |> update_member(patched.index, &%{&1 | wounds: 0})
+        |> Squad.update_member(patched.index, &%{&1 | wounds: 0})
         |> step(%{last | outcome: :heal, member: patched.name, index: patched.index})
 
       true ->
@@ -991,12 +839,12 @@ defmodule NeuroScav.Raid do
   end
 
   defp settle(raid, :train, member, _item, last),
-    do: raid |> add_stat(member.index, last.stat, @stat_step) |> step(last)
+    do: raid |> Squad.train(member.index, last.stat) |> step(last)
 
   # propital takes the wound away; a medkit turns the third into one that
   # can't kill; with neither the third kills
   defp settle(raid, :wound, member, _item, last) do
-    case hurt(raid, member, :wound, last.stat) do
+    case Squad.hurt(raid, member, :wound, last.stat) do
       {raid, @wound_saver} ->
         step(raid, %{last | outcome: :spared, used: @wound_saver})
 
@@ -1010,15 +858,15 @@ defmodule NeuroScav.Raid do
   end
 
   defp settle(raid, :promote, member, _item, last) do
-    last = if next_rarity(member.rarity), do: last, else: %{last | outcome: :train}
-    raid |> rank_up(member, last.stat) |> step(last)
+    last = if Squad.next_rarity(member.rarity), do: last, else: %{last | outcome: :train}
+    raid |> Squad.rank_up(member, last.stat) |> step(last)
   end
 
   defp settle(raid, :trophy, member, _item, last) do
     trophy = trophy(last.event)
 
     %{raid | stash: raid.stash ++ [%{item: trophy, owner: member.index}]}
-    |> rank_up(member, last.stat)
+    |> Squad.rank_up(member, last.stat)
     |> step(%{last | item: trophy})
   end
 
@@ -1036,45 +884,6 @@ defmodule NeuroScav.Raid do
 
   defp settle(raid, _pass_or_nothing, _member, _item, last), do: step(raid, last)
 
-  defp set_alive(raid, index, alive), do: update_member(raid, index, &%{&1 | alive: alive})
-
-  defp add_stat(raid, index, stat, delta),
-    do:
-      update_member(raid, index, fn member ->
-        update_in(member.stats[stat], &max(&1 + delta, 1))
-      end)
-
-  # a promotion; at the top the checked stat is trained instead
-  defp rank_up(raid, member, stat) do
-    case next_rarity(member.rarity) do
-      nil -> add_stat(raid, member.index, stat, @stat_step)
-      rarity -> promote(raid, member.index, rarity)
-    end
-  end
-
-  # the stats keep what the raid did to them and take the new rarity's bonus on top
-  defp promote(raid, index, rarity) do
-    update_member(raid, index, fn member ->
-      delta = BattleRoom.rarity_bonus(rarity) - BattleRoom.rarity_bonus(member.rarity)
-
-      %{
-        member
-        | rarity: rarity,
-          stats: Map.new(member.stats, fn {stat, value} -> {stat, value + delta} end)
-      }
-    end)
-  end
-
-  # nil at the top: a legendary has nowhere to go, the gnome is off the scale
-  defp next_rarity(rarity) do
-    case Enum.find_index(@rarities, &(&1 == rarity)) do
-      nil -> nil
-      index -> Enum.at(@rarities, index + 1)
-    end
-  end
-
-  defp update_member(raid, index, fun), do: update_in(raid.squad, &List.update_at(&1, index, fun))
-
   defp step(raid, last) do
     {follow_up, pursuers} = follow(raid, Map.get(@chains, {last.event, last.outcome}))
 
@@ -1085,7 +894,7 @@ defmodule NeuroScav.Raid do
 
     raid = %{
       raid
-      | squad: Enum.map(raid.squad, &bleed/1),
+      | squad: Enum.map(raid.squad, &Squad.bleed/1),
         pursuers: pursuers,
         turn: raid.turn + 1,
         searched: if(last.outcome == :found, do: raid.searched + 1, else: 0),
@@ -1095,7 +904,7 @@ defmodule NeuroScav.Raid do
     }
 
     # a stall keeps the squad at the event at hand, so does a look at a search
-    if last.outcome in [:stall, :found], do: raid, else: done(raid)
+    remember(if last.outcome in [:stall, :found], do: raid, else: done(raid))
   end
 
   # The event at hand is done: after a pursuer comes the next one or the
@@ -1113,18 +922,6 @@ defmodule NeuroScav.Raid do
       end
     end
   end
-
-  # a bleeding member loses a little of every stat at every step, to 1 at least
-  defp bleed(%{alive: true} = member) do
-    if bleeding?(member),
-      do: %{
-        member
-        | stats: Map.new(member.stats, fn {stat, value} -> {stat, max(value - @bleed, 1)} end)
-      },
-      else: member
-  end
-
-  defp bleed(member), do: member
 
   # retreats in a row: a retreat counts up, a risk taken ends them, leaving a
   # search (nil) is neither
