@@ -20,6 +20,10 @@ defmodule NeuroScav.Application do
         {DynamicSupervisor, name: NeuroScav.BattleSupervisor, strategy: :one_for_one},
         # Raids in progress, so a reconnecting page picks its raid up again
         NeuroScav.RaidStore,
+        # Share images, drawn one at a time
+        NeuroScav.ImageRenderer,
+        # Request counts for the /api rate limit
+        {NeuroScav.RateLimiter, clean_period: :timer.minutes(1)},
         # Start a worker by calling: NeuroScav.Worker.start_link(arg)
         # {NeuroScav.Worker, arg},
         # Start to serve requests, typically the last entry

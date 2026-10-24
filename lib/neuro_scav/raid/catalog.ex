@@ -19,6 +19,8 @@ defmodule NeuroScav.Raid.Catalog do
   # - `scav: true`: a scav event, karma eases its luck checks (talks with scavs)
   # - `gnome: true`: a gnome, after the squad's loot
   # - `search: true`: no options of its own but a search, see `NeuroScav.Raid`
+  # - `camp: true`: no options of its own but a rest, see `NeuroScav.Raid`;
+  #   a random map has one, never drawn
   # - `exit: true`: an exit, on the map's last layer only; through it the raid ends
   #
   # option: {stat, difficulty, on success, on failure}, :safe, a key
@@ -30,12 +32,6 @@ defmodule NeuroScav.Raid.Catalog do
   # stat once.
   @events %{
     pmc: [{:strength, 0, :pass, :lose}, {:agility, 10, :pass, :lose}],
-    reshala: %{
-      options: [{:strength, 15, :loot, :lose}, {:agility, 5, :pass, :lose}],
-      modes: %{agility: :weakest},
-      karma: %{strength: -1},
-      chain: %{loot: {:reshala_guards, 2}}
-    },
     sniper: [{:agility, 0, :pass, :lose}, {:luck, -10, :pass, :lose}, {:key, :altyn, :pass}],
     mines: %{
       options: [{:agility, 0, :pass, :wound}, {:luck, 10, :pass, :lose}],
@@ -43,39 +39,27 @@ defmodule NeuroScav.Raid.Catalog do
     },
     office: [{:strength, 10, :loot, :nothing}, :safe],
     bait: %{options: [{:agility, 15, :loot, :lose}, :safe], chain: %{safe: {:ambush, 2}}},
-    killa: %{
-      options: [{:strength, 15, :loot, :lose}, {:luck, 5, :pass, :lose}],
-      modes: %{luck: :weakest}
-    },
     wounded: %{
       options: [{:luck, 0, :loot, :nothing}, :safe],
       scav: true,
       karma: %{luck: 1},
       chain: %{loot: {:debtor, 3}}
     },
-    tagilla: [{:strength, 20, :loot, :lose}, {:agility, 5, :pass, :lose}],
-    shturman: [{:agility, 10, :loot, :lose}, {:luck, 0, :pass, :lose}],
     cultists: %{
       options: [{:agility, 5, :pass, :lose}, {:luck, 10, :pass, :lose}, {:key, :nvg, :pass}],
       modes: %{luck: :weakest}
     },
     raiders: [{:strength, 20, :loot, :lose}, {:agility, 10, :pass, :lose}],
-    toll: %{options: [{:luck, 0, :pass, :drop}, :safe], scav: true},
+    # haggling: the scavs take it well, whatever it costs
+    toll: %{options: [{:luck, 0, :pass, :drop}, :safe], scav: true, karma: %{luck: 1}},
     airdrop: %{
       options: [{:agility, 20, :loot, :lose}, :safe],
       chain: %{loot: {:drop_hunters, 1}}
     },
     medic: %{options: [{:luck, 0, :revive, :nothing}, :safe], scav: true},
     bridge: [{:agility, 10, :pass, :lose}, {:luck, 5, :pass, :drop}],
-    sanitar: [
-      {:strength, 20, :loot, :lose},
-      {:luck, 10, :revive, :drop},
-      {:agility, 5, :pass, :lose}
-    ],
-    glukhar: [{:strength, 25, :loot, :lose}, {:agility, 10, :pass, :lose}],
-    kollontay: [{:luck, 5, :pass, :drop}, {:strength, 15, :loot, :lose}],
-    zryachiy: [{:agility, 15, :pass, :lose}, :safe],
-    vex: [{:luck, 0, :pass, :drop}, :safe],
+    # talking the price down is a skill: it trains luck
+    vex: [{:luck, 0, :train, :drop}, :safe],
     tripwire: %{
       options: [{:agility, -5, :pass, :wound}, {:luck, 10, :loot, :lose}],
       modes: %{agility: :each}
@@ -96,7 +80,8 @@ defmodule NeuroScav.Raid.Catalog do
     rogues: [{:agility, 20, :loot, :lose}, {:luck, 10, :pass, :drop}],
     bunker: [{:luck, 5, :loot, :lose}, :safe],
     mechanic: [{:agility, 10, :loot, :lose}, :safe],
-    train: [{:agility, 5, :pass, :stall}, :safe],
+    # a crate in an open car of a passing train
+    train: [{:agility, 5, :loot, :stall}, :safe],
     trunk: [{:luck, 0, :loot, :wound}, :safe],
     goons: %{
       options: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
@@ -127,6 +112,46 @@ defmodule NeuroScav.Raid.Catalog do
     priest: %{
       options: [{:luck, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
       trophy: :amulet
+    },
+    # the locations' own bosses, each mostly at home (see @locations)
+    reshala: %{
+      options: [{:strength, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      trophy: :golden_tt,
+      karma: %{strength: -1},
+      chain: %{trophy: {:reshala_guards, 2}}
+    },
+    shturman: %{
+      options: [{:agility, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      trophy: :svds
+    },
+    # Sanitar trades too: his meds for the squad's loot
+    sanitar: %{
+      options: [
+        {:strength, 0, :trophy, :lose},
+        {:luck, 10, :revive, :drop},
+        {:agility, 15, :pass, :wound}
+      ],
+      trophy: :sanitar_bag
+    },
+    killa: %{
+      options: [{:strength, 5, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      trophy: :killa_helmet
+    },
+    glukhar: %{
+      options: [{:strength, 5, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      trophy: :ash12
+    },
+    zryachiy: %{
+      options: [{:luck, 5, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      trophy: :zryachiy_balaclava
+    },
+    tagilla: %{
+      options: [{:strength, 10, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      trophy: :sledgehammer
+    },
+    kollontay: %{
+      options: [{:strength, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      trophy: :baton
     },
     # the toughest, won about 1 time in 4: its trophy is legendary
     komar: %{
@@ -165,6 +190,8 @@ defmodule NeuroScav.Raid.Catalog do
     # searches: one more box, and one more, till the squad leaves or gets hurt
     abandoned_store: %{search: true},
     dorm_room: %{search: true},
+    # a camp: a breather, the squad picks how to spend it
+    camp: %{camp: true},
     # scavs
     scav_camp: %{
       options: [{:luck, 5, :loot, :nothing}, {:strength, 10, :loot, :lose}, :safe],
@@ -265,7 +292,15 @@ defmodule NeuroScav.Raid.Catalog do
     pkm: %{strength: 20},
     ghillie: %{agility: 15, luck: 5},
     amulet: %{luck: 20},
-    komar_wings: %{luck: 40}
+    komar_wings: %{luck: 40},
+    golden_tt: %{luck: 15, strength: 5},
+    svds: %{agility: 10, luck: 10},
+    sanitar_bag: %{luck: 10, strength: 5, agility: 5},
+    killa_helmet: %{strength: 15, agility: 5},
+    ash12: %{strength: 20, agility: -5},
+    zryachiy_balaclava: %{agility: 20},
+    sledgehammer: %{strength: 25, agility: -5},
+    baton: %{strength: 10, luck: 10}
   }
 
   # how often a kind of loot turns up, 1 unless listed: the valuables are rare
@@ -323,6 +358,7 @@ defmodule NeuroScav.Raid.Catalog do
     :scav,
     :gnome,
     :search,
+    :camp,
     :exit
   ]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
@@ -379,6 +415,7 @@ defmodule NeuroScav.Raid.Catalog do
           Map.keys(Map.get(spec, :karma, %{})) -- stats != [] &&
             "karma for a stat no option checks",
           Map.get(spec, :search) && spec.options != [] && "a search with options of its own",
+          Map.get(spec, :camp) && spec.options != [] && "a camp with options of its own",
           Map.get(spec, :exit) && :stall in outcomes && "an exit that stalls"
         ],
         &is_binary/1
@@ -390,6 +427,7 @@ defmodule NeuroScav.Raid.Catalog do
 
   @exits for {event, %{exit: true}} <- @specs, do: event
   @searches for {event, %{search: true}} <- @specs, do: event
+  @camps for {event, %{camp: true}} <- @specs, do: event
   @bosses for {event, %{trophy: _trophy}} <- @specs, do: event
   @trophies for {event, %{trophy: trophy}} <- @specs, into: %{}, do: {event, trophy}
   @weights for {event, %{weight: weight}} <- @specs, into: %{}, do: {event, weight}
@@ -412,22 +450,22 @@ defmodule NeuroScav.Raid.Catalog do
               into: %{},
               do: {{event, outcome}, follow_up}
   @follow_ups for {_trigger, {event, _delay}} <- @chains, do: event
-  # what a random map's nodes are drawn from, apart from its exits and boss
-  @common Map.keys(@specs) -- (@bosses ++ @follow_ups ++ @exits)
+  # what a random map's nodes are drawn from, apart from its exits, boss and camp
+  @common Map.keys(@specs) -- (@bosses ++ @follow_ups ++ @exits ++ @camps)
   # what a stall may bring: a common event that can't stall in its turn
   @detours for event <- @common,
                not Enum.any?(@specs[event].options, &match?({_, _, _, :stall}, &1)),
                do: event
 
   # The locations, Tarkov's: a random map is one of them, with its exits
-  # (as many as a map has columns at least), its bosses and its own events,
-  # which turn up there more often than the rest, see `NeuroScav.Raid`.
+  # (as many as a map has columns at least), its bosses (its own first, the
+  # one met there most, then those who roam in) and its own events, which
+  # turn up there more often than the rest, see `NeuroScav.Raid.Chart`.
   @locations %{
     customs: %{
       exits: [:exit_car, :exit_coop, :exit_fence, :exit_boat],
-      bosses: [:priest, :partisan, :komar],
+      bosses: [:reshala, :partisan, :priest],
       events: [
-        :reshala,
         :dorm_room,
         :scav_camp,
         :prapor_quest,
@@ -439,9 +477,8 @@ defmodule NeuroScav.Raid.Catalog do
     },
     woods: %{
       exits: [:exit_bunker, :exit_car, :exit_coop, :exit_fence],
-      bosses: [:partisan, :priest],
+      bosses: [:shturman, :partisan, :priest],
       events: [
-        :shturman,
         :bush_wookie,
         :sniper,
         :mines,
@@ -453,9 +490,8 @@ defmodule NeuroScav.Raid.Catalog do
     },
     shoreline: %{
       exits: [:exit_boat, :exit_tunnel, :exit_coop, :exit_car],
-      bosses: [:priest, :komar],
+      bosses: [:sanitar, :priest, :komar],
       events: [
-        :sanitar,
         :medic,
         :tripwire,
         :scav_patrol,
@@ -467,9 +503,8 @@ defmodule NeuroScav.Raid.Catalog do
     },
     interchange: %{
       exits: [:exit_car, :exit_train, :exit_fence, :exit_coop],
-      bosses: [:komar, :kaban],
+      bosses: [:killa, :komar, :kaban],
       events: [
-        :killa,
         :abandoned_store,
         :elevator,
         :mechanic,
@@ -481,14 +516,13 @@ defmodule NeuroScav.Raid.Catalog do
     },
     reserve: %{
       exits: [:exit_train, :exit_cliff, :exit_bunker, :exit_coop],
-      bosses: [:komar, :partisan],
-      events: [:glukhar, :raiders, :bunker, :train, :bitcoin_farm, :stairs, :tower, :veteran]
+      bosses: [:glukhar, :komar, :partisan],
+      events: [:raiders, :bunker, :train, :bitcoin_farm, :stairs, :tower, :veteran]
     },
     lighthouse: %{
       exits: [:exit_train, :exit_tunnel, :exit_car, :exit_cliff],
-      bosses: [:partisan, :komar],
+      bosses: [:zryachiy, :partisan, :komar],
       events: [
-        :zryachiy,
         :rogues,
         :lightkeeper,
         :goons,
@@ -500,9 +534,8 @@ defmodule NeuroScav.Raid.Catalog do
     },
     factory: %{
       exits: [:exit_fence, :exit_tunnel, :exit_coop, :exit_car],
-      bosses: [:priest, :komar],
+      bosses: [:tagilla, :priest, :komar],
       events: [
-        :tagilla,
         :skirmish,
         :stairs,
         :wipe_day,
@@ -529,9 +562,8 @@ defmodule NeuroScav.Raid.Catalog do
     },
     streets: %{
       exits: [:exit_car, :exit_tunnel, :exit_fence, :exit_coop],
-      bosses: [:kaban, :komar],
+      bosses: [:kollontay, :kaban, :komar],
       events: [
-        :kollontay,
         :streets_fps,
         :desync,
         :trunk,
@@ -579,6 +611,7 @@ defmodule NeuroScav.Raid.Catalog do
     cond do
       Map.has_key?(spec, :trophy) -> :boss
       Map.get(spec, :exit) -> :exit
+      Map.get(spec, :camp) -> :camp
       Map.get(spec, :search) -> :search
       Map.get(spec, :gnome) -> :gnome
       Map.get(spec, :scav) -> :scav
@@ -610,6 +643,7 @@ defmodule NeuroScav.Raid.Catalog do
       locations: @locations,
       kinds: @kinds,
       searches: @searches,
+      camps: @camps,
       traits: @traits,
       bosses: @bosses,
       trophies: @trophies,

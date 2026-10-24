@@ -18,7 +18,7 @@ A Phoenix LiveView app around Tarkov-style scavengers: generate them alone, in t
 | **Glossary** | `/glossary` | The rarity rules and their chances |
 | **Statistics** | `/statistics` | Live counters of generated scavengers by rarity, and how raids went at each location: raids finished, wipes, scavs that made it out |
 
-- **Share links**: a scavenger, a team and a finished raid can be shared as a page with an Open Graph preview. The preview image is an SVG rendered to PNG on the server (Resvg, Bender fonts embedded); the card lies on a tactical map of the region with a scene of a location.
+- **Share links**: a scavenger, a team and a finished raid can be shared as a page with an Open Graph preview. The preview image is an SVG rendered to PNG on the server (Resvg, with the Bender fonts); the card lies on a tactical map of the region with a scene of a location.
 - **Real-time**: LiveView and PubSub; battles and statistics update for everyone connected.
 - **Four languages**: English, Russian, German and Japanese.
 - **JSON API** for generation and statistics (see [docs/API.md](docs/API.md)).

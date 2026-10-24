@@ -54,7 +54,7 @@ defmodule NeuroScav.RaidMechanicsTest do
 
   describe "who makes a check" do
     test "a stealthy one is made by the weakest at it" do
-      [_storm, sneak] = @squad |> new_raid([:reshala]) |> Raid.options()
+      [_listen, sneak] = @squad |> new_raid([:footsteps]) |> Raid.options()
       weakest = @squad |> Enum.map(&Raid.card/1) |> Enum.min_by(& &1.stats.agility)
 
       assert sneak.mode == :weakest
@@ -168,8 +168,8 @@ defmodule NeuroScav.RaidMechanicsTest do
       assert chances.([:pmc], @calm) == [50, 40]
       # fog: strength -10, agility +5; the day: fights +5
       assert chances.([:pmc], %{weather: :fog, daytime: :day}) == [45, 45]
-      # the night: fights -5, hiding (sneaking past Reshala) +10
-      assert chances.([:reshala], %{weather: :clear, daytime: :night}) == [30, 55]
+      # the night: fights -5, hiding (sneaking past the Goons) +10
+      assert chances.([:goons], %{weather: :clear, daytime: :night}) == [15, 50, nil]
       # the morning: a search +5 (a luck check for loot)
       assert chances.([:trunk], @calm) == [55, nil]
     end
@@ -268,13 +268,13 @@ defmodule NeuroScav.RaidMechanicsTest do
     end
 
     test "a chatterbox gives the squad away when it hides, and talks scavs round" do
-      # the train: an escape (agility 5, a stall at worst), 45% for a plain 50
-      raid = squad([:train, :pmc], [{:chatty, 50}])
+      # the desync's run: an escape (agility 0, a stall at worst), 50% for a plain 50
+      raid = squad([:desync, :pmc], [{:chatty, 50}])
       chatty = name(raid, 0)
-      assert %{outcome: :pass} = Raid.choose(raid, 0, 40).last
+      assert %{outcome: :pass} = Raid.choose(raid, 1, 40).last
 
       assert %{outcome: :stall, quirk: {:chatty, ^chatty}} =
-               Raid.choose(raid, 0, 40, :sj6, 1).last
+               Raid.choose(raid, 1, 40, :sj6, 1).last
 
       # the toll: a luck check at a scav event, 50%
       raid = squad([:toll, :pmc], [{:chatty, 50}])

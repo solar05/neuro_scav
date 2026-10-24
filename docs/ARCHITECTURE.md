@@ -24,7 +24,7 @@ Most state lives in processes (GenServers, ETS, a process per battle room) rathe
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Processes (lib/neuro_scav/servers)                                   │
 │   ScavengersServer · StatsCounterServer · UserRequestsServer         │
-│   BattleRoom (one per room) · RaidStore (ETS)                        │
+│   BattleRoom (one per room) · RaidStore (ETS) · ImageRenderer        │
 └──────────────────────────────────────────────────────────────────────┘
                         ↓
 ┌──────────────────────────────────────────────────────────────────────┐
@@ -65,7 +65,7 @@ Mounted into every LiveView by `NeuroScavWeb.live_view/0`:
 
 #### Controllers (`controllers/`)
 
-- **`ShareController`** — share pages for a scavenger, a team and a finished raid, and their Open Graph images. The token in the link carries the data and is strictly validated when decoded. The image is an SVG (the card on the region's tactical map, a location scene on its strip) rendered to PNG by Resvg, with the Bender fonts embedded; the art in `priv/static/images/share/` and the fonts are read at compile time. Images get an ETag and are cached for a day.
+- **`ShareController`** — share pages for a scavenger, a team and a finished raid, and their Open Graph images. The token in the link carries the data and is strictly validated when decoded. The image is an SVG (the card on the region's tactical map, a location scene on its strip) rendered to PNG by Resvg (through `ImageRenderer`) with the Bender fonts; the art in `priv/static/images/share/` is read at compile time, the region's map drawn to a PNG then, once. Images get an ETag and are cached for a day.
 - **`Api.HealthController`, `Api.ScavengersController`** — the JSON API, see [API.md](API.md).
 
 #### Components (`components/`)
@@ -78,7 +78,7 @@ Mounted into every LiveView by `NeuroScavWeb.live_view/0`:
 
 - **`SetLocale`** — the language from the `lang` param or cookie (`en`, `ru`, `de`, `ja`; `ru` by default), kept in the cookie and session
 - **`SetUserId`** — an anonymous user id in the session; PubSub topics, battles and raids are keyed by it
-- **`RateLimit`** — Hammer, 200 requests per minute by IP or session user (the `/api` pipeline)
+- **`RateLimit`** — Hammer (`NeuroScav.RateLimiter`), 200 requests per minute by IP or session user (the `/api` pipeline)
 
 ### 2. PubSub (`lib/neuro_scav/pub_sub.ex`, `pub_sub/topics.ex`)
 
@@ -128,7 +128,7 @@ Seven counters: `:common`, `:uncommon`, `:rare`, `:epic`, `:legendary`, `:neuro`
 
 #### UserRequestsServer
 
-The queue of Neuro requests to Ollama, one at a time on a timer:
+The queue of Neuro requests to Ollama, oldest first, one at a time on a timer; the model's answer (up to a minute) is waited for in a task, so the queue keeps taking requests meanwhile:
 
 - `schedule_request/2` → `:scheduled`, `:already_scheduled` (one per user) or `:requests_limit_reached` (10 in the queue)
 - a request older than 5 minutes is dropped unprocessed
@@ -150,16 +150,20 @@ One card battle between two players, a process per invite link registered in `Ne
 
 Raids in progress in ETS, keyed by `{user_id, run}` (the run is in the raid page's address, so each tab has its own), so a page that reconnects — a phone back from the background, a dropped network — picks its raid up again. A raid lives an hour after its last step, a sweep every 10 minutes drops the stale ones, and the store holds `max_runs/0` raids at most. The server only owns the table: reads and writes go straight to it.
 
+#### ImageRenderer
+
+Draws the share images one at a time. Resvg's NIF holds a normal scheduler for the whole drawing (tens of milliseconds), so drawings side by side would hold as many schedulers and stall every page; here at most one is held, 20 requests wait at most (the rest get a 503 at once), and one waiting past 10 seconds is skipped.
+
 ### 4. Domain (`lib/neuro_scav/`)
 
 #### Raid engine (`raid.ex`, `raid/`)
 
 Plain data and functions, no processes: the Raid LiveView keeps the raid in its assigns and copies it to `RaidStore` after every step; the step that ends a raid counts it in the raid statistics (`Scavengers.record_raid/1`), once.
 
-- **`NeuroScav.Raid`** — the raid: the squad crosses a map of layers of nodes with an event at each; an event's options need a stat check, are safe, need an item (a key) or a condition (a payment, the scavs' trust — karma). A check is made by the member best at the stat, with their loot's bonuses and karma. The squad sees the next nodes, the rest by their kind of event — or not at all at night and in the fog — and remembers what it has seen.
-- **`Raid.Squad`** — members and their battle-card stats, wounds, the stash and its consumables. The squad is up to five: names the player types in, or random ones from `generate_uncounted/1`.
-- **`Raid.Chart`** — the map's shape (4 wide, 10–13 layers, 3–4 paths across, a boss on 80% of maps), the locations, random maps
-- **`Raid.Catalog`** — every event, search and exit, and the nine locations with their exits, bosses and events
+- **`NeuroScav.Raid`** — the raid: the squad crosses a map of layers of nodes with an event at each; an event's options need a stat check, are safe, need an item (a key) or a condition (a payment, the scavs' trust — karma). A check is made by the member best at the stat, with their loot's bonuses and karma. The squad sees the next nodes, the rest by their kind of event — or not at all at night and in the fog — and remembers what it has seen. A camp on every map offers one rest: patch up the most wounded, train the squad's weak spot or repack the loot.
+- **`Raid.Squad`** — members and their battle-card stats (with the team sets' bonus, as in a battle), wounds, the stash and its consumables. The squad is up to five: names the player types in, or random ones from `generate_uncounted/1`.
+- **`Raid.Chart`** — the map's shape (4 wide, 11–14 layers, 3–4 paths across, a boss on 80% of maps — the location's own most often —, a camp on every one), the locations, random maps
+- **`Raid.Catalog`** — every event, search, exit and the camp, and the nine locations with their exits, bosses (their own first) and events
 - **`Raid.Report`** — a finished raid in short (location, exit, members, loot, language), encoded as URL-safe base64 JSON into the share link; decoding checks every value against the known ones
 
 `mix raid.sim` (`lib/mix/tasks/raid.sim.ex`) plays thousands of raids with random squads to tune the balance. Its counterpart for generation, `mix rarity.sim` (`lib/mix/tasks/rarity.sim.ex`), generates scavengers by the hundred thousand and checks their rarities against the exact odds.
@@ -189,6 +193,8 @@ NeuroScav.Supervisor (one_for_one)
 ├── DynamicSupervisor (NeuroScav.BattleSupervisor)
 │   └── NeuroScav.BattleRoom (one per room)
 ├── NeuroScav.RaidStore
+├── NeuroScav.ImageRenderer
+├── NeuroScav.RateLimiter (Hammer, ETS)
 ├── NeuroScavWeb.Endpoint
 ├── :systemd.ready()
 ├── NeuroScav.UserRequestsSupervisor → UserRequestsServer   ┐
@@ -302,7 +308,7 @@ A share link carries its card, so nothing is stored; the token is a trust bounda
 
 ### 6. Compile-Time Assets
 
-The name lists, the share art and fonts and the Tabler icons are read at compile time into module attributes.
+The name lists, the share art and the Tabler icons are read at compile time into module attributes; the region's map under share cards is drawn to a PNG then too.
 
 ## Testing Strategy
 

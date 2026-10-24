@@ -7,14 +7,15 @@ defmodule NeuroScav.Raid.Squad do
 
   A member's raid card is the battle card (`BattleRoom.card/1`) with the part
   that comes from the name cut to `@base_share` percent (1 at least), the
-  rarity bonus kept whole. Wounds add up: from the second one a member
-  bleeds (`bleeding?/1`), losing `@bleed` of every stat at every step, the
-  third kills. The squad's consumables spend themselves on what they spare a
-  member from: propital takes a wound away, a medkit turns a death, the third
-  wound's too, into a wound that can't kill.
+  rarity bonus kept whole; every set the squad collects (`sets/1`) adds
+  `BattleRoom.set_bonus/0` to every stat, as in a battle. Wounds add up:
+  from the second one a member bleeds (`bleeding?/1`), losing `@bleed` of
+  every stat at every step, the third kills. The squad's consumables spend
+  themselves on what they spare a member from: propital takes a wound away, a
+  medkit turns a death, the third wound's too, into a wound that can't kill.
   """
 
-  alias NeuroScav.BattleRoom
+  alias NeuroScav.{BattleRoom, ScavengersServer}
   alias NeuroScav.Raid.Catalog
 
   @catalog Catalog.compiled()
@@ -37,18 +38,29 @@ defmodule NeuroScav.Raid.Squad do
 
   @doc """
   The squad of `members` (maps with `:name` and `:rarity`): their raid cards,
-  told apart by `:index` (names may repeat), alive, unhurt, with their trait.
+  told apart by `:index` (names may repeat), alive, unhurt, with their trait,
+  their stats with the squad's set bonus.
   """
   @spec new([map()]) :: [map()]
   def new(members) do
+    bonus = BattleRoom.set_bonus() * length(sets(members))
+
     members
     |> Enum.with_index()
     |> Enum.map(fn {member, index} ->
-      member
-      |> card()
+      card = card(member)
+
+      %{card | stats: Map.new(card.stats, fn {stat, value} -> {stat, value + bonus} end)}
       |> Map.merge(%{index: index, alive: true, wounds: 0, trait: trait(member.name)})
     end)
   end
+
+  @doc """
+  The sets the squad's names collect (`ScavengersServer.team_sets/1`), the
+  fallen's too: a set is the squad's from the start.
+  """
+  @spec sets([map()]) :: [atom()]
+  def sets(members), do: members |> Enum.map(& &1.name) |> ScavengersServer.team_sets()
 
   @doc "A member's raid card, see the moduledoc; the gnome stays a joker."
   @spec card(%{name: String.t(), rarity: atom()}) :: map()
@@ -129,6 +141,47 @@ defmodule NeuroScav.Raid.Squad do
   def loot_bonuses(raid, member) do
     for %{item: item, owner: owner} <- raid.stash, owner == member.index, reduce: %{} do
       bonuses -> Map.merge(bonuses, @loot[item], fn _stat, a, b -> a + b end)
+    end
+  end
+
+  @doc "The alive member with the most wounds, nil when nobody is wounded."
+  @spec most_wounded(map()) :: map() | nil
+  def most_wounded(raid) do
+    case for member <- alive(raid), member.wounds > 0, do: member do
+      [] -> nil
+      wounded -> Enum.max_by(wounded, & &1.wounds)
+    end
+  end
+
+  @doc """
+  The squad's weak spot, `{member, stat}`: the stat its best at it is worst
+  at, counting loot, and that member. A check goes to the best at its stat,
+  so training them there helps the most.
+  """
+  @spec weak_spot(map()) :: {map(), atom()}
+  def weak_spot(raid) do
+    alive = alive(raid)
+
+    BattleRoom.stats()
+    |> Enum.map(fn stat -> {Enum.max_by(alive, &with_loot(raid, &1, stat)), stat} end)
+    |> Enum.min_by(fn {member, stat} -> with_loot(raid, member, stat) end)
+  end
+
+  @doc """
+  The stash repacked: every item to the alive member best at the stat it adds
+  most to, a fallen finder's too (so it works again); a consumable adding
+  nothing stays with its finder while they're alive.
+  """
+  @spec repack(map()) :: map()
+  def repack(raid) do
+    alive = alive(raid)
+    %{raid | stash: for(entry <- raid.stash, do: %{entry | owner: keeper(alive, entry).index})}
+  end
+
+  defp keeper(alive, %{item: item, owner: owner}) do
+    case Enum.max_by(@loot[item], &elem(&1, 1), fn -> nil end) do
+      nil -> Enum.find(alive, hd(alive), &(&1.index == owner))
+      {stat, _bonus} -> Enum.max_by(alive, & &1.stats[stat])
     end
   end
 

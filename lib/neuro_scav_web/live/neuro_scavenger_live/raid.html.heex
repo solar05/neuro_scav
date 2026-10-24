@@ -50,6 +50,13 @@
           </div>
           <.stash loot={stash_entries(@raid)} />
         </div>
+        <%!-- the bonus is in the members' stats already: this tells where it comes from --%>
+        <p :if={Raid.sets(@raid) != []} id="raid-sets" class="battle-sets">
+          {gettext("Team sets")}:
+          <span :for={set <- Raid.sets(@raid)} class="battle-set">
+            {set_label(set)} +{NeuroScav.BattleRoom.set_bonus()}
+          </span>
+        </p>
 
         <div class="raid-board">
           <div class="raid-board-main">
@@ -105,6 +112,14 @@
                     {note}
                   </span>
                 </span>
+                <span
+                  :if={@raid.last.roll}
+                  id="raid-roll"
+                  class="raid-roll"
+                  title={gettext("Raid roll tip")}
+                >
+                  <.icon name="tabler-dice-5" /> {roll_text(@raid.last)}
+                </span>
               </p>
               <p :if={!@raid.last} id="raid-outcome-none" class="raid-outcome raid-outcome-none">
                 <span class="raid-outcome-body">{gettext("Raid your move")}</span>
@@ -150,9 +165,21 @@
                     >
                       <span>{option_label(event, option)}</span>
                       <small :if={option.locked}>{locked_text(option)}</small>
-                      <small :if={option.stat && not option.locked}>
+                      <%!-- a check has a mode: who makes it; a rest's stat is the one it trains --%>
+                      <small :if={option.mode && not option.locked}>
                         {stat_label(option.stat)} · {performer(option)} · {option.chance}%
                         <.icons option={option} />
+                      </small>
+                      <small :if={option.camp == :heal and not option.locked}>
+                        <.icon name="tabler-droplet" /> {option.member.wounds} · {option.member.name}
+                      </small>
+                      <small :if={option.camp == :train}>
+                        <.icon name="tabler-barbell" /> {option.member.name} · {stat_label(
+                          option.stat
+                        )} +{Raid.stat_step()}
+                      </small>
+                      <small :if={option.camp == :repack and not option.locked}>
+                        <.icon name="tabler-backpack" /> {gettext("Raid camp repack note")}
                       </small>
                       <small :if={option.key && not option.locked}>
                         <.icon name="tabler-key" /> {item_name(option.key)} · {option.member.name}

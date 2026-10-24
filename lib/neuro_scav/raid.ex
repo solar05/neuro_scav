@@ -11,8 +11,8 @@ defmodule NeuroScav.Raid do
   there are several to start from. Through an exit the raid is over. The
   squad sees the nodes it may go to next and the exits as they are, the rest
   by their kind of event (`kind/1`), and those not at all at night or in the
-  fog, the bosses aside (`sight/2`), unless it has seen them before: what it
-  has seen it remembers, by kind (`seen`).
+  fog, the bosses and the camp's fire aside (`sight/2`), unless it has seen
+  them before: what it has seen it remembers, by kind (`seen`).
 
   Each event offers two or three options; an option either needs a stat check,
   is safe (nothing happens), needs an item (a key: an alive member having it
@@ -23,7 +23,8 @@ defmodule NeuroScav.Raid do
   A check is made by the alive member best at that stat counting their own
   loot (some checks by the worst one, `:weakest`, or by `:each`: one roll
   against everyone's chance, the failure for each it beats): the chance is
-  the stat (`card/1`, a lowered battle card) plus the bonuses of the loot that
+  the stat (`card/1`, a lowered battle card, with the squad's set bonus,
+  `sets/1`) plus the bonuses of the loot that
   member found, minus the option's difficulty, eased or made harder by karma
   and the world (below), kept within 5..95%. Loot helps its finder only, and
   only while they're alive: a fallen member's loot stays in the stash,
@@ -95,6 +96,14 @@ defmodule NeuroScav.Raid do
   round (a luck check at a scav event) or gives the squad away when it hides
   (`@chatter`); a lucky one's failed check comes off after all.
 
+  A camp (`camp?/1`), one on a random map, is a breather with three sure
+  options, one to take: the most wounded member is patched up (`:heal`, locked
+  with nobody wounded), the squad's weak spot is trained (`:train`: the stat
+  the squad is worst at, counting the best member at it, grows on them), or
+  the loot is repacked (`:repacked`: every item to the alive member best at
+  what it adds, a fallen one's too, so it works again; locked when nothing
+  would move). Resting is neither a retreat nor a risk.
+
   The events and the loot are in `NeuroScav.Raid.Catalog`.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
@@ -112,7 +121,9 @@ defmodule NeuroScav.Raid do
   chain brought (`follow_up`), the change of `karma` and
   the item `used` (a key, or a consumable spent); the `quirk`, `{what,
   name}`, when a member acted on their own. A check by each names all it beat
-  in `member` (`:wounds` when they're more than one).
+  in `member` (`:wounds` when they're more than one). A check's `roll` and
+  the `chance` it was against, nil but the roll for a check by each (everyone
+  had their own chance), both nil with no check.
   """
   @type last :: %{
           event: atom(),
@@ -125,7 +136,9 @@ defmodule NeuroScav.Raid do
           follow_up: atom() | nil,
           karma: integer(),
           used: atom() | nil,
-          quirk: {atom(), String.t()} | nil
+          quirk: {atom(), String.t()} | nil,
+          roll: 1..100 | nil,
+          chance: 5..95 | nil
         }
   @last %{
     event: nil,
@@ -138,7 +151,9 @@ defmodule NeuroScav.Raid do
     follow_up: nil,
     karma: 0,
     used: nil,
-    quirk: nil
+    quirk: nil,
+    roll: nil,
+    chance: nil
   }
 
   # the events and the loot, see NeuroScav.Raid.Catalog
@@ -147,6 +162,7 @@ defmodule NeuroScav.Raid do
   @exits @catalog.exits
   @kinds @catalog.kinds
   @searches @catalog.searches
+  @camps @catalog.camps
   # a search: the first look's danger (%), and what each next one adds
   @search_danger 10
   @search_step 15
@@ -199,6 +215,7 @@ defmodule NeuroScav.Raid do
     mode: nil,
     search: nil,
     leave: false,
+    camp: nil,
     retreat: false,
     locked: false
   }
@@ -223,6 +240,10 @@ defmodule NeuroScav.Raid do
   @spec events() :: [atom()]
   def events, do: Map.keys(@specs)
 
+  @doc "The sets the squad collects: each adds to every stat, see `NeuroScav.Raid.Squad`."
+  @spec sets(map()) :: [atom()]
+  def sets(raid), do: Squad.sets(raid.squad)
+
   @doc "Whether an event is a boss."
   @spec boss?(atom()) :: boolean()
   def boss?(event), do: event in @bosses
@@ -241,7 +262,7 @@ defmodule NeuroScav.Raid do
 
   @doc """
   What kind of event it is, as the map tells before the squad gets there:
-  `:boss`, `:exit`, `:search`, `:gnome`, `:scav`, `:rare` (it may promote),
+  `:boss`, `:exit`, `:camp`, `:search`, `:gnome`, `:scav`, `:rare` (it may promote),
   `:loot`, `:fight` (it may kill) or `:hazard`.
   """
   @spec kind(atom()) :: atom()
@@ -250,6 +271,10 @@ defmodule NeuroScav.Raid do
   @doc "Whether an event is a search: one more box till the squad leaves."
   @spec search?(atom()) :: boolean()
   def search?(event), do: event in @searches
+
+  @doc "Whether an event is a camp: a breather, see the moduledoc."
+  @spec camp?(atom()) :: boolean()
+  def camp?(event), do: event in @camps
 
   @doc "Whether an event is the scavs': karma eases its luck checks."
   @spec scav?(atom()) :: boolean()
@@ -408,7 +433,7 @@ defmodule NeuroScav.Raid do
   What the squad can tell of a node: `:event` for where it's been, where it
   may go next and the exits; `:kind` (`kind/1`) for the rest. In the dark
   (`dark?/1`) the rest is `:remembered` (by kind) if the squad has seen it
-  before, `:hidden` if not, except a boss.
+  before, `:hidden` if not, except a boss and a camp (its fire shows).
   """
   @spec sight(map(), tuple()) :: :event | :kind | :remembered | :hidden
   def sight(raid, id) do
@@ -416,7 +441,7 @@ defmodule NeuroScav.Raid do
 
     cond do
       id in raid.path or id in ahead(raid) or exit?(event) -> :event
-      boss?(event) or not dark?(raid) -> :kind
+      boss?(event) or camp?(event) or not dark?(raid) -> :kind
       id in raid.seen -> :remembered
       true -> :hidden
     end
@@ -451,35 +476,54 @@ defmodule NeuroScav.Raid do
   the karma it needs in `trust`, locked below it; both are sure. A `retreat`
   is `locked` once the squad has retreated `@retreat_limit` times in a row. A
   search has two: one more look (`search`, the looks so far) by the luckiest
-  member, and leaving (`leave: true`).
+  member, and leaving (`leave: true`). A camp has its three rests (`camp`:
+  `:heal`, `:train`, `:repack`), sure, with the `member` (and `stat`) they're
+  for.
   """
   @spec options(map()) :: [map()]
   def options(raid) do
     event = event(raid)
 
-    if search?(event) do
-      %{member: member, chance: chance} = search_plan(raid)
+    cond do
+      search?(event) ->
+        %{member: member, chance: chance} = search_plan(raid)
 
-      [
-        %{
-          @no_check
-          | search: raid.searched,
-            member: member,
-            chance: chance,
-            reward: :loot,
-            risk: :wound
-        },
-        %{@no_check | leave: true}
-      ]
-    else
-      for option <- options_of(event) do
-        %{
-          option(raid, event, option)
-          | retreat: retreat?(option),
-            locked: locked?(raid, event, option)
-        }
-      end
+        [
+          %{
+            @no_check
+            | search: raid.searched,
+              member: member,
+              chance: chance,
+              reward: :loot,
+              risk: :wound
+          },
+          %{@no_check | leave: true}
+        ]
+
+      camp?(event) ->
+        camp_options(raid)
+
+      true ->
+        for option <- options_of(event) do
+          %{
+            option(raid, event, option)
+            | retreat: retreat?(option),
+              locked: locked?(raid, event, option)
+          }
+        end
     end
+  end
+
+  # a camp's rests: patching up the most wounded, training the weak spot, repacking
+  defp camp_options(raid) do
+    wounded = Squad.most_wounded(raid)
+    {trainee, stat} = Squad.weak_spot(raid)
+
+    [
+      %{@no_check | camp: :heal, member: wounded, chance: 100, locked: wounded == nil},
+      %{@no_check | camp: :train, member: trainee, stat: stat, chance: 100, reward: :train},
+      %{@no_check | camp: :repack, chance: 100, locked: Squad.repack(raid).stash == raid.stash}
+    ]
   end
 
   defp option(_raid, _event, :safe), do: @no_check
@@ -640,6 +684,32 @@ defmodule NeuroScav.Raid do
   defp act(raid, event, :search, roll, item, quirky),
     do: check(raid, event, search_plan(raid), roll, item, quirky)
 
+  defp act(raid, event, {:camp, :heal}, _roll, _item, _quirky) do
+    patched = Squad.most_wounded(raid)
+
+    raid
+    |> Squad.update_member(patched.index, &%{&1 | wounds: 0})
+    |> step(%{@last | event: event, outcome: :heal, member: patched.name, index: patched.index})
+  end
+
+  defp act(raid, event, {:camp, :train}, _roll, _item, _quirky) do
+    {trainee, stat} = Squad.weak_spot(raid)
+
+    raid
+    |> Squad.train(trainee.index, stat)
+    |> step(%{
+      @last
+      | event: event,
+        outcome: :train,
+        member: trainee.name,
+        index: trainee.index,
+        stat: stat
+    })
+  end
+
+  defp act(raid, event, {:camp, :repack}, _roll, _item, _quirky),
+    do: raid |> Squad.repack() |> step(%{@last | event: event, outcome: :repacked})
+
   defp act(raid, event, {:key, key, success}, _roll, item, _quirky) do
     holder = Squad.holder(raid, key)
 
@@ -735,6 +805,11 @@ defmodule NeuroScav.Raid do
   # option `index` of an event: one more look or leaving at a search, otherwise as listed
   defp pick(_raid, event, index) when event in @searches, do: Enum.at([:search, :leave], index)
 
+  defp pick(raid, event, index) when event in @camps do
+    option = Enum.at(camp_options(raid), index)
+    if option && not option.locked, do: {:camp, option.camp}
+  end
+
   defp pick(raid, event, index) do
     option = Enum.at(options_of(event), index)
     if option && not locked?(raid, event, option), do: option
@@ -758,14 +833,16 @@ defmodule NeuroScav.Raid do
         outcome: outcome,
         member: member.name,
         index: member.index,
-        quirk: if(lucky, do: {:lucky, member.name}, else: plan.quirk)
+        quirk: if(lucky, do: {:lucky, member.name}, else: plan.quirk),
+        roll: roll,
+        chance: plan.chance
     })
   end
 
   # one roll against everyone's chance: the ones it beats are wounded (the
   # catalog has an each check pass or wound)
   defp check_each(raid, event, {stat, _difficulty, _success, _failure} = option, roll) do
-    last = %{@last | event: event, stat: stat, retreat: retreat?(option)}
+    last = %{@last | event: event, stat: stat, retreat: retreat?(option), roll: roll}
 
     case for member <- alive(raid), roll > chance(raid, event, option, member), do: member do
       [] ->
@@ -817,8 +894,6 @@ defmodule NeuroScav.Raid do
   end
 
   defp settle(raid, :revive, _member, _item, last) do
-    wounded = for member <- alive(raid), member.wounds > 0, do: member
-
     cond do
       fallen = Enum.find(raid.squad, &(not &1.alive)) ->
         raid
@@ -826,9 +901,7 @@ defmodule NeuroScav.Raid do
         |> step(%{last | member: fallen.name, index: fallen.index})
 
       # nobody to bring back: the most wounded one is patched up
-      wounded != [] ->
-        patched = Enum.max_by(wounded, & &1.wounds)
-
+      patched = Squad.most_wounded(raid) ->
         raid
         |> Squad.update_member(patched.index, &%{&1 | wounds: 0})
         |> step(%{last | outcome: :heal, member: patched.name, index: patched.index})

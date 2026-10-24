@@ -243,6 +243,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   # View helpers
 
+  defp option_label(_event, %{camp: rest}) when rest != nil,
+    do: Locale.get_text("Raid camp #{rest}")
+
   defp option_label(event, %{key: key}) when key != nil,
     do: Locale.get_text("Raid #{event} #{key}")
 
@@ -268,7 +271,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp performer(%{member: member}), do: member.name
 
-  # why an option can't be taken: the item a key needs, or enough of running
+  # why an option can't be taken: nothing for a rest to do, the item a key
+  # needs, or enough of running
+  defp locked_text(%{camp: :heal}), do: gettext("Raid camp nobody wounded")
+  defp locked_text(%{camp: :repack}), do: gettext("Raid camp nothing to repack")
+
   defp locked_text(%{key: key}) when key != nil,
     do: gettext("Raid needs %{item}", item: item_name(key))
 
@@ -279,11 +286,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp locked_text(_retreat), do: gettext("Raid retreat locked")
 
-  # an option with no check, item or condition: safe, or leaving a search
+  # an option with no check, item, condition or rest: safe, or leaving a search
   defp plain?(option),
     do:
       option.stat == nil and option.key == nil and option.search == nil and not option.pay and
-        option.trust == nil and not option.locked
+        option.trust == nil and option.camp == nil and not option.locked
 
   # the location, the time of day and the weather, each with its icon, in a line
   # with the checks they ease and harden now
@@ -377,6 +384,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
     do: gettext("Raid paid %{name} %{item}", name: name, item: item_name(item))
 
   defp outcome_text(%{outcome: :trusted}), do: gettext("Raid trusted")
+  defp outcome_text(%{outcome: :repacked}), do: gettext("Raid repacked")
 
   defp outcome_text(%{outcome: :stall, member: name}),
     do: gettext("Raid stall %{name}", name: name)
@@ -434,11 +442,29 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp used_note(_last), do: nil
 
+  # the check's roll against its chance, "34 ≤ 41" (a success, unless a lucky
+  # one's failure came off); a check by each, the roll alone
+  defp roll_text(%{roll: roll, chance: nil}), do: "#{roll}"
+  defp roll_text(%{roll: roll, chance: chance}) when roll <= chance, do: "#{roll} ≤ #{chance}"
+  defp roll_text(%{roll: roll, chance: chance}), do: "#{roll} > #{chance}"
+
+  defp set_label(set), do: Locale.get_text("Set #{set}")
+
   defp karma_text(0), do: gettext("Raid karma %{value}", value: 0)
   defp karma_text(karma), do: gettext("Raid karma %{value}", value: signed(karma))
 
   defp outcome_class(%{outcome: outcome})
-       when outcome in [:pass, :loot, :found, :revive, :train, :heal, :spared, :trusted],
+       when outcome in [
+              :pass,
+              :loot,
+              :found,
+              :revive,
+              :train,
+              :heal,
+              :spared,
+              :trusted,
+              :repacked
+            ],
        do: "raid-outcome-good"
 
   defp outcome_class(%{outcome: outcome}) when outcome in [:promote, :trophy],
@@ -455,7 +481,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp result_loot(raid), do: raid |> Report.new(nil) |> Map.fetch!(:loot) |> loot_text()
   defp share_path(raid, locale), do: ~p"/share/raid/#{Report.encode(Report.new(raid, locale))}"
 
-  # "10–13"
+  # "11–14"
   defp steps_text, do: "#{Raid.steps().first}–#{Raid.steps().last}"
 
   # the member the last event changed flashes: up, down, a promotion or a death

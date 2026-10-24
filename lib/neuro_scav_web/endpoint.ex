@@ -11,18 +11,19 @@ defmodule NeuroScavWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  # compress: LiveView's diffs (a raid step's map and squad) shrink several
+  # times over the wire, for a little memory per connection
   socket "/live", Phoenix.LiveView.Socket,
-    websocket: [connect_info: [:peer_data, session: @session_options]],
+    websocket: [connect_info: [:peer_data, session: @session_options], compress: true],
     longpoll: [connect_info: [session: @session_options]]
 
-  # Serve at "/" the static files from "priv/static" directory.
-  #
-  # You should set gzip to true if you are running phx.digest
-  # when deploying your static files in production.
+  # Serve at "/" the static files from "priv/static" directory: in
+  # production phx.digest (mix assets.deploy) puts a .gz beside every file,
+  # sent to a browser that takes gzip
   plug Plug.Static,
     at: "/",
     from: :neuro_scav,
-    gzip: false,
+    gzip: not code_reloading?,
     only: NeuroScavWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the

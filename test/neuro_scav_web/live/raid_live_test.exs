@@ -53,7 +53,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert members(lv) == 5
     # the whole map, and a few layers round the squad for a phone
     assert has_element?(lv, "#raid-map") and has_element?(lv, "#raid-map-near")
-    assert render(lv) =~ ~r/Встреча 1 из 1[0-3]/
+    assert render(lv) =~ ~r/Встреча 1 из 1[1-4]/
     assert has_element?(lv, "#raid-world")
 
     lv |> enter() |> element("#raid-option-0") |> render_click()
@@ -144,6 +144,16 @@ defmodule NeuroScavWeb.RaidLiveTest do
 
     render_patch(lv, link <> "&run=" <> run)
     assert lv |> element("#raid") |> render() == raid
+  end
+
+  test "a squad's sets show with the bonus they add, none without", %{conn: conn} do
+    # Лена and Арена rhyme
+    rhyme = [%{name: "Гена Лена", rarity: :epic}, %{name: "Сеня Арена", rarity: :common}]
+    {:ok, lv, _html} = live(conn, Raid.path(rhyme))
+    assert lv |> element("#raid-sets") |> render() =~ "Рифма +5"
+
+    {:ok, lv, _html} = live(conn, Raid.path([%{name: "Дед Мороз", rarity: :common}]))
+    refute has_element?(lv, "#raid-sets")
   end
 
   test "a page keeps its last three runs, however many it's made to start", %{conn: conn} do
@@ -288,10 +298,12 @@ defmodule NeuroScavWeb.RaidLiveTest do
     squad = [%{name: "Алиса Аврора", rarity: :common}]
 
     for locale <- ~w(ru en de ja), event <- NeuroScav.Raid.events() do
-      # an option is named by the stat it checks, the item it needs or its condition
+      # an option is named by its rest, the stat it checks, the item it needs or its condition
       labels =
         for option <- NeuroScav.Raid.options(NeuroScav.Raid.new(squad, [event])),
-            label = option.stat || option.key || (option.pay && :pay) || (option.trust && :karma),
+            label =
+              option.camp || option.stat || option.key || (option.pay && :pay) ||
+                (option.trust && :karma),
             label != nil,
             do: label
 
@@ -447,7 +459,9 @@ defmodule NeuroScavWeb.RaidLiveTest do
         follow_up: nil,
         karma: 0,
         used: nil,
-        quirk: nil
+        quirk: nil,
+        roll: nil,
+        chance: nil
       }
 
       {lv, _raid} =
@@ -482,6 +496,48 @@ defmodule NeuroScavWeb.RaidLiveTest do
       }
 
       assert told(conn, long) =~ "raid-outcome-long"
+    end
+
+    test "a check shows its roll against the chance, a check by each the roll alone",
+         %{conn: conn} do
+      # the stairs: no loot nor fight, so nobody takes over the safe option
+      {lv, _raid} = raid_page(conn, [:stairs, :stairs, :pmc])
+      lv |> element("#raid-option-1") |> render_click()
+      refute has_element?(lv, "#raid-roll")
+      lv |> element("#raid-option-0") |> render_click()
+      assert has_element?(lv, "#raid-roll")
+
+      roll = fn changes ->
+        told(conn, changes) |> LazyHTML.from_fragment() |> LazyHTML.query("#raid-roll")
+      end
+
+      assert roll.(%{roll: 34, chance: 41}) |> LazyHTML.text() =~ "34 ≤ 41"
+      assert roll.(%{roll: 60, chance: 41}) |> LazyHTML.text() =~ "60 > 41"
+      assert roll.(%{roll: 34}) |> LazyHTML.text() |> String.trim() == "34"
+      assert render(lv) =~ ru("Raid roll tip")
+    end
+
+    test "a camp offers its three rests, each telling who it's for or why it can't be had",
+         %{conn: conn} do
+      {lv, raid} = raid_page(conn, [:camp, :pmc])
+      html = lv |> element("#raid-event-0") |> render()
+
+      for msgid <-
+            ["Raid camp heal", "Raid camp nobody wounded", "Raid camp train"] ++
+              ["Raid camp repack", "Raid camp nothing to repack"],
+          do: assert(html =~ ru(msgid), msgid)
+
+      %{member: trainee, stat: stat} = Enum.at(NeuroScav.Raid.options(raid), 1)
+      assert html =~ "#{trainee.name} · #{ru("Stat #{stat}")} +10"
+
+      lv |> element("#raid-option-1") |> render_click()
+
+      assert lv |> element("#raid-outcome-1") |> render() =~
+               ru("Raid train %{name} %{stat} %{value}",
+                 name: trainee.name,
+                 stat: ru("Stat #{stat}"),
+                 value: 10
+               )
     end
 
     test "every outcome is told in words of its own", %{conn: conn} do
@@ -536,7 +592,8 @@ defmodule NeuroScavWeb.RaidLiveTest do
             {%{event: :office, outcome: :loot, item: :sj6, quirk: {:greedy, name}},
              ru("Raid quirk greedy %{name}", name: name)},
             {%{outcome: :pass, quirk: {:chatty_scav, "Дед Мороз"}},
-             ru("Raid quirk chatty_scav %{name}", name: "Дед Мороз")}
+             ru("Raid quirk chatty_scav %{name}", name: "Дед Мороз")},
+            {%{event: :camp, outcome: :repacked, member: nil, stat: nil}, ru("Raid repacked")}
           ] do
         assert told(conn, changes) =~ words, inspect(changes)
       end
@@ -629,7 +686,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
     end
 
     test "a check tells who makes it: the weakest, or everyone", %{conn: conn} do
-      {lv, _raid} = raid_page(conn, [:reshala])
+      {lv, _raid} = raid_page(conn, [:footsteps])
       assert lv |> element("#raid-option-1") |> render() =~ "слабейший:"
 
       {lv, _raid} = raid_page(conn, [:mines])

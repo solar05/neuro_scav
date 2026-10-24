@@ -375,7 +375,7 @@ msgid "Team sets"
 msgstr "Chiimu setto"
 
 msgid "Sets note %{bonus}"
-msgstr "3 × 3 batoru to dorafuto de wa, setto hitotsu goto ni chiimu no zen suteeta ga +%{bonus}."
+msgstr "3 × 3 batoru, dorafuto, tansaku de wa, setto hitotsu goto ni chiimu no zen suteeta ga +%{bonus}."
 
 msgid "Turn timer rules %{seconds}"
 msgstr "Hitotsu no te ni %{seconds} byou. Sugiru to jidou de te ga utareru."
@@ -681,10 +681,10 @@ msgid "Raid raiders agility"
 msgstr "Heisha wo tootte taikyaku"
 
 msgid "Raid toll"
-msgstr "Yuuryou dasshutsu-guchi"
+msgstr "Tsuukouryou"
 
 msgid "Raid toll text"
-msgstr "Deguchi de taikutsu na yabanjin ga «Tsuukou 7000 ₽» no fuda wo motsu."
+msgstr "Komichi de taikutsu na yabanjin ga «Tsuukou 7000 ₽» no fuda wo motsu. Negiru mono wa jimoto ni sonkei sareru."
 
 msgid "Raid toll luck"
 msgstr "Negiru"
@@ -770,11 +770,14 @@ msgstr "Toudai kara Zuryachii no sukoopu ga hikaru. Kyaku wa kirai da."
 msgid "Raid zryachiy agility"
 msgstr "Gake zoi ni kakenukeru"
 
+msgid "Raid zryachiy luck"
+msgstr "Kare o shoujun ni toraeru"
+
 msgid "Raid vex"
-msgstr "Kuruma de dasshutsu"
+msgstr "Michibata no untenshu"
 
 msgid "Raid vex text"
-msgstr "Michibata ni kuruma. Untenshu ga ryukku wo miru: «Tada ja nosenai.»"
+msgstr "Michibata ni kuruma. Untenshu ga ryukku wo miru: «Tada ja nosenai.» Nebiki mo hitotsu no gijutsu da."
 
 msgid "Raid vex luck"
 msgstr "Nedan wo sageru"
@@ -924,10 +927,10 @@ msgid "Raid mechanic agility"
 msgstr "Hikiukeru"
 
 msgid "Raid train"
-msgstr "Ressha de dasshutsu"
+msgstr "Kamotsu ressha"
 
 msgid "Raid train text"
-msgstr "Ressha ga kuru. Hassha made ippun, minna ga sharyou e hashiru."
+msgstr "Kamotsu ressha ga yukkuri tooru. Hirakareta sharyou ni hako ga mieru — demo mousugu kasoku suru."
 
 msgid "Raid train agility"
 msgstr "Tobinoru"
@@ -1162,6 +1165,30 @@ msgstr "Harai nagara nigeru"
 
 msgid "Item komar_wings"
 msgstr "Ka no hane"
+
+msgid "Item golden_tt"
+msgstr "Reshara no kin no TT"
+
+msgid "Item svds"
+msgstr "Shutoruman no SVDS"
+
+msgid "Item sanitar_bag"
+msgstr "Sanitaa no kaban"
+
+msgid "Item killa_helmet"
+msgstr "Kira no herumetto"
+
+msgid "Item ash12"
+msgstr "Glukharu no ASh-12"
+
+msgid "Item zryachiy_balaclava"
+msgstr "Zuryachii no barakurava"
+
+msgid "Item sledgehammer"
+msgstr "Tagira no oohanmaa"
+
+msgid "Item baton"
+msgstr "Korontai no keibou"
 
 msgid "Raid axeman"
 msgstr "Ono-otoko"
@@ -1529,6 +1556,9 @@ msgstr "sono ba ni todomari, betsu no dekigoto"
 msgid "Raid icon retreat %{limit}"
 msgstr "tettai: renzoku %{limit}-kai made"
 
+msgid "Raid roll tip"
+msgstr "d100 no saikoro: kakuritsu ika nara seikou"
+
 msgid "Raid elevator"
 msgstr "Kamotsu erebeetaa"
 
@@ -1714,6 +1744,36 @@ msgstr "Mou hitohako"
 
 msgid "Raid search leave"
 msgstr "Mitsuketa mono o motte saru"
+
+msgid "Raid camp"
+msgstr "Kyuukei"
+
+msgid "Raid camp text"
+msgstr "Takibi no soba no shizuka na sumi, butai wa hitoiki tsukeru. Dekiru no wa hitotsu dake."
+
+msgid "Raid camp heal"
+msgstr "Kega nin no teate"
+
+msgid "Raid camp train"
+msgstr "Yowami o kitaeru"
+
+msgid "Raid camp repack"
+msgstr "Ryukku o tsumenaosu"
+
+msgid "Raid camp repack note"
+msgstr "aitemu wa sono suteeta ga ichiban takai hito e"
+
+msgid "Raid camp nobody wounded"
+msgstr "Kega nin wa inai"
+
+msgid "Raid camp nothing to repack"
+msgstr "Subete mou saiteki na hito ga motteiru"
+
+msgid "Raid repacked"
+msgstr "Ryukku o tsumenaoshita: aitemu wa hitsuyou na hito no te ni."
+
+msgid "Raid node camp"
+msgstr "Kyuukei"
 
 msgid "Raid found %{name} %{item}"
 msgstr "%{name} ga mitsuketa: %{item}. Mada sagaseru."

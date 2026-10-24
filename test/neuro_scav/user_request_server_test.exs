@@ -3,7 +3,7 @@ defmodule NeuroScav.UserRequestServerTest do
 
   use ExUnit.Case, async: false
 
-  alias NeuroScav.{FakeClient, IncorrectFakeClient}
+  alias NeuroScav.{FakeClient, IncorrectFakeClient, RaisingFakeClient, SlowFakeClient}
 
   @user_id "12345678"
   @another_id "55555"
@@ -24,6 +24,40 @@ defmodule NeuroScav.UserRequestServerTest do
       assert Server.schedule_request(@another_id, "en") == :scheduled
       assert Server.schedule_request(@another_id, "en") == :already_scheduled
       assert Server.schedule_request(@user_id, "en") == :already_scheduled
+    end
+  end
+
+  describe "order and pace" do
+    test "requests wait in the order they came" do
+      pid = start_server(@default_settings)
+      for user <- ~w(a b c d e), do: Server.schedule_request(user, "en")
+
+      %{state: queue} = :sys.get_state(pid)
+      assert Enum.map(queue, & &1["user_id"]) == ~w(a b c d e)
+    end
+
+    test "the queue takes requests while the model works on one, its user's still counting" do
+      Process.register(self(), :slow_fake_client_test)
+      pid = start_server(%{@default_settings | client: SlowFakeClient})
+      NeuroScav.PubSub.subscribe(:neuro_scavenger, %{"user_id" => @user_id})
+
+      Server.schedule_request(@user_id, "en")
+      send(pid, :process_request)
+      assert_receive {:generating, model}
+
+      assert Server.schedule_request(@another_id, "en") == :scheduled
+      assert Server.schedule_request(@user_id, "en") == :already_scheduled
+
+      send(model, :answer)
+      assert_receive {:neuro_generated, %{"name" => "Neuro Scav"}}
+    end
+
+    test "ticks by itself from the start" do
+      start_server(@default_settings)
+      NeuroScav.PubSub.subscribe(:neuro_scavenger, %{"user_id" => @user_id})
+      Server.schedule_request(@user_id, "en")
+
+      assert_receive {:neuro_generated, _scav}, 2_000
     end
   end
 
@@ -66,6 +100,16 @@ defmodule NeuroScav.UserRequestServerTest do
       Server.schedule_request(@user_id, "en")
       Process.send(pid, :process_request, [])
       _ = :sys.get_state(pid)
+      assert Process.alive?(pid)
+    end
+
+    test "when client raises: the user hears of an error, the queue lives on" do
+      pid = start_server(%{@default_settings | client: RaisingFakeClient})
+      NeuroScav.PubSub.subscribe(:neuro_scavenger, %{"user_id" => @user_id})
+      Server.schedule_request(@user_id, "en")
+      send(pid, :process_request)
+
+      assert_receive :neuro_generation_error
       assert Process.alive?(pid)
     end
 

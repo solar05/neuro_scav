@@ -10,19 +10,23 @@ defmodule NeuroScav.Raid.Chart do
   (`@local_weight` times). Events are drawn by weight (`draw/3`): the
   promoting ones are rare. With `@boss_chance` a map gets one of the
   location's bosses, in the middle or just before the exits, where there's
-  another way past if the map has one.
+  another way past if the map has one; every map gets a camp, a breather
+  somewhere between, off the boss's way past if it can be.
   """
 
   alias NeuroScav.Raid.Catalog
 
   @width 4
   # how many layers a map has, the exits' too
-  @steps 10..13
+  @steps 11..14
   # how many walks across the map shape it, see shape/2
   @paths 3..4
   @boss_chance 0.8
+  # a location's own boss comes this many times as often as one roaming in
+  @own_boss 3
 
   @catalog Catalog.compiled()
+  @camp hd(@catalog.camps)
   # location => its exits, bosses and own events; those turn up there this much more often
   @locations @catalog.locations
   @local_weight 4
@@ -44,9 +48,11 @@ defmodule NeuroScav.Raid.Chart do
   A random map of `location` (a random one by default), as many layers long
   as `steps/0` picks: the location's exits on the last, different events
   everywhere else, drawn by weight, so rare events seldom show up and the
-  location's own often do. Bosses and chain events aren't drawn: with
-  `@boss_chance` one of the location's bosses takes a node in the middle or
-  just before the exits.
+  location's own often do. Bosses, camps and chain events aren't drawn: with
+  `@boss_chance` one of the location's bosses (its own `@own_boss` times as
+  often as each roaming one) takes a node in the middle or just before the
+  exits, and a camp takes one from the third layer to the
+  one two before the exits.
   """
   @spec random_map(atom() | nil) :: map()
   def random_map(location \\ nil) do
@@ -57,21 +63,23 @@ defmodule NeuroScav.Raid.Chart do
     layers = Enum.random(@steps)
     links = shape(layers, Enum.random(@paths))
     {ends, inner} = links |> Map.keys() |> Enum.split_with(&(elem(&1, 0) == layers - 1))
-    boss = if :rand.uniform() < @boss_chance, do: boss_node(inner, layers)
-    rest = Enum.shuffle(inner -- [boss])
+    boss = if :rand.uniform() < @boss_chance, do: place(inner, [div(layers, 2), layers - 2])
+    camp = place(inner -- [boss], 2..(layers - 3)//1)
+    rest = Enum.shuffle(inner -- [boss, camp])
 
     nodes =
       Enum.zip(rest, draw(@common, weights, length(rest))) ++
         Enum.zip(ends, Enum.take_random(exits, length(ends))) ++
-        if(boss, do: [{boss, Enum.random(bosses)}], else: [])
+        if(boss, do: [{boss, hd(draw(bosses, %{hd(bosses) => @own_boss}, 1))}], else: []) ++
+        [{camp, @camp}]
 
     %{nodes: Map.new(nodes), links: links, location: location}
   end
 
-  # a node in the middle layer or the one before the exits, where there's
-  # another way past if it can be
-  defp boss_node(ids, layers) do
-    places = Enum.filter(ids, &(elem(&1, 0) in [div(layers, 2), layers - 2]))
+  # a node of `ids` in one of the `layers`, where there's another way past if
+  # it can be (the boss taken out of `ids`, a camp keeps off its way past)
+  defp place(ids, layers) do
+    places = Enum.filter(ids, &(elem(&1, 0) in layers))
 
     wide =
       Enum.filter(places, fn {layer, _column} ->

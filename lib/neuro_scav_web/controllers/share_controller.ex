@@ -1,20 +1,21 @@
 defmodule NeuroScavWeb.ShareController do
   use NeuroScavWeb, :controller
 
+  alias NeuroScav.ImageRenderer
   alias NeuroScav.Raid.Report
   alias NeuroScavWeb.RaidComponents
 
   @canvas %{w: 1200, h: 630}
   @card %{cx: 450, cy: 75, cw: 300, ch: 480, art_h: 215}
 
-  # Fonts embedded as base64 at compile time so the SVG is self-contained;
-  # every file read at compile time is an external resource, so changing one
-  # recompiles the module
+  # The fonts Resvg draws the texts with (it takes no @font-face): here for
+  # the region's map, drawn as the module compiles (see @region_map_png), and
+  # found again at run time for the cards (font_paths/0: a release has its own
+  # priv). Every file read at compile time is an external resource: changing
+  # one recompiles the module
   @fonts Path.join([to_string(:code.priv_dir(:neuro_scav)), "static", "fonts"])
-  @external_resource Path.join(@fonts, "Bender.otf")
-  @external_resource Path.join(@fonts, "BenderBold.otf")
-  @font_normal @fonts |> Path.join("Bender.otf") |> File.read!() |> Base.encode64()
-  @font_bold @fonts |> Path.join("BenderBold.otf") |> File.read!() |> Base.encode64()
+  @font_files [Path.join(@fonts, "Bender.otf"), Path.join(@fonts, "BenderBold.otf")]
+  for path <- @font_files, do: @external_resource(path)
 
   @rarity_colors %{
     "legendary" => {"#ff8c00", "#ffd060"},
@@ -29,6 +30,9 @@ defmodule NeuroScavWeb.ShareController do
   # best first; picks the team card's frame color
   @rarity_rank ~w(gnome legendary epic neuro rare uncommon common)
   @max_team_members NeuroScav.ScavengersServer.max_team_members()
+  # a share token's name is cut to this, as a raid report's: no page makes a
+  # longer one, and a card's drawing grows with it
+  @max_name 40
   @team_card %{cx: 320, cy: 75, cw: 560, ch: 480, art_h: 110}
   @raid_card %{cx: 220, cy: 45, cw: 760, ch: 540, art_h: 150}
 
@@ -51,10 +55,28 @@ defmodule NeuroScavWeb.ShareController do
                    {Path.basename(path, ".svg"), content}
                  end)
   @external_resource Path.join(@share_images, "map.svg")
-  @region_map Path.join(@share_images, "map.svg")
-              |> File.read!()
-              |> String.replace(~r/\A\s*<svg[^>]*>/, "")
-              |> String.replace(~r/<\/svg>\s*\z/, "")
+  # The region's map, drawn once to a PNG as the module compiles: it's the
+  # same under every card, and drawing it was the most of drawing an image
+  map =
+    @share_images
+    |> Path.join("map.svg")
+    |> File.read!()
+    |> String.replace(~r/\A\s*<svg[^>]*>/, "")
+    |> String.replace(~r/<\/svg>\s*\z/, "")
+
+  {:ok, map_png} =
+    Resvg.svg_string_to_png_buffer(
+      """
+      <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
+        <svg width="#{@canvas.w}" height="#{@canvas.h}" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">#{map}</svg>
+      </svg>
+      """,
+      font_files: @font_files,
+      skip_system_fonts: true,
+      resources_dir: System.tmp_dir!()
+    )
+
+  @region_map_png map_png |> :binary.list_to_bin() |> Base.encode64()
   @locations NeuroScav.Raid.locations()
   # a location's colour washing over the map, as over the raid's own map card
   @location_tints %{
@@ -258,23 +280,19 @@ defmodule NeuroScavWeb.ShareController do
       |> send_resp(304, "")
     else
       result =
-        try do
-          Resvg.svg_string_to_png_buffer(build_svg.(),
-            font_files: font_paths(),
-            skip_system_fonts: true,
-            resources_dir: System.tmp_dir!()
-          )
-        rescue
-          e -> {:error, e}
-        end
+        ImageRenderer.png(build_svg.(),
+          font_files: font_paths(),
+          skip_system_fonts: true,
+          resources_dir: System.tmp_dir!()
+        )
 
       case result do
-        {:ok, buffer} ->
+        {:ok, png} ->
           conn
           |> put_resp_content_type("image/png", nil)
           |> put_resp_header("cache-control", "public, max-age=86400")
           |> put_resp_header("etag", ~s("#{etag}"))
-          |> send_resp(200, :binary.list_to_bin(buffer))
+          |> send_resp(200, png)
 
         {:error, reason} ->
           require Logger
@@ -314,9 +332,7 @@ defmodule NeuroScavWeb.ShareController do
         </radialGradient>
       </defs>
       <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#0d110b"/>
-      <svg width="#{@canvas.w}" height="#{@canvas.h}" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
-        #{@region_map}
-      </svg>
+      <image width="#{@canvas.w}" height="#{@canvas.h}" href="data:image/png;base64,#{@region_map_png}"/>
       <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="#{Map.get(@location_tints, location, "#000000")}" opacity="0.12"/>
       <rect width="#{@canvas.w}" height="#{@canvas.h}" fill="url(#vignette)"/>
       <text x="#{cx}" y="#{cy - 14}" font-family="Bender, Arial, sans-serif" font-size="15" font-weight="bold" letter-spacing="3" fill="#9aab68">#{gettext("Share region") |> String.upcase() |> xml_escape()}</text>
@@ -367,7 +383,6 @@ defmodule NeuroScavWeb.ShareController do
 
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
-      #{font_style_defs()}
       <defs>
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
@@ -424,7 +439,6 @@ defmodule NeuroScavWeb.ShareController do
 
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
-      #{font_style_defs()}
       <defs>
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
@@ -481,7 +495,6 @@ defmodule NeuroScavWeb.ShareController do
 
     """
     <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
-      #{font_style_defs()}
       <defs>
         <clipPath id="card-clip">
           <rect x="#{cx}" y="#{cy}" width="#{cw}" height="#{ch}" rx="20"/>
@@ -503,27 +516,6 @@ defmodule NeuroScavWeb.ShareController do
             font-size="14" font-weight="bold" letter-spacing="2"
             fill="#{color}" fill-opacity="0.35" text-anchor="end">SCAVGEN</text>
     </svg>
-    """
-  end
-
-  defp font_style_defs do
-    """
-    <style>
-      @font-face {
-        font-family: 'Bender';
-        font-weight: normal;
-        src: url('data:font/otf;base64,#{@font_normal}') format('opentype');
-      }
-      @font-face {
-        font-family: 'Bender';
-        font-weight: bold;
-        src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-      }
-      @font-face {
-        font-family: 'BenderBold';
-        src: url('data:font/otf;base64,#{@font_bold}') format('opentype');
-      }
-    </style>
     """
   end
 
@@ -726,8 +718,7 @@ defmodule NeuroScavWeb.ShareController do
 
   defp decode_token(token) do
     with {:ok, decoded} <- Base.url_decode64(token, padding: false),
-         [name, rarity] when name != "" and rarity != "" <-
-           String.split(decoded, "|", parts: 2) do
+         {:ok, %{name: name, rarity: rarity}} <- member(decoded) do
       {:ok, name, rarity}
     else
       _ -> :error
@@ -738,11 +729,23 @@ defmodule NeuroScavWeb.ShareController do
   defp decode_team_token(token) do
     with {:ok, decoded} <- Base.url_decode64(token, padding: false),
          lines when length(lines) in 1..@max_team_members <- String.split(decoded, "\n"),
-         pairs = Enum.map(lines, &String.split(&1, "|", parts: 2)),
-         true <- Enum.all?(pairs, &match?([name, rarity] when name != "" and rarity != "", &1)) do
-      {:ok, Enum.map(pairs, fn [name, rarity] -> %{name: name, rarity: rarity} end)}
+         members = Enum.map(lines, &member/1),
+         true <- Enum.all?(members, &match?({:ok, _member}, &1)) do
+      {:ok, Enum.map(members, fn {:ok, member} -> member end)}
     else
       _ -> :error
+    end
+  end
+
+  # "name|rarity" from a token, which comes from anyone: text (valid UTF-8),
+  # the name cut to @max_name, a rarity the site has
+  defp member(line) do
+    with true <- String.valid?(line),
+         [name, rarity] when name != "" <- String.split(line, "|", parts: 2),
+         true <- Map.has_key?(@rarity_colors, rarity) do
+      {:ok, %{name: String.slice(name, 0, @max_name), rarity: rarity}}
+    else
+      _invalid -> :error
     end
   end
 

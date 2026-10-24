@@ -37,6 +37,7 @@ defmodule NeuroScavWeb.RaidComponents do
   @kind_icons [
     boss: "tabler-skull",
     exit: "tabler-door-exit",
+    camp: "tabler-campfire",
     fight: "tabler-swords",
     loot: "tabler-moneybag",
     search: "tabler-box",
@@ -103,7 +104,7 @@ defmodule NeuroScavWeb.RaidComponents do
   defp hide_stash, do: JS.add_class("hidden", to: "#raid-stash")
 
   @doc """
-  What the icons on the options, the traits and the map mean: a compact modal like the stash's, opened
+  What the icons on the options, the roll, the traits and the map mean: a compact modal like the stash's, opened
   by the small button in the event's header (`#btn-raid-legend`), so the
   legend takes no room on the page. It sits outside the event's panel, which
   clips what it holds.
@@ -128,6 +129,12 @@ defmodule NeuroScavWeb.RaidComponents do
               <.icon name={option_icon(key)} class="raid-legend-tabler" />
             </span>
             {icon_meaning(key)}
+          </li>
+          <li id="raid-legend-roll">
+            <span class="raid-legend-icon">
+              <.icon name="tabler-dice-5" class="raid-legend-tabler" />
+            </span>
+            {gettext("Raid roll tip")}
           </li>
         </ul>
         <p class="raid-legend-title">{gettext("Raid traits")}</p>

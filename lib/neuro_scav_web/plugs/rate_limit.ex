@@ -1,6 +1,6 @@
 defmodule NeuroScavWeb.Plugs.RateLimit do
   @moduledoc """
-  Rate limiting plug using Hammer.
+  Rate limiting plug using Hammer (`NeuroScav.RateLimiter`).
 
   Limits API requests based on IP address or session user ID.
   Default: 200 requests per 1 minute window.
@@ -19,7 +19,7 @@ defmodule NeuroScavWeb.Plugs.RateLimit do
     ip = get_client_ip(conn)
     key = "rate_limit:#{ip}"
 
-    case Hammer.check_rate(key, window_ms, limit) do
+    case NeuroScav.RateLimiter.hit(key, window_ms, limit) do
       {:allow, _count} ->
         conn
 

@@ -10,15 +10,11 @@ defmodule NeuroScavWeb.Plugs.SetLocale do
   def init, do: init(nil)
   def init(_options), do: nil
 
-  def call(conn, _options) do
-    case fetch_locale_from(conn) do
-      nil ->
-        put_locale(conn, @default_locale)
+  def call(conn, _options), do: put_locale(conn, known_locale(fetch_locale_from(conn)))
 
-      locale ->
-        put_locale(conn, locale)
-    end
-  end
+  @doc "`locale` if the site has it, the default one (#{@default_locale}) for anything else."
+  @spec known_locale(term()) :: String.t()
+  def known_locale(locale), do: check_locale(locale) || @default_locale
 
   def put_gettext_locale(locale) do
     NeuroScavWeb.Gettext |> Gettext.put_locale(locale)

@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v4';
+const CACHE_VERSION = 'v5';
 const CACHE_NAME = `scavgen-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -11,7 +11,7 @@ const PRECACHE_URLS = [
   '/apple-touch-icon.png',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
-  '/images/gnome.png',
+  '/images/gnome.webp',
   '/images/back.png',
   '/images/old_back.webp',
   '/sounds/gnome_sound.mp3'

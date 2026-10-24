@@ -386,7 +386,7 @@ msgid "Team sets"
 msgstr "Сеты команды"
 
 msgid "Sets note %{bonus}"
-msgstr "В бою 3 × 3 и драфте каждый собранный сет даёт команде +%{bonus} ко всем статам."
+msgstr "В бою 3 × 3, драфте и вылазке каждый собранный сет даёт команде +%{bonus} ко всем статам."
 
 msgid "Turn timer rules %{seconds}"
 msgstr "На каждый ход — %{seconds} секунд, потом ход сделают за тебя."
@@ -692,10 +692,10 @@ msgid "Raid raiders agility"
 msgstr "Отходить через казармы"
 
 msgid "Raid toll"
-msgstr "Платный выход"
+msgstr "Платный проход"
 
 msgid "Raid toll text"
-msgstr "У выхода скучает дикий с табличкой «Проход — 7000 ₽»."
+msgstr "На тропе скучает дикий с табличкой «Проход — 7000 ₽». Местные уважают тех, кто торгуется."
 
 msgid "Raid toll luck"
 msgstr "Поторговаться"
@@ -781,11 +781,14 @@ msgstr "С маяка блестит прицел Зрячего. Гостей �
 msgid "Raid zryachiy agility"
 msgstr "Проскочить вдоль скал"
 
+msgid "Raid zryachiy luck"
+msgstr "Поймать его в прицел"
+
 msgid "Raid vex"
-msgstr "Выезд на машине"
+msgstr "Водитель у дороги"
 
 msgid "Raid vex text"
-msgstr "У дороги ждёт машина. Водитель косится на ваши рюкзаки: «За выезд платят»."
+msgstr "У дороги стоит машина. Водитель косится на ваши рюкзаки: «Подвезти — не бесплатно». Сбить цену — тоже наука."
 
 msgid "Raid vex luck"
 msgstr "Сбить цену"
@@ -935,10 +938,10 @@ msgid "Raid mechanic agility"
 msgstr "Взяться за дело"
 
 msgid "Raid train"
-msgstr "Выход на поезде"
+msgstr "Товарный поезд"
 
 msgid "Raid train text"
-msgstr "Подходит поезд. До отправления минута, к вагонам бегут все."
+msgstr "Мимо ползёт товарняк. В открытом вагоне виден ящик — но поезд вот-вот наберёт ход."
 
 msgid "Raid train agility"
 msgstr "Запрыгнуть в вагон"
@@ -1173,6 +1176,30 @@ msgstr "Уйти, отмахиваясь"
 
 msgid "Item komar_wings"
 msgstr "Комариные крылья"
+
+msgid "Item golden_tt"
+msgstr "Золотой ТТ Решалы"
+
+msgid "Item svds"
+msgstr "СВДС Штурмана"
+
+msgid "Item sanitar_bag"
+msgstr "Сумка Санитара"
+
+msgid "Item killa_helmet"
+msgstr "Шлем Киллы"
+
+msgid "Item ash12"
+msgstr "АШ-12 Глухаря"
+
+msgid "Item zryachiy_balaclava"
+msgstr "Балаклава Зрячего"
+
+msgid "Item sledgehammer"
+msgstr "Кувалда Тагиллы"
+
+msgid "Item baton"
+msgstr "Дубинка Коллонтая"
 
 msgid "Raid axeman"
 msgstr "Топорист"
@@ -1540,6 +1567,9 @@ msgstr "останетесь на месте, и придёт другое со�
 msgid "Raid icon retreat %{limit}"
 msgstr "отступление: подряд можно не больше %{limit}"
 
+msgid "Raid roll tip"
+msgstr "Бросок d100: проверка удалась, если выпало не больше шанса"
+
 msgid "Raid elevator"
 msgstr "Грузовой лифт"
 
@@ -1725,6 +1755,36 @@ msgstr "Ещё один ящик"
 
 msgid "Raid search leave"
 msgstr "Уйти с тем, что есть"
+
+msgid "Raid camp"
+msgstr "Привал"
+
+msgid "Raid camp text"
+msgstr "Тихий угол у костра, отряд может перевести дух. Времени хватит только на одно дело."
+
+msgid "Raid camp heal"
+msgstr "Перевязать раненого"
+
+msgid "Raid camp train"
+msgstr "Подтянуть слабое место"
+
+msgid "Raid camp repack"
+msgstr "Перебрать рюкзаки"
+
+msgid "Raid camp repack note"
+msgstr "каждый предмет — тому, кто лучше в его стате"
+
+msgid "Raid camp nobody wounded"
+msgstr "Раненых нет"
+
+msgid "Raid camp nothing to repack"
+msgstr "Всё и так у тех, кому нужнее"
+
+msgid "Raid repacked"
+msgstr "Рюкзаки перебраны: каждая вещь у того, кому она нужнее."
+
+msgid "Raid node camp"
+msgstr "Привал"
 
 msgid "Raid found %{name} %{item}"
 msgstr "%{name} нашёл: %{item}. Можно поискать ещё."

@@ -25,8 +25,9 @@ defmodule Mix.Tasks.Raid.Sim do
   Where the map forks a strategy goes by the kind of event it sees ahead
   (`Raid.kind/1`) and whether a member may be lost there (`Raid.deadly?/1`;
   nothing to go by where it can't see): the cautious one keeps off bosses,
-  fights and red rings, the careful one off bosses and red rings, the greedy
-  one goes for bosses and loot, the random one anywhere.
+  fights and red rings, the careful one off bosses and red rings, both make
+  for a camp; the greedy one goes for bosses and loot, the random one
+  anywhere. At a camp the careful one patches up the wounded, else trains.
 
   Squads are five random first and last names of the locale, rarity by the
   usual rules (`ScavengersServer.check_name/1`). Members act on their own as
@@ -46,8 +47,8 @@ defmodule Mix.Tasks.Raid.Sim do
   @costs %{lose: 3, wound: 1, drop: 1, stall: 1}
   # how a strategy takes a kind of node ahead and a red ring (deadly), 0 unless listed
   @leanings %{
-    "cautious" => %{boss: -3, fight: -2, gnome: -1, hazard: -1, deadly: -1},
-    "careful" => %{boss: -2, fight: -1, loot: 1, search: 1, deadly: -1},
+    "cautious" => %{boss: -3, fight: -2, gnome: -1, hazard: -1, deadly: -1, camp: 2},
+    "careful" => %{boss: -2, fight: -1, loot: 1, search: 1, deadly: -1, camp: 1},
     "greedy" => %{boss: 3, rare: 2, loot: 2, search: 1},
     "random" => %{}
   }

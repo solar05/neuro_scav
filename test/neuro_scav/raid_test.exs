@@ -20,10 +20,10 @@ defmodule NeuroScav.RaidTest do
   defp best(stat), do: @squad |> Enum.map(&Raid.card/1) |> Enum.max_by(& &1.stats[stat])
   defp index_of(card), do: Enum.find_index(@squad, &(&1.name == card.name))
 
-  test "a new raid crosses a map 10 to 13 layers long with the whole squad alive" do
+  test "a new raid crosses a map 11 to 14 layers long with the whole squad alive" do
     raid = new_raid(@squad)
 
-    assert Raid.steps() == 10..13
+    assert Raid.steps() == 11..14
     assert Chart.layers(raid.map) in Raid.steps()
     assert Enum.all?(raid.squad, & &1.alive)
     refute Raid.over?(raid)
@@ -111,6 +111,42 @@ defmodule NeuroScav.RaidTest do
     assert %{outcome: :drop, item: :rooster} = raid.last
     assert Enum.map(raid.stash, & &1.item) == [:sj6]
     assert length(Raid.alive(raid)) == 3
+  end
+
+  test "a check tells its roll and the chance it was against, a safe option neither" do
+    raid = new_raid(@squad, [:office, :office])
+    [%{chance: chance}, _safe] = Raid.options(raid)
+
+    assert %{roll: 30, chance: ^chance} = Raid.choose(raid, 0, 30, :sj6).last
+    assert %{roll: nil, chance: nil} = Raid.choose(raid, 1, 30).last
+  end
+
+  test "a check by each tells the roll alone: everyone had their own chance" do
+    assert %{roll: 50, chance: nil} = (@squad |> new_raid([:mines]) |> Raid.choose(0, 50)).last
+  end
+
+  test "every set the squad collects adds the battle's set bonus to every stat" do
+    # Лена and Арена rhyme
+    members = [%{name: "Гена Лена", rarity: :epic}, %{name: "Сеня Арена", rarity: :common}]
+    raid = new_raid(members)
+    assert Raid.sets(raid) == [:rhyme]
+
+    for {member, card} <- Enum.zip(raid.squad, Enum.map(members, &Raid.card/1)),
+        {stat, value} <- card.stats,
+        do: assert(member.stats[stat] == value + BattleRoom.set_bonus())
+
+    assert Raid.sets(new_raid(@squad)) == []
+  end
+
+  test "haggling on the toll path wins the scavs over, talking a driver down trains luck, a train's crate is loot" do
+    # failed or not, the scavs take a haggle well
+    assert %{outcome: :drop, karma: 1} = (@squad |> new_raid([:toll]) |> Raid.choose(0, 100)).last
+
+    assert %{outcome: :train, stat: :luck} =
+             (@squad |> new_raid([:vex]) |> Raid.choose(0, 1)).last
+
+    assert %{outcome: :loot, item: :sj6} =
+             (@squad |> new_raid([:train]) |> Raid.choose(0, 1, :sj6)).last
   end
 
   test "a failed drop with an empty stash costs nothing" do
@@ -310,7 +346,7 @@ defmodule NeuroScav.RaidTest do
     test "an outcome may bring another event, catching up a few nodes later" do
       raid = @squad |> new_raid([:reshala, :pmc, :office, :medic]) |> Raid.choose(0, 1, :sj6)
 
-      assert %{outcome: :loot, follow_up: :reshala_guards} = raid.last
+      assert %{outcome: :trophy, follow_up: :reshala_guards} = raid.last
       assert Raid.event(raid) == :pmc
 
       # two nodes later it comes first, the node's own event after it
@@ -356,6 +392,16 @@ defmodule NeuroScav.RaidTest do
       raid = Raid.choose(raid, 0, 1)
       assert %{outcome: :trophy, item: :amulet} = raid.last
       assert actor(raid, 0).stats.luck == before.stats.luck + Raid.stat_step()
+    end
+
+    test "the locations' own bosses fight for a trophy or let the squad go at a wound" do
+      for boss <- ~w(reshala shturman sanitar killa glukhar zryachiy tagilla kollontay)a do
+        assert Raid.boss?(boss) and Raid.trophy_item?(Raid.trophy(boss))
+        options = @squad |> new_raid([boss]) |> Raid.options()
+
+        assert Enum.any?(options, &(&1.reward == :trophy and &1.risk == :lose))
+        assert Enum.any?(options, &(&1.reward == :pass and &1.risk == :wound))
+      end
     end
 
     test "Komar's wings are legendary: +40 luck" do
@@ -600,8 +646,22 @@ defmodule NeuroScav.RaidTest do
         Enum.count(1..400, fn _ -> event in Map.values(Raid.random_map(location).nodes) end)
       end
 
-      assert share.(:customs, :reshala) * 2 > share.(:woods, :reshala) * 3
-      assert share.(:woods, :shturman) * 2 > share.(:customs, :shturman) * 3
+      assert share.(:customs, :axeman) * 2 > share.(:woods, :axeman) * 3
+      assert share.(:woods, :sniper) * 2 > share.(:customs, :sniper) * 3
+    end
+
+    test "a location's own boss is met there most, the roaming ones now and then" do
+      bosses = fn location ->
+        Enum.flat_map(1..400, fn _ ->
+          for event <- Map.values(Raid.random_map(location).nodes), Raid.boss?(event), do: event
+        end)
+        |> Enum.frequencies()
+      end
+
+      interchange = bosses.(:interchange)
+      assert interchange[:killa] > 2 * interchange[:komar]
+      assert interchange[:killa] > 2 * interchange[:kaban]
+      refute Map.has_key?(bosses.(:customs), :killa)
     end
   end
 
@@ -646,7 +706,10 @@ defmodule NeuroScav.RaidTest do
   end
 
   test "last always has the same keys, whatever happened" do
-    keys = Enum.sort(~w(event outcome member index item stat retreat follow_up karma used quirk)a)
+    keys =
+      Enum.sort(
+        ~w(event outcome member index item stat retreat follow_up karma used quirk roll chance)a
+      )
 
     lasts = [
       (@squad |> new_raid([:office]) |> Raid.choose(1, 1)).last,
@@ -662,6 +725,105 @@ defmodule NeuroScav.RaidTest do
     ]
 
     for last <- lasts, do: assert(last |> Map.keys() |> Enum.sort() == keys)
+  end
+
+  describe "a camp" do
+    test "a random map has one, off the first two layers and the one before the exits" do
+      for _ <- 1..50 do
+        map = Raid.random_map()
+        assert [{layer, _column}] = for({id, :camp} <- map.nodes, do: id)
+        assert layer in 2..(Chart.layers(map) - 3)
+      end
+    end
+
+    test "its fire shows in the dark, where the rest ahead is hidden" do
+      raid =
+        new_raid(@squad, [:office, :office, :camp, :pmc], %{weather: :clear, daytime: :night})
+
+      assert Raid.sight(raid, {2, 0}) == :kind
+      assert Raid.sight(raid, {3, 0}) == :hidden
+    end
+
+    test "patches up the most wounded, locked with nobody wounded" do
+      raid = new_raid(@squad, [:camp, :pmc])
+
+      assert [%{camp: :heal, locked: true}, %{camp: :train}, %{camp: :repack, locked: true}] =
+               Raid.options(raid)
+
+      assert Raid.choose(raid, 0, 1) == raid
+
+      raid = put_in(raid.squad, Enum.map(raid.squad, &%{&1 | wounds: &1.index}))
+      assert %{member: %{index: 2}, locked: false} = hd(Raid.options(raid))
+
+      raid = Raid.choose(raid, 0, 1)
+      assert %{outcome: :heal, index: 2} = raid.last
+      assert Enum.map(raid.squad, & &1.wounds) == [0, 1, 0]
+    end
+
+    test "trains the squad's weak spot on the best at it" do
+      raid = new_raid(@squad, [:camp, :pmc])
+
+      stats = fn member ->
+        %{
+          member
+          | stats: %{strength: 30 + member.index, agility: 50, luck: 20 + member.index * 5}
+        }
+      end
+
+      # the best at each: strength 32, agility 50, luck 30 — luck is the weak spot
+      raid = put_in(raid.squad, Enum.map(raid.squad, stats))
+      assert %{member: %{index: 2}, stat: :luck} = Enum.at(Raid.options(raid), 1)
+
+      raid = Raid.choose(raid, 1, 1)
+      assert %{outcome: :train, index: 2, stat: :luck} = raid.last
+      assert Enum.at(raid.squad, 2).stats.luck == 30 + Raid.stat_step()
+    end
+
+    test "repacks every item to the one best at its stat, a fallen finder's too" do
+      raid = new_raid(@squad, [:camp, :pmc])
+
+      stats = fn member ->
+        %{
+          member
+          | stats: %{strength: 10 * (member.index + 1), agility: 50 - 10 * member.index, luck: 30}
+        }
+      end
+
+      # the second one fallen: the strongest alive is the third, the most agile the first
+      squad = raid.squad |> Enum.map(stats) |> List.update_at(1, &%{&1 | alive: false})
+
+      raid = %{
+        raid
+        | squad: squad,
+          stash: [
+            %{item: :sj6, owner: 1},
+            %{item: :meldonin, owner: 2},
+            %{item: :medkit, owner: 1}
+          ]
+      }
+
+      repacked = Raid.choose(raid, 2, 1)
+      assert repacked.last.outcome == :repacked
+
+      # medkit adds nothing: its finder fallen, it goes to the first alive one
+      assert repacked.stash == [
+               %{item: :sj6, owner: 2},
+               %{item: :meldonin, owner: 0},
+               %{item: :medkit, owner: 0}
+             ]
+
+      # repacked once, nothing would move
+      assert Enum.at(Raid.options(%{raid | stash: repacked.stash}), 2).locked
+    end
+
+    test "resting is neither a retreat nor a risk" do
+      raid = @squad |> new_raid([:office, :camp, :office]) |> Raid.choose(1, 1)
+      assert raid.retreats == 1
+
+      raid = Raid.choose(raid, 1, 1)
+      assert raid.retreats == 1
+      assert Enum.at(Raid.options(raid), 1).locked
+    end
   end
 
   describe "retreats" do

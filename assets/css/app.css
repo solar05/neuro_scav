@@ -5,18 +5,18 @@
 @font-face {
     font-family: "Bender";
     font-weight: normal;
-    src: url("../fonts/Bender.otf") format("opentype");
+    src: url("../fonts/Bender.woff2") format("woff2");
 }
 
 @font-face {
     font-family: "BenderBold";
     font-weight: bold;
-    src: url("../fonts/BenderBold.otf") format("opentype");
+    src: url("../fonts/BenderBold.woff2") format("woff2");
 }
 
-@font-face {
-    font-family: "SF";
-    src: url("../fonts/SFProText-Regular.ttf");
+:root {
+    /* the device's own font (SF on Apple's): nothing to download */
+    --system-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
 }
 
 body {
@@ -212,7 +212,7 @@ p {
 .btn-blended-neuro {
     background-color: #4d6bfe !important;
     color: #fff !important;
-    font-family: "SF";
+    font-family: var(--system-font);
     font-size: 120%;
     border-radius: 18px;
 }
@@ -227,14 +227,14 @@ p {
 .btn-blended-neuro:hover {
     color: #fff !important;
     background-color: #5a95ec !important;
-    font-family: "SF";
+    font-family: var(--system-font);
     border-radius: 18px;
 }
 
 .blended-active {
     background-color: #4d6bfe !important;
     color: #fff !important;
-    font-family: "SF";
+    font-family: var(--system-font);
     border-radius: 18px;
     animation: borderPulseBlue 2.5s ease-in-out infinite;
 }
@@ -391,21 +391,21 @@ p {
 .blended-active:hover {
     color: #fff !important;
     background-color: #5a95ec !important;
-    font-family: "SF";
+    font-family: var(--system-font);
     border-radius: 18px;
 }
 
 .blend-font {
     color: #fff !important;
     border-radius: 18px;
-    font-family: "SF";
+    font-family: var(--system-font);
     animation: borderPulseBlue 2.5s ease-in-out infinite;
 }
 
 .blend-font:hover {
     color: #fff !important;
     background-color: #5a95ec !important;
-    font-family: "SF";
+    font-family: var(--system-font);
     border-radius: 18px;
 }
 
@@ -1647,7 +1647,7 @@ kbd {
     background: #212529;
     border: 1px solid #555;
     border-radius: 4px;
-    font-family: "SF", monospace;
+    font-family: var(--system-font);
     font-size: 60%;
     color: #d49300;
     box-shadow: 0 2px 0 rgba(0,0,0,0.5);
@@ -2929,6 +2929,7 @@ svg[class^="tabler-"] {
 /* the kinds' colours, on the map and in the legend */
 .raid-kind-boss { color: #e53935; }
 .raid-kind-exit { color: #4caf50; }
+.raid-kind-camp { color: #4db6ac; }
 .raid-kind-fight { color: #d0d0d0; }
 .raid-kind-loot { color: #d49300; }
 .raid-kind-search { color: #c8a060; }
@@ -3286,6 +3287,17 @@ svg[class^="tabler-"] {
 
 .raid-outcome-long {
     font-size: 16px;
+}
+
+/* the check's roll against its chance, at the outcome's end */
+.raid-roll {
+    flex: none;
+    margin-left: auto;
+    padding-left: 10px;
+    color: #a5a5a5;
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: help;
 }
 
 .raid-outcome-none {

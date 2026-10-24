@@ -187,6 +187,23 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert html_response(conn, 400)
     end
 
+    test "rejects a rarity the site doesn't have and what isn't text", %{conn: conn} do
+      for token <- [
+            token_for("Alice Adams", "mythic"),
+            Base.url_encode64(<<0xFF, 0xFE, "|rare">>, padding: false)
+          ] do
+        assert conn |> get(~p"/share/#{token}") |> html_response(400) =~ "invalid link"
+      end
+    end
+
+    test "cuts a name past 40 characters short, so its card stays cheap to draw", %{conn: conn} do
+      name = String.duplicate("А", 30) <> " " <> String.duplicate("Б", 70)
+      html = conn |> get(~p"/share/#{token_for(name, "rare")}") |> html_response(200)
+
+      assert html =~ String.duplicate("Б", 9)
+      refute html =~ String.duplicate("Б", 10)
+    end
+
     test "returns 400 for a token that decodes without a pipe separator", %{conn: conn} do
       token = Base.url_encode64("JustANameNoPipe", padding: false)
       conn = get(conn, ~p"/share/#{token}")
@@ -381,7 +398,8 @@ defmodule NeuroScavWeb.ShareControllerTest do
             "not base64!",
             team_token([{"", "rare"}]),
             Base.url_encode64("no separator", padding: false),
-            team_token(List.duplicate({"A B", "common"}, 6))
+            team_token(List.duplicate({"A B", "common"}, 6)),
+            team_token([{"Alice Adams", "rare"}, {"Bob Brown", "mythic"}])
           ] do
         assert conn |> get(~p"/share/team/#{token}") |> html_response(400) =~ "invalid link"
       end

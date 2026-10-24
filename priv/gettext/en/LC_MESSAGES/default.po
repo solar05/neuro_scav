@@ -386,7 +386,7 @@ msgid "Team sets"
 msgstr "Team sets"
 
 msgid "Sets note %{bonus}"
-msgstr "In 3 × 3 battles and drafts every set a team collects adds +%{bonus} to all its stats."
+msgstr "In 3 × 3 battles, drafts and raids every set a team collects adds +%{bonus} to all its stats."
 
 msgid "Turn timer rules %{seconds}"
 msgstr "You have %{seconds} seconds per move, then the move is made for you."
@@ -692,10 +692,10 @@ msgid "Raid raiders agility"
 msgstr "Fall back through the barracks"
 
 msgid "Raid toll"
-msgstr "Paid extract"
+msgstr "Toll path"
 
 msgid "Raid toll text"
-msgstr "A bored scav at the exit holds a sign: “Passage — 7000 ₽”."
+msgstr "A bored scav on the path holds a sign: “Passage — 7000 ₽”. The locals respect a haggler."
 
 msgid "Raid toll luck"
 msgstr "Haggle"
@@ -781,11 +781,14 @@ msgstr "Zryachiy's scope glints from the lighthouse. He doesn't like visitors."
 msgid "Raid zryachiy agility"
 msgstr "Dash along the cliffs"
 
+msgid "Raid zryachiy luck"
+msgstr "Catch him in your sights"
+
 msgid "Raid vex"
-msgstr "Car extract"
+msgstr "Driver by the road"
 
 msgid "Raid vex text"
-msgstr "A car waits by the road. The driver eyes your backpacks: “The ride isn't free.”"
+msgstr "A car stands by the road. The driver eyes your backpacks: “A lift isn't free.” Talking the price down is a skill too."
 
 msgid "Raid vex luck"
 msgstr "Talk the price down"
@@ -935,10 +938,10 @@ msgid "Raid mechanic agility"
 msgstr "Take the job"
 
 msgid "Raid train"
-msgstr "Train extract"
+msgstr "Freight train"
 
 msgid "Raid train text"
-msgstr "The train pulls in. One minute to departure, everyone runs for the cars."
+msgstr "A freight train crawls past. There's a crate in an open car — but the train is about to pick up speed."
 
 msgid "Raid train agility"
 msgstr "Jump on board"
@@ -1173,6 +1176,30 @@ msgstr "Back off, swatting"
 
 msgid "Item komar_wings"
 msgstr "Mosquito wings"
+
+msgid "Item golden_tt"
+msgstr "Reshala's golden TT"
+
+msgid "Item svds"
+msgstr "Shturman's SVDS"
+
+msgid "Item sanitar_bag"
+msgstr "Sanitar's bag"
+
+msgid "Item killa_helmet"
+msgstr "Killa's helmet"
+
+msgid "Item ash12"
+msgstr "Glukhar's ASh-12"
+
+msgid "Item zryachiy_balaclava"
+msgstr "Zryachiy's balaclava"
+
+msgid "Item sledgehammer"
+msgstr "Tagilla's sledgehammer"
+
+msgid "Item baton"
+msgstr "Kollontay's baton"
 
 msgid "Raid axeman"
 msgstr "Axeman"
@@ -1540,6 +1567,9 @@ msgstr "the squad stays put and meets something else"
 msgid "Raid icon retreat %{limit}"
 msgstr "a retreat: no more than %{limit} in a row"
 
+msgid "Raid roll tip"
+msgstr "A d100 roll: the check succeeds when it's no higher than the chance"
+
 msgid "Raid elevator"
 msgstr "Freight elevator"
 
@@ -1725,6 +1755,36 @@ msgstr "One more box"
 
 msgid "Raid search leave"
 msgstr "Leave with what you have"
+
+msgid "Raid camp"
+msgstr "Camp"
+
+msgid "Raid camp text"
+msgstr "A quiet corner by a fire, the squad can catch its breath. There's time for one thing only."
+
+msgid "Raid camp heal"
+msgstr "Patch up the wounded"
+
+msgid "Raid camp train"
+msgstr "Drill the weak spot"
+
+msgid "Raid camp repack"
+msgstr "Repack the backpacks"
+
+msgid "Raid camp repack note"
+msgstr "each item to whoever is best at its stat"
+
+msgid "Raid camp nobody wounded"
+msgstr "Nobody is wounded"
+
+msgid "Raid camp nothing to repack"
+msgstr "Everything is where it helps most"
+
+msgid "Raid repacked"
+msgstr "Backpacks repacked: every item is with whoever needs it most."
+
+msgid "Raid node camp"
+msgstr "Camp"
 
 msgid "Raid found %{name} %{item}"
 msgstr "%{name} found: %{item}. There's more to search."
