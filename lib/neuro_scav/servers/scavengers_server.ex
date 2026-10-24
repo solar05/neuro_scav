@@ -207,8 +207,7 @@ defmodule NeuroScav.ScavengersServer do
 
   @impl true
   def init(%{module_name: names} = settings) do
-    state =
-      names |> load_names() |> Map.put(:gnome_odds, Map.get(settings, :gnome_odds, @gnome_odds))
+    state = names(names, Map.get(settings, :gnome_odds, @gnome_odds))
 
     Logger.info("Scavenger server started")
     {:ok, state}
@@ -306,9 +305,23 @@ defmodule NeuroScav.ScavengersServer do
   @spec gnome_odds() :: pos_integer()
   def gnome_odds, do: @gnome_odds
 
-  @doc false
+  @doc """
+  What generation draws from, as the server keeps it: the name lists of the
+  `module` and the gnome's odds (`nil`: no gnome). For `generate_scavenger/2`.
+  """
+  @spec names(module(), pos_integer() | nil) :: map()
+  def names(module \\ NeuroScav.Scavengers.Names, gnome_odds \\ @gnome_odds),
+    do: module |> load_names() |> Map.put(:gnome_odds, gnome_odds)
+
+  @doc """
+  A scavenger of `locale` generated as the server does, neither counted in
+  statistics nor announced: the gnome with a chance of 1 in the odds,
+  otherwise a random first and last name with its rarity. `names` comes from
+  `names/2`. The site goes through the server; this is for tools
+  (`mix rarity.sim`).
+  """
   @spec generate_scavenger(map(), String.t()) :: map()
-  defp generate_scavenger(%{gnome_odds: odds} = names, locale) do
+  def generate_scavenger(%{gnome_odds: odds} = names, locale) do
     if odds && :rand.uniform(odds) == 1,
       do: gnome(locale),
       else: name_pair(names, locale)

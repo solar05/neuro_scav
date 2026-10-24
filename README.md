@@ -235,6 +235,17 @@ mix raid.sim --strategy greedy --events       # one strategy, with a table per e
 mix raid.sim --route pmc,veteran,labs         # a fixed route instead of a random map
 ```
 
+### Rarity distribution
+
+`mix rarity.sim` generates scavengers the way the site does (the gnome included) without counting them anywhere, and prints each rarity's count and share next to its exact chance, with the deviation in standard deviations: within ±2σ is chance, past ±3σ (marked `!`) generation and the odds disagree. `--csv` prints rows with the seed and runs in each, to append to one file and sum up later. See `mix help rarity.sim`.
+
+```bash
+mix rarity.sim                                # 100000 scavengers per locale
+mix rarity.sim --runs 1000000                 # more scavengers, closer to the odds
+mix rarity.sim --locale en --seed 42          # one locale, the same ones every time
+mix rarity.sim --csv >> rarities.csv          # rows to collect over many runs
+```
+
 ### Database
 
 - **Create migration**: `mix ecto.gen.migration migration_name`

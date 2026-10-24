@@ -117,6 +117,7 @@ The one random exception: any generated scavenger is the gnome with a chance of 
 - `generate_single/1`, `generate_team/1` — synchronous (the API)
 - `generate_card/2` — a battle card, synchronously, counted like the others
 - `generate_uncounted/1` — not counted nor announced (battle bots, a raid's random squad)
+- `names/2`, `generate_scavenger/2` — the same generation without the server, not counted nor announced (`mix rarity.sim`)
 - `check_name/1`, `odds/2`, `team_sets/1`, `max_team_members/0` (5)
 
 #### StatsCounterServer
@@ -161,7 +162,7 @@ Plain data and functions, no processes: the Raid LiveView keeps the raid in its 
 - **`Raid.Catalog`** — every event, search and exit, and the nine locations with their exits, bosses and events
 - **`Raid.Report`** — a finished raid in short (location, exit, members, loot, language), encoded as URL-safe base64 JSON into the share link; decoding checks every value against the known ones
 
-`mix raid.sim` (`lib/mix/tasks/raid.sim.ex`) plays thousands of raids with random squads to tune the balance.
+`mix raid.sim` (`lib/mix/tasks/raid.sim.ex`) plays thousands of raids with random squads to tune the balance. Its counterpart for generation, `mix rarity.sim` (`lib/mix/tasks/rarity.sim.ex`), generates scavengers by the hundred thousand and checks their rarities against the exact odds.
 
 #### Client (`client.ex`)
 
@@ -309,7 +310,7 @@ The name lists, the share art and fonts and the Tabler icons are read at compile
 - **Domain and processes** (`test/neuro_scav/`): the raid engine (`raid_test`, `raid_mechanics_test`, `raid_report_test`), `raid_store_test`, `battle_room_test`, `scavengers_server_test`, `scavengers/names_test`, `stats_counter_server_test`, `user_request_server_test`
 - **LiveViews** (`test/neuro_scav_web/live/`): a test file per page, plus the toast and the online counter
 - **Controllers and plugs** (`test/neuro_scav_web/controllers/`, `plugs/`): the share pages and images, the API, locale and user id
-- **Mix task** (`test/mix/tasks/raid_sim_test.exs`)
+- **Mix tasks** (`test/mix/tasks/`): `raid_sim_test`, `rarity_sim_test`
 
 The generation and counter servers aren't started in the test environment; tests start what they need with `start_supervised!/1`.
 

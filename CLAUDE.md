@@ -63,6 +63,8 @@ mix ecto.gen.migration name_of_migration  # Create new migration
 mix phx.gen.secret    # Generate random secret for SECRET_KEY_BASE
 mix raid.sim          # Simulate raids to tune their balance (dev only; see `mix help raid.sim`)
 mix raid.sim --strategy greedy --events --seed 42  # one strategy, per-event table, reproducible
+mix rarity.sim        # Check generated rarities against their exact odds (dev only; see `mix help rarity.sim`)
+mix rarity.sim --locale en --seed 42 --csv >> rarities.csv  # one locale, reproducible, rows to collect
 ```
 
 ## Architecture Overview
