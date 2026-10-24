@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5';
+const CACHE_VERSION = 'v6';
 const CACHE_NAME = `scavgen-${CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
@@ -74,11 +74,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // HTML-страницы и статика без хэша — Network-First с fallback на кеш, затем offline.html
+  // HTML-страницы и статика без хэша — Network-First с fallback на кеш, затем offline.html.
+  // В кеш — только основные страницы (один сегмент пути, без query): ссылки /share/…,
+  // комнаты /battle/<id>, отряды /raid?team=… у каждого свои, кеш копил бы их без конца
+  const page = url.search === '' && /^\/[a-z_]*$/.test(url.pathname);
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        if (response.ok) {
+        if (response.ok && page) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }

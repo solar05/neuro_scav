@@ -16,6 +16,7 @@ defmodule NeuroScav.StatsCounterSupervisor do
   @impl true
   def init(_init_arg) do
     children = [
+      # the row to count in: the server reads its counts afresh at every start
       {NeuroScav.StatsCounterServer, Scavengers.get_statistics()}
     ]
 

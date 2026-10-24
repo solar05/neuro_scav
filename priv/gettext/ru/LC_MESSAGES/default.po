@@ -253,6 +253,9 @@ msgstr "Создать комнату"
 msgid "Battle not found"
 msgstr "Комната не найдена или уже закрыта"
 
+msgid "Battle rooms busy"
+msgstr "Сейчас слишком много боёв, попробуй через пару минут"
+
 msgid "Create new battle"
 msgstr "Создать новую"
 
@@ -2053,26 +2056,10 @@ msgstr "погиб"
 msgid "Share region"
 msgstr "Норвинская область · Тарков"
 
-msgid "Raid stats title"
-msgstr "Вылазки"
 
-msgid "Raid stats location"
-msgstr "Локация"
 
-msgid "Raid stats raids"
-msgstr "Вылазок"
 
-msgid "Raid stats wiped"
-msgstr "Погибли все"
 
-msgid "Raid stats survived"
-msgstr "Выжило"
 
-msgid "Raid stats total"
-msgstr "Всего"
 
-msgid "Raid stats empty"
-msgstr "Из вылазок пока никто не возвращался."
 
-msgid "Raid stats note"
-msgstr "«Погибли все» — доля вылазок, из которых не вернулся никто; «выжило» — доля вернувшихся дичков."

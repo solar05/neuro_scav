@@ -96,18 +96,6 @@ defmodule NeuroScav.PubSub do
   end
 
   @doc """
-  Broadcast every location's raid statistics, once a finished raid is counted.
-  """
-  @spec broadcast_raid_statistics([map()]) :: :ok | {:error, term()}
-  def broadcast_raid_statistics(raid_statistics) do
-    PubSub.broadcast(
-      NeuroScav.PubSub,
-      Topics.statistics_topic(),
-      {:raid_statistics_updated, raid_statistics}
-    )
-  end
-
-  @doc """
   Subscribe to legendary finds made by any user.
   """
   @spec subscribe_finds() :: :ok | {:error, term()}

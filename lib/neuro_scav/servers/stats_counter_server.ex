@@ -22,18 +22,12 @@ defmodule NeuroScav.StatsCounterServer do
 
   ## State Management
 
-  Server state is a map where keys are counter atoms and values are integers:
-  ```elixir
-  %{
-    common: 42,
-    uncommon: 15,
-    rare: 8,
-    epic: 2,
-    legendary: 1,
-    neuro: 5,
-    gnome: 0
-  }
-  ```
+  Server state is the statistics row (`NeuroScav.Scavengers.Statistics`),
+  read from the database whenever the server starts, a restart too. Every
+  update is an atomic increment of that row (`Scavengers.increment_statistics/2`),
+  so a restart, or another node counting at once, loses nothing; the state
+  becomes the row as the database returns it. A write that fails is logged
+  and that count is lost; the server goes on.
 
   ## Usage Examples
 
@@ -56,6 +50,7 @@ defmodule NeuroScav.StatsCounterServer do
   use GenServer
 
   alias NeuroScav.{PubSub, Scavengers}
+  alias NeuroScav.Scavengers.Statistics
 
   @available_counters [:common, :uncommon, :rare, :epic, :legendary, :neuro, :gnome]
 
@@ -165,35 +160,34 @@ defmodule NeuroScav.StatsCounterServer do
     )
   end
 
+  # the row to count in, read afresh: a restarted server picks up every count
+  # so far, not what the row held when the server was first started
   @impl true
-  def init(default_state) do
+  def init(%Statistics{id: id}) do
     Logger.info("Statistics counter server started")
-    {:ok, default_state}
+    {:ok, Scavengers.get_statistics(id)}
   end
 
   @impl true
-  def handle_cast({:update_multiple_counters, counters}, state) do
-    summarized_counters = Enum.frequencies(counters)
-
-    new_statistics =
-      Enum.reduce(summarized_counters, %{}, fn {counter, increased_value}, acc ->
-        new_value = Map.get(state, counter) + increased_value
-        Map.put(acc, counter, new_value)
-      end)
-
-    {:ok, new_state} = Scavengers.update_statistics(state, new_statistics)
-    PubSub.broadcast_statistics(new_state)
-
-    {:noreply, new_state}
-  end
+  def handle_cast({:update_multiple_counters, counters}, state),
+    do: {:noreply, increment(state, Enum.frequencies(counters))}
 
   @impl true
-  def handle_cast({:update_counter, counter}, state) do
-    new_value = Map.get(state, counter) + 1
+  def handle_cast({:update_counter, counter}, state),
+    do: {:noreply, increment(state, %{counter => 1})}
 
-    {:ok, new_state} = Scavengers.update_statistics(state, Map.put(%{}, counter, new_value))
-    PubSub.broadcast_statistics(new_state)
+  # an atomic increment in the database, then the row as it is now to the
+  # statistics page; a failed write loses that count, not the server (a crash
+  # at every count while the database is down would take the app down too)
+  defp increment(state, counts) do
+    case Scavengers.increment_statistics(state, counts) do
+      {:ok, statistics} ->
+        PubSub.broadcast_statistics(statistics)
+        statistics
 
-    {:noreply, new_state}
+      {:error, reason} ->
+        Logger.warning("Statistics not counted: #{inspect(reason)}")
+        state
+    end
   end
 end

@@ -901,21 +901,6 @@ defmodule NeuroScavWeb.RaidLiveTest do
       assert lv |> element("#raid-legend-map") |> render() =~ ru("Raid node deadly")
     end
 
-    test "a raid over counts in its location's statistics, once", %{conn: conn} do
-      {lv, _raid} = raid_page(conn, [:exit_car], &put_in(&1.map[:location], :customs))
-      assert NeuroScav.Scavengers.list_raid_statistics() == []
-
-      lv |> element("#raid-option-1") |> render_click()
-      assert has_element?(lv, "#raid-end")
-
-      assert [%{location: "customs", raids: 1, wiped: 0, members: 3, survivors: 3}] =
-               NeuroScav.Scavengers.list_raid_statistics()
-
-      # a late click at the end changes nothing, nor counts again
-      render_click(lv, "choose", %{"index" => "1", "turn" => "0"})
-      assert [%{raids: 1}] = NeuroScav.Scavengers.list_raid_statistics()
-    end
-
     test "through an exit the raid is over, the end tells which", %{conn: conn} do
       {lv, _raid} = raid_page(conn, [:exit_car])
       lv |> element("#raid-option-1") |> render_click()

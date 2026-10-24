@@ -242,6 +242,9 @@ msgstr "Heya wo tsukuru"
 msgid "Battle not found"
 msgstr "Heya ga mitsukarimasen"
 
+msgid "Battle rooms busy"
+msgstr "Ima wa batoru ga oosugiru. Sukoshi shite kara mata tameshite"
+
 msgid "Create new battle"
 msgstr "Atarashiku tsukuru"
 
@@ -2042,26 +2045,10 @@ msgstr "senshi"
 msgid "Share region"
 msgstr "Norubinsuku-shuu · Tarukofu"
 
-msgid "Raid stats title"
-msgstr "Tansaku"
 
-msgid "Raid stats location"
-msgstr "Basho"
 
-msgid "Raid stats raids"
-msgstr "Kaisuu"
 
-msgid "Raid stats wiped"
-msgstr "Zenmetsu"
 
-msgid "Raid stats survived"
-msgstr "Seizon"
 
-msgid "Raid stats total"
-msgstr "Goukei"
 
-msgid "Raid stats empty"
-msgstr "Mada owatta tansaku wa arimasen."
 
-msgid "Raid stats note"
-msgstr "\"Zenmetsu\": dare mo kaette konakatta tansaku no wariai; \"Seizon\": dasshutsu shita sukabu no wariai."

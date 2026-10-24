@@ -7,7 +7,9 @@ defmodule NeuroScav.BattleRoom do
   - `:draft` - teams picked in turns from open cards on the table
 
   A room is a process per invite link, registered in `NeuroScav.BattleRegistry`
-  under `NeuroScav.BattleSupervisor`. The creator is the first player and the
+  under `NeuroScav.BattleSupervisor`, which holds a limited number of them
+  (`{:error, :busy}` past it). A user keeps `@rooms_per_owner` rooms at most:
+  opening one more closes their oldest, as if it had idled out. The creator is the first player and the
   first other visitor the second; everyone after that only watches. An `open`
   room (`create(owner, open: true)`) is meant for a random opponent rather than
   an invite; the battle LiveView lists it while its owner waits.
@@ -92,6 +94,8 @@ defmodule NeuroScav.BattleRoom do
   @joker_stat 116
   @modes [:duel, :team, :draft]
   @idle_timeout :timer.hours(1)
+  # a page may push "create" over and over: each room would live an hour
+  @rooms_per_owner 5
   @bot "bot"
   @bot_think_ms 2_000..5_000
   @bot_chat_chance 0.5
@@ -157,7 +161,7 @@ defmodule NeuroScav.BattleRoom do
   `turn_ms:` the time for a move (tests pass a long one and send the timeout),
   `anomalies:` the ones to pick from for each battle (`[]` for none).
   """
-  @spec create(String.t(), keyword()) :: {:ok, String.t()}
+  @spec create(String.t(), keyword()) :: {:ok, String.t()} | {:error, :busy}
   def create(owner_id, opts \\ []), do: start_room(owner_id, nil, opts)
 
   @doc """
@@ -168,7 +172,7 @@ defmodule NeuroScav.BattleRoom do
   `:bot_turn` message), `chat_chance:` (0.0..1.0) and `chat_ms:` how often and
   how fast it chats.
   """
-  @spec create_with_bot(String.t(), String.t(), keyword()) :: {:ok, String.t()}
+  @spec create_with_bot(String.t(), String.t(), keyword()) :: {:ok, String.t()} | {:error, :busy}
   def create_with_bot(owner_id, locale, opts \\ []) do
     bot = %{
       locale: locale,
@@ -181,6 +185,7 @@ defmodule NeuroScav.BattleRoom do
   end
 
   defp start_room(owner_id, bot, opts) do
+    close_oldest(owner_id)
     id = :crypto.strong_rand_bytes(6) |> Base.url_encode64(padding: false)
 
     settings = %{
@@ -192,8 +197,23 @@ defmodule NeuroScav.BattleRoom do
     }
 
     room = {__MODULE__, {id, owner_id, bot, settings}}
-    {:ok, _pid} = DynamicSupervisor.start_child(NeuroScav.BattleSupervisor, room)
-    {:ok, id}
+
+    case DynamicSupervisor.start_child(NeuroScav.BattleSupervisor, room) do
+      {:ok, _pid} -> {:ok, id}
+      {:error, :max_children} -> {:error, :busy}
+    end
+  end
+
+  # the owner's rooms past the newest @rooms_per_owner - 1 close, the oldest
+  # first, the way an idle one does (`:timeout`): the new one makes the limit
+  defp close_oldest(owner_id) do
+    NeuroScav.BattleRegistry
+    |> Registry.select([
+      {{:_, :"$1", {:"$2", :"$3"}}, [{:==, :"$2", owner_id}], [{{:"$3", :"$1"}}]}
+    ])
+    |> Enum.sort()
+    |> Enum.drop(1 - @rooms_per_owner)
+    |> Enum.each(fn {_opened, pid} -> send(pid, :timeout) end)
   end
 
   @doc """
@@ -304,8 +324,11 @@ defmodule NeuroScav.BattleRoom do
   # Server
 
   @doc false
-  def start_link({id, _owner_id, _bot, _opts} = args) do
-    GenServer.start_link(__MODULE__, args, name: via(id))
+  # registered with its owner and when it opened, for close_oldest/1
+  def start_link({id, owner_id, _bot, _opts} = args) do
+    opened = System.monotonic_time()
+    name = {:via, Registry, {NeuroScav.BattleRegistry, id, {owner_id, opened}}}
+    GenServer.start_link(__MODULE__, args, name: name)
   end
 
   @impl true

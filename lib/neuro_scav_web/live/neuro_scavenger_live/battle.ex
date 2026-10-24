@@ -56,10 +56,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
     do: {:noreply, assign(socket, :mode, Map.get(@modes, mode, :duel))}
 
   def handle_event("create", _params, %{assigns: assigns} = socket) do
-    {:ok, id} =
-      BattleRoom.create(assigns.user_id, mode: assigns.mode, locale: assigns.user_locale)
-
-    {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+    assigns.user_id
+    |> BattleRoom.create(mode: assigns.mode, locale: assigns.user_locale)
+    |> enter(socket)
   end
 
   def handle_event(
@@ -69,18 +68,21 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
       ) do
     waiting = for {id, %{metas: [%{mode: ^mode} | _]}} <- Presence.list(@queue), do: id
 
-    id =
-      Enum.find(waiting, &seated?(BattleRoom.join(&1, user_id), user_id)) ||
-        open_room(user_id, mode, assigns.user_locale)
+    case Enum.find(waiting, &seated?(BattleRoom.join(&1, user_id), user_id)) do
+      nil ->
+        user_id
+        |> BattleRoom.create(open: true, mode: mode, locale: assigns.user_locale)
+        |> enter(socket)
 
-    {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+      id ->
+        enter({:ok, id}, socket)
+    end
   end
 
   def handle_event("create_bot", _params, %{assigns: assigns} = socket) do
-    {:ok, id} =
-      BattleRoom.create_with_bot(assigns.user_id, assigns.user_locale, mode: assigns.mode)
-
-    {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+    assigns.user_id
+    |> BattleRoom.create_with_bot(assigns.user_locale, mode: assigns.mode)
+    |> enter(socket)
   end
 
   def handle_event("pick", %{"index" => index}, %{assigns: assigns} = socket) do
@@ -119,10 +121,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Battle do
   defp seated?({:ok, battle}, user_id), do: player?(battle, user_id)
   defp seated?({:error, :not_found}, _user_id), do: false
 
-  defp open_room(user_id, mode, locale) do
-    {:ok, id} = BattleRoom.create(user_id, open: true, mode: mode, locale: locale)
-    id
-  end
+  # into a room just opened or found, or the reason there's none
+  defp enter({:ok, id}, socket), do: {:noreply, push_navigate(socket, to: ~p"/battle/#{id}")}
+
+  defp enter({:error, :busy}, socket),
+    do: {:noreply, put_flash(socket, :error, gettext("Battle rooms busy"))}
 
   # Presence drops the entry by itself when the owner's page closes
   defp queue(%{assigns: %{battle: battle, user_id: user_id, queued: queued}} = socket) do

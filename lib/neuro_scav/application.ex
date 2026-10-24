@@ -17,7 +17,9 @@ defmodule NeuroScav.Application do
         NeuroScavWeb.Presence,
         # Card battle rooms: one process per invite link
         {Registry, keys: :unique, name: NeuroScav.BattleRegistry},
-        {DynamicSupervisor, name: NeuroScav.BattleSupervisor, strategy: :one_for_one},
+        # at most this many rooms at once (some 10 KB each): past it no new one opens
+        {DynamicSupervisor,
+         name: NeuroScav.BattleSupervisor, strategy: :one_for_one, max_children: 2_000},
         # Raids in progress, so a reconnecting page picks its raid up again
         NeuroScav.RaidStore,
         # Share images, drawn one at a time

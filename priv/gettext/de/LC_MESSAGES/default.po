@@ -242,6 +242,9 @@ msgstr "Raum erstellen"
 msgid "Battle not found"
 msgstr "Raum nicht gefunden oder bereits geschlossen"
 
+msgid "Battle rooms busy"
+msgstr "Gerade laufen zu viele Kämpfe, versuch es in ein paar Minuten noch einmal"
+
 msgid "Create new battle"
 msgstr "Neuen erstellen"
 
@@ -2042,26 +2045,10 @@ msgstr "gefallen"
 msgid "Share region"
 msgstr "Oblast Norwinsk · Tarkow"
 
-msgid "Raid stats title"
-msgstr "Streifzüge"
 
-msgid "Raid stats location"
-msgstr "Ort"
 
-msgid "Raid stats raids"
-msgstr "Anzahl"
 
-msgid "Raid stats wiped"
-msgstr "Alle tot"
 
-msgid "Raid stats survived"
-msgstr "Überlebt"
 
-msgid "Raid stats total"
-msgstr "Gesamt"
 
-msgid "Raid stats empty"
-msgstr "Noch kein Streifzug ist zu Ende."
 
-msgid "Raid stats note"
-msgstr "„Alle tot“: Anteil der Streifzüge ohne Rückkehrer; „überlebt“: Anteil der Scavs, die herauskamen."

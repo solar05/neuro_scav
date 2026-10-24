@@ -40,6 +40,8 @@ defmodule NeuroScav.ImageRenderer do
     :exit, reason -> {:error, reason}
   end
 
+  # ponytail: the fonts load at every drawing; two files, so Resvg's warm
+  # `:fontdb` measured no faster (more fonts would make it worth keeping one)
   @impl true
   def init(nil), do: {:ok, nil}
 
@@ -50,12 +52,9 @@ defmodule NeuroScav.ImageRenderer do
       else: {:noreply, state}
   end
 
-  # Resvg gives the PNG as a list of bytes: a binary isn't copied in the reply
+  # the PNG as a binary (a list of bytes would be copied in the reply)
   defp draw(svg, opts) do
-    case Resvg.svg_string_to_png_buffer(svg, opts) do
-      {:ok, bytes} -> {:ok, :binary.list_to_bin(bytes)}
-      error -> error
-    end
+    Resvg.svg_string_to_png_binary(svg, opts)
   rescue
     error -> {:error, error}
   end

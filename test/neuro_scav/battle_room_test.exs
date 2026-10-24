@@ -13,6 +13,26 @@ defmodule NeuroScav.BattleRoomTest do
     %{id: id, pid: pid}
   end
 
+  describe "how many rooms" do
+    test "a user keeps five rooms at most: one more closes their oldest" do
+      owner = "owner-#{System.unique_integer([:positive])}"
+      ids = for _ <- 1..5, do: elem(BattleRoom.create(owner, anomalies: []), 1)
+      [oldest | kept] = ids
+      [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, oldest)
+      ref = Process.monitor(pid)
+      NeuroScav.PubSub.subscribe_battle(oldest)
+
+      {:ok, newest} = BattleRoom.create(owner, anomalies: [])
+
+      # it closes the way an idle one does: its viewers hear of it
+      assert_receive :battle_closed
+      assert_receive {:DOWN, ^ref, :process, ^pid, :normal}
+
+      for id <- kept ++ [newest],
+          do: assert([{_pid, _value}] = Registry.lookup(NeuroScav.BattleRegistry, id))
+    end
+  end
+
   describe "card/1" do
     test "stats come from the name, so the same name always gets the same card" do
       card = BattleRoom.card(%{name: "Алиса Аврора", rarity: :common})

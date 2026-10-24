@@ -65,7 +65,7 @@ defmodule NeuroScavWeb.ShareController do
     |> String.replace(~r/<\/svg>\s*\z/, "")
 
   {:ok, map_png} =
-    Resvg.svg_string_to_png_buffer(
+    Resvg.svg_string_to_png_binary(
       """
       <svg xmlns="http://www.w3.org/2000/svg" width="#{@canvas.w}" height="#{@canvas.h}">
         <svg width="#{@canvas.w}" height="#{@canvas.h}" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">#{map}</svg>
@@ -76,7 +76,7 @@ defmodule NeuroScavWeb.ShareController do
       resources_dir: System.tmp_dir!()
     )
 
-  @region_map_png map_png |> :binary.list_to_bin() |> Base.encode64()
+  @region_map_png Base.encode64(map_png)
   @locations NeuroScav.Raid.locations()
   # a location's colour washing over the map, as over the raid's own map card
   @location_tints %{

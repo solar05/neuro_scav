@@ -7,7 +7,7 @@ NeuroScav is a Phoenix 1.8 LiveView application. The code is split into two halv
 - `lib/neuro_scav/` — the domain: scavenger generation, card battles, raids, statistics
 - `lib/neuro_scav_web/` — the web: LiveViews, controllers, plugs, components
 
-Most state lives in processes (GenServers, ETS, a process per battle room) rather than in the database: PostgreSQL holds only the statistics: the rarity counters and how raids went. Shared results (a scavenger, a team, a finished raid) aren't stored at all — the share link carries them.
+Most state lives in processes (GenServers, ETS, a process per battle room) rather than in the database: PostgreSQL holds only the statistics: the rarity counters. Shared results (a scavenger, a team, a finished raid) aren't stored at all — the share link carries them.
 
 ## System Architecture Diagram
 
@@ -35,7 +35,7 @@ Most state lives in processes (GenServers, ETS, a process per battle room) rathe
 └──────────────────────────────────────────────────────────────────────┘
                         ↓
 ┌──────────────────────────────────────────────────────────────────────┐
-│ PostgreSQL: rarity and raid statistics  ·  Ollama: scav:latest       │
+│ PostgreSQL: rarity statistics  ·  Ollama: scav:latest                │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -54,7 +54,7 @@ Most state lives in processes (GenServers, ETS, a process per battle room) rathe
 | **Raid** | `/raid` | the raid engine (`NeuroScav.Raid`), `RaidStore`, `Raid.Report` for the share link |
 | **Wheel** | `/wheel` | nothing outside the page |
 | **Glossary** | `/glossary` | the rarity rules, `ScavengersServer.odds/2` |
-| **Statistics** | `/statistics` | the rarity counters and the raid statistics (`Scavengers.list_raid_statistics/0`), both kept fresh by `statistics:lobby` |
+| **Statistics** | `/statistics` | the rarity counters, kept fresh by `statistics:lobby` |
 
 Mounted into every LiveView by `NeuroScavWeb.live_view/0`:
 
@@ -87,7 +87,7 @@ Mounted into every LiveView by `NeuroScavWeb.live_view/0`:
 | Topic | Carries |
 |-------|---------|
 | `user:<user_id>:<page>` | a user's generation results for a page: `{:single_generated, scav}`, `{:team_generated, team}`, `{:neuro_generated, scav}`, `:neuro_generation_error` |
-| `statistics:lobby` | `{:statistics_updated, counters}` after every update, `{:raid_statistics_updated, rows}` after every raid finished |
+| `statistics:lobby` | `{:statistics_updated, counters}` after every update |
 | `finds:lobby` | legendary finds, for the toast |
 | `battle:<id>` | `{:battle_updated, state}` on every change of a room, `:battle_closed` |
 | `online` | Presence of the connected pages |
@@ -122,7 +122,7 @@ The one random exception: any generated scavenger is the gnome with a chance of 
 
 #### StatsCounterServer
 
-Seven counters: `:common`, `:uncommon`, `:rare`, `:epic`, `:legendary`, `:neuro`, `:gnome`. It starts from the `statistics` row; every update is written back to it (`Scavengers.update_statistics/2`) and broadcast to `statistics:lobby`.
+Seven counters: `:common`, `:uncommon`, `:rare`, `:epic`, `:legendary`, `:neuro`, `:gnome`, in the `statistics` row. The server reads them from it whenever it starts, a restart too; every update is an atomic increment of the row (`Scavengers.increment_statistics/2`), so a restart or another node loses nothing, and the row as it is now goes to `statistics:lobby`. A failed write loses that count, not the server.
 
 **Key functions:** `update_counter/1`, `update_multiple_counters/1`, `gnome_captured/0`, `available_counters/0`.
 
@@ -144,7 +144,7 @@ One card battle between two players, a process per invite link registered in `Ne
 - **Turn timer:** when it runs out, the bot's logic moves for whoever is late
 - **Presence and chat:** pages are monitored (an absent player is `away`); the last 50 chat messages stay in the room
 - Every change goes to `battle:<id>`; LiveViews render only the viewer's own cards until the reveal, so nothing leaks to the browser
-- A room stops after an hour without activity
+- A room stops after an hour without activity; a user keeps 5 rooms at most (one more closes their oldest), and the supervisor holds 2000 (past it the lobby says the rooms are busy)
 
 #### RaidStore
 
@@ -158,7 +158,7 @@ Draws the share images one at a time. Resvg's NIF holds a normal scheduler for t
 
 #### Raid engine (`raid.ex`, `raid/`)
 
-Plain data and functions, no processes: the Raid LiveView keeps the raid in its assigns and copies it to `RaidStore` after every step; the step that ends a raid counts it in the raid statistics (`Scavengers.record_raid/1`), once.
+Plain data and functions, no processes: the Raid LiveView keeps the raid in its assigns and copies it to `RaidStore` after every step.
 
 - **`NeuroScav.Raid`** — the raid: the squad crosses a map of layers of nodes with an event at each; an event's options need a stat check, are safe, need an item (a key) or a condition (a payment, the scavs' trust — karma). A check is made by the member best at the stat, with their loot's bonuses and karma. The squad sees the next nodes, the rest by their kind of event — or not at all at night and in the fog — and remembers what it has seen. A camp on every map offers one rest: patch up the most wounded, train the squad's weak spot or repack the loot.
 - **`Raid.Squad`** — members and their battle-card stats (with the team sets' bonus, as in a battle), wounds, the stash and its consumables. The squad is up to five: names the player types in, or random ones from `generate_uncounted/1`.
@@ -174,9 +174,8 @@ The Ollama client: the `scav:latest` model, temperature 0.8, a 60-second timeout
 
 #### Scavengers context (`scavengers.ex`, `scavengers/`)
 
-- `NeuroScav.Scavengers` — get, create and update the statistics; `record_raid/1` counts a finished raid (an atomic upsert with increments, then a broadcast), `list_raid_statistics/0`
+- `NeuroScav.Scavengers` — get, create and update the statistics
 - `Scavengers.Statistics` — the schema: seven integer counters in one row
-- `Scavengers.RaidStatistics` — a row per location: raids finished, raids nobody came out of (`wiped`), scavs sent and scavs that came out
 - `Scavengers.Names` — the name lists per language
 
 #### Application & supervision (`application.ex`)
@@ -204,7 +203,7 @@ NeuroScav.Supervisor (one_for_one)
 
 ### 5. Data Layer (`lib/neuro_scav/repo.ex`)
 
-PostgreSQL through Ecto, with two tables (`priv/repo/migrations`): `statistics`, one row of rarity counters, and `raid_statistics`, a row per location. Battles, raids in progress and the Neuro queue are in memory and don't survive a restart.
+PostgreSQL through Ecto, with one table (`priv/repo/migrations`): `statistics`, one row of rarity counters. Battles, raids in progress and the Neuro queue are in memory and don't survive a restart.
 
 ## Data Flow Examples
 

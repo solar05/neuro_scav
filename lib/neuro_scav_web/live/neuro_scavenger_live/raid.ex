@@ -4,7 +4,7 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   import NeuroScavWeb.RaidComponents
 
-  alias NeuroScav.{Locale, Raid, RaidStore, Scavengers, ScavengersServer}
+  alias NeuroScav.{Locale, Raid, RaidStore, ScavengersServer}
   alias NeuroScav.Raid.Report
 
   @max_name_length 40
@@ -111,15 +111,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp run_path(nil, run), do: ~p"/raid?#{[run: run]}"
   defp run_path(team, run), do: ~p"/raid?#{[team: team, run: run]}"
 
-  # every change of the raid is kept, so a reconnect picks it up; a raid
-  # just over counts in the statistics, once
+  # every change of the raid is kept, so a reconnect picks it up
   defp assign_raid(socket, members, raid) do
     RaidStore.put({socket.assigns.user_id, socket.assigns.run}, members, raid)
-    previous = socket.assigns[:raid]
-
-    if Raid.over?(raid) and not (previous && Raid.over?(previous)),
-      do: Scavengers.record_raid(Report.new(raid, nil))
-
     assign(socket, members: members, raid: raid)
   end
 

@@ -16,7 +16,7 @@ A Phoenix LiveView app around Tarkov-style scavengers: generate them alone, in t
 | **Raid** | `/raid` | A text roguelike: a squad crosses a random map of one of nine locations, meets events with stat checks, keys, payments and karma, bosses, weather and night, and leaves through an exit — or doesn't |
 | **Wheel** | `/wheel` | A wheel of fortune over your own entries |
 | **Glossary** | `/glossary` | The rarity rules and their chances |
-| **Statistics** | `/statistics` | Live counters of generated scavengers by rarity, and how raids went at each location: raids finished, wipes, scavs that made it out |
+| **Statistics** | `/statistics` | Live counters of generated scavengers by rarity |
 
 - **Share links**: a scavenger, a team and a finished raid can be shared as a page with an Open Graph preview. The preview image is an SVG rendered to PNG on the server (Resvg, with the Bender fonts); the card lies on a tactical map of the region with a scene of a location.
 - **Real-time**: LiveView and PubSub; battles and statistics update for everyone connected.

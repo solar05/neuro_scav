@@ -34,8 +34,15 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Team do
     {:noreply, socket}
   end
 
+  # the index comes from the client: one that isn't a member's changes nothing
   def handle_event("toggle_lock", %{"index" => index}, socket) do
-    index = String.to_integer(index)
+    # the index comes from the client: what isn't a whole number is no member's
+    index =
+      case is_binary(index) && Integer.parse(index) do
+        {index, ""} -> index
+        _invalid -> nil
+      end
+
     %{locked: locked, team: team} = socket.assigns
 
     locked =

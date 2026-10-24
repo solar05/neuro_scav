@@ -69,6 +69,21 @@ defmodule NeuroScavWeb.SingleLiveTest do
       assert render(lv) =~ ~s(data-url="/share/)
     end
 
+    test "a capture sooner than the gnome can be back neither counts nor gives the gnome",
+         %{conn: conn} do
+      start_supervised!({NeuroScav.StatsCounterServer, NeuroScav.Scavengers.get_statistics()})
+      before = :sys.get_state(NeuroScav.StatsCounterServer).gnome
+      {:ok, lv, _html} = live(conn, ~p"/")
+
+      render_click(lv, "gnome_clicked")
+      send(lv.pid, {:single_generated, %{rarity: :rare, name: "Alice Adams"}})
+      # a crafted one right after: the gnome can't have shown again
+      render_click(lv, "gnome_clicked")
+
+      assert render(lv) =~ "Alice Adams"
+      assert :sys.get_state(NeuroScav.StatsCounterServer).gnome == before + 1
+    end
+
     test "gnome click share token encodes gnome rarity", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/")
       render_click(lv, "gnome_clicked")

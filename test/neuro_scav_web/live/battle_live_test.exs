@@ -32,6 +32,24 @@ defmodule NeuroScavWeb.BattleLiveTest do
     assert {:ok, %{players: ["a"]}} = BattleRoom.join(id, "a")
   end
 
+  test "with the rooms full the lobby says so, no room opens and the page lives on" do
+    %{active: active} = DynamicSupervisor.count_children(NeuroScav.BattleSupervisor)
+
+    # as many owners as rooms are left: each keeps its one room
+    for i <- 1..(2_000 - active), do: {:ok, _id} = BattleRoom.create("filler-#{i}")
+
+    on_exit(fn ->
+      for {_, pid, _, _} <- DynamicSupervisor.which_children(NeuroScav.BattleSupervisor),
+          do: DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid)
+    end)
+
+    assert BattleRoom.create("one-more") == {:error, :busy}
+
+    {:ok, lv, _html} = live(conn_for("a"), ~p"/battle")
+    assert lv |> element("#btn-battle-create") |> render_click() =~ "Сейчас слишком много боёв"
+    assert Process.alive?(lv.pid)
+  end
+
   defp stop_room_on_exit(id) do
     [{pid, _}] = Registry.lookup(NeuroScav.BattleRegistry, id)
     on_exit(fn -> DynamicSupervisor.terminate_child(NeuroScav.BattleSupervisor, pid) end)

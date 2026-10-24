@@ -41,6 +41,18 @@ defmodule NeuroScavWeb.TeamLiveTest do
       refute lv |> element(~s(td[phx-value-index="0"])) |> render_click() =~ "🔒"
     end
 
+    test "a lock of what isn't a member's index changes nothing, the page lives on",
+         %{conn: conn} do
+      {:ok, lv, _html} = live(conn, ~p"/team_scavengers")
+      send(lv.pid, {:team_generated, team(~w(A1 A2 A3 A4 A5))})
+      render(lv)
+
+      for index <- ["x", "1.5", "9", "-1", 3],
+          do: render_click(lv, "toggle_lock", %{"index" => index})
+
+      refute render(lv) =~ "🔒"
+    end
+
     test "shows the sets the team collects", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/team_scavengers")
       refute has_element?(lv, "#team-sets")
