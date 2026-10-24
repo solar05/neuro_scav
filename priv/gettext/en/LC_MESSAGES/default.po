@@ -388,27 +388,6 @@ msgstr "Team sets"
 msgid "Sets note %{bonus}"
 msgstr "In 3 × 3 battles and drafts every set a team collects adds +%{bonus} to all its stats."
 
-msgid "Quiz"
-msgstr "Quiz"
-
-msgid "Quiz rarity question"
-msgstr "What rarity is this scavenger?"
-
-msgid "Quiz duel question"
-msgstr "Who wins the battle? Hint: the rarer the scavenger, the stronger it is."
-
-msgid "Quiz right"
-msgstr "Right!"
-
-msgid "Quiz wrong"
-msgstr "Wrong!"
-
-msgid "Quiz score %{right} %{total}"
-msgstr "Guessed: %{right} of %{total}"
-
-msgid "Next"
-msgstr "Next"
-
 msgid "Turn timer rules %{seconds}"
 msgstr "You have %{seconds} seconds per move, then the move is made for you."
 

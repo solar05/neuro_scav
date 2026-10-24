@@ -370,24 +370,6 @@ defmodule NeuroScav.ScavengersServer do
   end
 
   @doc """
-  A random name of `locale` with `rarity` (any but the gnome), without counting
-  it in statistics. Rule rarities are found by drawing random pairs, so an epic
-  takes about a thousand cheap draws.
-  """
-  @spec random_name(String.t(), atom(), module()) :: String.t()
-  def random_name(locale, rarity, names \\ NeuroScav.Scavengers.Names) do
-    state = load_names(names)
-
-    if rarity == :legendary,
-      do: state |> Map.fetch!("legendary_names_#{locale}") |> Enum.random(),
-      else:
-        fn -> name_pair(state, locale) end
-        |> Stream.repeatedly()
-        |> Enum.find(&(&1.rarity == rarity))
-        |> Map.fetch!(:name)
-  end
-
-  @doc """
   Sets a team of names (two or more) collects, each one a battle bonus:
 
   - `:initial` - every first name starts with the same letter

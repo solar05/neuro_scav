@@ -37,7 +37,6 @@ defmodule NeuroScavWeb.Router do
     live "/wheel", NeuroScavengerLive.Wheel, :wheel
     live "/battle", NeuroScavengerLive.Battle, :battle
     live "/battle/:id", NeuroScavengerLive.Battle, :battle
-    live "/quiz", NeuroScavengerLive.Quiz, :quiz
     live "/raid", NeuroScavengerLive.Raid, :raid
 
     get "/share/:token", ShareController, :show

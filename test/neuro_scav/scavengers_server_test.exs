@@ -88,15 +88,6 @@ defmodule NeuroScav.ScavengersServerTest do
     end
   end
 
-  describe "random_name/3" do
-    test "gives a name of the asked rarity" do
-      for locale <- ~w(ru en de ja), rarity <- [:legendary, :epic, :rare, :uncommon, :common] do
-        name = Server.random_name(locale, rarity)
-        assert Server.check_name(name).rarity == rarity, "#{locale} #{rarity}: #{name}"
-      end
-    end
-  end
-
   describe "team_sets/1" do
     test "finds the sets a team collects" do
       assert Server.team_sets(["Анна Кот", "Алла Лисица", "Ася Смирнова"]) == [:initial]

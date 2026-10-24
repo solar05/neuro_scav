@@ -14,7 +14,6 @@ A Phoenix LiveView app around Tarkov-style scavengers: generate them alone, in t
 | **Neuro** | `/neuro_scavengers` | Scavengers made up by an LLM via [Ollama](https://ollama.ai), of the `neuro` rarity |
 | **Battle** | `/battle` | Card battles between two players by invite link or an open room for a random opponent: a duel, team against team, or a draft from open cards; anyone else watches |
 | **Raid** | `/raid` | A text roguelike: a squad crosses a random map of one of nine locations, meets events with stat checks, keys, payments and karma, bosses, weather and night, and leaves through an exit — or doesn't |
-| **Quiz** | `/quiz` | Guess a name's rarity, or which of two cards wins a duel |
 | **Wheel** | `/wheel` | A wheel of fortune over your own entries |
 | **Glossary** | `/glossary` | The rarity rules and their chances |
 | **Statistics** | `/statistics` | Live counters of generated scavengers by rarity |

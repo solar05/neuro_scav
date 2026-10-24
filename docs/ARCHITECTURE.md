@@ -14,7 +14,7 @@ Most state lives in processes (GenServers, ETS, a process per battle room) rathe
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
 │ Web Layer (lib/neuro_scav_web)                                       │
-│   LiveViews: Single · Team · Neuro · Battle · Raid · Quiz · Wheel    │
+│   LiveViews: Single · Team · Neuro · Battle · Raid · Wheel           │
 │              Glossary · Statistics                                   │
 │   on every page: LegendaryToast · OnlineCounter (Presence)           │
 │   ShareController (share pages, PNG previews) · /api controllers     │
@@ -52,7 +52,6 @@ Most state lives in processes (GenServers, ETS, a process per battle room) rathe
 | **Neuro** | `/neuro_scavengers` | `UserRequestsServer.schedule_request/2` — a queue of requests to Ollama |
 | **Battle** | `/battle`, `/battle/:id` | a `BattleRoom` per invite link, its `battle:<id>` topic, Presence |
 | **Raid** | `/raid` | the raid engine (`NeuroScav.Raid`), `RaidStore`, `Raid.Report` for the share link |
-| **Quiz** | `/quiz` | `ScavengersServer.random_name/2`, `BattleRoom.compare/4` for the duel questions |
 | **Wheel** | `/wheel` | nothing outside the page |
 | **Glossary** | `/glossary` | the rarity rules, `ScavengersServer.odds/2` |
 | **Statistics** | `/statistics` | the `statistics:lobby` topic |
@@ -118,7 +117,7 @@ The one random exception: any generated scavenger is the gnome with a chance of 
 - `generate_single/1`, `generate_team/1` — synchronous (the API)
 - `generate_card/2` — a battle card, synchronously, counted like the others
 - `generate_uncounted/1` — not counted nor announced (battle bots, a raid's random squad)
-- `check_name/1`, `random_name/2`, `odds/2`, `team_sets/1`, `max_team_members/0` (5)
+- `check_name/1`, `odds/2`, `team_sets/1`, `max_team_members/0` (5)
 
 #### StatsCounterServer
 

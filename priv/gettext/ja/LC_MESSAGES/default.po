@@ -377,27 +377,6 @@ msgstr "Chiimu setto"
 msgid "Sets note %{bonus}"
 msgstr "3 × 3 batoru to dorafuto de wa, setto hitotsu goto ni chiimu no zen suteeta ga +%{bonus}."
 
-msgid "Quiz"
-msgstr "Kuizu"
-
-msgid "Quiz rarity question"
-msgstr "Kono yabanjin no rea-do wa?"
-
-msgid "Quiz duel question"
-msgstr "Batoru de katsu no wa dotchi? Hinto: rea na yabanjin hodo tsuyoi."
-
-msgid "Quiz right"
-msgstr "Seikai!"
-
-msgid "Quiz wrong"
-msgstr "Hazure!"
-
-msgid "Quiz score %{right} %{total}"
-msgstr "Seikai: %{total} mon-chuu %{right} mon"
-
-msgid "Next"
-msgstr "Tsugi e"
-
 msgid "Turn timer rules %{seconds}"
 msgstr "Hitotsu no te ni %{seconds} byou. Sugiru to jidou de te ga utareru."
 

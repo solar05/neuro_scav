@@ -238,7 +238,6 @@ defmodule NeuroScavWeb.CoreComponents do
       {"/statistics", gettext("Stats")},
       {"/wheel", gettext("Wheel")},
       {"/battle", gettext("Battle")},
-      {"/quiz", gettext("Quiz")},
       {"/raid", gettext("Raid")}
     ]
 
@@ -301,7 +300,6 @@ defmodule NeuroScavWeb.CoreComponents do
       :glossary,
       :wheel,
       :battle,
-      :quiz,
       :raid
     ]
   end
@@ -314,7 +312,6 @@ defmodule NeuroScavWeb.CoreComponents do
       "/glossary",
       "/wheel",
       "/battle",
-      "/quiz",
       "/raid"
     ]
   end

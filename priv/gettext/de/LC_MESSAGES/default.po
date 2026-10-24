@@ -377,27 +377,6 @@ msgstr "Team-Sets"
 msgid "Sets note %{bonus}"
 msgstr "Im 3 × 3-Kampf und im Draft gibt jedes gesammelte Set dem Team +%{bonus} auf alle Werte."
 
-msgid "Quiz"
-msgstr "Quiz"
-
-msgid "Quiz rarity question"
-msgstr "Wie selten ist dieser Wildling?"
-
-msgid "Quiz duel question"
-msgstr "Wer gewinnt den Kampf? Tipp: je seltener der Wildling, desto stärker."
-
-msgid "Quiz right"
-msgstr "Richtig!"
-
-msgid "Quiz wrong"
-msgstr "Daneben!"
-
-msgid "Quiz score %{right} %{total}"
-msgstr "Erraten: %{right} von %{total}"
-
-msgid "Next"
-msgstr "Weiter"
-
 msgid "Turn timer rules %{seconds}"
 msgstr "Für jeden Zug hast du %{seconds} Sekunden, danach wird für dich gezogen."
 

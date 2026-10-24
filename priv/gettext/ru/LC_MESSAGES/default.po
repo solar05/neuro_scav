@@ -388,27 +388,6 @@ msgstr "Сеты команды"
 msgid "Sets note %{bonus}"
 msgstr "В бою 3 × 3 и драфте каждый собранный сет даёт команде +%{bonus} ко всем статам."
 
-msgid "Quiz"
-msgstr "Угадайка"
-
-msgid "Quiz rarity question"
-msgstr "Какой редкости этот дичок?"
-
-msgid "Quiz duel question"
-msgstr "Кто победит в бою? Подсказка: чем реже дичок, тем он сильнее."
-
-msgid "Quiz right"
-msgstr "Верно!"
-
-msgid "Quiz wrong"
-msgstr "Мимо!"
-
-msgid "Quiz score %{right} %{total}"
-msgstr "Угадано: %{right} из %{total}"
-
-msgid "Next"
-msgstr "Дальше"
-
 msgid "Turn timer rules %{seconds}"
 msgstr "На каждый ход — %{seconds} секунд, потом ход сделают за тебя."
 
