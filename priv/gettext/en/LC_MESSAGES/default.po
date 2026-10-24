@@ -1992,3 +1992,27 @@ msgstr "KIA"
 
 msgid "Share region"
 msgstr "Norvinsk Region · Tarkov"
+
+msgid "Raid stats title"
+msgstr "Raids"
+
+msgid "Raid stats location"
+msgstr "Location"
+
+msgid "Raid stats raids"
+msgstr "Raids"
+
+msgid "Raid stats wiped"
+msgstr "Wiped"
+
+msgid "Raid stats survived"
+msgstr "Survived"
+
+msgid "Raid stats total"
+msgstr "Total"
+
+msgid "Raid stats empty"
+msgstr "No raid has finished yet."
+
+msgid "Raid stats note"
+msgstr "\"Wiped\": the share of raids nobody came back from; \"survived\": the share of scavs who made it out."

@@ -7,24 +7,14 @@ defmodule NeuroScavWeb.ShareController do
   @canvas %{w: 1200, h: 630}
   @card %{cx: 450, cy: 75, cw: 300, ch: 480, art_h: 215}
 
-  # Fonts embedded as base64 at compile time so the SVG is self-contained
-  @font_normal Path.join([
-                 to_string(:code.priv_dir(:neuro_scav)),
-                 "static",
-                 "fonts",
-                 "Bender.otf"
-               ])
-               |> File.read!()
-               |> Base.encode64()
-
-  @font_bold Path.join([
-               to_string(:code.priv_dir(:neuro_scav)),
-               "static",
-               "fonts",
-               "BenderBold.otf"
-             ])
-             |> File.read!()
-             |> Base.encode64()
+  # Fonts embedded as base64 at compile time so the SVG is self-contained;
+  # every file read at compile time is an external resource, so changing one
+  # recompiles the module
+  @fonts Path.join([to_string(:code.priv_dir(:neuro_scav)), "static", "fonts"])
+  @external_resource Path.join(@fonts, "Bender.otf")
+  @external_resource Path.join(@fonts, "BenderBold.otf")
+  @font_normal @fonts |> Path.join("Bender.otf") |> File.read!() |> Base.encode64()
+  @font_bold @fonts |> Path.join("BenderBold.otf") |> File.read!() |> Base.encode64()
 
   @rarity_colors %{
     "legendary" => {"#ff8c00", "#ffd060"},
@@ -48,15 +38,19 @@ defmodule NeuroScavWeb.ShareController do
   # tactical map behind the card. A raid shows where it went; a scavenger, a
   # team where they were spotted, by their names' hash.
   @share_images Path.join([to_string(:code.priv_dir(:neuro_scav)), "static", "images", "share"])
-  @location_art Map.new(Path.wildcard(Path.join(@share_images, "locations/*.svg")), fn path ->
-                  content =
-                    path
-                    |> File.read!()
-                    |> String.replace(~r/\A\s*<svg[^>]*>/, "")
-                    |> String.replace(~r/<\/svg>\s*\z/, "")
+  @location_art (for path <- Path.wildcard(Path.join(@share_images, "locations/*.svg")),
+                     into: %{} do
+                   @external_resource path
 
-                  {Path.basename(path, ".svg"), content}
-                end)
+                   content =
+                     path
+                     |> File.read!()
+                     |> String.replace(~r/\A\s*<svg[^>]*>/, "")
+                     |> String.replace(~r/<\/svg>\s*\z/, "")
+
+                   {Path.basename(path, ".svg"), content}
+                 end)
+  @external_resource Path.join(@share_images, "map.svg")
   @region_map Path.join(@share_images, "map.svg")
               |> File.read!()
               |> String.replace(~r/\A\s*<svg[^>]*>/, "")
@@ -256,7 +250,7 @@ defmodule NeuroScavWeb.ShareController do
   end
 
   defp send_png(conn, cache_key, build_svg) do
-    etag = :crypto.hash(:md5, cache_key) |> Base.encode16(case: :lower)
+    etag = :crypto.hash(:md5, [images_version(), cache_key]) |> Base.encode16(case: :lower)
 
     if get_req_header(conn, "if-none-match") == [~s("#{etag}")] do
       conn
@@ -289,6 +283,12 @@ defmodule NeuroScavWeb.ShareController do
       end
     end
   end
+
+  # What an image is drawn with: this module (its layout, and the art and fonts
+  # compiled into it), the texts and the raid's names. Part of the ETag, so a
+  # change to any of them isn't answered with a stale image's 304.
+  defp images_version,
+    do: Enum.map([__MODULE__, NeuroScavWeb.Gettext, RaidComponents], & &1.module_info(:md5))
 
   defp pick_location(name) do
     Enum.at(@locations, :erlang.phash2(name, length(@locations)))

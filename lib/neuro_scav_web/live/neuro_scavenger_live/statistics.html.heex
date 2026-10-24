@@ -63,4 +63,42 @@
     <hr class="stats-divider" />
     <.rarity_bars statistics={@statistics} />
   </div>
+
+  <%!-- how raids went, a row per location, the most raided first --%>
+  <div id="raid-statistics" class="raid-stats">
+    <hr class="stats-divider" />
+    <h3 class="raid-stats-title">{gettext("Raid stats title")}</h3>
+    <%= if @raid_statistics == [] do %>
+      <p class="raid-stats-note">{gettext("Raid stats empty")}</p>
+    <% else %>
+      <% total = raid_total(@raid_statistics) %>
+      <table class="raid-stats-table">
+        <thead>
+          <tr>
+            <th>{gettext("Raid stats location")}</th>
+            <th>{gettext("Raid stats raids")}</th>
+            <th>{gettext("Raid stats wiped")}</th>
+            <th>{gettext("Raid stats survived")}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr :for={row <- @raid_statistics} id={"raid-stats-#{row.location}"}>
+            <td>{RaidComponents.location_title(row.location)}</td>
+            <td>{row.raids}</td>
+            <td>{percent(row.wiped, row.raids)}</td>
+            <td>{percent(row.survivors, row.members)}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr id="raid-stats-total">
+            <td>{gettext("Raid stats total")}</td>
+            <td>{total.raids}</td>
+            <td>{percent(total.wiped, total.raids)}</td>
+            <td>{percent(total.survivors, total.members)}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <p class="raid-stats-note">{gettext("Raid stats note")}</p>
+    <% end %>
+  </div>
 </div>

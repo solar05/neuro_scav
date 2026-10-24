@@ -1876,6 +1876,99 @@ kbd {
     margin: 1.5rem 0;
 }
 
+/* the raids' table under the rarities: a row per location, the totals last;
+   px, not the body's vw-based size, so four columns fit a phone and don't
+   swell on a wide screen */
+.raid-stats {
+    max-width: 760px;
+    margin: 0 auto 2rem;
+    font-family: "Bender";
+    font-size: 20px;
+    color: #fff;
+}
+
+.raid-stats-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 28px;
+}
+
+.raid-stats-table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    background: rgba(126, 127, 139, 0.85);
+}
+
+.raid-stats-table th,
+.raid-stats-table td {
+    padding: 8px 12px;
+    text-align: right;
+}
+
+.raid-stats-table th:first-child,
+.raid-stats-table td:first-child {
+    width: 34%;
+    text-align: left;
+}
+
+.raid-stats-table thead th {
+    background: rgba(0, 0, 0, 0.35);
+    font-size: 80%;
+    font-weight: normal;
+    line-height: 1.2;
+    vertical-align: bottom;
+}
+
+.raid-stats-table tbody tr + tr td {
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.raid-stats-table tfoot td {
+    background: rgba(0, 0, 0, 0.25);
+    font-weight: bold;
+}
+
+.raid-stats-note {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 15px;
+    color: #c8c8c8;
+}
+
+@media (max-width: 576px) {
+    .raid-stats {
+        font-size: 15px;
+    }
+
+    .raid-stats-title {
+        font-size: 22px;
+    }
+
+    .raid-stats-table th,
+    .raid-stats-table td {
+        padding: 6px 6px;
+    }
+
+    .raid-stats-table th:first-child,
+    .raid-stats-table td:first-child {
+        width: 31%;
+        padding-left: 10px;
+    }
+
+    .raid-stats-table th:last-child,
+    .raid-stats-table td:last-child {
+        padding-right: 10px;
+    }
+
+    .raid-stats-note {
+        font-size: 13px;
+    }
+}
+
 .rarity-bars-container {
     width: 100%;
     margin: 2rem 0 1rem;

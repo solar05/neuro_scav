@@ -446,6 +446,17 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert conn |> get(~p"/share/raid/not-a-raid") |> html_response(400)
     end
 
+    test "its image is revalidated by an ETag of its token and of how it's drawn", %{conn: conn} do
+      path = ~p"/share/raid/#{raid_token()}/image"
+      [etag] = conn |> get(path) |> get_resp_header("etag")
+
+      assert build_conn() |> put_req_header("if-none-match", etag) |> get(path) |> response(304)
+
+      # an ETag of the token alone (as before the images' version was in it) is stale
+      stale = ~s("#{:crypto.hash(:md5, "raid:" <> raid_token()) |> Base.encode16(case: :lower)}")
+      assert build_conn() |> put_req_header("if-none-match", stale) |> get(path) |> response(200)
+    end
+
     test "its image is a PNG, for any token", %{conn: conn} do
       conn = get(conn, ~p"/share/raid/#{raid_token()}/image")
       assert valid_png?(response(conn, 200))

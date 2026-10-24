@@ -4,10 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**NeuroScav** is a Phoenix 1.7+ web application for neural scavenger hunts. It provides real-time AI-powered scavenger hunt functionality with single-player and team-based modes, powered by Ollama for local LLM inference. The app uses PostgreSQL for persistence, Phoenix LiveView for real-time updates, and GenServers for coordination of stateful operations.
+**NeuroScav** is a Phoenix 1.8 web application for neural scavenger hunts. It provides real-time AI-powered scavenger hunt functionality with single-player and team-based modes, powered by Ollama for local LLM inference. The app uses PostgreSQL for persistence, Phoenix LiveView for real-time updates, and GenServers for coordination of stateful operations.
 
 **Tech Stack:**
-- **Framework**: Phoenix 1.7.21+, Elixir 1.14+
+- **Framework**: Phoenix 1.8, Elixir 1.14+
 - **Database**: PostgreSQL with Ecto ORM
 - **Real-time**: LiveView + PubSub
 - **UI**: Tailwind CSS + Heroicons

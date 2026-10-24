@@ -29,7 +29,8 @@ defmodule NeuroScav.PubSub.Topics do
   @doc """
   Global statistics topic for broadcasting aggregated statistics updates.
 
-  Used by StatsCounterServer to publish updated counter values.
+  Used by StatsCounterServer to publish updated counter values, and by
+  `Scavengers.record_raid/1` to publish the raid statistics.
   All subscribers receive the latest statistics.
   """
   @spec statistics_topic() :: String.t()
