@@ -185,11 +185,20 @@
                         <.icon name="tabler-key" /> {item_name(option.key)} · {option.member.name}
                         <.icons option={option} />
                       </small>
+                      <%!-- a gift is gone for good: its price tells what it costs --%>
+                      <small :if={option.give && not option.locked}>
+                        <.icon name="tabler-gift" /> {item_name(option.give)} · {roubles(
+                          Raid.price(option.give)
+                        )} · {option.member.name}
+                        <.icons option={option} />
+                      </small>
                       <small :if={option.search}>
                         {option.member.name} · {option.chance}% <.icons option={option} />
                       </small>
                       <small :if={option.pay and not option.locked}>
-                        <.icon name="tabler-cash" /> {item_name(option.price)} · {option.member.name}
+                        <.icon name="tabler-cash" /> {item_name(option.price)} · {roubles(
+                          Raid.price(option.price)
+                        )} · {option.member.name}
                         <.icons option={option} />
                       </small>
                       <small :if={option.trust && not option.locked}>

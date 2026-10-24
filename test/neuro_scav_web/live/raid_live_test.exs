@@ -262,6 +262,19 @@ defmodule NeuroScavWeb.RaidLiveTest do
     assert ledx =~ "ЛЕДХ" and ledx =~ "+5 ко всему" and ledx =~ "Дед Мороз"
     # a finder who didn't make it out is struck out
     assert doc |> LazyHTML.query(".raid-stash-owner-dead") |> LazyHTML.text() =~ "Дед Мороз"
+    # each item's price; what the loot that works is worth together
+    assert rooster =~ "80 000 ₽" and ledx =~ "1 000 000 ₽"
+    assert doc |> LazyHTML.query("#raid-stash-value") |> LazyHTML.text() =~ "80 000 ₽"
+  end
+
+  test "a valuable adds nothing but its price" do
+    html =
+      render_component(&NeuroScavWeb.RaidComponents.stash/1,
+        loot: [%{item: :gpu, owner: "Гена Лена", alive: true}]
+      )
+
+    assert html =~ "Видеокарта" and html =~ "700 000 ₽"
+    refute html =~ "Ловкость" or html =~ "Сила" or html =~ "Удача"
   end
 
   test "loot that takes a stat shows it with a minus" do
@@ -302,7 +315,7 @@ defmodule NeuroScavWeb.RaidLiveTest do
       labels =
         for option <- NeuroScav.Raid.options(NeuroScav.Raid.new(squad, [event])),
             label =
-              option.camp || option.stat || option.key || (option.pay && :pay) ||
+              option.camp || option.stat || option.key || option.give || (option.pay && :pay) ||
                 (option.trust && :karma),
             label != nil,
             do: label
@@ -380,6 +393,12 @@ defmodule NeuroScavWeb.RaidLiveTest do
                "#{locale}: #{msgid}"
       end)
     end
+  end
+
+  test "the end tells what the loot carried out is worth" do
+    told = NeuroScavWeb.RaidComponents.loot_text([:ledx, :sj6])
+    assert told =~ "1 040 000 ₽" and told =~ "ЛЕДХ"
+    assert NeuroScavWeb.RaidComponents.loot_text([]) == "Ничего не вынесли"
   end
 
   test "every trait, what it does and the search are translated in every language" do
@@ -876,6 +895,32 @@ defmodule NeuroScavWeb.RaidLiveTest do
                ru("Raid paid %{name} %{item}", name: "Алиса Аврора", item: ru("Item sj6"))
 
       assert has_element?(lv, "#raid-exit")
+    end
+
+    test "a gift shows what it hands over and what that's worth; without it it's locked",
+         %{conn: conn} do
+      # the medic: no loot nor fight, so nobody takes over the gift
+      {lv, _raid} = raid_page(conn, [:medic])
+
+      assert lv |> element("#raid-option-1[disabled]") |> render() =~
+               ru("Raid needs %{item}", item: ru("Item ledx"))
+
+      {lv, _raid} = raid_page(conn, [:medic], &%{&1 | stash: [%{item: :ledx, owner: 1}]})
+      gift = lv |> element("#raid-option-1") |> render()
+      assert gift =~ ru("Raid medic ledx") and gift =~ "1 000 000 ₽"
+      assert gift =~ "Гена Лена" and gift =~ "#tabler-gift"
+
+      lv |> element("#raid-option-1") |> render_click()
+      outcome = lv |> element("#raid-outcome-1") |> render()
+      assert outcome =~ ru("Raid used %{item}", item: ru("Item ledx"))
+    end
+
+    test "every weather shows with its icon", %{conn: conn} do
+      for weather <- Map.keys(Catalog.compiled().weathers) do
+        {lv, _raid} = raid_page(conn, [:pmc], &%{&1 | weather: weather})
+        world = lv |> element("#raid-world") |> render()
+        assert world =~ ru("Raid weather #{weather}") and world =~ "#tabler-", "#{weather}"
+      end
     end
 
     test "the co-op exit is open to a squad the scavs like", %{conn: conn} do

@@ -433,6 +433,8 @@ defmodule NeuroScavWeb.ShareControllerTest do
       assert html =~ "Таможня" and html =~ "Вышли 1 из 2" and html =~ "Выход: Поезд"
       assert html =~ "Alice Adams" and html =~ "Bob Brown" and html =~ "погиб"
       assert html =~ "share-raid-lost"
+      # what the loot carried out is worth
+      assert html =~ "40 000 ₽"
       assert html =~ ~s(href="/raid")
     end
 

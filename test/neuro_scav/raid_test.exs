@@ -33,8 +33,8 @@ defmodule NeuroScav.RaidTest do
     [fight, climb] = @squad |> new_raid([:pmc]) |> Raid.options()
 
     assert fight.member.name == best(:strength).name
-    assert fight.chance == best(:strength).stats.strength |> max(5) |> min(95)
-    assert climb.chance == (best(:agility).stats.agility - 10) |> max(5) |> min(95)
+    assert fight.chance == (best(:strength).stats.strength + 15) |> max(5) |> min(95)
+    assert climb.chance == (best(:agility).stats.agility + 10) |> max(5) |> min(95)
   end
 
   test "a success passes, a failure loses the member who tried" do
@@ -61,7 +61,7 @@ defmodule NeuroScav.RaidTest do
     assert %{outcome: :loot, item: :sj6} = raid.last
 
     [fight, _climb] = Raid.options(raid)
-    assert fight.chance == (best(:strength).stats.strength + 10) |> max(5) |> min(95)
+    assert fight.chance == (best(:strength).stats.strength + 10 + 15) |> max(5) |> min(95)
   end
 
   test "a failed search finds nothing and loses nobody; a safe option risks nothing" do
@@ -248,6 +248,13 @@ defmodule NeuroScav.RaidTest do
       assert count.(:keycard) * 2 < count.(:bitcoin)
     end
 
+    test "loot is worth its price, a valuable nothing but it; what's carried out adds up" do
+      assert Enum.all?(Raid.loot(), &(Raid.price(&1) > 0))
+      assert Raid.loot_bonus(:gpu) == %{} and Raid.price(:gpu) > Raid.price(:sj6)
+      assert Raid.value([:ledx, :sj6, :sj6]) == Raid.price(:ledx) + 2 * Raid.price(:sj6)
+      assert Raid.value([]) == 0
+    end
+
     test "loot may take a stat as well: a heavy helmet slows its finder down" do
       raid = new_raid([%{name: "Дед Мороз", rarity: :legendary}], [:office, :pmc])
       [_fight, climb] = raid |> Raid.choose(0, 1, :sj6) |> Raid.options()
@@ -280,7 +287,7 @@ defmodule NeuroScav.RaidTest do
         |> Enum.map(&(&1.stats.agility + if(&1.name == finder.name, do: 10, else: 0)))
         |> Enum.max()
 
-      assert climb.chance == (best_agility - 10) |> max(5) |> min(95)
+      assert climb.chance == (best_agility + 10) |> max(5) |> min(95)
     end
 
     test "a fallen finder's loot stops working and works again once they're back" do
@@ -301,7 +308,7 @@ defmodule NeuroScav.RaidTest do
       refute Raid.active?(raid, hd(raid.stash))
       [fight, _climb] = Raid.options(raid)
       assert fight.member.name == strongest_other.name
-      assert fight.chance == strongest_other.stats.strength |> max(5) |> min(95)
+      assert fight.chance == (strongest_other.stats.strength + 15) |> max(5) |> min(95)
 
       # back on their feet, the armor works again (by now the morning is a day: fights go easier)
       raid = raid |> Raid.choose(0, 1) |> Raid.choose(0, 1)
@@ -309,7 +316,7 @@ defmodule NeuroScav.RaidTest do
       [fight, _climb] = Raid.options(raid)
       assert fight.member.name == finder.name
       day = Map.get(Raid.world(raid).daytime_kinds, :fight, 0)
-      assert fight.chance == (finder.stats.strength + 15 + day) |> max(5) |> min(95)
+      assert fight.chance == (finder.stats.strength + 15 + 15 + day) |> max(5) |> min(95)
     end
 
     test "a failed drop takes the last active item, not a fallen finder's" do
@@ -423,7 +430,9 @@ defmodule NeuroScav.RaidTest do
     test "the gnome thief steals the last item on a failure, whichever way the squad tries" do
       for index <- [0, 1] do
         raid = @squad |> new_raid([:trunk, :gnome_thief, :pmc]) |> Raid.choose(0, 1, :rooster)
-        assert Enum.all?(Raid.options(raid), & &1.stat)
+        # no way around but a check, or gold the squad has none of
+        assert Enum.all?(Enum.take(Raid.options(raid), 2), & &1.stat)
+        assert %{give: :gold_chain, locked: true} = Enum.at(Raid.options(raid), 2)
 
         raid = Raid.choose(raid, index, 100)
         assert %{event: :gnome_thief, outcome: :drop, item: :rooster} = raid.last
@@ -432,6 +441,12 @@ defmodule NeuroScav.RaidTest do
 
       raid = @squad |> new_raid([:gnome_thief]) |> Raid.choose(0, 1, :nvg)
       assert %{outcome: :loot, item: :nvg} = raid.last
+
+      # gold of its own, and the gnome lets the rest be
+      raid = @squad |> new_raid([:trunk, :gnome_thief]) |> Raid.choose(0, 1, :gold_chain)
+      raid = %{raid | stash: raid.stash ++ [%{item: :rooster, owner: 0}]}
+      assert %{outcome: :pass, used: :gold_chain} = Raid.choose(raid, 2, 100).last
+      assert Enum.map(Raid.choose(raid, 2, 100).stash, & &1.item) == [:rooster]
     end
 
     test "random maps hold no chain events and now and then a boss, mid-way or before the exits" do
@@ -666,21 +681,22 @@ defmodule NeuroScav.RaidTest do
   end
 
   describe "exits" do
-    test "the car takes the stash's last active item for sure; with nothing to pay it's locked" do
+    test "the car takes the stash's cheapest active item for sure; with nothing to pay it's locked" do
       raid = new_raid(@squad, [:exit_car])
       assert [%{pay: true, price: nil, locked: true}, _haggle, _walk] = Raid.options(raid)
       assert Raid.choose(raid, 0, 1) == raid
 
-      raid = %{raid | stash: [%{item: :sj6, owner: 0}, %{item: :rooster, owner: 1}]}
+      stash = [%{item: :rooster, owner: 0}, %{item: :sj6, owner: 1}, %{item: :ledx, owner: 0}]
+      raid = %{raid | stash: stash}
 
-      assert [%{pay: true, price: :rooster, chance: 100, locked: false} = pay | _] =
+      assert [%{pay: true, price: :sj6, chance: 100, locked: false} = pay | _] =
                Raid.options(raid)
 
       assert pay.member.index == 1
 
       raid = Raid.choose(raid, 0, 100)
-      assert %{outcome: :paid, item: :rooster, index: 1} = raid.last
-      assert Enum.map(raid.stash, & &1.item) == [:sj6]
+      assert %{outcome: :paid, item: :sj6, index: 1} = raid.last
+      assert Enum.map(raid.stash, & &1.item) == [:rooster, :ledx]
       assert Raid.over?(raid)
     end
 

@@ -2033,9 +2033,6 @@ msgstr "Auf Raid gehen"
 msgid "Raid share title %{location}"
 msgstr "Raid: %{location}"
 
-msgid "Raid result loot %{items}"
-msgstr "Herausgebracht: %{items}"
-
 msgid "Raid result no loot"
 msgstr "Nichts herausgebracht"
 
@@ -2045,10 +2042,146 @@ msgstr "gefallen"
 msgid "Share region"
 msgstr "Oblast Norwinsk · Tarkow"
 
+msgid "Raid result loot %{value} %{items}"
+msgstr "Herausgebracht im Wert von %{value}: %{items}"
 
+msgid "Raid stash value %{value}"
+msgstr "Insgesamt %{value} wert"
 
+msgid "Item gpu"
+msgstr "Grafikkarte"
 
+msgid "Item teapot"
+msgstr "Antiker Teekessel"
 
+msgid "Item flash_drive"
+msgstr "Gesicherter USB-Stick"
 
+msgid "Item gold_chain"
+msgstr "Goldene Halskette"
 
+msgid "Item roler"
+msgstr "Roler-Submariner-Uhr"
 
+msgid "Item bronze_lion"
+msgstr "Bronzelöwe"
+
+msgid "Item tetriz"
+msgstr "Tetriz"
+
+msgid "Item intel"
+msgstr "Geheimdienstmappe"
+
+msgid "Item cat_figurine"
+msgstr "Katzenfigur"
+
+msgid "Item toilet_paper"
+msgstr "Toilettenpapier"
+
+msgid "Item tank_battery"
+msgstr "Panzerbatterie"
+
+msgid "Raid weather overcast"
+msgstr "Bewölkt"
+
+msgid "Raid weather drizzle"
+msgstr "Nieselregen"
+
+msgid "Raid weather rainbow"
+msgstr "Regenbogen"
+
+msgid "Raid weather cool"
+msgstr "Kühl"
+
+msgid "Raid weather breeze"
+msgstr "Leichte Brise"
+
+msgid "Raid prapor_quest teapot"
+msgstr "Den antiken Teekessel abgeben"
+
+msgid "Raid therapist_quest flash_drive"
+msgstr "Den USB-Stick abgeben"
+
+msgid "Raid medic ledx"
+msgstr "Mit dem LEDX bezahlen"
+
+msgid "Raid scav_patrol moonshine"
+msgstr "Mit Selbstgebranntem bewirten"
+
+msgid "Raid chatty_scav tetriz"
+msgstr "Ihm das Tetriz schenken"
+
+msgid "Raid gnome_thief gold_chain"
+msgstr "Ihn mit der Goldkette abfinden"
+
+msgid "Raid wounded medkit"
+msgstr "Ihm eure Salewa geben"
+
+msgid "Raid rogues intel"
+msgstr "Die Geheimdienstmappe übergeben"
+
+msgid "Raid prapor_reward"
+msgstr "Prapors Paket"
+
+msgid "Raid prapor_reward text"
+msgstr "Prapor am Funk: „Teekessel angenommen. Das Versteck ist unter der Brücke, der Code ist mein Geburtsjahr. Weiß ich selbst nicht mehr.“"
+
+msgid "Raid prapor_reward luck"
+msgstr "Den Code erraten"
+
+msgid "Raid prapor_reward strength"
+msgstr "Das Schloss abschlagen"
+
+msgid "Raid therapist_reward"
+msgstr "Therapists Dank"
+
+msgid "Raid therapist_reward text"
+msgstr "Therapist am Funk: „USB-Sticks erhalten. Ein Kurier mit Sanitätstasche wartet an der Gabelung — seid pünktlich.“"
+
+msgid "Raid therapist_reward luck"
+msgstr "Den Kurier treffen"
+
+msgid "Raid jaeger_hunt"
+msgstr "Jagd mit Jaeger"
+
+msgid "Raid jaeger_hunt text"
+msgstr "Jaeger ist zufrieden: „Kommst du mit auf die Jagd? Aber leise — das Wild hier trägt Sturmgewehre.“"
+
+msgid "Raid jaeger_hunt agility"
+msgstr "Das Wild aufspüren"
+
+msgid "Raid jaeger_hunt strength"
+msgstr "Einen Hinterhalt legen"
+
+msgid "Raid mechanic_reward"
+msgstr "Mechanics Belohnung"
+
+msgid "Raid mechanic_reward text"
+msgstr "Mechanic am Funk: „Stick erhalten. Komm vorbei — ich schieße dir die Waffe ein, vielleicht gibt's noch was obendrauf.“"
+
+msgid "Raid mechanic_reward agility"
+msgstr "Die Waffe einschießen"
+
+msgid "Raid mechanic_reward luck"
+msgstr "Um eine Zugabe bitten"
+
+msgid "Raid quest_snipers"
+msgstr "Die Scharfschützen vom Platz"
+
+msgid "Raid quest_snipers text"
+msgstr "Die drei Scharfschützen vom Platz haben den Verlust des Questgegenstands nicht verkraftet. Sie sind euch auf der Spur."
+
+msgid "Raid quest_snipers agility"
+msgstr "Durch die Hinterhöfe verschwinden"
+
+msgid "Raid quest_snipers luck"
+msgstr "Ihr Nest finden"
+
+msgid "Raid lost_scav_return"
+msgstr "Ein dankbarer Wildling"
+
+msgid "Raid lost_scav_return text"
+msgstr "Der verirrte Wildling ist zurück — mit Freunden und Geschenken: „Hab doch gesagt — die sind von uns!“"
+
+msgid "Raid lost_scav_return luck"
+msgstr "Die Geschenke annehmen"

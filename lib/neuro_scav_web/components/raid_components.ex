@@ -58,6 +58,7 @@ defmodule NeuroScavWeb.RaidComponents do
   patches); the backdrop is a sibling of the panel, so a click inside the panel
   keeps it open. Each item shows who found it: loot works for its finder only,
   so a fallen finder's items are dimmed and the button counts the active ones.
+  Each item tells its price, the list what the active ones are worth.
   """
   attr :loot, :list, required: true, doc: "%{item, owner, alive} each, see stash_entries/1"
 
@@ -92,9 +93,16 @@ defmodule NeuroScavWeb.RaidComponents do
           >
             <b class={Raid.trophy_item?(item) && "raid-stash-trophy"}>{item_name(item)}</b>
             {item_bonus(item)}
+            <span class="raid-stash-price">{roubles(Raid.price(item))}</span>
             <span class={["raid-stash-owner", not alive && "raid-stash-owner-dead"]}>{owner}</span>
           </li>
         </ul>
+        <p :if={@loot != []} id="raid-stash-value" class="raid-stash-value">
+          {gettext("Raid stash value %{value}",
+            value:
+              @loot |> Enum.filter(& &1.alive) |> Enum.map(& &1.item) |> Raid.value() |> roubles()
+          )}
+        </p>
         <p :if={@loot == []} class="raid-stash-empty">{gettext("Stash empty")}</p>
       </div>
     </div>
@@ -497,11 +505,19 @@ defmodule NeuroScavWeb.RaidComponents do
     end
   end
 
-  # the loot the squad carried out, or that it carried out nothing
+  # the loot the squad carried out and what it's worth, or that it carried out nothing
   def loot_text([]), do: gettext("Raid result no loot")
 
   def loot_text(items),
-    do: gettext("Raid result loot %{items}", items: Enum.map_join(items, ", ", &item_name/1))
+    do:
+      gettext("Raid result loot %{value} %{items}",
+        value: roubles(Raid.value(items)),
+        items: Enum.map_join(items, ", ", &item_name/1)
+      )
+
+  # "1 250 000 ₽", never broken across lines
+  def roubles(value),
+    do: String.replace(Integer.to_string(value), ~r/\B(?=(\d{3})+$)/, " ") <> " ₽"
 
   def location_class(raid),
     do: if(location = Raid.location(raid), do: "raid-location-#{location}")

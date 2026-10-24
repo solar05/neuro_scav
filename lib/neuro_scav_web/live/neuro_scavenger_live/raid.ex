@@ -18,6 +18,11 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   }
   @weather_icons %{
     clear: "tabler-sun",
+    overcast: "tabler-cloud",
+    drizzle: "tabler-droplets",
+    rainbow: "tabler-rainbow",
+    cool: "tabler-temperature-minus",
+    breeze: "tabler-sun-wind",
     fog: "tabler-cloud-fog",
     rain: "tabler-cloud-rain",
     wind: "tabler-wind",
@@ -243,6 +248,9 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   defp option_label(event, %{key: key}) when key != nil,
     do: Locale.get_text("Raid #{event} #{key}")
 
+  defp option_label(event, %{give: gift}) when gift != nil,
+    do: Locale.get_text("Raid #{event} #{gift}")
+
   defp option_label(event, %{pay: true}), do: Locale.get_text("Raid #{event} pay")
 
   defp option_label(event, %{trust: level}) when level != nil,
@@ -265,13 +273,16 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
 
   defp performer(%{member: member}), do: member.name
 
-  # why an option can't be taken: nothing for a rest to do, the item a key
-  # needs, or enough of running
+  # why an option can't be taken: nothing for a rest to do, the item a key or
+  # a gift needs, or enough of running
   defp locked_text(%{camp: :heal}), do: gettext("Raid camp nobody wounded")
   defp locked_text(%{camp: :repack}), do: gettext("Raid camp nothing to repack")
 
   defp locked_text(%{key: key}) when key != nil,
     do: gettext("Raid needs %{item}", item: item_name(key))
+
+  defp locked_text(%{give: gift}) when gift != nil,
+    do: gettext("Raid needs %{item}", item: item_name(gift))
 
   defp locked_text(%{pay: true}), do: gettext("Raid needs payment")
 
@@ -283,8 +294,8 @@ defmodule NeuroScavWeb.NeuroScavengerLive.Raid do
   # an option with no check, item, condition or rest: safe, or leaving a search
   defp plain?(option),
     do:
-      option.stat == nil and option.key == nil and option.search == nil and not option.pay and
-        option.trust == nil and option.camp == nil and not option.locked
+      option.stat == nil and option.key == nil and option.give == nil and option.search == nil and
+        not option.pay and option.trust == nil and option.camp == nil and not option.locked
 
   # the location, the time of day and the weather, each with its icon, in a line
   # with the checks they ease and harden now

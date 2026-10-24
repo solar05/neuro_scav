@@ -1661,10 +1661,10 @@ msgid "Raid footsteps agility"
 msgstr "Замереть и ждать"
 
 msgid "Raid bush_wookie"
-msgstr "Куст-вуки"
+msgstr "Странный куст"
 
 msgid "Raid bush_wookie text"
-msgstr "Куст шевелится и тихо хихикает. Это ЧВК в маскхалате."
+msgstr "Куст шевелится и тихо хихикает..."
 
 msgid "Raid bush_wookie strength"
 msgstr "Прострелить куст"
@@ -2044,9 +2044,6 @@ msgstr "Сходить в рейд"
 msgid "Raid share title %{location}"
 msgstr "Вылазка: %{location}"
 
-msgid "Raid result loot %{items}"
-msgstr "Вынесли: %{items}"
-
 msgid "Raid result no loot"
 msgstr "Ничего не вынесли"
 
@@ -2056,10 +2053,146 @@ msgstr "погиб"
 msgid "Share region"
 msgstr "Норвинская область · Тарков"
 
+msgid "Raid result loot %{value} %{items}"
+msgstr "Вынесли на %{value}: %{items}"
 
+msgid "Raid stash value %{value}"
+msgstr "Всего на %{value}"
 
+msgid "Item gpu"
+msgstr "Видеокарта"
 
+msgid "Item teapot"
+msgstr "Антикварный чайник"
 
+msgid "Item flash_drive"
+msgstr "Защищённая флешка"
 
+msgid "Item gold_chain"
+msgstr "Золотая цепь"
 
+msgid "Item roler"
+msgstr "Часы «Ролер»"
 
+msgid "Item bronze_lion"
+msgstr "Бронзовый лев"
+
+msgid "Item tetriz"
+msgstr "Тетриз"
+
+msgid "Item intel"
+msgstr "Папка с разведданными"
+
+msgid "Item cat_figurine"
+msgstr "Статуэтка кота"
+
+msgid "Item toilet_paper"
+msgstr "Туалетная бумага"
+
+msgid "Item tank_battery"
+msgstr "Танковый аккумулятор"
+
+msgid "Raid weather overcast"
+msgstr "Пасмурно"
+
+msgid "Raid weather drizzle"
+msgstr "Морось"
+
+msgid "Raid weather rainbow"
+msgstr "Радуга"
+
+msgid "Raid weather cool"
+msgstr "Прохлада"
+
+msgid "Raid weather breeze"
+msgstr "Лёгкий ветерок"
+
+msgid "Raid prapor_quest teapot"
+msgstr "Отдать антикварный чайник"
+
+msgid "Raid therapist_quest flash_drive"
+msgstr "Отдать флешку"
+
+msgid "Raid medic ledx"
+msgstr "Заплатить ЛЕДХ"
+
+msgid "Raid scav_patrol moonshine"
+msgstr "Угостить самогоном"
+
+msgid "Raid chatty_scav tetriz"
+msgstr "Подарить ему тетриз"
+
+msgid "Raid gnome_thief gold_chain"
+msgstr "Откупиться золотой цепью"
+
+msgid "Raid wounded medkit"
+msgstr "Отдать ему свою «Салеву»"
+
+msgid "Raid rogues intel"
+msgstr "Отдать разведданные"
+
+msgid "Raid prapor_reward"
+msgstr "Посылка Прапора"
+
+msgid "Raid prapor_reward text"
+msgstr "Прапор по рации: «Чайники зачтены. Схрон под мостом, код от замка — год моего рождения. Сам не помню какой»."
+
+msgid "Raid prapor_reward luck"
+msgstr "Подобрать код"
+
+msgid "Raid prapor_reward strength"
+msgstr "Сбить замок"
+
+msgid "Raid therapist_reward"
+msgstr "Благодарность Терапевта"
+
+msgid "Raid therapist_reward text"
+msgstr "Терапевт по рации: «Флешки получила. Курьер с аптечкой ждёт вас у развилки — не опаздывайте»."
+
+msgid "Raid therapist_reward luck"
+msgstr "Встретить курьера"
+
+msgid "Raid jaeger_hunt"
+msgstr "Охота с Егерем"
+
+msgid "Raid jaeger_hunt text"
+msgstr "Егерь доволен: «Пойдёшь со мной на охоту? Только тихо — дичь тут с автоматами»."
+
+msgid "Raid jaeger_hunt agility"
+msgstr "Выслеживать дичь"
+
+msgid "Raid jaeger_hunt strength"
+msgstr "Устроить засаду"
+
+msgid "Raid mechanic_reward"
+msgstr "Награда Механика"
+
+msgid "Raid mechanic_reward text"
+msgstr "Механик по рации: «Флешку получил. Заходи — пристреляю тебе ствол, а может, и подкину чего»."
+
+msgid "Raid mechanic_reward agility"
+msgstr "Пристрелять ствол"
+
+msgid "Raid mechanic_reward luck"
+msgstr "Попросить добавки"
+
+msgid "Raid quest_snipers"
+msgstr "Снайперы с площади"
+
+msgid "Raid quest_snipers text"
+msgstr "Те трое снайперов с площади не смирились с пропажей квестового предмета. Они идут по следу."
+
+msgid "Raid quest_snipers agility"
+msgstr "Уйти дворами"
+
+msgid "Raid quest_snipers luck"
+msgstr "Найти их лёжку"
+
+msgid "Raid lost_scav_return"
+msgstr "Благодарный дикий"
+
+msgid "Raid lost_scav_return text"
+msgstr "Тот самый заблудившийся дикий вернулся — с друзьями и гостинцами: «Я ж говорил — свои!»"
+
+msgid "Raid lost_scav_return luck"
+msgstr "Принять гостинцы"

@@ -1,6 +1,6 @@
 defmodule NeuroScav.Raid.Catalog do
   @moduledoc """
-  What raids are made of: every event, every piece of loot, the weather and
+  What raids are made of: every event, every piece of loot and its price, the weather and
   the times of day, checked as the catalog compiles. `NeuroScav.Raid` plays
   them and takes the catalog at compile time (`compiled/0`). A new event is an
   entry here plus its texts in `priv/gettext` (title, text and one label per
@@ -25,46 +25,56 @@ defmodule NeuroScav.Raid.Catalog do
   #
   # option: {stat, difficulty, on success, on failure}, :safe, a key
   # {:key, item, on success}: no check, the success sure if an alive member
-  # has the item (it stays theirs), locked if nobody does; or a condition, a
-  # sure pass as well: `:pay` takes the stash's last active item (locked with
-  # none), `{:karma, n}` needs the scavs' karma at n at least. An option is
-  # told apart by its stat (labels, karma, `last.stat`): an event checks a
-  # stat once.
+  # has the item (it stays theirs), locked if nobody does; a gift {:give,
+  # item, on success}: the same, but the item is handed over for good (a pass,
+  # loot or a revive: nothing that needs a stat); or a condition, a sure pass
+  # as well: `:pay` takes the stash's cheapest active item (locked with none),
+  # `{:karma, n}` needs the scavs' karma at n at least. An option is told
+  # apart by its stat or its item (labels, karma, `last.stat`): an event
+  # checks a stat once, needs an item once.
+  #
+  # The less a success brings, the easier it is: a way past costing a wound or
+  # an item at worst comes off about two times in three, one that may cost a
+  # member a little more seldom, loot and training about one time in three,
+  # loot that may cost a member once in four or five (for a fresh squad's best
+  # at the stat, about 40, see `NeuroScav.Raid.Squad`). A check by the weakest
+  # or by each is that much easier: the weakest is some 25 below the best.
   @events %{
-    pmc: [{:strength, 0, :pass, :lose}, {:agility, 10, :pass, :lose}],
-    sniper: [{:agility, 0, :pass, :lose}, {:luck, -10, :pass, :lose}, {:key, :altyn, :pass}],
+    pmc: [{:strength, -15, :pass, :lose}, {:agility, -10, :pass, :lose}],
+    sniper: [{:agility, -10, :pass, :lose}, {:luck, -20, :pass, :lose}, {:key, :altyn, :pass}],
     mines: %{
-      options: [{:agility, 0, :pass, :wound}, {:luck, 10, :pass, :lose}],
+      options: [{:agility, -30, :pass, :wound}, {:luck, -10, :pass, :lose}],
       modes: %{agility: :each}
     },
-    office: [{:strength, 10, :loot, :nothing}, :safe],
+    office: [{:strength, 5, :loot, :nothing}, :safe],
     bait: %{options: [{:agility, 15, :loot, :lose}, :safe], chain: %{safe: {:ambush, 2}}},
     wounded: %{
-      options: [{:luck, 0, :loot, :nothing}, :safe],
+      options: [{:luck, 0, :loot, :nothing}, {:give, :medkit, :loot}, :safe],
       scav: true,
       karma: %{luck: 1},
       chain: %{loot: {:debtor, 3}}
     },
     cultists: %{
-      options: [{:agility, 5, :pass, :lose}, {:luck, 10, :pass, :lose}, {:key, :nvg, :pass}],
+      options: [{:agility, -10, :pass, :lose}, {:luck, -35, :pass, :lose}, {:key, :nvg, :pass}],
       modes: %{luck: :weakest}
     },
-    raiders: [{:strength, 20, :loot, :lose}, {:agility, 10, :pass, :lose}],
+    raiders: [{:strength, 20, :loot, :lose}, {:agility, -10, :pass, :lose}],
     # haggling: the scavs take it well, whatever it costs
     toll: %{options: [{:luck, 0, :pass, :drop}, :safe], scav: true, karma: %{luck: 1}},
     airdrop: %{
-      options: [{:agility, 20, :loot, :lose}, :safe],
+      options: [{:agility, 15, :loot, :lose}, :safe],
       chain: %{loot: {:drop_hunters, 1}}
     },
-    medic: %{options: [{:luck, 0, :revive, :nothing}, :safe], scav: true},
-    bridge: [{:agility, 10, :pass, :lose}, {:luck, 5, :pass, :drop}],
+    # a LEDX is worth a life to a medic
+    medic: %{options: [{:luck, 0, :revive, :nothing}, {:give, :ledx, :revive}, :safe], scav: true},
+    bridge: [{:agility, -10, :pass, :lose}, {:luck, -20, :pass, :drop}],
     # talking the price down is a skill: it trains luck
     vex: [{:luck, 0, :train, :drop}, :safe],
     tripwire: %{
-      options: [{:agility, -5, :pass, :wound}, {:luck, 10, :loot, :lose}],
+      options: [{:agility, -30, :pass, :wound}, {:luck, 15, :loot, :lose}],
       modes: %{agility: :each}
     },
-    dead_pmc: %{options: [{:luck, 5, :loot, :lose}, :safe], chain: %{loot: {:pmc_killer, 2}}},
+    dead_pmc: %{options: [{:luck, 10, :loot, :lose}, :safe], chain: %{loot: {:pmc_killer, 2}}},
     labs: [
       {:strength, 25, :loot, :lose},
       {:agility, 20, :loot, :lose},
@@ -72,56 +82,72 @@ defmodule NeuroScav.Raid.Catalog do
       :safe
     ],
     obdolbos: [{:luck, 0, :train, :wound}, :safe],
-    skirmish: [{:strength, 5, :train, :wound}, {:agility, 0, :pass, :lose}],
-    stairs: [{:agility, 10, :train, :wound}, :safe],
+    skirmish: [{:strength, 5, :train, :wound}, {:agility, -15, :pass, :lose}],
+    stairs: [{:agility, 5, :train, :wound}, :safe],
     # the promoting ones are rare
     veteran: %{options: [{:strength, 20, :promote, :wound}, :safe], weight: 0.12},
     lightkeeper: %{options: [{:agility, 25, :promote, :lose}, :safe], weight: 0.12},
-    rogues: [{:agility, 20, :loot, :lose}, {:luck, 10, :pass, :drop}],
-    bunker: [{:luck, 5, :loot, :lose}, :safe],
-    mechanic: [{:agility, 10, :loot, :lose}, :safe],
+    # the Rogues are after intel for their commander
+    rogues: [{:agility, 20, :loot, :lose}, {:luck, -20, :pass, :drop}, {:give, :intel, :pass}],
+    bunker: [{:luck, 10, :loot, :lose}, :safe],
+    mechanic: %{
+      options: [{:agility, 10, :loot, :lose}, :safe],
+      chain: %{loot: {:mechanic_reward, 2}}
+    },
     # a crate in an open car of a passing train
-    train: [{:agility, 5, :loot, :stall}, :safe],
+    train: [{:agility, 0, :loot, :stall}, :safe],
     trunk: [{:luck, 0, :loot, :wound}, :safe],
     goons: %{
-      options: [{:strength, 30, :loot, :lose}, {:agility, 10, :pass, :lose}, :safe],
+      options: [{:strength, 30, :loot, :lose}, {:agility, -25, :pass, :lose}, :safe],
       modes: %{agility: :weakest}
     },
     flea: %{options: [{:luck, 0, :loot, :drop}, :safe], scav: true},
-    tower: [{:agility, 5, :train, :lose}, :safe],
+    tower: [{:agility, 10, :train, :lose}, :safe],
     # chains: only ever brought by another event
     reshala_guards: %{
-      options: [{:strength, 20, :loot, :lose}, {:agility, 10, :pass, :wound}],
+      options: [{:strength, 20, :loot, :lose}, {:agility, -20, :pass, :wound}],
       karma: %{strength: -1}
     },
-    ambush: [{:agility, 10, :pass, :wound}, {:strength, 15, :loot, :lose}],
+    ambush: [{:agility, -20, :pass, :wound}, {:strength, 15, :loot, :lose}],
     debtor: %{options: [{:luck, -15, :revive, :nothing}, :safe], scav: true},
-    drop_hunters: [{:agility, 15, :pass, :drop}, {:strength, 20, :loot, :lose}],
-    pmc_killer: [{:strength, 15, :loot, :lose}, {:luck, 10, :pass, :drop}],
-    # bosses: no way around, only a fight for the trophy or a costly escape. A
-    # fight is no harder than a plain check: by the time a boss comes the squad
-    # is worn, and a loss is a death, so it's won about 4 times in 10 (mix raid.sim)
+    drop_hunters: [{:agility, -15, :pass, :drop}, {:strength, 20, :loot, :lose}],
+    pmc_killer: [{:strength, 15, :loot, :lose}, {:luck, -20, :pass, :drop}],
+    # quests: a trader keeps their word a few nodes later
+    prapor_reward: [{:luck, -20, :loot, :nothing}, {:strength, -5, :loot, :wound}],
+    therapist_reward: [{:luck, -25, :revive, :nothing}, :safe],
+    jaeger_hunt: [{:agility, 5, :train, :wound}, {:strength, 5, :loot, :wound}],
+    mechanic_reward: [{:agility, -15, :train, :nothing}, {:luck, -10, :loot, :nothing}],
+    quest_snipers: [{:agility, -20, :pass, :wound}, {:luck, 15, :loot, :lose}],
+    lost_scav_return: %{
+      options: [{:luck, -10, :loot, :nothing}, :safe],
+      scav: true,
+      karma: %{luck: 1}
+    },
+    # bosses: no way around, only a fight for the trophy or an escape at a
+    # wound. A fight is no harder than a plain check: by the time a boss comes
+    # the squad is worn, and a loss is a death, so it's won about 4 times in 10
+    # (mix raid.sim); the escape comes off about one time in two
     kaban: %{
-      options: [{:strength, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:strength, 0, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :pkm
     },
     partisan: %{
-      options: [{:agility, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:agility, 0, :trophy, :lose}, {:luck, -10, :pass, :wound}],
       trophy: :ghillie
     },
     priest: %{
-      options: [{:luck, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:luck, 0, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :amulet
     },
     # the locations' own bosses, each mostly at home (see @locations)
     reshala: %{
-      options: [{:strength, 0, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:strength, 0, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :golden_tt,
       karma: %{strength: -1},
       chain: %{trophy: {:reshala_guards, 2}}
     },
     shturman: %{
-      options: [{:agility, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:agility, 0, :trophy, :lose}, {:luck, -10, :pass, :wound}],
       trophy: :svds
     },
     # Sanitar trades too: his meds for the squad's loot
@@ -129,62 +155,71 @@ defmodule NeuroScav.Raid.Catalog do
       options: [
         {:strength, 0, :trophy, :lose},
         {:luck, 10, :revive, :drop},
-        {:agility, 15, :pass, :wound}
+        {:agility, -10, :pass, :wound}
       ],
       trophy: :sanitar_bag
     },
     killa: %{
-      options: [{:strength, 5, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:strength, 5, :trophy, :lose}, {:luck, -10, :pass, :wound}],
       trophy: :killa_helmet
     },
     glukhar: %{
-      options: [{:strength, 5, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:strength, 5, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :ash12
     },
     zryachiy: %{
-      options: [{:luck, 5, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:luck, 5, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :zryachiy_balaclava
     },
     tagilla: %{
-      options: [{:strength, 10, :trophy, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:strength, 10, :trophy, :lose}, {:agility, -10, :pass, :wound}],
       trophy: :sledgehammer
     },
     kollontay: %{
-      options: [{:strength, 0, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:strength, 0, :trophy, :lose}, {:luck, -10, :pass, :wound}],
       trophy: :baton
     },
     # the toughest, won about 1 time in 4: its trophy is legendary
     komar: %{
-      options: [{:agility, 5, :trophy, :lose}, {:luck, 15, :pass, :wound}],
+      options: [{:agility, 5, :trophy, :lose}, {:luck, -10, :pass, :wound}],
       trophy: :komar_wings
     },
     # exits: the squad gets out whatever comes of it, at a price; none stalls
     exit_car: %{
-      options: [:pay, {:luck, 5, :pass, :drop}, {:agility, 10, :pass, :wound}],
+      options: [:pay, {:luck, -20, :pass, :drop}, {:agility, -20, :pass, :wound}],
       exit: true
     },
     exit_coop: %{
-      options: [{:karma, 1}, {:luck, 10, :pass, :lose}, {:agility, 15, :pass, :wound}],
+      options: [{:karma, 1}, {:luck, -15, :pass, :lose}, {:agility, -20, :pass, :wound}],
       exit: true,
       scav: true
     },
     exit_bunker: %{
       options: [
         {:key, :keycard, :pass},
-        {:strength, 15, :pass, :wound},
-        {:luck, 15, :pass, :drop}
+        {:strength, -20, :pass, :wound},
+        {:luck, -20, :pass, :drop}
       ],
       exit: true
     },
-    exit_boat: %{options: [{:agility, 5, :pass, :wound}, {:luck, 0, :pass, :drop}], exit: true},
-    exit_train: %{options: [{:luck, 5, :pass, :wound}, {:agility, 10, :pass, :lose}], exit: true},
-    exit_fence: %{
-      options: [{:agility, 5, :pass, :wound}, {:strength, 10, :pass, :drop}],
+    exit_boat: %{
+      options: [{:agility, -20, :pass, :wound}, {:luck, -25, :pass, :drop}],
       exit: true
     },
-    exit_cliff: %{options: [{:agility, 15, :pass, :lose}, {:luck, 10, :pass, :wound}], exit: true},
+    exit_train: %{
+      options: [{:luck, -20, :pass, :wound}, {:agility, -15, :pass, :lose}],
+      exit: true
+    },
+    exit_fence: %{
+      options: [{:agility, -20, :pass, :wound}, {:strength, -15, :pass, :drop}],
+      exit: true
+    },
+    exit_cliff: %{
+      options: [{:agility, -10, :pass, :lose}, {:luck, -15, :pass, :wound}],
+      exit: true
+    },
     exit_tunnel: %{
-      options: [{:luck, 5, :pass, :wound}, {:strength, 10, :pass, :drop}],
+      options: [{:luck, -20, :pass, :wound}, {:strength, -15, :pass, :drop}],
       exit: true
     },
     # searches: one more box, and one more, till the squad leaves or gets hurt
@@ -198,81 +233,115 @@ defmodule NeuroScav.Raid.Catalog do
       scav: true,
       karma: %{luck: 1, strength: -2}
     },
-    fence: %{options: [{:luck, 15, :loot, :nothing}, :safe], scav: true},
+    fence: %{options: [{:luck, 10, :loot, :nothing}, :safe], scav: true},
+    # nothing talks a scav round like moonshine
     scav_patrol: %{
-      options: [{:luck, 10, :pass, :wound}, {:strength, 15, :loot, :lose}],
+      options: [
+        {:luck, -15, :pass, :wound},
+        {:strength, 15, :loot, :lose},
+        {:give, :moonshine, :pass}
+      ],
       scav: true,
       karma: %{strength: -1}
     },
-    lost_scav: %{options: [{:agility, 10, :train, :wound}, :safe], karma: %{agility: 1}},
+    lost_scav: %{
+      options: [{:agility, 5, :train, :wound}, :safe],
+      karma: %{agility: 1},
+      chain: %{train: {:lost_scav_return, 3}}
+    },
     # Tarkov as players know it
-    axeman: [{:strength, 5, :loot, :lose}, {:agility, 10, :pass, :wound}],
-    cheater: [{:luck, 25, :loot, :lose}, {:agility, 15, :pass, :lose}],
-    desync: [{:luck, 10, :pass, :lose}, {:agility, 0, :pass, :stall}],
-    extract_campers: [{:agility, 15, :pass, :lose}, {:luck, 10, :pass, :drop}],
-    prapor_quest: [{:luck, 5, :train, :nothing}, :safe],
+    axeman: [{:strength, 10, :loot, :lose}, {:agility, -20, :pass, :wound}],
+    cheater: [{:luck, 25, :loot, :lose}, {:agility, -5, :pass, :lose}],
+    desync: [{:luck, -10, :pass, :lose}, {:agility, -20, :pass, :stall}],
+    extract_campers: [{:agility, -5, :pass, :lose}, {:luck, -20, :pass, :drop}],
+    # the teapots found or handed over, Prapor pays a few nodes later
+    prapor_quest: %{
+      options: [{:luck, 0, :train, :nothing}, {:give, :teapot, :pass}, :safe],
+      chain: %{train: {:prapor_reward, 2}, pass: {:prapor_reward, 2}}
+    },
     sleeping_scav: %{options: [{:agility, 5, :loot, :wound}, :safe], karma: %{agility: -1}},
-    streets_fps: [{:agility, 15, :pass, :stall}, {:luck, 5, :train, :nothing}],
-    bear_usec: [{:luck, 5, :loot, :nothing}, {:agility, 10, :pass, :lose}],
-    grenade_scav: [{:agility, 0, :loot, :lose}, {:luck, 10, :pass, :wound}],
+    streets_fps: [{:agility, -15, :pass, :stall}, {:luck, 0, :train, :nothing}],
+    bear_usec: [{:luck, 5, :loot, :nothing}, {:agility, -10, :pass, :lose}],
+    grenade_scav: [{:agility, 10, :loot, :lose}, {:luck, -20, :pass, :wound}],
     door_key: [
       {:strength, 10, :loot, :wound},
       {:luck, 20, :loot, :nothing},
       {:key, :keycard, :loot}
     ],
     # a stall: clearing the way may take so long that something else turns up
-    roadblock: [{:strength, 10, :pass, :stall}, {:agility, 5, :pass, :wound}],
+    roadblock: [{:strength, -15, :pass, :stall}, {:agility, -20, :pass, :wound}],
     # Tarkov once more
     elevator: [
-      {:agility, 10, :pass, :stall},
-      {:strength, 5, :pass, :wound},
+      {:agility, -15, :pass, :stall},
+      {:strength, -20, :pass, :wound},
       {:key, :keycard, :pass}
     ],
     extract_queue: %{
-      options: [{:agility, 10, :pass, :lose}, {:strength, 15, :loot, :lose}],
+      options: [{:agility, -30, :pass, :lose}, {:strength, 15, :loot, :lose}],
       modes: %{agility: :weakest}
     },
     moonshine_still: [{:luck, 5, :train, :wound}, :safe],
-    quest_item: [{:agility, 15, :loot, :lose}, :safe],
-    mosin_chad: [{:agility, 10, :pass, :lose}, {:strength, 10, :loot, :lose}],
+    # the snipers don't let the quest item go
+    quest_item: %{
+      options: [{:agility, 15, :loot, :lose}, :safe],
+      chain: %{loot: {:quest_snipers, 2}}
+    },
+    mosin_chad: [{:agility, -10, :pass, :lose}, {:strength, 15, :loot, :lose}],
     wipe_day: [{:strength, 0, :train, :wound}, :safe],
-    therapist_quest: [{:luck, 15, :loot, :nothing}, :safe],
+    therapist_quest: %{
+      options: [{:luck, 5, :loot, :nothing}, {:give, :flash_drive, :pass}, :safe],
+      chain: %{loot: {:therapist_reward, 3}, pass: {:therapist_reward, 3}}
+    },
     footsteps: %{
-      options: [{:luck, 10, :pass, :lose}, {:agility, 5, :pass, :wound}],
+      options: [{:luck, -10, :pass, :lose}, {:agility, -40, :pass, :wound}],
       modes: %{agility: :weakest}
     },
-    bush_wookie: [{:strength, 10, :loot, :lose}, {:luck, 5, :pass, :drop}],
+    bush_wookie: [{:strength, 15, :loot, :lose}, {:luck, -20, :pass, :drop}],
+    # a Tetriz keeps a scav busy for good
     chatty_scav: %{
-      options: [{:luck, 5, :pass, :wound}, {:strength, 10, :loot, :lose}],
+      options: [
+        {:luck, -15, :pass, :wound},
+        {:strength, 15, :loot, :lose},
+        {:give, :tetriz, :pass}
+      ],
       scav: true,
       karma: %{strength: -1}
     },
-    jaeger_quest: %{options: [{:agility, 25, :promote, :wound}, :safe], weight: 0.3},
+    jaeger_quest: %{
+      options: [{:agility, 25, :promote, :wound}, :safe],
+      weight: 0.3,
+      chain: %{promote: {:jaeger_hunt, 2}}
+    },
     bitcoin_farm: %{
-      options: [{:strength, 15, :loot, :lose}, {:luck, 10, :loot, :wound}],
+      options: [{:strength, 15, :loot, :lose}, {:luck, 5, :loot, :wound}],
       karma: %{strength: -1}
     },
     # gnomes: small, many and after your loot; whatever the squad tries with
-    # the thief, a failure costs loot
+    # the thief, a failure costs loot, unless it gets gold of its own
     gnome_thief: %{
-      options: [{:agility, 10, :loot, :drop}, {:luck, 5, :pass, :drop}],
+      options: [
+        {:agility, 5, :loot, :drop},
+        {:luck, -20, :pass, :drop},
+        {:give, :gold_chain, :pass}
+      ],
       weight: 0.5,
       gnome: true
     },
-    gnome_trader: %{options: [{:luck, 10, :loot, :drop}, :safe], weight: 0.5, gnome: true},
+    gnome_trader: %{options: [{:luck, 5, :loot, :drop}, :safe], weight: 0.5, gnome: true},
     gnome_ambush: %{
-      options: [{:strength, 15, :loot, :lose}, {:agility, 10, :pass, :drop}],
+      options: [{:strength, 15, :loot, :lose}, {:agility, -20, :pass, :drop}],
       weight: 0.5,
       gnome: true
     },
     gnome_pmc: %{
-      options: [{:strength, 20, :loot, :lose}, {:luck, 5, :pass, :drop}],
+      options: [{:strength, 20, :loot, :lose}, {:luck, -20, :pass, :drop}],
       weight: 0.5,
       gnome: true
     }
   }
 
-  # loot: the stats it adds to every check of the squad (some take a little too)
+  # loot: the stats it adds to every check of the squad (some take a little
+  # too, the valuables add nothing: they're worth their price, see @prices)
   @loot %{
     sj6: %{strength: 10},
     meldonin: %{agility: 10},
@@ -288,6 +357,18 @@ defmodule NeuroScav.Raid.Catalog do
     nvg: %{agility: 5, luck: 5},
     # consumables, see @consumables
     medkit: %{},
+    # valuables: a heavy one takes a stat
+    gpu: %{},
+    teapot: %{},
+    flash_drive: %{},
+    gold_chain: %{},
+    roler: %{},
+    bronze_lion: %{},
+    tetriz: %{},
+    intel: %{},
+    cat_figurine: %{},
+    toilet_paper: %{},
+    tank_battery: %{agility: -10},
     # trophies, see @trophies
     pkm: %{strength: 20},
     ghillie: %{agility: 15, luck: 5},
@@ -303,18 +384,77 @@ defmodule NeuroScav.Raid.Catalog do
     baton: %{strength: 10, luck: 10}
   }
 
+  # what each kind of loot is worth, in roubles: what the squad carries out adds up
+  @prices %{
+    sj6: 40_000,
+    meldonin: 35_000,
+    rooster: 80_000,
+    ledx: 1_000_000,
+    propital: 25_000,
+    etg: 30_000,
+    slick: 350_000,
+    altyn: 150_000,
+    moonshine: 90_000,
+    bitcoin: 450_000,
+    keycard: 1_200_000,
+    nvg: 200_000,
+    medkit: 20_000,
+    gpu: 700_000,
+    teapot: 60_000,
+    flash_drive: 120_000,
+    gold_chain: 50_000,
+    roler: 150_000,
+    bronze_lion: 200_000,
+    tetriz: 70_000,
+    intel: 250_000,
+    cat_figurine: 100_000,
+    toilet_paper: 5_000,
+    tank_battery: 500_000,
+    pkm: 250_000,
+    ghillie: 80_000,
+    amulet: 300_000,
+    komar_wings: 1_500_000,
+    golden_tt: 200_000,
+    svds: 250_000,
+    sanitar_bag: 400_000,
+    killa_helmet: 350_000,
+    ash12: 300_000,
+    zryachiy_balaclava: 250_000,
+    sledgehammer: 200_000,
+    baton: 150_000
+  }
+
+  if Map.keys(@prices) -- Map.keys(@loot) != [] or Map.keys(@loot) -- Map.keys(@prices) != [],
+    do: raise(CompileError, description: "raid loot: every kind of it needs a price, only it")
+
   # how often a kind of loot turns up, 1 unless listed: the valuables are rare
-  @loot_weights %{ledx: 0.3, keycard: 0.3, slick: 0.5}
+  @loot_weights %{
+    ledx: 0.3,
+    keycard: 0.3,
+    slick: 0.5,
+    gpu: 0.2,
+    tank_battery: 0.3,
+    bronze_lion: 0.4,
+    intel: 0.4,
+    cat_figurine: 0.5,
+    flash_drive: 0.6,
+    roler: 0.6
+  }
 
   # consumables: loot the squad shares and spends by itself, once, on what it
   # spares a member from: a medkit turns a death into a wound, propital takes
   # a wound away (till then it's loot like any other)
   @consumables %{medkit: :lose, propital: :wound}
 
-  # the weather, one for a raid, drawn by weight: mostly clear, now and then
-  # something that adds a little to some checks, more often takes
+  # the weather, one for a raid, drawn by weight: mostly clear or overcast,
+  # now and then something that eases some checks, hardens them, or both
   @weathers %{
-    clear: %{weight: 6, stats: %{}},
+    clear: %{weight: 5, stats: %{}},
+    overcast: %{weight: 2, stats: %{}},
+    drizzle: %{weight: 1, stats: %{agility: -5, luck: 5}},
+    rainbow: %{weight: 1, stats: %{luck: 10}},
+    cool: %{weight: 1, stats: %{strength: 5, agility: 5}},
+    breeze: %{weight: 1, stats: %{agility: 10}},
     fog: %{weight: 1, stats: %{strength: -10, agility: 5}},
     rain: %{weight: 1, stats: %{agility: -5, luck: -5}},
     wind: %{weight: 1, stats: %{strength: -5}},
@@ -362,6 +502,8 @@ defmodule NeuroScav.Raid.Catalog do
     :exit
   ]
   @successes [:pass, :loot, :revive, :train, :promote, :trophy]
+  # a gift checks no stat for a training or a promotion to raise
+  @gifts [:pass, :loot, :revive]
   @failures [:lose, :wound, :drop, :nothing, :stall]
 
   for {event, spec} <- @specs do
@@ -369,6 +511,8 @@ defmodule NeuroScav.Raid.Catalog do
       for {stat, _difficulty, success, failure} <- spec.options, do: {stat, success, failure}
 
     keys = for {:key, item, success} <- spec.options, do: {item, success}
+    gives = for {:give, item, success} <- spec.options, do: {item, success}
+    items = for {item, _success} <- keys ++ gives, do: item
     stats = for {stat, _success, _failure} <- checks, do: stat
     safe = if :safe in spec.options, do: [:safe], else: []
 
@@ -380,7 +524,7 @@ defmodule NeuroScav.Raid.Catalog do
     outcomes =
       safe ++
         Enum.flat_map(checks, fn {_stat, success, failure} -> [success, failure] end) ++
-        for({_item, success} <- keys, do: success)
+        for({_item, success} <- keys ++ gives, do: success)
 
     chain = Map.get(spec, :chain, %{})
     modes = Map.get(spec, :modes, %{})
@@ -390,7 +534,7 @@ defmodule NeuroScav.Raid.Catalog do
       Enum.filter(
         [
           unknown != [] && "unknown keys #{inspect(unknown)}",
-          length(checks) + length(keys) + length(safe) + length(conditions) !=
+          length(checks) + length(keys) + length(gives) + length(safe) + length(conditions) !=
             length(spec.options) &&
             "an option of no known shape",
           Enum.any?(checks, fn {_stat, success, failure} ->
@@ -399,6 +543,10 @@ defmodule NeuroScav.Raid.Catalog do
           Enum.any?(keys, fn {item, success} ->
             not Map.has_key?(@loot, item) or success not in @successes
           end) && "a key of unknown loot or outcome",
+          Enum.any?(gives, fn {item, success} ->
+            not Map.has_key?(@loot, item) or success not in @gifts
+          end) && "a gift of unknown loot or of an outcome a gift can't bring",
+          items != Enum.uniq(items) && "two options need the same item",
           Map.keys(modes) -- stats != [] && "a mode for a stat no option checks",
           Enum.any?(modes, fn {_stat, mode} -> mode not in [:weakest, :each] end) &&
             "an unknown mode",
@@ -657,6 +805,7 @@ defmodule NeuroScav.Raid.Catalog do
       common: @common,
       detours: @detours,
       loot: @loot,
+      prices: @prices,
       loot_weights: @loot_weights
     }
   end

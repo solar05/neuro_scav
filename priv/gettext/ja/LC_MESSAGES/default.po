@@ -2033,9 +2033,6 @@ msgstr "Reido ni iku"
 msgid "Raid share title %{location}"
 msgstr "Reido: %{location}"
 
-msgid "Raid result loot %{items}"
-msgstr "Mochikaetta: %{items}"
-
 msgid "Raid result no loot"
 msgstr "Nani mo mochikaerenakatta"
 
@@ -2045,10 +2042,146 @@ msgstr "senshi"
 msgid "Share region"
 msgstr "Norubinsuku-shuu · Tarukofu"
 
+msgid "Raid result loot %{value} %{items}"
+msgstr "Mochikaetta (%{value}): %{items}"
 
+msgid "Raid stash value %{value}"
+msgstr "Goukei %{value}"
 
+msgid "Item gpu"
+msgstr "Gurafikku kaado"
 
+msgid "Item teapot"
+msgstr "Kottou no yakan"
 
+msgid "Item flash_drive"
+msgstr "Sekyua USB memori"
 
+msgid "Item gold_chain"
+msgstr "Kin no kusari"
 
+msgid "Item roler"
+msgstr "Roorer no udedokei"
 
+msgid "Item bronze_lion"
+msgstr "Seidou no raion"
+
+msgid "Item tetriz"
+msgstr "Tetorizu"
+
+msgid "Item intel"
+msgstr "Jouhou fairu"
+
+msgid "Item cat_figurine"
+msgstr "Neko no okimono"
+
+msgid "Item toilet_paper"
+msgstr "Toiretto peepaa"
+
+msgid "Item tank_battery"
+msgstr "Sensha no batterii"
+
+msgid "Raid weather overcast"
+msgstr "Kumori"
+
+msgid "Raid weather drizzle"
+msgstr "Kirisame"
+
+msgid "Raid weather rainbow"
+msgstr "Niji"
+
+msgid "Raid weather cool"
+msgstr "Suzushii"
+
+msgid "Raid weather breeze"
+msgstr "Soyokaze"
+
+msgid "Raid prapor_quest teapot"
+msgstr "Kottou no yakan wo watasu"
+
+msgid "Raid therapist_quest flash_drive"
+msgstr "USB memori wo watasu"
+
+msgid "Raid medic ledx"
+msgstr "LEDX de harau"
+
+msgid "Raid scav_patrol moonshine"
+msgstr "Mitsuzou-shu wo furumau"
+
+msgid "Raid chatty_scav tetriz"
+msgstr "Tetorizu wo ageru"
+
+msgid "Raid gnome_thief gold_chain"
+msgstr "Kin no kusari de te wo utsu"
+
+msgid "Raid wounded medkit"
+msgstr "Jibun no Sarewa wo watasu"
+
+msgid "Raid rogues intel"
+msgstr "Jouhou fairu wo watasu"
+
+msgid "Raid prapor_reward"
+msgstr "Purapooru no kozutsumi"
+
+msgid "Raid prapor_reward text"
+msgstr "Musen de Purapooru: «Yakan wa uketotta. Kakushi-basho wa hashi no shita, angou wa ore no umare-doshi da. Jibun demo oboetenee.»"
+
+msgid "Raid prapor_reward luck"
+msgstr "Angou wo ateru"
+
+msgid "Raid prapor_reward strength"
+msgstr "Jou wo uchikowasu"
+
+msgid "Raid therapist_reward"
+msgstr "Serapisuto no orei"
+
+msgid "Raid therapist_reward text"
+msgstr "Musen de Serapisuto: «USB memori wa uketotta wa. Bunkiten de kyuukyuubako wo motta tsukai ga matteru — okurenaide.»"
+
+msgid "Raid therapist_reward luck"
+msgstr "Tsukai to au"
+
+msgid "Raid jaeger_hunt"
+msgstr "Yeegaa to kari"
+
+msgid "Raid jaeger_hunt text"
+msgstr "Yeegaa wa manzoku da: «Issho ni kari ni iku ka? Shizuka ni na — koko no emono wa juu wo motteru.»"
+
+msgid "Raid jaeger_hunt agility"
+msgstr "Emono wo ou"
+
+msgid "Raid jaeger_hunt strength"
+msgstr "Machibuse suru"
+
+msgid "Raid mechanic_reward"
+msgstr "Mekanikku no houshuu"
+
+msgid "Raid mechanic_reward text"
+msgstr "Musen de Mekanikku: «USB wa uketotta. Kite kure — juu no zeroin wo shite yaru, omake mo aru kamo na.»"
+
+msgid "Raid mechanic_reward agility"
+msgstr "Zeroin suru"
+
+msgid "Raid mechanic_reward luck"
+msgstr "Omake wo nedaru"
+
+msgid "Raid quest_snipers"
+msgstr "Hiroba no sogekishu"
+
+msgid "Raid quest_snipers text"
+msgstr "Hiroba no sogekishu sannin wa kuesuto aitemu ga kieta no wo yurusanakatta. Ato wo otte kuru."
+
+msgid "Raid quest_snipers agility"
+msgstr "Uradoori de nigeru"
+
+msgid "Raid quest_snipers luck"
+msgstr "Karera no su wo sagasu"
+
+msgid "Raid lost_scav_return"
+msgstr "Kansha suru yabanjin"
+
+msgid "Raid lost_scav_return text"
+msgstr "Ano mayotta yabanjin ga modotte kita — nakama to miyage wo motte: «Itta daro — mikata da tte!»"
+
+msgid "Raid lost_scav_return luck"
+msgstr "Miyage wo uketoru"

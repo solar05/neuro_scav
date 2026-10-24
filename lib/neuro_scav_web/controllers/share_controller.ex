@@ -466,7 +466,8 @@ defmodule NeuroScavWeb.ShareController do
     %{cx: cx, cy: cy, cw: cw, ch: ch, art_h: art_h} = @raid_card
     color = raid_color(report)
     mid_x = cx + div(cw, 2)
-    loot = RaidComponents.loot_text(report.loot)
+    # Bender has no ₽: it would draw nothing
+    loot = report.loot |> RaidComponents.loot_text() |> String.replace("₽", "RUB")
     loot = if String.length(loot) > 70, do: String.slice(loot, 0, 69) <> "…", else: loot
 
     rows =

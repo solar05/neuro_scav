@@ -20,6 +20,7 @@ defmodule NeuroScav.Raid.Squad do
 
   @catalog Catalog.compiled()
   @loot @catalog.loot
+  @prices @catalog.prices
   @traits @catalog.traits
   # the consumables sparing a member a wound, a death
   @wound_saver @catalog.savers.wound
@@ -126,6 +127,19 @@ defmodule NeuroScav.Raid.Squad do
     List.last(for {entry, index} <- Enum.with_index(raid.stash), active?(raid, entry), do: index)
   end
 
+  @doc """
+  The index of the stash's cheapest item whose finder is alive (the latest of
+  equals), nil when there's none: what the squad pays with.
+  """
+  @spec cheapest_active(map()) :: non_neg_integer() | nil
+  def cheapest_active(raid) do
+    raid.stash
+    |> Enum.with_index()
+    |> Enum.filter(fn {entry, _index} -> active?(raid, entry) end)
+    |> Enum.min_by(fn {entry, index} -> {@prices[entry.item], -index} end, fn -> {nil, nil} end)
+    |> elem(1)
+  end
+
   @doc "A member's stat with the bonuses of the loot they found."
   @spec with_loot(map(), map(), atom()) :: integer()
   def with_loot(raid, member, stat),
@@ -227,7 +241,9 @@ defmodule NeuroScav.Raid.Squad do
   # a consumable is the squad's: any alive member's will do, and it's gone once spent
   defp has?(raid, item), do: spare_entry(raid, item) != nil
 
-  defp spend(raid, item), do: %{raid | stash: List.delete_at(raid.stash, spare_entry(raid, item))}
+  @doc "The item is gone from the stash: the first of it an alive member has (a gift, a consumable)."
+  @spec spend(map(), atom()) :: map()
+  def spend(raid, item), do: %{raid | stash: List.delete_at(raid.stash, spare_entry(raid, item))}
 
   defp spare_entry(raid, item),
     do: Enum.find_index(raid.stash, &(&1.item == item and active?(raid, &1)))

@@ -3428,6 +3428,21 @@ svg[class^="tabler-"] {
     content: "— ";
 }
 
+/* what an item is worth, after what it adds */
+.raid-stash-price {
+    margin-left: 6px;
+    color: #9aab68;
+    font-size: 14px;
+}
+
+/* what the loot that works is worth together: what the squad would carry out */
+.raid-stash-value {
+    margin: 0;
+    padding: 0 14px 12px;
+    color: #ffd060;
+    font: 16px "Bender";
+}
+
 .raid-stash-owner-dead {
     color: #ff5252;
     text-decoration: line-through;

@@ -2044,9 +2044,6 @@ msgstr "Go on a raid"
 msgid "Raid share title %{location}"
 msgstr "Raid: %{location}"
 
-msgid "Raid result loot %{items}"
-msgstr "Carried out: %{items}"
-
 msgid "Raid result no loot"
 msgstr "Carried nothing out"
 
@@ -2056,10 +2053,146 @@ msgstr "KIA"
 msgid "Share region"
 msgstr "Norvinsk Region · Tarkov"
 
+msgid "Raid result loot %{value} %{items}"
+msgstr "Carried out %{value} worth: %{items}"
 
+msgid "Raid stash value %{value}"
+msgstr "Worth %{value} in all"
 
+msgid "Item gpu"
+msgstr "Graphics card"
 
+msgid "Item teapot"
+msgstr "Antique teapot"
 
+msgid "Item flash_drive"
+msgstr "Secure flash drive"
 
+msgid "Item gold_chain"
+msgstr "Golden neck chain"
 
+msgid "Item roler"
+msgstr "Roler Submariner watch"
 
+msgid "Item bronze_lion"
+msgstr "Bronze lion"
+
+msgid "Item tetriz"
+msgstr "Tetriz"
+
+msgid "Item intel"
+msgstr "Intelligence folder"
+
+msgid "Item cat_figurine"
+msgstr "Cat figurine"
+
+msgid "Item toilet_paper"
+msgstr "Toilet paper"
+
+msgid "Item tank_battery"
+msgstr "Tank battery"
+
+msgid "Raid weather overcast"
+msgstr "Overcast"
+
+msgid "Raid weather drizzle"
+msgstr "Drizzle"
+
+msgid "Raid weather rainbow"
+msgstr "Rainbow"
+
+msgid "Raid weather cool"
+msgstr "Cool"
+
+msgid "Raid weather breeze"
+msgstr "Light breeze"
+
+msgid "Raid prapor_quest teapot"
+msgstr "Hand over the antique teapot"
+
+msgid "Raid therapist_quest flash_drive"
+msgstr "Hand over the flash drive"
+
+msgid "Raid medic ledx"
+msgstr "Pay with the LEDX"
+
+msgid "Raid scav_patrol moonshine"
+msgstr "Treat them to moonshine"
+
+msgid "Raid chatty_scav tetriz"
+msgstr "Give him the Tetriz"
+
+msgid "Raid gnome_thief gold_chain"
+msgstr "Buy him off with the gold chain"
+
+msgid "Raid wounded medkit"
+msgstr "Give him your Salewa"
+
+msgid "Raid rogues intel"
+msgstr "Hand over the intel"
+
+msgid "Raid prapor_reward"
+msgstr "Prapor's parcel"
+
+msgid "Raid prapor_reward text"
+msgstr "Prapor on the radio: “Teapots accepted. The stash is under the bridge, the lock code is my birth year. Don't remember it myself.”"
+
+msgid "Raid prapor_reward luck"
+msgstr "Guess the code"
+
+msgid "Raid prapor_reward strength"
+msgstr "Knock the lock off"
+
+msgid "Raid therapist_reward"
+msgstr "Therapist's thanks"
+
+msgid "Raid therapist_reward text"
+msgstr "Therapist on the radio: “Got the flash drives. A courier with a med bag is waiting at the fork — don't be late.”"
+
+msgid "Raid therapist_reward luck"
+msgstr "Meet the courier"
+
+msgid "Raid jaeger_hunt"
+msgstr "A hunt with Jaeger"
+
+msgid "Raid jaeger_hunt text"
+msgstr "Jaeger is pleased: “Coming hunting with me? Quietly, though — the game here carries rifles.”"
+
+msgid "Raid jaeger_hunt agility"
+msgstr "Track the game"
+
+msgid "Raid jaeger_hunt strength"
+msgstr "Set an ambush"
+
+msgid "Raid mechanic_reward"
+msgstr "Mechanic's reward"
+
+msgid "Raid mechanic_reward text"
+msgstr "Mechanic on the radio: “Got the flash drive. Come by — I'll zero your rifle, maybe throw in something extra.”"
+
+msgid "Raid mechanic_reward agility"
+msgstr "Zero the rifle"
+
+msgid "Raid mechanic_reward luck"
+msgstr "Ask for a little extra"
+
+msgid "Raid quest_snipers"
+msgstr "The snipers from the square"
+
+msgid "Raid quest_snipers text"
+msgstr "The three snipers from the square didn't take the missing quest item well. They're on your trail."
+
+msgid "Raid quest_snipers agility"
+msgstr "Slip away through the yards"
+
+msgid "Raid quest_snipers luck"
+msgstr "Find their nest"
+
+msgid "Raid lost_scav_return"
+msgstr "A grateful scav"
+
+msgid "Raid lost_scav_return text"
+msgstr "That lost scav is back — with friends and presents: “Told you — they're with us!”"
+
+msgid "Raid lost_scav_return luck"
+msgstr "Take the presents"

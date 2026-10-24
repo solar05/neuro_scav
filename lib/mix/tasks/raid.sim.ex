@@ -198,6 +198,7 @@ defmodule Mix.Tasks.Raid.Sim do
       alive: average(alive),
       steps: average(Enum.map(results, fn {_raid, log} -> length(log) end)),
       stash: average(Enum.map(results, fn {raid, _log} -> length(raid.stash) end)),
+      value: average(Enum.map(results, fn {raid, _log} -> Raid.value(carried(raid)) end)),
       karma: average(Enum.map(results, fn {raid, _log} -> raid.karma end)),
       with:
         Map.new(@outcomes, fn outcome ->
@@ -229,7 +230,7 @@ defmodule Mix.Tasks.Raid.Sim do
 
   defp print_summary(strategies, results) do
     outcomes = Enum.map(@outcomes, &Atom.to_string/1)
-    header = ~w(strategy wiped clean alive steps stash karma) ++ outcomes
+    header = ~w(strategy wiped clean alive steps stash value karma) ++ outcomes
     rows = for strategy <- strategies, do: [strategy | summary_row(summary(results[strategy]))]
 
     Mix.shell().info("\nRaids (outcome columns: share of raids that met one)")
@@ -238,7 +239,8 @@ defmodule Mix.Tasks.Raid.Sim do
 
   defp summary_row(summary) do
     [percent(summary.wiped), percent(summary.clean), number(summary.alive)] ++
-      [number(summary.steps), number(summary.stash), number(summary.karma)] ++
+      [number(summary.steps), number(summary.stash), thousands(summary.value)] ++
+      [number(summary.karma)] ++
       Enum.map(@outcomes, &percent(summary.with[&1]))
   end
 
@@ -294,6 +296,10 @@ defmodule Mix.Tasks.Raid.Sim do
   defp share(list, fun), do: Enum.count(list, fun) * 100 / max(length(list), 1)
   defp average(numbers), do: Enum.sum(numbers) / max(length(numbers), 1)
 
+  # what alive finders carry out, the raid's score
+  defp carried(raid), do: for(entry <- raid.stash, Raid.active?(raid, entry), do: entry.item)
+
+  defp thousands(value), do: "#{round(value / 1000)}k"
   defp percent(value), do: "#{:erlang.float_to_binary(value * 1.0, decimals: 1)}%"
   defp number(value), do: :erlang.float_to_binary(value * 1.0, decimals: 2)
 end

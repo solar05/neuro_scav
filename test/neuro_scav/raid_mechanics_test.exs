@@ -52,6 +52,45 @@ defmodule NeuroScav.RaidMechanicsTest do
     end
   end
 
+  describe "gifts" do
+    test "a gift nobody has is locked; its holder hands it over for good, a sure success" do
+      raid = @squad |> new_raid([:pmc, :medic, :pmc]) |> Raid.choose(0, 100)
+      [fallen] = Enum.reject(raid.squad, & &1.alive)
+      assert %{give: :ledx, locked: true, member: nil} = raid |> Raid.options() |> Enum.at(1)
+
+      holder = hd(Raid.alive(raid))
+
+      raid = %{
+        raid
+        | stash: [%{item: :ledx, owner: holder.index}, %{item: :sj6, owner: holder.index}]
+      }
+
+      assert %{give: :ledx, locked: false, chance: 100, reward: :revive, retreat: false} =
+               gift = raid |> Raid.options() |> Enum.at(1)
+
+      assert gift.member.index == holder.index
+
+      raid = Raid.choose(raid, 1, 100)
+      assert %{outcome: :revive, used: :ledx} = raid.last
+      assert raid.last.member == fallen.name
+      assert Enum.map(raid.stash, & &1.item) == [:sj6]
+    end
+
+    test "a quest's item handed over brings the trader's reward a few nodes later" do
+      raid = %{
+        new_raid(@squad, [:prapor_quest, :office, :office, :pmc])
+        | stash: [%{item: :teapot, owner: 0}]
+      }
+
+      raid = Raid.choose(raid, 1, 100)
+      assert %{outcome: :pass, used: :teapot, follow_up: :prapor_reward} = raid.last
+      assert raid.stash == []
+
+      raid = Raid.choose(raid, 1, 1)
+      assert Raid.event(raid) == :prapor_reward and Raid.at(raid) == {2, 0}
+    end
+  end
+
   describe "who makes a check" do
     test "a stealthy one is made by the weakest at it" do
       [_listen, sneak] = @squad |> new_raid([:footsteps]) |> Raid.options()
@@ -164,12 +203,14 @@ defmodule NeuroScav.RaidMechanicsTest do
         route |> plain(world) |> Raid.options() |> Enum.map(& &1.chance)
       end
 
-      # pmc: a fight with strength at 0, a run with agility at 10 (neither a fight nor hiding)
-      assert chances.([:pmc], @calm) == [50, 40]
+      # pmc: a fight with strength at -15, a run with agility at -10 (neither a fight nor hiding)
+      assert chances.([:pmc], @calm) == [65, 60]
       # fog: strength -10, agility +5; the day: fights +5
-      assert chances.([:pmc], %{weather: :fog, daytime: :day}) == [45, 45]
+      assert chances.([:pmc], %{weather: :fog, daytime: :day}) == [60, 65]
       # the night: fights -5, hiding (sneaking past the Goons) +10
-      assert chances.([:goons], %{weather: :clear, daytime: :night}) == [15, 50, nil]
+      assert chances.([:goons], %{weather: :clear, daytime: :night}) == [15, 85, nil]
+      # a rainbow: luck +10
+      assert chances.([:trunk], %{weather: :rainbow, daytime: :evening}) == [60, nil]
       # the morning: a search +5 (a luck check for loot)
       assert chances.([:trunk], @calm) == [55, nil]
     end
@@ -268,13 +309,13 @@ defmodule NeuroScav.RaidMechanicsTest do
     end
 
     test "a chatterbox gives the squad away when it hides, and talks scavs round" do
-      # the desync's run: an escape (agility 0, a stall at worst), 50% for a plain 50
+      # the desync's run: an escape (agility -20, a stall at worst), 70% for a plain 50
       raid = squad([:desync, :pmc], [{:chatty, 50}])
       chatty = name(raid, 0)
-      assert %{outcome: :pass} = Raid.choose(raid, 1, 40).last
+      assert %{outcome: :pass} = Raid.choose(raid, 1, 60).last
 
       assert %{outcome: :stall, quirk: {:chatty, ^chatty}} =
-               Raid.choose(raid, 1, 40, :sj6, 1).last
+               Raid.choose(raid, 1, 60, :sj6, 1).last
 
       # the toll: a luck check at a scav event, 50%
       raid = squad([:toll, :pmc], [{:chatty, 50}])

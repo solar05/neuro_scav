@@ -16,10 +16,11 @@ defmodule NeuroScav.Raid do
 
   Each event offers two or three options; an option either needs a stat check,
   is safe (nothing happens), needs an item (a key: an alive member having it
-  opens the way for sure, the item stays theirs; with nobody having it the
-  option is locked) or has a condition, a sure way through as well, locked
-  while it isn't met: a payment (`:paid`, the stash's last active item goes)
-  or the scavs' trust (`:trusted`, karma high enough). Exits have them.
+  opens the way for sure, the item stays theirs; a gift: the same, but the
+  item is handed over for good; with nobody having it the option is locked)
+  or has a condition, a sure way through as well, locked while it isn't met:
+  a payment (`:paid`, the stash's cheapest active item goes) or the scavs'
+  trust (`:trusted`, karma high enough). Exits have them.
   A check is made by the alive member best at that stat counting their own
   loot (some checks by the worst one, `:weakest`, or by `:each`: one roll
   against everyone's chance, the failure for each it beats): the chance is
@@ -104,6 +105,9 @@ defmodule NeuroScav.Raid do
   what it adds, a fallen one's too, so it works again; locked when nothing
   would move). Resting is neither a retreat nor a risk.
 
+  Every piece of loot has its price (`price/1`): what the squad carries out
+  is worth their sum (`value/1`), the raid's score.
+
   The events and the loot are in `NeuroScav.Raid.Catalog`.
 
   A raid is plain data: the page keeps it, every step returns a new one. The
@@ -184,6 +188,7 @@ defmodule NeuroScav.Raid do
   @detours @catalog.detours
   @spares 5
   @loot @catalog.loot
+  @prices @catalog.prices
   @loot_weights @catalog.loot_weights
   # {event, stat} => who makes that check, :best unless listed
   @modes @catalog.modes
@@ -201,7 +206,7 @@ defmodule NeuroScav.Raid do
   @search {:luck, 0, :found, :wound}
   # retreats in a row a squad may make: then it has to take a risk
   @retreat_limit 1
-  # an option with no check: a safe one, a key, a condition or leaving a search
+  # an option with no check: a safe one, a key, a gift, a condition or leaving a search
   @no_check %{
     stat: nil,
     member: nil,
@@ -209,6 +214,7 @@ defmodule NeuroScav.Raid do
     reward: nil,
     risk: nil,
     key: nil,
+    give: nil,
     pay: false,
     price: nil,
     trust: nil,
@@ -329,6 +335,14 @@ defmodule NeuroScav.Raid do
   @doc "Stats a piece of loot adds to the squad's checks."
   @spec loot_bonus(atom()) :: %{atom() => pos_integer()}
   def loot_bonus(item), do: Map.fetch!(@loot, item)
+
+  @doc "What a piece of loot is worth, in roubles."
+  @spec price(atom()) :: pos_integer()
+  def price(item), do: Map.fetch!(@prices, item)
+
+  @doc "What the items are worth together, in roubles."
+  @spec value([atom()]) :: non_neg_integer()
+  def value(items), do: items |> Enum.map(&price/1) |> Enum.sum()
 
   @doc """
   A new raid for `members` (maps with `:name` and `:rarity`) across `map`, a
@@ -470,9 +484,9 @@ defmodule NeuroScav.Raid do
   stat, who makes the check (`mode`: `:best`, `:weakest`, `:each`) and the
   `member` who'd do it (for each, the worst at it), the chance in percent and
   what a success brings (`reward`) and a failure costs (`risk`). A key has
-  the item in `key`, the member who has it and a sure chance, or is `locked`
-  with nobody to have it. A payment (`pay: true`) has the item it takes in
-  `price` and its finder, locked with nothing to pay; the scavs' trust has
+  the item in `key`, a gift in `give`, the member who has it and a sure
+  chance, or is `locked` with nobody to have it. A payment (`pay: true`) has
+  the item it takes in `price` and its finder, locked with nothing to pay; the scavs' trust has
   the karma it needs in `trust`, locked below it; both are sure. A `retreat`
   is `locked` once the squad has retreated `@retreat_limit` times in a row. A
   search has two: one more look (`search`, the looks so far) by the luckiest
@@ -528,16 +542,16 @@ defmodule NeuroScav.Raid do
 
   defp option(_raid, _event, :safe), do: @no_check
 
-  defp option(raid, _event, {:key, item, success}) do
+  defp option(raid, _event, {how, item, success}) when how in [:key, :give] do
     holder = Squad.holder(raid, item)
-    %{@no_check | key: item, member: holder, chance: holder && 100, reward: success}
+    %{@no_check | how => item, member: holder, chance: holder && 100, reward: success}
   end
 
-  # the stash's last active item pays, its finder hands it over
+  # the stash's cheapest active item pays, its finder hands it over
   defp option(raid, _event, :pay) do
     payment = %{@no_check | pay: true, reward: :pass, risk: :drop}
 
-    case Squad.last_active(raid) do
+    case Squad.cheapest_active(raid) do
       nil ->
         payment
 
@@ -612,10 +626,12 @@ defmodule NeuroScav.Raid do
     if retreat?(option) or Map.get(@modes, {event, stat}) == :weakest, do: :hide
   end
 
-  # A key nobody has is locked, so is a payment with nothing to pay and trust
-  # the scavs don't give; and a retreat once the squad has retreated as long as
-  # it may, unless the event has nothing else to take or it's an exit.
-  defp locked?(raid, _event, {:key, item, _success}), do: Squad.holder(raid, item) == nil
+  # A key or a gift nobody has is locked, so is a payment with nothing to pay
+  # and trust the scavs don't give; and a retreat once the squad has retreated
+  # as long as it may, unless the event has nothing else to take or it's an exit.
+  defp locked?(raid, _event, {how, item, _success}) when how in [:key, :give],
+    do: Squad.holder(raid, item) == nil
+
   defp locked?(raid, _event, :pay), do: Squad.last_active(raid) == nil
   defp locked?(raid, _event, {:karma, level}), do: raid.karma < level
 
@@ -661,7 +677,7 @@ defmodule NeuroScav.Raid do
     do: step(raid, %{@last | event: event, outcome: :safe, retreat: true})
 
   defp act(raid, event, :pay, _roll, _item, _quirky) do
-    {paid, stash} = List.pop_at(raid.stash, Squad.last_active(raid))
+    {paid, stash} = List.pop_at(raid.stash, Squad.cheapest_active(raid))
     owner = Enum.at(raid.squad, paid.owner)
 
     step(%{raid | stash: stash}, %{
@@ -710,8 +726,10 @@ defmodule NeuroScav.Raid do
   defp act(raid, event, {:camp, :repack}, _roll, _item, _quirky),
     do: raid |> Squad.repack() |> step(%{@last | event: event, outcome: :repacked})
 
-  defp act(raid, event, {:key, key, success}, _roll, item, _quirky) do
+  # a key stays its holder's, a gift is gone
+  defp act(raid, event, {how, key, success}, _roll, item, _quirky) when how in [:key, :give] do
     holder = Squad.holder(raid, key)
+    raid = if how == :give, do: Squad.spend(raid, key), else: raid
 
     settle(raid, success, holder, item, %{
       @last
